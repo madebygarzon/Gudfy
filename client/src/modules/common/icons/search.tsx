@@ -2,7 +2,7 @@ import React from "react"
 import { IconProps } from "types/icon"
 
 const Search: React.FC<IconProps> = ({
-  size = "16",
+  size = "18",
   color = "currentColor",
   ...attributes
 }) => {
@@ -10,7 +10,7 @@ const Search: React.FC<IconProps> = ({
     <svg
       width={size}
       height={size}
-      viewBox="0 0 24 24"
+      viewBox="0 0 22 22"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       {...attributes}

@@ -12,11 +12,14 @@ const DesktopSearchModal = () => {
 
   return (
     <>
-      <button onClick={open} className="flex items-center gap-x-2 h-full">
+      <div className="flex items-center w-auto h-full justify-center">
+      <div className="items-center m-0 w-auto rounded-xl bg-transparent border border-white">
+      <input type="text" className=" w-48 h-8 bg-transparent text-white rounded-l-xl focus:outline-none px-2"/>
+      <button onClick={open} className="w-7" >
         <Search />
-        Search
       </button>
-
+      </div>
+      </div>
       <Modal isOpen={state} close={close} size="large">
         <Modal.Body>
           <InstantSearch

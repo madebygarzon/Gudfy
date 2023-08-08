@@ -38,6 +38,9 @@ module.exports = {
       colors: {
         'blue-gf': '#1F0046',
       },
+      boxShadow: {
+        'gf': '0px 0px 10px 0px rgba(0, 0, 0, 0.68)',
+      },
     },
   },
   plugins: [],
