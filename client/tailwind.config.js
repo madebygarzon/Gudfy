@@ -24,15 +24,19 @@ module.exports = {
       },
       fontFamily: {
         sans: [
-          "Inter",
+          "Poppins",
+          /*"Inter",
           "-apple-system",
           "BlinkMacSystemFont",
           "Segoe UI",
           "Roboto",
           "Helvetica Neue",
           "Ubuntu",
-          "sans-serif",
+          "sans-serif",*/
         ],
+      },
+      colors: {
+        'blue-gf': '#1F0046',
       },
     },
   },
