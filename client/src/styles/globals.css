@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -51,9 +52,13 @@
 
 @layer components {
   .content-container {
-    @apply max-w-[1440px] w-full mx-auto px-8
+    @apply w-full mx-auto px-8
   }
 
+  .footer-menu {
+    margin-left: 160px;
+    margin-right: 180px;
+  }
   .contrast-btn {
     @apply px-4 py-2 border border-black rounded-full hover:bg-black hover:text-white transition-colors duration-200 ease-in;
   }
