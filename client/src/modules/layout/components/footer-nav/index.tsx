@@ -1,149 +1,47 @@
 "use client"
-import { useCollections } from "medusa-react"
+import Image from "next/image"
 
-const FooterNav = () => {
-  const { collections } = useCollections()
+const FooterNav: React.FC = () => {
   return (
-    <div className="bg-blue-gf text-white content-container flex flex-col gap-y-8 pt-16 pb-8">
-      <div className="flex flex-col gap-y-6 xsmall:flex-row items-start justify-between">
-        <div className="text-small-regular grid grid-cols-4 gap-x-16">
-          <div className="flex flex-col gap-y-2">
-            <span className="text-base-semi">Medusa</span>
-            <ul className="grid grid-cols-1 gap-y-2">
-              <li>
-                <a
-                  href="https://github.com/medusajs"
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  GitHub
-                </a>
-              </li>
-              <li>
-                <a
-                  href="https://docs.medusajs.com"
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  Documentation
-                </a>
-              </li>
-              <li>
-                <a
-                  href="https://github.com/medusajs/nextjs-starter-medusa"
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  Source code
-                </a>
-              </li>
-            </ul>
-          </div>
-
-          <div className="flex flex-col gap-y-2">
-            <span className="text-base-semi">Medusa</span>
-            <ul className="grid grid-cols-1 gap-y-2">
-              <li>
-                <a
-                  href="https://github.com/medusajs"
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  GitHub
-                </a>
-              </li>
-              <li>
-                <a
-                  href="https://docs.medusajs.com"
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  Documentation
-                </a>
-              </li>
-              <li>
-                <a
-                  href="https://github.com/medusajs/nextjs-starter-medusa"
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  Source code
-                </a>
-              </li>
-            </ul>
-          </div>
-
-          <div className="flex flex-col gap-y-2">
-            <span className="text-base-semi">Medusa</span>
-            <ul className="grid grid-cols-1 gap-y-2">
-              <li>
-                <a
-                  href="https://github.com/medusajs"
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  GitHub
-                </a>
-              </li>
-              <li>
-                <a
-                  href="https://docs.medusajs.com"
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  Documentation
-                </a>
-              </li>
-              <li>
-                <a
-                  href="https://github.com/medusajs/nextjs-starter-medusa"
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  Source code
-                </a>
-              </li>
-            </ul>
-          </div>
-
-          <div className="flex flex-col gap-y-2">
-            <span className="text-base-semi">Medusa</span>
-            <ul className="grid grid-cols-1 gap-y-2">
-              <li>
-                <a
-                  href="https://github.com/medusajs"
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  GitHub
-                </a>
-              </li>
-              <li>
-                <a
-                  href="https://docs.medusajs.com"
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  Documentation
-                </a>
-              </li>
-              <li>
-                <a
-                  href="https://github.com/medusajs/nextjs-starter-medusa"
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  Source code
-                </a>
-              </li>
-            </ul>
-          </div>
-        </div>
+    <div className=" bg-blue-gf ">
+      <div className="space-x-4 flex justify-center mx-auto p-4">
+        <Image
+          src="/image_coins/litecoin-coin.webp"
+          alt="You can pay with litecoin"
+          width={30}
+          height={30}
+          className="transition ease-in-out delay-150 hover:-translate-y-1 hover:scale-110 duration-300"
+        />
+        <Image
+          src="/image_coins/ethereum-coin.webp"
+          alt="You can pay with ethereum"
+          width={30}
+          height={30}
+          className="transition ease-in-out delay-150 hover:-translate-y-1 hover:scale-110 duration-300"
+        />
+        <Image
+          src="/image_coins/bitcoin-coin.webp"
+          alt="You can pay with bitcoin"
+          width={30}
+          height={30}
+          className="transition ease-in-out delay-150 hover:-translate-y-1 hover:scale-110 duration-300"
+        />
+        <Image
+          src="/image_coins/tether-coin.webp"
+          alt="You can pay with tether"
+          width={30}
+          height={30}
+          className="transition ease-in-out delay-150 hover:-translate-y-1 hover:scale-110 duration-300"
+        />
       </div>
-      <div className="flex flex-col-reverse gap-y-4 justify-center xsmall:items-center xsmall:flex-row xsmall:items-end xsmall:justify-between">
-        <span className="text-xsmall-regular text-gray-500">
-          © Copyright 2022 gudfy
-        </span>
+      <div className="flex justify-center mt-6">
+        <Image
+          src="/image_coins/binance-logo.webp"
+          alt="You can pay through the binance platform"
+          width={150}
+          height={150}
+          className=" transition ease-in-out delay-150 hover:-translate-y-1 hover:scale-110 duration-300"
+        />
       </div>
     </div>
   )
