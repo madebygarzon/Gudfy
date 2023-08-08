@@ -51,9 +51,9 @@ const Nav = () => {
     >
       <header
         className={clsx(
-          "relative h-20 px-8 mx-auto my-0 transition-colors bg-transparent border-transparent duration-500 hover: bg-blue-gf shadow-gf border-b-1",
+          "relative h-20 px-8 mx-auto my-0 transition-colors bg-transparent border-transparent duration-500 hover:bg-blue-gf shadow-gf border-b-1",
           {
-            "!bg-blue-gf !bg-blue-gf": !isHome || isScrolled,
+            "!bg-blue-gf": !isHome || isScrolled,
           }
         )}
       >
@@ -100,7 +100,7 @@ const Nav = () => {
         
       </header>
       {!isScrolled 
-      ?<nav className="text-white flex py-2 relative  justify-center gap-x-6 text-base hover: bg-blue-gf duration-500">
+      ?<nav className="text-white flex py-2 relative  justify-center gap-x-6 text-base hover:bg-blue-gf duration-500">
           <Link href="/">  Home </Link>
           <Link href="/">  Blog </Link>
           <Link href="/">  Shop </Link>
