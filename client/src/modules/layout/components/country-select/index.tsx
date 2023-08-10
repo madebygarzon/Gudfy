@@ -55,9 +55,9 @@ const CountrySelect = () => {
       >
         <Listbox.Button className="py-1 w-full">
           <div className="text-small-regular flex items-center gap-x-2 xsmall:justify-end">
-            <span>Shipping to:</span>
+            <span></span>
             {current && (
-              <span className="text-small-semi flex items-center gap-x-2">
+              <span className=" text-[#FFFFFF] font-[400] text-[14px]  flex items-center gap-x-2">
                 <ReactCountryFlag
                   svg
                   style={{
@@ -66,7 +66,7 @@ const CountrySelect = () => {
                   }}
                   countryCode={current.country}
                 />
-                {current.label}
+                {current.label== "Spain"? <p>Español</p>: <p>English</p>}
               </span>
             )}
           </div>
@@ -80,15 +80,16 @@ const CountrySelect = () => {
             leaveTo="opacity-0"
           >
             <Listbox.Options
-              className="absolute -bottom-[calc(-1)] left-0 xsmall:left-auto xsmall:right-0 max-h-[442px] overflow-y-scroll z-[900] bg-white drop-shadow-md text-small-regular uppercase text-black no-scrollbar"
+              className="absolute right-[-50px] bg-blue-gf text-[14px] text-[#FFFFFF] "
               static
             >
               {options?.map((o, index) => {
+                if(o.country !== "us" && o.country !== "es" )  return;
                 return (
                   <Listbox.Option
                     key={index}
                     value={o}
-                    className="py-2 hover:bg-gray-200 px-3 cursor-pointer flex items-center gap-x-2"
+                    className="py-2 px-7 hover:bg-white hover:text-blue-gf text-center cursor-pointer flex items-center gap-x-2"
                   >
                     <ReactCountryFlag
                       svg
@@ -98,7 +99,7 @@ const CountrySelect = () => {
                       }}
                       countryCode={o.country}
                     />{" "}
-                    {o.label}
+                    {o.label== "Spain"? <p>Español</p>: <p>English</p>}
                   </Listbox.Option>
                 )
               })}

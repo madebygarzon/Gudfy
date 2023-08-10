@@ -1,5 +1,5 @@
 "use client"
-
+import { useAccount } from "@lib/context/account-context"
 import { useMobileMenu } from "@lib/context/mobile-menu-context"
 import Hamburger from "@modules/common/components/hamburger"
 import CartDropdown from "@modules/layout/components/cart-dropdown"
@@ -12,33 +12,35 @@ import Image from "next/image"
 import { usePathname } from "next/navigation"
 import { useEffect, useState } from "react"
 import CountrySelect from "../../components/country-select"
+import DropdownGudFy from "@modules/layout/components/dropdown-gf"
 
 const Nav = () => {
+  const {customer} = useAccount();
   const pathname = usePathname()
   const [isHome, setIsHome] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
+  const propsDropDown ={name:"Account", items: [{label:"Log In",  href:"/account/login"},{label:"Register",  href:"/account/login"}]}
+  const propsDropDownLog ={name:"Name user", items: [{label:"dashboard",  href:"/account"},{label:"edit",  href:"/account"}]}
+  
 
   //useEffect that detects if window is scrolled > 5px on the Y axis
-  useEffect(() => {
-    if (isHome) {
-      const detectScrollY = () => {
-        if (window.scrollY > 5) {
-          setIsScrolled(true)
-        } else {
-          setIsScrolled(false)
-        }
-      }
-
-      window.addEventListener("scroll", detectScrollY)
-
-      return () => {
-        window.removeEventListener("scroll", detectScrollY)
-      }
-    }
-  }, [isHome])
+  
 
   useEffect(() => {
     pathname === "/" ? setIsHome(true) : setIsHome(false)
+    const detectScrollY = () => {
+      if (window.scrollY > 5) {
+        setIsScrolled(true)
+      } else {
+        setIsScrolled(false)
+      }
+    }
+
+    window.addEventListener("scroll", detectScrollY)
+
+    return () => {
+      window.removeEventListener("scroll", detectScrollY)
+    }
   }, [pathname])
 
   const { toggle } = useMobileMenu()
@@ -51,7 +53,7 @@ const Nav = () => {
     >
       <header
         className={clsx(
-          "relative h-20 px-8 mx-auto my-0 transition-colors bg-transparent border-transparent duration-500 hover:bg-blue-gf shadow-gf border-b-1",
+          "relative h-[76px] px-8 mx-auto my-0 transition-colors bg-transparent border-transparent duration-500 hover:bg-blue-gf shadow-gf border-b-1",
           {
             "!bg-blue-gf": !isHome || isScrolled,
           }
@@ -65,19 +67,22 @@ const Nav = () => {
             }
           )}
         >
-          <div className="flex-1 basis-0 h-full flex items-center">
+          <div className="flex-1  ml-20 basis-0 h-full flex items-center">
             <Link href="/">
-            <Image src="/g71.webp" width={150} height={50} alt="GUDFY" />
+              <Image
+                alt="gudfy"
+                src="/header/logo_gudfy.webp"
+                width={132.28}
+                height={50}
+              />
             </Link>
 
-            <div className="flex ml-7 items-start h-full">
-          <DesktopSearchModal />
-
+            <div className="flex ml-4 items-start h-full">
+              <DesktopSearchModal />
+            </div>
           </div>
 
-          </div>
-
-          <div className="flex items-center gap-x-6 h-full flex-1 basis-0 justify-end">
+          <div className="flex items-center justify-between h-full flex-1 basis-0 ">
             {/* <div className="block small:hidden">
               <Hamburger setOpen={toggle} />
             </div>
@@ -89,22 +94,28 @@ const Nav = () => {
             </div>
 
             <div className="hidden small:flex items-center gap-x-6 h-full">
-              {/* {process.env.FEATURE_SEARCH_ENABLED && <DesktopSearchModal />} */}
+              {/* {process.env.FEATURE_SEARCH_ENABLED && <DesktopSearchModal />} */ console.log(customer)}
+              {!customer?
+                 <DropdownGudFy name={propsDropDown.name} items={propsDropDown.items}/>:
+                <DropdownGudFy name={propsDropDownLog.name} items={propsDropDownLog.items}/>
+                }
               
-              <Link href="/account">Account</Link>
             </div>
             <CartDropdown />
           </div>
         </nav>
         <MobileMenu />
-        
       </header>
-      {!isScrolled 
-      ?<nav className="text-white flex py-2 relative  justify-center gap-x-6 text-base hover:bg-blue-gf duration-500">
-          <Link href="/">  Home </Link>
-          <Link href="/">  Blog </Link>
-          <Link href="/">  Shop </Link>
-        </nav> : ""}
+      {!isScrolled ? (
+        <nav className={clsx("text-[#FFFFFF] font-[500] text-[14px] flex py-2 justify-center gap-x-6 hover:bg-blue-gf duration-500" ,
+         {"!bg-blue-gf": !isHome})}>
+          <Link href="/"> Home </Link>
+          <Link href="/"> Blog </Link>
+          <Link href="/"> Shop </Link>
+        </nav>
+      ) : (
+        ""
+      )}
     </div>
   )
 }
