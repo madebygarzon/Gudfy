@@ -10,6 +10,7 @@ import Thumbnail from "@modules/products/components/thumbnail"
 import { formatAmount, useCart } from "medusa-react"
 import Link from "next/link"
 import { Fragment } from "react"
+import {GiShoppingCart} from "react-icons/gi"
 
 const CartDropdown = () => {
   const { cart, totalItems } = useCart()
@@ -18,10 +19,14 @@ const CartDropdown = () => {
   const { state, open, close } = useCartDropdown()
 
   return (
+  
     <div className="h-full z-50" onMouseEnter={open} onMouseLeave={close}>
       <Popover className="relative h-full">
-        <Popover.Button className="h-full">
-          <Link href="/cart">{`My Bag (${totalItems})`}</Link>
+        <Popover.Button className="h-full text-[#FFFFFF] font-[500] text-[14px]">
+          <Link href="/cart" className="flex">
+            <GiShoppingCart size={30} />
+            {` (${totalItems})`}
+          </Link>
         </Popover.Button>
         <Transition
           show={state}

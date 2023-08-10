@@ -13,7 +13,7 @@ const DesktopSearchModal = () => {
   return (
     <>
       <div className="flex items-center w-auto h-full justify-center">
-      <div className="items-center m-0 w-auto rounded-xl bg-transparent border border-white">
+      <div className="items-center m-0 w-auto rounded-[50px] border border-[#FFFFFF59]">
       <input type="text" className=" w-48 h-8 bg-transparent text-white rounded-l-xl focus:outline-none px-2"/>
       <button onClick={open} className="w-7" >
         <Search />
