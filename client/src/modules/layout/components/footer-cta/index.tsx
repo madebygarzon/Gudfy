@@ -1,6 +1,7 @@
 "use client"
 import { useCollections } from "medusa-react"
 import { FaFacebook, FaInstagram, FaYoutube } from "react-icons/fa"
+import BotonWhatsApp from "@modules/common/components/whatsapp"
 
 const FooterCTA = () => {
   const { collections } = useCollections()
@@ -126,6 +127,7 @@ const FooterCTA = () => {
             </div>
           </div>
         </div>
+        <BotonWhatsApp />
       </div>
     </div>
   )
