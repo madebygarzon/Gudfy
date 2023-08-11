@@ -1,4 +1,5 @@
-import LoginTemplate from "@modules/account/templates/login-template"
+import React from "react"
+import LoginComponente from "@modules/account/components/login"
 import { Metadata } from "next"
 
 export const metadata: Metadata = {
@@ -7,5 +8,15 @@ export const metadata: Metadata = {
 }
 
 export default function Login() {
-  return <LoginTemplate />
+  
+  return (
+    <div className="grid grid-cols-2 ">
+      <div className="flex items-center w-auto h-auto justify-center bg-blue-gf" style={{ height: '100vh' }} >
+      <p>Bienvenido</p>
+      </div>
+      <div className="flex items-center justify-center">
+          <LoginComponente/>
+      </div>
+    </div>
+  )
 }

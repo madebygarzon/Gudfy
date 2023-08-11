@@ -1,3 +1,4 @@
+'use client'
 import { medusaClient } from "@lib/config"
 import { LOGIN_VIEW, useAccount } from "@lib/context/account-context"
 import Button from "@modules/common/components/button"
@@ -12,7 +13,7 @@ interface SignInCredentials extends FieldValues {
   password: string
 }
 
-const Login = () => {
+const LoginComponente = () => {
   const { loginView, refetchCustomer } = useAccount()
   const [_, setCurrentView] = loginView
   const [authError, setAuthError] = useState<string | undefined>(undefined)
@@ -77,7 +78,7 @@ const Login = () => {
       <span className="text-center text-gray-700 text-small-regular mt-6">
         Not a member?{" "}
         <button
-          onClick={() => setCurrentView(LOGIN_VIEW.REGISTER)}
+          onClick={() => router.push("/account/register")}
           className="underline"
         >
           Join us
@@ -88,4 +89,4 @@ const Login = () => {
   )
 }
 
-export default Login
+export default LoginComponente
