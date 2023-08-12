@@ -1,25 +1,21 @@
 module.exports = {
-  content: [
-    "./src/pages/**/*.{js,ts,jsx,tsx}",
-    "./src/components/**/*.{js,ts,jsx,tsx}",
-    "./src/modules/**/*.{js,ts,jsx,tsx}",
-  ],
+  content: ["./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
     extend: {
       transitionProperty: {
-        "width": "width",
-        "spacing": 'margin, padding',
+        width: "width",
+        spacing: "margin, padding",
       },
       maxWidth: {
         "8xl": "100rem",
       },
       screens: {
         "2xsmall": "320px",
-        "xsmall": "512px",
-        "small": "1024px",
-        "medium": "1280px",
-        "large": "1440px",
-        "xlarge": "1680px",
+        xsmall: "512px",
+        small: "1024px",
+        medium: "1280px",
+        large: "1440px",
+        xlarge: "1680px",
         "2xlarge": "1920px",
       },
       fontFamily: {
@@ -36,10 +32,10 @@ module.exports = {
         ],
       },
       colors: {
-        'blue-gf': '#1F0046',
+        "blue-gf": "#1F0046",
       },
       boxShadow: {
-        'gf': '0px 0px 10px 0px rgba(0, 0, 0, 0.68)',
+        gf: "0px 0px 10px 0px rgba(0, 0, 0, 0.68)",
       },
     },
   },
