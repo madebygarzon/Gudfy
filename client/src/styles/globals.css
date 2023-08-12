@@ -116,47 +116,6 @@
   }
   
   
-  .transition-menu {
-    position: relative;
-    color: white;
-    background-color: transparent;
-    border: none;
-    outline: none;
-    cursor: pointer;
-    overflow: hidden;
-    transition: transform 0.3s, color 0.3s;
-  
-    &:hover {
-      transform: translateY(-4px);
-      color: #ffffff;
-    }
-  
-    &:after {
-      content: '';
-      position: absolute;
-      left: 50%;
-      bottom: 0;
-      transform: translateX(-50%);
-      width: 0;
-      height: 1px;
-      background-color: white;
-      transition: width 0.3s ease-in-out;
-    }
-  
-    &:hover::after {
-      width: 100%;
-    }
-    &:hover span {
-      transform: translateY(-4px);
-      transition: transform 0.3s;
-    }
-    span {
-      display: inline-block;
-      transform: translateY(0);
-      transition: transform 0.3s;
-    }
-
-  }
 
 }
 

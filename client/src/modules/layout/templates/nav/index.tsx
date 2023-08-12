@@ -60,8 +60,7 @@ const Nav = () => {
 
   const { toggle } = useMobileMenu()
 
-  return ( 
-    isLogin?
+  return isLogin ? (
     <div
       className={clsx("sticky top-0 inset-x-0 z-50 group", {
         "!fixed": isHome,
@@ -135,15 +134,31 @@ const Nav = () => {
             { "!bg-blue-gf": !isHome }
           )}
         >
-            <Link href="/" className="transition-menu w-14 text-center"> <span>Home</span> </Link>
-            <Link href="/" className="transition-menu w-14 text-center"> <span>Blog</span> </Link>
-            <Link href="/" className="transition-menu w-14 text-center"> <span>Store</span> </Link>
+          <div className="px-2 m-0 border-b-2 border-transparent hover:border-[#ffffff] ">
+            <Link href="/" className="">
+              Home
+            </Link>
+          </div>
+          <div className="px-2 m-0 border-b-2 border-transparent hover:border-[#ffffff]" >
+            <Link href="/" className="">
+              {" "}
+              <span>Blog</span>{" "}
+            </Link>
+          </div>
+          <div className="px-2 m-0 border-b-2 border-transparent hover:border-[#ffffff]" >
+            <Link href="/" className="">
+              {" "}
+              <span>Store</span>{" "}
+            </Link>
+          </div>
         </nav>
       ) : (
         ""
       )}
     </div>
-       : "")   
+  ) : (
+    ""
+  )   
 }
 
 export default Nav
