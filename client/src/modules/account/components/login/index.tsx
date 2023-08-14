@@ -1,4 +1,4 @@
-'use client'
+"use client"
 import { medusaClient } from "@lib/config"
 import { LOGIN_VIEW, useAccount } from "@lib/context/account-context"
 import Button from "@modules/common/components/button"
@@ -7,6 +7,7 @@ import Spinner from "@modules/common/icons/spinner"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { FieldValues, useForm } from "react-hook-form"
+import Link from "next/link"
 
 interface SignInCredentials extends FieldValues {
   email: string
@@ -40,26 +41,30 @@ const LoginComponente = () => {
   })
 
   return (
-    <div className="max-w-sm w-full flex flex-col items-center">
+    <div className="max-w-md w-full flex flex-col items-center">
       {isSubmitting && (
         <div className="z-10 fixed inset-0 bg-white bg-opacity-50 flex items-center justify-center">
           <Spinner size={24} />
         </div>
       )}
-      <h1 className="text-large-semi uppercase mb-6">Welcome back</h1>
+
+      <h1 className="text-large-semi  mb-6 text-3xl">Iniciar Sesión</h1>
       <p className="text-center text-base-regular text-gray-700 mb-8">
-        Sign in to access an enhanced shopping experience.
+        ¿Nuevo usuario? <Link href={"./register"}>Crear una cuenta</Link>.
       </p>
-      <form className="w-full" onSubmit={onSubmit}>
+      <form
+        className="w-full font[400] shadow-xl border-2 rounded-3xl p-12 flex flex-col items-center "
+        onSubmit={onSubmit}
+      >
         <div className="flex flex-col w-full gap-y-2">
           <Input
-            label="Email"
+            label="Nombre de usuario"
             {...register("email", { required: "Email is required" })}
             autoComplete="email"
             errors={errors}
           />
           <Input
-            label="Password"
+            label="Contraseña"
             {...register("password", { required: "Password is required" })}
             type="password"
             autoComplete="current-password"
@@ -73,18 +78,11 @@ const LoginComponente = () => {
             </span>
           </div>
         )}
-        <Button className="mt-6">Enter</Button>
+        <div className="mx-max felx justify-center">
+          <Button className=" mt-6 rounded-full">Accerder</Button>
+        </div>
       </form>
-      <span className="text-center text-gray-700 text-small-regular mt-6">
-        Not a member?{" "}
-        <button
-          onClick={() => router.push("/account/register")}
-          className="underline"
-        >
-          Join us
-        </button>
-        .
-      </span>
+      <p className="mt-5 font[900] text-xs">O ingresa con:</p>
     </div>
   )
 }
