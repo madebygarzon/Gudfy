@@ -1,3 +1,4 @@
+'use client'
 import { medusaClient } from "@lib/config"
 import { LOGIN_VIEW, useAccount } from "@lib/context/account-context"
 import Button from "@modules/common/components/button"
@@ -113,7 +114,7 @@ const Register = () => {
       <span className="text-center text-gray-700 text-small-regular mt-6">
         Already a member?{" "}
         <button
-          onClick={() => setCurrentView(LOGIN_VIEW.SIGN_IN)}
+          onClick={() => router.push("/account/login")}
           className="underline"
         >
           Sign in

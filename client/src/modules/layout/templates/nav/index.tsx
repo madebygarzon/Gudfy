@@ -1,4 +1,5 @@
 "use client"
+import React,{ useEffect, useState } from "react"
 import { useAccount } from "@lib/context/account-context"
 import { useMobileMenu } from "@lib/context/mobile-menu-context"
 import Hamburger from "@modules/common/components/hamburger"
@@ -7,27 +8,41 @@ import DropdownMenu from "@modules/layout/components/dropdown-menu"
 import MobileMenu from "@modules/mobile-menu/templates"
 import DesktopSearchModal from "@modules/search/templates/desktop-search-modal"
 import clsx from "clsx"
-import Link  from "next/link"
 import Image from "next/image"
 import { usePathname } from "next/navigation"
-import { useEffect, useState } from "react"
 import CountrySelect from "../../components/country-select"
 import DropdownGudFy from "@modules/layout/components/dropdown-gf"
+import Link from "next/link" 
 
 const Nav = () => {
-  const {customer} = useAccount();
+  const { customer } = useAccount()
   const pathname = usePathname()
   const [isHome, setIsHome] = useState(false)
+  const [isLogin, setIsLogin]= useState(true)
   const [isScrolled, setIsScrolled] = useState(false)
-  const propsDropDown ={name:"Account", items: [{label:"Log In",  href:"/account/login"},{label:"Register",  href:"/account/login"}]}
-  const propsDropDownLog ={name:"Name user", items: [{label:"dashboard",  href:"/account"},{label:"edit",  href:"/account"}]}
-  
+  const propsDropDown = {
+    name: "Cuenta",
+    items: [
+      { label: "Ingresar", href: "/account/login" },
+      { label: "Registrarse", href: "/account/login" },
+    ],
+  }
+  const propsDropDownLog = {
+    name: "Name user",
+    items: [
+      { label: "Mis pedidos", href: "/" },
+      { label: "Editar perfil", href: "/" },
+      { label: "Mi carrito", href: "/" },
+      { label: "wallet", href: "/"},
+      { label: "Cerrar sesión", href:"/"}
+    ],
+  }
 
   //useEffect that detects if window is scrolled > 5px on the Y axis
-  
 
   useEffect(() => {
     pathname === "/" ? setIsHome(true) : setIsHome(false)
+    pathname === "/account/login" ||  pathname === "/account/register" ?  setIsLogin(false) : setIsLogin(true)
     const detectScrollY = () => {
       if (window.scrollY > 5) {
         setIsScrolled(true)
@@ -45,7 +60,8 @@ const Nav = () => {
 
   const { toggle } = useMobileMenu()
 
-  return (
+  return ( 
+    isLogin?
     <div
       className={clsx("sticky top-0 inset-x-0 z-50 group", {
         "!fixed": isHome,
@@ -94,12 +110,18 @@ const Nav = () => {
             </div>
 
             <div className="hidden small:flex items-center gap-x-6 h-full">
-              {/* {process.env.FEATURE_SEARCH_ENABLED && <DesktopSearchModal />} */ console.log(customer)}
-              {!customer?
-                 <DropdownGudFy name={propsDropDown.name} items={propsDropDown.items}/>:
-                <DropdownGudFy name={propsDropDownLog.name} items={propsDropDownLog.items}/>
-                }
-              
+              {/* {process.env.FEATURE_SEARCH_ENABLED && <DesktopSearchModal />} */}
+              {!customer ? (
+                <DropdownGudFy
+                  name={propsDropDown.name}
+                  items={propsDropDown.items}
+                />
+              ) : (
+                <DropdownGudFy
+                  name={propsDropDownLog.name}
+                  items={propsDropDownLog.items}
+                />
+              )}
             </div>
             <CartDropdown />
           </div>
@@ -107,17 +129,21 @@ const Nav = () => {
         <MobileMenu />
       </header>
       {!isScrolled ? (
-        <nav className={clsx("text-[#FFFFFF] font-[500] text-[14px] flex py-2 justify-center gap-x-6 hover:bg-blue-gf duration-500" ,
-         {"!bg-blue-gf": !isHome})}>
-          <Link href="/"> Home </Link>
-          <Link href="/"> Blog </Link>
-          <Link href="/"> Shop </Link>
+        <nav
+          className={clsx(
+            "text-[#FFFFFF] font-[500] text-[14px] flex py-4 justify-center gap-x-6 hover:bg-blue-gf duration-500",
+            { "!bg-blue-gf": !isHome }
+          )}
+        >
+            <Link href="/" className="transition-menu w-14 text-center"> <span>Home</span> </Link>
+            <Link href="/" className="transition-menu w-14 text-center"> <span>Blog</span> </Link>
+            <Link href="/" className="transition-menu w-14 text-center"> <span>Store</span> </Link>
         </nav>
       ) : (
         ""
       )}
     </div>
-  )
+       : "")   
 }
 
 export default Nav
