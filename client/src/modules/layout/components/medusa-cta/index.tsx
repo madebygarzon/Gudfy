@@ -42,7 +42,7 @@ const MedusaCTA = () => {
               type="email"
             />
             <ButtonLigth
-              className="text-[#FFFFFF] font-[400] text-[14px] font-[400] text-[14px]"
+              className="text-[#FFFFFF] font-[400] text-[14px]"
               type="submit"
             >
               Suscribirme
