@@ -44,45 +44,44 @@ const Register = () => {
   })
 
   return (
-    <div className="max-w-sm flex flex-col items-center mt-12">
+    <div className="max-w-md w-full flex flex-col items-center">
       {isSubmitting && (
         <div className="z-10 fixed inset-0 bg-white bg-opacity-50 flex items-center justify-center">
           <Spinner size={24} />
         </div>
       )}
-      <h1 className="text-large-semi uppercase mb-6">Become a Acme Member</h1>
-      <p className="text-center text-base-regular text-gray-700 mb-4">
-        Create your Acme Member profile, and get access to an enhanced shopping
-        experience.
+      <h1 className="text-large-semi  mb-6 text-3xl">Crear una cuentar</h1>
+      <p className="text-center text-base-regular text-gray-700  font-[500] mb-4">
+      ¿Ya tienes una cuenta? <Link href={"./login"}>Accede</Link> 
       </p>
-      <form className="w-full flex flex-col" onSubmit={onSubmit}>
+      <form className="w-full font[400] shadow-xl border-2 rounded-3xl p-10 flex flex-col items-center" onSubmit={onSubmit}>
         <div className="flex flex-col w-full gap-y-2">
           <Input
-            label="First name"
+            label="Nombre"
             {...register("first_name", { required: "First name is required" })}
             autoComplete="given-name"
             errors={errors}
           />
           <Input
-            label="Last name"
+            label="Apellido"
             {...register("last_name", { required: "Last name is required" })}
             autoComplete="family-name"
             errors={errors}
           />
           <Input
-            label="Email"
+            label="Correo"
             {...register("email", { required: "Email is required" })}
             autoComplete="email"
             errors={errors}
           />
           <Input
-            label="Phone"
+            label="Telefono"
             {...register("phone")}
             autoComplete="tel"
             errors={errors}
           />
           <Input
-            label="Password"
+            label="Contraseña"
             {...register("password", {
               required: "Password is required",
             })}
@@ -99,28 +98,12 @@ const Register = () => {
           </div>
         )}
         <span className="text-center text-gray-700 text-small-regular mt-6">
-          By creating an account, you agree to Acme&apos;s{" "}
-          <Link href="/content/privacy-policy" className="underline">
-            Privacy Policy
-          </Link>{" "}
-          and{" "}
-          <Link href="/content/terms-of-use" className="underline">
-            Terms of Use
-          </Link>
-          .
+        Acepto {" "}
+        <Link href={"https://gudfy.com/terminos-y-condiciones/"}>los términos y condiciones.</Link>
         </span>
-        <Button className="mt-6">Join</Button>
+        <Button className="mt-6 rounded-full">Entrar</Button>
       </form>
-      <span className="text-center text-gray-700 text-small-regular mt-6">
-        Already a member?{" "}
-        <button
-          onClick={() => router.push("/account/login")}
-          className="underline"
-        >
-          Sign in
-        </button>
-        .
-      </span>
+      
     </div>
   )
 }
