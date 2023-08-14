@@ -18,7 +18,7 @@ const Button = ({
     <button
       {...props}
       className={clsx(
-        "px-10 py-[10px] text-small-regular transition-colors duration-200",
+        "px-10 py-[10px] rounded-[30] text-sm transition-colors duration-200 ",
         {
           "text-white bg-[#402e72] hover:bg-blue-gf":
             variant === "primary",
