@@ -5,8 +5,11 @@ import Button from "@modules/common/components/button"
 import Input from "@modules/common/components/input"
 import Spinner from "@modules/common/icons/spinner"
 import { useRouter } from "next/navigation"
-import { useState } from "react"
+import React, { useState } from "react"
 import { FieldValues, useForm } from "react-hook-form"
+import { BsFacebook } from "react-icons/bs"
+import {FcGoogle} from "react-icons/fc"
+import { Checkbox } from "@nextui-org/checkbox" 
 import Link from "next/link"
 
 interface SignInCredentials extends FieldValues {
@@ -70,6 +73,11 @@ const LoginComponente = () => {
             autoComplete="current-password"
             errors={errors}
           />
+          
+        </div>
+        <div className="flex w-full justify-between items-center">
+        <Checkbox defaultSelected radius="full" color="secondary">Full</Checkbox>
+        <p className="w-[90px]">¿Has olvidado la contraseña?</p>
         </div>
         {authError && (
           <div>
@@ -83,6 +91,10 @@ const LoginComponente = () => {
         </div>
       </form>
       <p className="mt-5 font[900] text-xs">O ingresa con:</p>
+      <div className="flex gap-4 pt-2">
+        <BsFacebook className=" p-[4px] bg-blue-500" color="white" size={35}/>
+        <FcGoogle className=" p-[1px] border border-blue-500" color="white" size={35}/>
+      </div>
     </div>
   )
 }
