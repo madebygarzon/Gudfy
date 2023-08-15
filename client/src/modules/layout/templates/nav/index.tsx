@@ -18,13 +18,13 @@ const Nav = () => {
   const { customer } = useAccount()
   const pathname = usePathname()
   const [isHome, setIsHome] = useState(false)
-  const [isLogin, setIsLogin]= useState(true)
-  const [isScrolled, setIsScrolled] = useState(false)
+  const [isLogin, setIsLogin]= useState(false)
+  const [isScrolled, setIsScrolled] = useState<boolean>()
   const propsDropDown = {
     name: "Cuenta",
     items: [
       { label: "Ingresar", href: "/account/login" },
-      { label: "Registrarse", href: "/account/login" },
+      { label: "Registrarse", href: "/account/register" },
     ],
   }
   const propsDropDownLog = {
@@ -82,7 +82,7 @@ const Nav = () => {
             }
           )}
         >
-          <div className="flex-1  ml-20 basis-0 h-full flex items-center">
+          <div className="flex-1 ml-20 basis-0 h-full flex items-center">
             <Link href="/">
               <Image
                 alt="gudfy"
@@ -134,19 +134,22 @@ const Nav = () => {
             { "!bg-blue-gf": !isHome }
           )}
         >
-          <div className="px-2 m-0 border-b-2 border-transparent hover:border-[#ffffff] ">
+          <div className={clsx("px-2 m-0 border-b-2 border-transparent hover:border-[#ffffff]",
+           {"border-[#ffffff]": pathname ==="/"})}>
             <Link href="/" className="">
               Home
             </Link>
           </div>
-          <div className="px-2 m-0 border-b-2 border-transparent hover:border-[#ffffff]" >
-            <Link href="/" className="">
+          <div className={clsx("px-2 m-0 border-b-2 border-transparent hover:border-[#ffffff]",
+           {"border-[#ffffff]": pathname ==="/blog"})} >
+            <Link href="/blog" >
               {" "}
               <span>Blog</span>{" "}
             </Link>
           </div>
-          <div className="px-2 m-0 border-b-2 border-transparent hover:border-[#ffffff]" >
-            <Link href="/" className="">
+          <div className={clsx("px-2 m-0 border-b-2 border-transparent hover:border-[#ffffff]",
+           {"border-[#ffffff]": pathname ==="/store"})}>
+            <Link href="/" >
               {" "}
               <span>Store</span>{" "}
             </Link>
