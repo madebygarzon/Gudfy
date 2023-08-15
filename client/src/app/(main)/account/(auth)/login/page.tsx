@@ -6,8 +6,8 @@ import Image from "next/image"
 import ButtonLigth from "@modules/common/components/button_light"
 import {BsFillArrowLeftCircleFill} from "react-icons/bs"
 export const metadata: Metadata = {
-  title: "Sign in",
-  description: "Sign in to your ACME account.",
+  title: "Iniciar sesión",
+  description: "Inicia sesión en Gudfy.",
 }
 
 export default function Login() {
