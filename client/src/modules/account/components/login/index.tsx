@@ -9,7 +9,7 @@ import React, { useState } from "react"
 import { FieldValues, useForm } from "react-hook-form"
 import { BsFacebook } from "react-icons/bs"
 import {FcGoogle} from "react-icons/fc"
-import { Checkbox } from "@nextui-org/checkbox" 
+import { Checkbox } from "@nextui-org/checkbox"
 import Link from "next/link"
 
 interface SignInCredentials extends FieldValues {
