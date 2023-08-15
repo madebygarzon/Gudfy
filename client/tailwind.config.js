@@ -7,6 +7,9 @@ module.exports = {
   ],
   theme: {
     extend: {
+      borderRadius: {
+        '30': '30px',
+      },
       transitionProperty: {
         width: "width",
         spacing: "margin, padding",
