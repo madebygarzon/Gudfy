@@ -4,10 +4,12 @@ import { Metadata } from "next"
 import Image from "next/image"
 import ButtonLigth from "@modules/common/components/button_light"
 import { BsFillArrowLeftCircleFill } from "react-icons/bs"
+import Link from "next/link"
+
 
 export const metadata: Metadata = {
-  title: "Sign in",
-  description: "Sign in to your ACME account.",
+  title: "Registratse",
+  description: "Registrate en su cuenta gudfy",
 }
 
 export default function RegisterPages() {
@@ -15,12 +17,14 @@ export default function RegisterPages() {
     <div className="grid grid-cols-2 h-screen ">
       <div className="bg-blue-gf ">
         <div className="flex h-[25%] m-[20px] justify-start items-center pl-9 mb-16">
+          <Link href="/">
           <Image
             alt="gudfy"
             src="/header/logo_gudfy.webp"
             width={160}
             height={120}
           />
+          </Link>
         </div>
         <div className=" flex items-center justify-center">
           <h1 className="w-[583px] text-[#FFFFFF] font-black text-center text-5xl space-y-4 ">
