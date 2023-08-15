@@ -73,16 +73,15 @@ const LoginComponente = () => {
             autoComplete="current-password"
             errors={errors}
           />
-          
         </div>
-        <div className="flex w-full justify-between items-center">
-        <Checkbox defaultSelected radius="full" color="secondary">Full</Checkbox>
-        <p className="w-[90px]">¿Has olvidado la contraseña?</p>
+        <div className="flex w-full pt-[10px] justify-between items-center">
+        <Checkbox defaultSelected radius="full" color="secondary" >Recuérdame</Checkbox>
+        <p className="w-[120px]">¿Has olvidado la contraseña?</p>
         </div>
         {authError && (
           <div>
             <span className="text-rose-500 w-full text-small-regular">
-              These credentials do not match our records
+            Estas credenciales no coinciden con nuestros registros
             </span>
           </div>
         )}
@@ -92,8 +91,8 @@ const LoginComponente = () => {
       </form>
       <p className="mt-5 font[900] text-xs">O ingresa con:</p>
       <div className="flex gap-4 pt-2">
-        <BsFacebook className=" p-[4px] bg-blue-500" color="white" size={35}/>
-        <FcGoogle className=" p-[1px] border border-blue-500" color="white" size={35}/>
+        <BsFacebook className="p-[4px] bg-blue-500" color="white" size={35}/>
+        <FcGoogle className="p-[1px] border border-blue-500" color="white" size={35}/>
       </div>
     </div>
   )
