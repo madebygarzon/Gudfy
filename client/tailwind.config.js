@@ -1,3 +1,5 @@
+const {nextui} = require("@nextui-org/react");
+
 module.exports = {
   content: [
     "./src/**/*.{js,ts,jsx,tsx}",
@@ -5,6 +7,9 @@ module.exports = {
   ],
   theme: {
     extend: {
+      borderRadius: {
+        '30': '30px',
+      },
       transitionProperty: {
         width: "width",
         spacing: "margin, padding",
@@ -42,5 +47,5 @@ module.exports = {
       },
     },
   },
-  plugins: [],
+  plugins: [nextui()],
 }
