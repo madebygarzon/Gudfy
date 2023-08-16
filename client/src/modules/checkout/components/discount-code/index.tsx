@@ -91,7 +91,7 @@ const DiscountCode: React.FC<DiscountCodeProps> = ({ cart }) => {
   return (
     <div className="w-full bg-white flex flex-col">
       <div className="mb-4">
-        <h3 className="text-base-semi">Discount</h3>
+        <h3 className="text-base-semi">Código de descuento</h3>
       </div>
       <div className="text-small-regular">
         {appliedDiscount ? (
@@ -113,9 +113,9 @@ const DiscountCode: React.FC<DiscountCodeProps> = ({ cart }) => {
           </div>
         ) : (
           <form onSubmit={handleSubmit(onApply)} className="w-full">
-            <div className="grid grid-cols-[1fr_80px] gap-x-2">
+            <div className="grid grid-cols-[1fr_80px] w-[260px] gap-x-2">
               <Input
-                label="Code"
+                label="Código"
                 {...register("discount_code", {
                   required: "Code is required",
                 })}
@@ -123,11 +123,11 @@ const DiscountCode: React.FC<DiscountCodeProps> = ({ cart }) => {
               />
               <div>
                 <Button
-                  className="!min-h-[0] h-[46px] w-[80px]"
+                  className="!min-h-[0] h-[46px] max-w-[130px] rounded-3xl"
                   disabled={isLoading}
                   isLoading={isLoading}
                 >
-                  Apply
+                  Aplicar
                 </Button>
               </div>
             </div>
