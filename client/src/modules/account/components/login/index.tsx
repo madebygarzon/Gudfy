@@ -8,9 +8,10 @@ import { useRouter } from "next/navigation"
 import React, { useState } from "react"
 import { FieldValues, useForm } from "react-hook-form"
 import { BsFacebook } from "react-icons/bs"
-import {FcGoogle} from "react-icons/fc"
+import { FcGoogle } from "react-icons/fc"
 import { Checkbox } from "@nextui-org/checkbox"
 import Link from "next/link"
+import RecoverAccount from "../recover-account"
 
 interface SignInCredentials extends FieldValues {
   email: string
@@ -22,6 +23,7 @@ const LoginComponente = () => {
   const [_, setCurrentView] = loginView
   const [authError, setAuthError] = useState<string | undefined>(undefined)
   const router = useRouter()
+  const [isRecovery, setIsRecovery] = useState<boolean>(false)
 
   const handleError = (_e: Error) => {
     setAuthError("Invalid email or password")
@@ -43,7 +45,7 @@ const LoginComponente = () => {
       .catch(handleError)
   })
 
-  return (
+  return !isRecovery ? (
     <div className="max-w-md w-full flex flex-col items-center">
       {isSubmitting && (
         <div className="z-10 fixed inset-0 bg-white bg-opacity-50 flex items-center justify-center">
@@ -75,13 +77,20 @@ const LoginComponente = () => {
           />
         </div>
         <div className="flex w-full pt-[10px] justify-between items-center">
-        <Checkbox defaultSelected radius="full" color="secondary" >Recuérdame</Checkbox>
-        <p className="w-[120px]">¿Has olvidado la contraseña?</p>
+          <Checkbox defaultSelected radius="full" color="secondary">
+            Recuérdame
+          </Checkbox>
+          <p
+            className="w-[120px] cursor-pointer hover:text-blue-800"
+            onClick={() => setIsRecovery(true)}
+          >
+            ¿Has olvidado la contraseña?
+          </p>
         </div>
         {authError && (
           <div>
             <span className="text-rose-500 w-full text-small-regular">
-            Estas credenciales no coinciden con nuestros registros
+              Estas credenciales no coinciden con nuestros registros
             </span>
           </div>
         )}
@@ -91,10 +100,16 @@ const LoginComponente = () => {
       </form>
       <p className="mt-5 font[900] text-xs">O ingresa con:</p>
       <div className="flex gap-4 pt-2">
-        <BsFacebook className="p-[4px] bg-blue-500" color="white" size={35}/>
-        <FcGoogle className="p-[1px] border border-blue-500" color="white" size={35}/>
+        <BsFacebook className="p-[4px] bg-blue-500" color="white" size={35} />
+        <FcGoogle
+          className="p-[1px] border border-blue-500"
+          color="white"
+          size={35}
+        />
       </div>
     </div>
+  ) : (
+    <RecoverAccount setIsRecovery={setIsRecovery} />
   )
 }
 
