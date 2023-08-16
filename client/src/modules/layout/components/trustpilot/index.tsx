@@ -7,7 +7,6 @@ const ReviewsTrusPilot = () => {
       data-businessunit-id="6260860da92000e9cfdc2c1c"
       data-style-height="24px"
       data-style-width="100%"
-      data-theme="dark"
       data-min-review-count="10"
       data-style-alignment="center"
     >
