@@ -8,7 +8,7 @@ import { useEffect, useState } from "react"
 const Footer = () => {
   const pathname = usePathname()
   const [isLogin,setIsLogin] = useState<boolean>()
-
+  
   useEffect(()=>{
     pathname === "/account/login" ||  pathname === "/account/register" ?  setIsLogin(false) : setIsLogin(true)
   },[pathname])
@@ -18,7 +18,7 @@ const Footer = () => {
       <FooterNav />
       <MedusaCTA />
     </footer>
-  :"")
+  :<div></div>)
 }
 
 export default Footer
