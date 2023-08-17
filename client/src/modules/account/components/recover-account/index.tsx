@@ -1,4 +1,5 @@
 import React, { useState } from "react"
+import { medusaClient } from "@lib/config"
 import Input from "@modules/common/components/input"
 import Button from "@modules/common/components/button"
 import Spinner from "@modules/common/icons/spinner"
@@ -7,23 +8,40 @@ import { BsFacebook } from "react-icons/bs"
 import { FcGoogle } from "react-icons/fc"
 import Link from "next/link"
 
-interface SignInCredentials extends FieldValues {
+type FormValues = {
   email: string
-  password: string
 }
+
+const emailRegex = new RegExp(
+  "^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$"
+)
 interface stateProps {
   setIsRecovery: React.Dispatch<React.SetStateAction<boolean>>
 }
 const RecoverAccount: React.FC<stateProps> = ({ setIsRecovery }) => {
-  const [authError, setAuthError] = useState<string | undefined>(undefined)
-
+  const [mailSent, setSentMail] = useState(false)
   const {
     register,
     handleSubmit,
-    formState: { errors, isSubmitting },
-  } = useForm<SignInCredentials>()
+    formState: { errors },
+  } = useForm<FormValues>()
 
-  const onSubmit = async () => {}
+  
+  const onSubmit = handleSubmit((values: FormValues) => {
+    
+    medusaClient.customers.generatePasswordToken({
+      email: values.email
+    }).then((e) => {
+      
+      console.log(e)
+      setSentMail(true)
+    })
+    .catch((e) => {
+      alert("error enviado")
+      console.log(e)
+    })
+  })
+
   return (
     <div className="max-w-md w-full flex flex-col items-center">
       <h1 className="text-large-semi  mb-6 text-3xl">
@@ -32,7 +50,7 @@ const RecoverAccount: React.FC<stateProps> = ({ setIsRecovery }) => {
       <p className="text-center text-base-regular text-gray-700 mb-8">
         ¿Nuevo usuario? <Link href={"./register"}>Crear una cuenta</Link>.
       </p>
-      <form
+      {!mailSent?<form
         className="w-full font[400] shadow-xl border-2 rounded-3xl p-12 flex flex-col items-center "
         onSubmit={onSubmit}
       >
@@ -44,13 +62,6 @@ const RecoverAccount: React.FC<stateProps> = ({ setIsRecovery }) => {
             errors={errors}
           />
         </div>
-        {authError && (
-          <div>
-            <span className="text-rose-500 w-full text-small-regular">
-              Estas credenciales no coinciden con nuestros registros
-            </span>
-          </div>
-        )}
         <div className="flex w-full justify-between items-center">
           <Button className=" mt-6 rounded-full ">Restablecer</Button>
           <p
@@ -60,7 +71,19 @@ const RecoverAccount: React.FC<stateProps> = ({ setIsRecovery }) => {
             Acceder
           </p>
         </div>
-      </form>
+      </form> : (<div className="">
+            <div className=" ">
+              <span className="text-center text-[20px]">
+                Le enviamos el restablecimiento a su correo
+              </span>
+              <p
+            className="w-[120px] mt-6 cursor-pointer hover:text-blue-800"
+            onClick={() => setIsRecovery(false)}
+          >
+           {"<-"} Regresar
+          </p>
+            </div>
+          </div>)}
       <p className="mt-5 font[900] text-xs">O ingresa con:</p>
       <div className="flex gap-4 pt-2">
         <BsFacebook className="p-[4px] bg-blue-500" color="white" size={35} />
