@@ -2,14 +2,14 @@ import UnderlineLink from "@modules/common/components/underline-link"
 
 const EmptyCartMessage = () => {
   return (
-    <div className="bg-amber-100 px-8 py-24 flex flex-col justify-center items-center text-center">
+    <div className="bg-[#F0F6FF] px-8 py-24 flex flex-col justify-center items-center text-center">
       <h1 className="text-2xl-semi">Tu carrito está vacio</h1>
       <p className="text-base-regular mt-4 mb-6 max-w-[32rem]">
-        You don&apos;t have anything in your bag. Let&apos;s change that, use
-        the link below to start browsing our products.
+        No tienes nada en tu carrito. Cambiemos eso, 
+        usa el enlace de abajo para comenzar a explorar nuestros productos.
       </p>
       <div>
-        <UnderlineLink href="/store">Explorar más productos</UnderlineLink>
+        <UnderlineLink href="/store">Explorar productos</UnderlineLink>
       </div>
     </div>
   )
