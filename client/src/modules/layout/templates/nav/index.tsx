@@ -137,7 +137,7 @@ const Nav = () => {
           <div className={clsx("px-2 m-0 border-b-2 border-transparent hover:border-[#ffffff]",
            {"border-[#ffffff]": pathname ==="/"})}>
             <Link href="/" className="">
-              Home
+              Inicio
             </Link>
           </div>
           <div className={clsx("px-2 m-0 border-b-2 border-transparent hover:border-[#ffffff]",
@@ -151,16 +151,14 @@ const Nav = () => {
            {"border-[#ffffff]": pathname ==="/store"})}>
             <Link href="/" >
               {" "}
-              <span>Store</span>{" "}
+              <span>Tienda</span>{" "}
             </Link>
           </div>
         </nav>
-      ) : (
-        ""
-      )}
+      ) : (<div></div>)}
     </div>
   ) : (
-    ""
+    <div></div>
   )   
 }
 

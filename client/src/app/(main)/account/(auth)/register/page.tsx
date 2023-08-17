@@ -17,7 +17,7 @@ export default function RegisterPages() {
     <div className="grid grid-cols-2 h-screen ">
       <div className="bg-blue-gf ">
         <div className="flex h-[25%] m-[20px] justify-start items-center pl-9 mb-16">
-          <Link href="/">
+          <Link href="/" >
           <Image
             alt="gudfy"
             src="/header/logo_gudfy.webp"
@@ -40,14 +40,12 @@ export default function RegisterPages() {
             Inicio
           </ButtonLigth>
         </div>
-        <p className="pt-8 felx text-[#ffffff] text-center text-[10px]">
-          Volver al inicio | Copyright © 2023 | Powered by Gudfy | Términos y
-          condiciones{" "}
-        </p>
+        <p className="pt-8 felx text-[#ffffff] text-center text-[10px]"> <Link href={"/"}>Volver al inicio</Link> | Copyright © 2023 | Powered by Gudfy | <Link href={"/terms-and-conditions"} target="_blank"> Términos y condiciones </Link></p>
       </div>
       <div className="flex items-center justify-center">
         <Register />
       </div>
+      
     </div>
   ) 
 }
