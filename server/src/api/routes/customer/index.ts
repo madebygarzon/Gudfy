@@ -6,9 +6,6 @@ const router = Router();
 
 
 export function attachCustomerRoutes(customerRouter: Router) {
-  
   customerRouter.use("/recover-password", router);
-
-  
-  router.get("/", wrapHandler(recoverPassword));
+  router.post("/", wrapHandler(recoverPassword));
 }
