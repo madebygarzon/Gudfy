@@ -2,11 +2,12 @@ import React, { useState } from "react"
 import { medusaClient } from "@lib/config"
 import Input from "@modules/common/components/input"
 import Button from "@modules/common/components/button"
-import Spinner from "@modules/common/icons/spinner"
-import { FieldValues, useForm } from "react-hook-form"
+import {  useForm } from "react-hook-form"
 import { BsFacebook } from "react-icons/bs"
 import { FcGoogle } from "react-icons/fc"
 import Link from "next/link"
+import axios from "axios"
+
 
 type FormValues = {
   email: string
@@ -33,8 +34,13 @@ const RecoverAccount: React.FC<stateProps> = ({ setIsRecovery }) => {
       email: values.email
     }).then((e) => {
       
-      console.log(e)
-      setSentMail(true)
+      const email = JSON.parse(e.response.config.data).email
+      const token = e.response.config.headers["Idempotency-Key"]
+      axios.post("http://localhost:9000/customer/recover-password/",{email,token}).then((ea)=>{
+        console.log(ea)
+      }
+      )
+
     })
     .catch((e) => {
       alert("error enviado")
