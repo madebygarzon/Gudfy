@@ -33,14 +33,8 @@ const RecoverAccount: React.FC<stateProps> = ({ setIsRecovery }) => {
     medusaClient.customers.generatePasswordToken({
       email: values.email
     }).then((e) => {
-      
-      const email = JSON.parse(e.response.config.data).email
-      const token = e.response.config.headers["Idempotency-Key"]
-      axios.post("http://localhost:9000/customer/recover-password/",{email,token}).then((ea)=>{
-        console.log(ea)
-      }
-      )
-
+      console.log(e)
+      setSentMail(true)
     })
     .catch((e) => {
       alert("error enviado")
