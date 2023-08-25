@@ -22,7 +22,7 @@ const CountrySelect = () => {
   const options: CountryOption[] | undefined = useMemo(() => {
     return regions
       ?.map((r) => {
-        return r.countries.map((c) => ({
+        return r.countries.filter((c) => c.iso_2 === "us" || c.iso_2 === "es").map((c) => ({
           country: c.iso_2,
           region: r.id,
           label: c.display_name,
@@ -53,16 +53,17 @@ const CountrySelect = () => {
             : undefined
         }
       >
-        <Listbox.Button className="py-1 w-full">
-          <div className="text-small-regular flex items-center gap-x-2 xsmall:justify-end">
-            <span></span>
+        <Listbox.Button className="py-1 w-auto">
+          <div className="text-small-regular flex items-center gap-x-2 ">
+            <span> </span>
             {current && (
               <span className=" text-[#FFFFFF] font-[400] text-[14px]  flex items-center gap-x-2">
                 <ReactCountryFlag
                   svg
                   style={{
-                    width: "16px",
-                    height: "16px",
+                    width: "30px",
+                    height: "30px",
+                    borderRadius: "30px"
                   }}
                   countryCode={current.country}
                 />
@@ -71,7 +72,7 @@ const CountrySelect = () => {
             )}
           </div>
         </Listbox.Button>
-        <div className="relative w-full min-w-[316px]">
+        <div className="relative w-auto">
           <Transition
             show={state}
             as={Fragment}
@@ -84,7 +85,6 @@ const CountrySelect = () => {
               static
             >
               {options?.map((o, index) => {
-                if(o.country !== "us" && o.country !== "es" )  return;
                 return (
                   <Listbox.Option
                     key={index}

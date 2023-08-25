@@ -6,20 +6,24 @@ import DesktopHit from "@modules/search/components/desktop-hit"
 import DesktopHits from "@modules/search/components/desktop-hits"
 import SearchBox from "@modules/search/components/search-box"
 import { InstantSearch } from "react-instantsearch-hooks-web"
+import Image from "next/image"
 
 const DesktopSearchModal = () => {
   const { state, close, open } = useToggleState()
 
   return (
     <>
-      <div className="flex items-center w-auto h-full justify-center">
-      <div className="items-center m-0 w-auto rounded-[50px] border border-[#FFFFFF59]">
-      <input type="text" className=" w-48 h-8 bg-transparent text-white rounded-l-xl focus:outline-none px-2"/>
-      <button onClick={open} className="w-7" >
+      <div className="flex w-[445px] h-[48px] border rounded-[5px] items-center px-5 gap-x-3">
+        <Image alt="icon-search" src="/header/icon-search.svg" width={16.69} height={16.69}/>
+        <input type="text" className=" w-full bg-transparent border-none text-white focus:outline-none " placeholder="Buscar..."/>
+      </div>
+      {/* 
+        Original
+      <button onClick={open} className="flex items-center gap-x-2 h-full">
         <Search />
-      </button>
-      </div>
-      </div>
+        Search
+      </button> */}
+
       <Modal isOpen={state} close={close} size="large">
         <Modal.Body>
           <InstantSearch
