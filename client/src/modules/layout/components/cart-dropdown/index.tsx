@@ -9,8 +9,9 @@ import Trash from "@modules/common/icons/trash"
 import Thumbnail from "@modules/products/components/thumbnail"
 import { formatAmount, useCart } from "medusa-react"
 import Link from "next/link"
+import Image from "next/image"
 import { Fragment } from "react"
-import {GiShoppingCart} from "react-icons/gi"
+
 
 const CartDropdown = () => {
   const { cart, totalItems } = useCart()
@@ -22,10 +23,10 @@ const CartDropdown = () => {
   
     <div className="h-full z-50" onMouseEnter={open} onMouseLeave={close}>
       <Popover className="relative h-full">
-        <Popover.Button className="h-full text-[#FFFFFF] font-[500] text-[14px]">
-          <Link href="/cart" className="flex">
-            <GiShoppingCart size={30} />
-            {` (${totalItems})`}
+        <Popover.Button className="h-full flex items-center text-[#FFFFFF] font-[500] text-[14px]">
+          <Link href="/cart" className="">
+            <Image alt="shop_gudfy" src="/header/shop-icon.svg" width={32} height={32} />
+            {totalItems? ` (${totalItems})`:""}
           </Link>
         </Popover.Button>
         <Transition
