@@ -60,11 +60,13 @@ const CountrySelect = () => {
               <span className=" text-[#FFFFFF] font-[400] text-[14px]  flex items-center gap-x-2">
                 <ReactCountryFlag
                   svg
+                  className="rounded-[50%] object-cover"
                   style={{
                     width: "30px",
                     height: "30px",
-                    borderRadius: "30px"
+                    
                   }}
+                  
                   countryCode={current.country}
                 />
                 {current.label== "Spain"? <p>Español</p>: <p>English</p>}
