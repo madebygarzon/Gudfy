@@ -1,6 +1,7 @@
 'use client'
 import React, { useState } from "react"
 import Link from "next/link"
+import Image from "next/image"
 
 type DropdownProps = {
   name: string, 
@@ -11,9 +12,10 @@ const DropdownGudFy: React.FC<DropdownProps> = ({name, items}) =>{
   
   const [isOpen, setIsOpen] = useState(false)
   return (
-    <div>
-    <div onMouseEnter={() => setIsOpen(!isOpen)}
+    <div >
+    <div className="relative flex items-center gap-x-1" onMouseEnter={() => setIsOpen(!isOpen)}
         onMouseLeave={() => setIsOpen(!isOpen)}>
+      <Image alt="user_gudfy" src="/header/user-icon.svg" width={32} height={32}/>
       <div
         className="flex text-[#FFFFFF] font-[500] text-[14px]"
         >
@@ -33,7 +35,7 @@ const DropdownGudFy: React.FC<DropdownProps> = ({name, items}) =>{
         </svg>
       </div>
       {isOpen && (
-        <div className="absolute  shadow-lg gap-x-4 gap-y-2 bg-blue-gf">
+        <div className="absolute top-[33px] shadow-lg gap-x-4 gap-y-2 bg-blue-gf">
           {items?.map((item,index)=>{
             return (
             <Link
