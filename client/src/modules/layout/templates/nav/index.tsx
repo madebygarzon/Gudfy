@@ -85,7 +85,7 @@ const Nav = () => {
                   width={167.84}
                   height={54.42}
                 />
-              </Link>
+              </Link>  
             </div>
 
             <div className="flex ml-4 items-center h-full">
