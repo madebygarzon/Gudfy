@@ -36,23 +36,19 @@ const MedusaCTA = () => {
         >
           <Form className="flex space-x-4 mt-6">
             <Field
-              className=" text-[#000000] rounded-[30px] min-h-[40px] pl-6 w-[250px]"
+              className="border-white border-solid border text-[#ffffff] font-[400] bg-transparent rounded min-h-[40px] pl-6 w-[250px]"
               placeholder="Ingresa tu email"
               name="email"
               type="email"
             />
             <ButtonLigth
-              className="text-[#FFFFFF] font-[400] text-[14px]"
+              className="text-[#000] font-semibold text-[14px] bg-white"
               type="submit"
             >
               Suscribirme
             </ButtonLigth>
           </Form>
         </Formik>
-      </div>
-
-      <div className="text-[#FFFFFF] font-[500] text-[10px] ">
-        <p>Copyright © 2023 | Powered by Gudfy</p>
       </div>
     </div>
   )
