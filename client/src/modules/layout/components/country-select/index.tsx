@@ -22,20 +22,19 @@ const CountrySelect = () => {
   const options: CountryOption[] | undefined = useMemo(() => {
     return regions
       ?.map((r) => {
-        return r.countries
-          .filter((c) => c.iso_2 === "us" || c.iso_2 === "es")
-          .map((c) => ({
-            country: c.iso_2,
-            region: r.id,
-            label: c.display_name,
-          }))
+        return r.countries.map((c) => ({
+          country: c.iso_2,
+          region: r.id,
+          label: c.display_name,
+        }))
       })
       .flat()
+      .filter((c) => c.country === "us" || c.country === "es")
   }, [regions])
 
   useEffect(() => {
     if (countryCode) {
-      const option = options?.find((o) => o.country === countryCode)
+      const option = options?.find((o) => o.country === "es")
       setCurrent(option)
     }
   }, [countryCode, options])
@@ -70,11 +69,11 @@ const CountrySelect = () => {
                   countryCode={current.country}
                 />
                 {current.label == "Spain" ? <p>Español</p> : <p>English</p>}
+                <div className=" flex pl-2 w-auto h-[30px] border-l-[1px] border-l-white items-center">
+                  {countryCode == "es" ? <p>COP</p> : <p>USD</p>}
+                </div>
               </span>
             )}
-            <div className=" flex pl-2 w-auto h-[30px] border-l-[1px] border-l-white items-center">
-              {countryCode == "es" ? <p>COP</p> : <p>USD</p>}
-            </div>
           </div>
         </Listbox.Button>
         <div className="relative w-auto">
