@@ -18,7 +18,7 @@ const ButtonLigth = ({
     <button
       {...props}
       className={clsx(
-        " flex items-center justify-center min-h-[40px] px-[25px] py-[10px] rounded-[30px] transition-colors duration-200 disabled:opacity-50",
+        " flex items-center justify-center min-h-[40px] px-[25px] py-[10px] rounded transition-colors duration-200 disabled:opacity-50",
         {
           "border-[1px] border-white border-solid":
             variant === "primary",
