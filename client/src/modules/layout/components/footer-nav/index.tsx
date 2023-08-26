@@ -6,41 +6,39 @@ const FooterNav: React.FC = () => {
     <div className=" bg-blue-gf ">
       <div className="space-x-4 flex justify-center mx-auto p-4">
         <Image
-          src="/image_coins/litecoin-coin.webp"
+          src="/image_coins/ethereum_icon.svg"
           alt="You can pay with litecoin"
           width={30}
           height={30}
-          className="transition ease-in-out delay-150 hover:-translate-y-1 hover:scale-110 duration-300"
+          className="transition ease-in-out delay-150 hover:-translate-y-1 hover:scale-110 duration-300 cursor-pointer"
         />
         <Image
-          src="/image_coins/ethereum-coin.webp"
+          src="/image_coins/bitcoin_icon.svg"
           alt="You can pay with ethereum"
           width={30}
           height={30}
-          className="transition ease-in-out delay-150 hover:-translate-y-1 hover:scale-110 duration-300"
+          className="transition ease-in-out delay-150 hover:-translate-y-1 hover:scale-110 duration-300 cursor-pointer"
         />
         <Image
-          src="/image_coins/bitcoin-coin.webp"
+          src="/image_coins/litecoin_icon.svg"
           alt="You can pay with bitcoin"
           width={30}
           height={30}
-          className="transition ease-in-out delay-150 hover:-translate-y-1 hover:scale-110 duration-300"
+          className="transition ease-in-out delay-150 hover:-translate-y-1 hover:scale-110 duration-300 cursor-pointer"
         />
         <Image
-          src="/image_coins/tether-coin.webp"
+          src="/image_coins/binance_icon.svg"
           alt="You can pay with tether"
           width={30}
           height={30}
-          className="transition ease-in-out delay-150 hover:-translate-y-1 hover:scale-110 duration-300"
+          className="transition ease-in-out delay-150 hover:-translate-y-1 hover:scale-110 duration-300 cursor-pointer"
         />
-      </div>
-      <div className="flex justify-center mt-6">
         <Image
-          src="/image_coins/binance-logo.webp"
-          alt="You can pay through the binance platform"
-          width={150}
-          height={150}
-          className=" transition ease-in-out delay-150 hover:-translate-y-1 hover:scale-110 duration-300"
+          src="/image_coins/tether_icon.svg"
+          alt="You can pay with tether"
+          width={30}
+          height={30}
+          className="transition ease-in-out delay-150 hover:-translate-y-1 hover:scale-110 duration-300 cursor-pointer"
         />
       </div>
     </div>
