@@ -22,18 +22,19 @@ const CountrySelect = () => {
   const options: CountryOption[] | undefined = useMemo(() => {
     return regions
       ?.map((r) => {
-        return r.countries.filter((c) => c.iso_2 === "us" || c.iso_2 === "es").map((c) => ({
+        return r.countries.map((c) => ({
           country: c.iso_2,
           region: r.id,
           label: c.display_name,
         }))
       })
       .flat()
+      .filter((c) => c.country === "us" || c.country === "es")
   }, [regions])
 
   useEffect(() => {
     if (countryCode) {
-      const option = options?.find((o) => o.country === countryCode)
+      const option = options?.find((o) => o.country === "es")
       setCurrent(option)
     }
   }, [countryCode, options])
@@ -64,12 +65,13 @@ const CountrySelect = () => {
                   style={{
                     width: "30px",
                     height: "30px",
-                    
                   }}
-                  
                   countryCode={current.country}
                 />
-                {current.label== "Spain"? <p>Español</p>: <p>English</p>}
+                {current.label == "Spain" ? <p>Español</p> : <p>English</p>}
+                <div className=" flex pl-2 w-auto h-[30px] border-l-[1px] border-l-white items-center">
+                  {countryCode == "es" ? <p>COP</p> : <p>USD</p>}
+                </div>
               </span>
             )}
           </div>
@@ -82,30 +84,32 @@ const CountrySelect = () => {
             leaveFrom="opacity-100"
             leaveTo="opacity-0"
           >
-            <Listbox.Options
-              className="absolute right-[-50px] bg-blue-gf text-[14px] text-[#FFFFFF] "
-              static
-            >
-              {options?.map((o, index) => {
-                return (
-                  <Listbox.Option
-                    key={index}
-                    value={o}
-                    className="py-2 px-7 hover:bg-white hover:text-blue-gf text-center cursor-pointer flex items-center gap-x-2"
-                  >
-                    <ReactCountryFlag
-                      svg
-                      style={{
-                        width: "16px",
-                        height: "16px",
-                      }}
-                      countryCode={o.country}
-                    />{" "}
-                    {o.label== "Spain"? <p>Español</p>: <p>English</p>}
-                  </Listbox.Option>
-                )
-              })}
-            </Listbox.Options>
+            <div className="absolute">
+              <Listbox.Options
+                className="relative top-[25px] bg-blue-gf text-[14px] text-[#FFFFFF] "
+                static
+              >
+                {options?.map((o, index) => {
+                  return (
+                    <Listbox.Option
+                      key={index}
+                      value={o}
+                      className="py-2 px-7 hover:bg-white hover:text-blue-gf text-center cursor-pointer flex items-center gap-x-2"
+                    >
+                      <ReactCountryFlag
+                        svg
+                        style={{
+                          width: "16px",
+                          height: "16px",
+                        }}
+                        countryCode={o.country}
+                      />{" "}
+                      {o.label == "Spain" ? <p>Español</p> : <p>English</p>}
+                    </Listbox.Option>
+                  )
+                })}
+              </Listbox.Options>
+            </div>
           </Transition>
         </div>
       </Listbox>
