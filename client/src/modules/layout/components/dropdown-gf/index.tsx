@@ -35,21 +35,24 @@ const DropdownGudFy: React.FC<DropdownProps> = ({name, items}) =>{
         </svg>
       </div>
       {isOpen && (
-        <div className="absolute top-[33px] shadow-lg gap-x-4 gap-y-2 bg-blue-gf">
+        <div className="absolute w-max top-[33px] gap-x-4 gap-y-2">
+        <div className="relative bg-blue-gf top-[27px]">
           {items?.map((item,index)=>{
             return (
             <Link
             key={index}
             href={item.href}
-            className="block px-7 py-2  text-[#FFFFFF] font-[400] text-[14px] hover:bg-gray-100 hover:text-gray-900"
+            className="block px-7 py-2 text-[#FFFFFF] font-[400] text-[14px] hover:bg-gray-100 hover:text-gray-900"
             >
             {item.label}
           </Link>
           )})}
             
         </div>
+        </div>
       )}
     </div>
+    
   </div>)
 }
 

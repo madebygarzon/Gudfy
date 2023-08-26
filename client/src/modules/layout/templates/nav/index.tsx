@@ -2,9 +2,7 @@
 import React, { useEffect, useState } from "react"
 import { useAccount } from "@lib/context/account-context"
 import { useMobileMenu } from "@lib/context/mobile-menu-context"
-import Hamburger from "@modules/common/components/hamburger"
 import CartDropdown from "@modules/layout/components/cart-dropdown"
-import DropdownMenu from "@modules/layout/components/dropdown-menu"
 import MobileMenu from "@modules/mobile-menu/templates"
 import DesktopSearchModal from "@modules/search/templates/desktop-search-modal"
 import clsx from "clsx"
@@ -39,7 +37,6 @@ const Nav = () => {
       { label: "Cerrar sesión", href: "/" },
     ],
   }
-
   //useEffect that detects if window is scrolled > 5px on the Y axis
 
   useEffect(() => {
@@ -80,36 +77,45 @@ const Nav = () => {
           )}
         >
           <div className="flex-1 gap-x-5  h-full flex items-center">
-            <Link href="/">
-              <Image
-                alt="gudfy"
-                src="/header/gudfy_logo.svg"
-                width={167.84}
-                height={54.42}
-              />
-            </Link>
+            <div>
+              <Link href="/">
+                <Image
+                  alt="gudfy"
+                  src="/header/gudfy_logo.svg"
+                  width={167.84}
+                  height={54.42}
+                />
+              </Link>
+            </div>
 
             <div className="flex ml-4 items-center h-full">
               <DesktopSearchModal />
               {/* {process.env.FEATURE_SEARCH_ENABLED && <DesktopSearchModal />} */}
             </div>
-
-            <CountrySelect />
+            <div>
+              <CountrySelect />
+            </div>
           </div>
           <div className="flex items-center gap-x-8 ">
-            <Wallet />
-            {!customer ? (
-              <DropdownGudFy
-                name={propsDropDown.name}
-                items={propsDropDown.items}
-              />
-            ) : (
-              <DropdownGudFy
-                name={propsDropDownLog.name}
-                items={propsDropDownLog.items}
-              />
-            )}
-            <CartDropdown />
+            <div>
+              <Wallet />
+            </div>
+            <div>
+              {!customer ? (
+                <DropdownGudFy
+                  name={propsDropDown.name}
+                  items={propsDropDown.items}
+                />
+              ) : (
+                <DropdownGudFy
+                  name={propsDropDownLog.name}
+                  items={propsDropDownLog.items}
+                />
+              )}
+            </div>
+            <div>
+              <CartDropdown />
+            </div>
           </div>
         </nav>
         <MobileMenu />
