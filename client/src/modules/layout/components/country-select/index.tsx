@@ -70,7 +70,7 @@ const CountrySelect = () => {
                 />
                 {current.label == "Spain" ? <p>Español</p> : <p>English</p>}
                 <div className=" flex pl-2 w-auto h-[30px] border-l-[1px] border-l-white items-center">
-                  {countryCode == "es" ? <p>COP</p> : <p>USD</p>}
+                  {current.label == "Spain" ? <p>COP</p> : <p>USD</p>}
                 </div>
               </span>
             )}
