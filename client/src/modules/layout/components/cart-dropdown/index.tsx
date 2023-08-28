@@ -24,10 +24,12 @@ const CartDropdown = () => {
     <div className="h-full z-50" onMouseEnter={open} onMouseLeave={close}>
       <Popover className="relative h-full">
         <Popover.Button className="h-full flex items-center text-[#FFFFFF] font-[500] text-[14px]">
+          <div className="flex relative transition ease-in-out delay-150 hover:-translate-y-1 hover:scale-110 duration-300">
           <Link href="/cart" className="">
             <Image alt="shop_gudfy" src="/header/shop-icon.svg" width={32} height={32} />
-            {totalItems? ` (${totalItems})`:""}
           </Link>
+          <span className="absolute text-[10px] px-[10px] top-[-20px] right-[-20px] bg-[#3F1C7A] rounded-[50%]">{totalItems? ` ${totalItems}`:""}</span>
+          </div>
         </Popover.Button>
         <Transition
           show={state}

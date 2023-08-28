@@ -76,8 +76,8 @@ const Nav = () => {
             }
           )}
         >
-          <div className="flex-1 gap-x-5  h-full flex items-center">
-            <div>
+          <div className="gap-x-5  h-full flex items-center">
+            <div className=" min-w-[167.84px] min-h-[54.42] transition ease-in-out delay-150 hover:-translate-y-1 hover:scale-110 duration-300">
               <Link href="/">
                 <Image
                   alt="gudfy"
@@ -88,7 +88,7 @@ const Nav = () => {
               </Link>  
             </div>
 
-            <div className="flex ml-4 items-center h-full">
+            <div className="hidden sm:flex ml-4 items-center h-full">
               <DesktopSearchModal />
               {/* {process.env.FEATURE_SEARCH_ENABLED && <DesktopSearchModal />} */}
             </div>
@@ -96,7 +96,7 @@ const Nav = () => {
               <CountrySelect />
             </div>
           </div>
-          <div className="flex items-center gap-x-8 ">
+          <div className="flex items-center gap-x-4 sm:gap-x-8 ">
             <div>
               <Wallet />
             </div>
