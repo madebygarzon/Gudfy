@@ -34,8 +34,9 @@ const CountrySelect = () => {
 
   useEffect(() => {
     if (countryCode) {
-      const option = options?.find((o) => o.country === "es")
-      setCurrent(option)
+      const option = options?.find((o) => o.country === countryCode )
+        if(!option) {setCurrent(options?.find((o) => o.country === "es"))}
+      else{setCurrent(option)}
     }
   }, [countryCode, options])
 
