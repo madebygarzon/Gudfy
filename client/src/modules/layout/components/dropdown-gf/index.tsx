@@ -12,13 +12,13 @@ const DropdownGudFy: React.FC<DropdownProps> = ({name, items}) =>{
   
   const [isOpen, setIsOpen] = useState(false)
   return (
-    <div >
-    <div className="relative flex items-center gap-x-1" onMouseEnter={() => setIsOpen(!isOpen)}
+    <div className="relative flex items-center gap-x-1 " onMouseEnter={() => setIsOpen(!isOpen)}
         onMouseLeave={() => setIsOpen(!isOpen)}>
-      <Image alt="user_gudfy" src="/header/user-icon.svg" width={32} height={32}/>
+      
       <div
-        className="flex text-[#FFFFFF] font-[500] text-[14px]"
+        className="flex items-center text-[#FFFFFF] font-[500] text-[14px] transition ease-in-out delay-150 hover:-translate-y-1 hover:scale-110 duration-300 "
         >
+        <Image className="mr-1"alt="user_gudfy" src="/header/user-icon.svg" width={32} height={32}/>
         {name}
         <svg
           className="-mr-1 h-5 w-5"
@@ -52,8 +52,7 @@ const DropdownGudFy: React.FC<DropdownProps> = ({name, items}) =>{
         </div>
       )}
     </div>
-    
-  </div>)
+    )
 }
 
 export default DropdownGudFy;
