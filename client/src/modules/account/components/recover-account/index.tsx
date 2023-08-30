@@ -13,9 +13,6 @@ type FormValues = {
   email: string
 }
 
-const emailRegex = new RegExp(
-  "^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$"
-)
 interface stateProps {
   setIsRecovery: React.Dispatch<React.SetStateAction<boolean>>
 }
