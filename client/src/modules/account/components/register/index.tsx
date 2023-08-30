@@ -39,7 +39,7 @@ const Register = () => {
       last_name: /^[a-zA-Z\s]+$/,
       email: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
       password: /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/,
-      phone: /^[0-9]{10}$/,
+      phone: /^[0-9]{10,}$/,
     }
 
     for (const campo in validaciones) {
@@ -62,27 +62,27 @@ const Register = () => {
             case "email":
               setError("email", {
                 type: "validate",
-                message: "correo no aceptado ",
+                message: "Correo no aceptado ",
               })
               break
             case "password":
               setError("password", {
                 type: "validate",
                 message:
-                  "debe contener una letra minúscula, una letra mayúscula, un dígito y una longitud mínima de 8 caracteres ",
+                  "Debe contener una letra minúscula, una letra mayúscula, un dígito y una longitud mínima de 8 caracteres ",
               })
               break
             case "phone":
               setError("phone", {
                 type: "validate",
                 message:
-                  "debe contener una letra minúscula, una letra mayúscula, un dígito y una longitud mínima de 8 caracteres ",
+                  "Numero no valido ",
               })
               break
           }
         }
       } else {
-        isValid = false
+        campo === "phone" ? isValid = true : isValid = false
       }
     }
 

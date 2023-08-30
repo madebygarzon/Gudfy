@@ -33,9 +33,36 @@ const LoginComponente = () => {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
+    setError,
   } = useForm<SignInCredentials>()
 
+  function handlerErros(credenciales: SignInCredentials) {
+    let isValid = true
+    const validaciones: Record<keyof SignInCredentials, RegExp> = {
+      email: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+    }
+
+    if (!credenciales.email) {
+      isValid = false
+      setError("email", {
+        type: "validate",
+        message: "Ingresa un valor",
+      })
+    }
+    if (!validaciones.email.test(credenciales.email)) {
+      isValid = false
+      setError("email", {
+        type: "validate",
+        message: "Ingrese un correo valido",
+      })
+    }
+
+    return isValid
+  }
+
   const onSubmit = handleSubmit(async (credentials) => {
+    const isValid = await handlerErros(credentials)
+    if (!isValid) return
     await medusaClient.auth
       .authenticate(credentials)
       .then(() => {
@@ -64,13 +91,13 @@ const LoginComponente = () => {
         <div className="flex flex-col w-full gap-y-2">
           <Input
             label="Nombre de usuario"
-            {...register("email", { required: "Email is required" })}
+            {...register("email", { required: "Correo electronico es requerido" })}
             autoComplete="email"
             errors={errors}
           />
           <Input
             label="Contraseña"
-            {...register("password", { required: "Password is required" })}
+            {...register("password", { required: "Se requiere contraseña" })}
             type="password"
             autoComplete="current-password"
             errors={errors}
