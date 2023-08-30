@@ -37,13 +37,24 @@ const Nav = () => {
       { label: "Cerrar sesión", href: "/" },
     ],
   }
+
+  const restrictHeader = [  // Podemos agregar las urls en las que no querramos 
+    {url:"/account/login"},
+    {url:"/account/register"},
+    {url:"/account/reset-password"}
+  ]
   //useEffect that detects if window is scrolled > 5px on the Y axis
+ function isRestric ( path:String): boolean  {
+  const restrinc = restrictHeader.filter(restric => path.includes(restric.url))
+  return restrinc.length?  true : false;
+ }
 
   useEffect(() => {
     pathname === "/" ? setIsHome(true) : setIsHome(false)
-    pathname === "/account/login" || pathname === "/account/register"
-      ? setIsLogin(false)
-      : setIsLogin(true)
+
+    const restricPathname = isRestric(pathname)
+    restricPathname?setIsLogin(false): setIsLogin(true)
+    
     const detectScrollY = () => {
       if (window.scrollY > 5) {
         setIsScrolled(true)
