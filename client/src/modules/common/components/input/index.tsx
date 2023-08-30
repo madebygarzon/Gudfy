@@ -33,7 +33,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
 
     useImperativeHandle(ref, () => inputRef.current!)
 
-    const hasError = get(errors, name) //&& get(touched, name)
+    const hasError = get(errors, name) || get(touched, name)
 
     return (
       <div>
