@@ -23,7 +23,7 @@ class RecoveryPasswork {
     try {
     await sendgrid.setApiKey(process.env.SENDGRID_API_KEY);
     const { email, token } = data
-    const emailHtml = render(<Email url="https://example.com" email={email} token={token} />);
+    const emailHtml = render(<Email url="http://localhost:8000/account/reset-password" email={email} token={token} />);
 
   const options = {
     from: "rdelgado@gudfy.com",
