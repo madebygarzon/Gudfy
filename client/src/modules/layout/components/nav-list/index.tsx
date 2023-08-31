@@ -5,11 +5,11 @@ import { usePathname } from "next/navigation"
 
 const NavList: React.FC = () => {
   const listItems = [
-    { label: "Inicio", href: "/" },
-    { label: "Tienda", href: "/store" },
-    { label: "Juegos", href: "/blog" },
-    { label: "Terjetas de regalos", href: "/card" },
-    { label: "Xbox", href: "/xbox" },
+    { id: "1", label: "Inicio", href: "/" },
+    { id: "2", label: "Tienda", href: "/store" },
+    { id: "3", label: "Juegos", href: "/blog" },
+    { id: "4", label: "Terjetas de regalos", href: "/card" },
+    { id: "5", label: "Xbox", href: "/xbox" },
   ]
   const [isSelect, setIsSelect] = useState<string>("/")
   const pathname = usePathname()
@@ -21,13 +21,13 @@ const NavList: React.FC = () => {
   return (
     <nav className="text-[#FFFFFF] font-[500] text-[14px] flex py-4 justify-center gap-x-7 bg-[#3F1C7A] duration-500">
       {listItems.map((item) => {
+        const isSelected = isSelect === item.href
         return (
           <div
-            className={clsx(
-              "px-2 m-0 border-b-2  hover:border-[#ffffff]",
-              { "border-[#ffffff]": isSelect == item.href },
-              {"border-transparent": isSelect !== item.href}
-            )}
+            key={item.id}
+            className={`px-2 m-0 border-b-2 hover:border-white ${
+              isSelected ? "border-white" : "border-transparent"
+            }`}
           >
             <Link href={item.href} className="">
               {item.label}
