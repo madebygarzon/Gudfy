@@ -122,7 +122,7 @@ const LoginComponente = () => {
           </div>
         )}
         <div className="mx-max felx justify-center">
-          <Button className=" mt-6 rounded-full">Accerder</Button>
+          <Button className=" mt-6 rounded-[5px]">Accerder</Button>
         </div>
       </form>
       <p className="mt-5 font[900] text-xs">O ingresa con:</p>
