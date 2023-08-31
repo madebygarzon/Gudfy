@@ -28,6 +28,7 @@ const ResetPassword: React.FC<tokenData> = ({ token, email }) => {
   } = useForm<ResetCustomerPasswordFormData>()
 
   const resetPassword = async (data: ResetCustomerPasswordFormData) => {
+    console.log(decodeURIComponent(email.replace('%40', '@')))
     if (data.new_password !== data.confirm_password) {
       setError("confirm_password", {
         type: "validate",
@@ -38,7 +39,7 @@ const ResetPassword: React.FC<tokenData> = ({ token, email }) => {
 
     medusaClient.customers
       .resetPassword({
-        email,
+        email:  decodeURIComponent(email.replace('%40', '@')),
         password: data.confirm_password,
         token,
       })
@@ -49,7 +50,7 @@ const ResetPassword: React.FC<tokenData> = ({ token, email }) => {
         console.log(e)
       })
   }
-
+ 
   return !isRestored ? (
     <div className="max-w-md w-full flex flex-col items-center">
       {isSubmitting && (
