@@ -1,24 +1,29 @@
-'use client'
+"use client"
 import React, { useState } from "react"
 import Link from "next/link"
 import Image from "next/image"
 
 type DropdownProps = {
-  name: string, 
-  items: {label: string; href: string; }[]
+  name: string
+  items: { label: string; href: string }[]
 }
 
-const DropdownGudFy: React.FC<DropdownProps> = ({name, items}) =>{
-  
+const DropdownGudFy: React.FC<DropdownProps> = ({ name, items }) => {
   const [isOpen, setIsOpen] = useState(false)
   return (
-    <div className="relative flex items-center gap-x-1 " onMouseEnter={() => setIsOpen(!isOpen)}
-        onMouseLeave={() => setIsOpen(!isOpen)}>
-      
-      <div
-        className="flex items-center text-[#FFFFFF] font-[500] text-[14px] transition ease-in-out delay-150 hover:-translate-y-1 hover:scale-110 duration-300 "
-        >
-        <Image className="mr-1"alt="user_gudfy" src="/header/user-icon.svg" width={32} height={32}/>
+    <div
+      className="relative flex items-center gap-x-1 "
+      onMouseEnter={() => setIsOpen(!isOpen)}
+      onMouseLeave={() => setIsOpen(!isOpen)}
+    >
+      <div className="flex items-center text-[#FFFFFF] font-[500] text-[14px] ">
+        <Image
+          className="mr-1"
+          alt="user_gudfy"
+          src="/header/user-icon.svg"
+          width={32}
+          height={32}
+        />
         {name}
         <svg
           className="-mr-1 h-5 w-5"
@@ -36,23 +41,23 @@ const DropdownGudFy: React.FC<DropdownProps> = ({name, items}) =>{
       </div>
       {isOpen && (
         <div className="absolute w-max top-[33px] gap-x-4 gap-y-2">
-        <div className="relative bg-blue-gf top-[27px]">
-          {items?.map((item,index)=>{
-            return (
-            <Link
-            key={index}
-            href={item.href}
-            className="block px-7 py-2 text-[#FFFFFF] font-[400] text-[14px] hover:bg-gray-100 hover:text-gray-900"
-            >
-            {item.label}
-          </Link>
-          )})}
-            
-        </div>
+          <div className="relative bg-blue-gf top-[27px]">
+            {items?.map((item, index) => {
+              return (
+                <Link
+                  key={index}
+                  href={item.href}
+                  className="block px-7 py-2 text-[#FFFFFF] font-[400] text-[14px] hover:bg-gray-100 hover:text-gray-900"
+                >
+                  {item.label}
+                </Link>
+              )
+            })}
+          </div>
         </div>
       )}
     </div>
-    )
+  )
 }
 
-export default DropdownGudFy;
+export default DropdownGudFy
