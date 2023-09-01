@@ -16,7 +16,7 @@ const DropdownGudFy: React.FC<DropdownProps> = ({ name, items }) => {
       onMouseEnter={() => setIsOpen(!isOpen)}
       onMouseLeave={() => setIsOpen(!isOpen)}
     >
-      <div className="flex items-center text-[#FFFFFF] font-[500] text-[14px] ">
+      <div className="flex items-center text-[#FFFFFF] font-[500] text-[14px] transition ease-in-out delay-150 hover:-translate-y-1 hover:scale-110 duration-300 ">
         <Image
           className="mr-1"
           alt="user_gudfy"
