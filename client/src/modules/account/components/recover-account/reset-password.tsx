@@ -5,7 +5,7 @@ import { medusaClient } from "@lib/config"
 import Button from "@modules/common/components/button"
 import Spinner from "@modules/common/icons/spinner"
 import { FieldValues, useForm } from "react-hook-form"
-import Image from "next/image"
+import Link from "next/link"
 
 type ResetCustomerPasswordFormData = {
   new_password: string
@@ -18,7 +18,7 @@ type tokenData = {
 
 const ResetPassword: React.FC<tokenData> = ({ token, email }) => {
   const [isRestored, setIsRestore] = React.useState<boolean>(false)
-
+  const emailCustomer = decodeURIComponent(email.replace("%40", "@"))
   const {
     register,
     handleSubmit,
@@ -28,7 +28,6 @@ const ResetPassword: React.FC<tokenData> = ({ token, email }) => {
   } = useForm<ResetCustomerPasswordFormData>()
 
   const resetPassword = async (data: ResetCustomerPasswordFormData) => {
-    console.log(decodeURIComponent(email.replace('%40', '@')))
     if (data.new_password !== data.confirm_password) {
       setError("confirm_password", {
         type: "validate",
@@ -39,18 +38,19 @@ const ResetPassword: React.FC<tokenData> = ({ token, email }) => {
 
     medusaClient.customers
       .resetPassword({
-        email:  decodeURIComponent(email.replace('%40', '@')),
+        email: emailCustomer,
         password: data.confirm_password,
         token,
       })
       .then(({ customer }) => {
         setIsRestore(true)
         console.log(customer.id)
-      }).catch((e)=>{
+      })
+      .catch((e) => {
         console.log(e)
       })
   }
- 
+
   return !isRestored ? (
     <div className="max-w-md w-full flex flex-col items-center">
       {isSubmitting && (
@@ -59,7 +59,7 @@ const ResetPassword: React.FC<tokenData> = ({ token, email }) => {
         </div>
       )}
       <h1 className="text-large-semi  text-3xl">Cambiar Contraseña</h1>
-      <p className=" mb-6">{`para la el usuario con el correo ${email}`}</p>
+      <p className=" w-auto text-center mb-6">{`para la el usuario con el correo ${emailCustomer}`}</p>
       <form
         onSubmit={handleSubmit(resetPassword)}
         onReset={() => reset()}
@@ -83,7 +83,16 @@ const ResetPassword: React.FC<tokenData> = ({ token, email }) => {
       </form>
     </div>
   ) : (
-    <div></div>
+    <div className="max-w-md w-full flex flex-col items-center shadow-xl rounded-3xl p-12 text-center">
+      <h1 className="text-large-semi  text-3xl pb-3">
+        ¡Restauracion de contaseña exitosa!
+      </h1>
+      <p className="w-auto text-[20px] mt-6 cursor-pointer hover:text-blue-800">
+        <Link href={"/account/login"} className="text-[20px]">
+          {"<- "}Para continuar, inicia sesión con la nueva contraseña{" "}
+        </Link>
+      </p>
+    </div>
   )
 }
 
