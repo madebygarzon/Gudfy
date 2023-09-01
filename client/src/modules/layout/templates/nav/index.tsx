@@ -38,18 +38,23 @@ const Nav = () => {
     ],
   }
 
-  const restrictHeader = [  // Podemos agregar las urls en las que no querramos 
-    {url:"/account/login"},
-    {url:"/account/register"},
-    {url:"/account/reset-password"}
+  const restrictHeader = [
+    // Podemos agregar las urls en las que no querramos
+    { url: "/account/login" },
+    { url: "/account/register" },
+    { url: "/account/reset-password" },
   ]
   //useEffect that detects if window is scrolled > 5px on the Y axis
- function isRestric ( path:String): boolean  {
+  /*function isRestric ( path:String): boolean  {
   const restrinc = restrictHeader.filter(restric => path.includes(restric.url))
   return restrinc.length?  true : false;
- }
+ }*/
 
-  useEffect(() => {
+  function isRestric(path: String): boolean {
+    return restrictHeader.some((restric) => path.includes(restric.url))
+  }
+
+  /*useEffect(() => {
     pathname === "/" ? setIsHome(true) : setIsHome(false)
 
     const restricPathname = isRestric(pathname)
@@ -68,7 +73,28 @@ const Nav = () => {
     return () => {
       window.removeEventListener("scroll", detectScrollY)
     }
+  }, [pathname])*/
+
+  useEffect(() => {
+    const restricPathname = isRestric(pathname)
+    restricPathname ? setIsLogin(false) : setIsLogin(true)
   }, [pathname])
+
+  useEffect(() => {
+    const detectScrollY = () => {
+      if (window.scrollY > 5) {
+        setIsScrolled(true)
+      } else {
+        setIsScrolled(false)
+      }
+    }
+
+    window.addEventListener("scroll", detectScrollY)
+
+    return () => {
+      window.removeEventListener("scroll", detectScrollY)
+    }
+  }, [])
 
   const { toggle } = useMobileMenu()
 
@@ -96,7 +122,7 @@ const Nav = () => {
                   width={167.84}
                   height={54.42}
                 />
-              </Link>  
+              </Link>
             </div>
 
             <div className="hidden sm:flex ml-4 items-center h-full">
