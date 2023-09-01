@@ -12,7 +12,6 @@ import Link from "next/link"
 import Image from "next/image"
 import { Fragment } from "react"
 
-
 const CartDropdown = () => {
   const { cart, totalItems } = useCart()
   const items = useEnrichedLineItems()
@@ -20,15 +19,21 @@ const CartDropdown = () => {
   const { state, open, close } = useCartDropdown()
 
   return (
-  
     <div className="h-full z-50" onMouseEnter={open} onMouseLeave={close}>
       <Popover className="relative h-full">
         <Popover.Button className="h-full flex items-center text-[#FFFFFF] font-[500] text-[14px]">
-          <div className="flex relative transition ease-in-out delay-150 hover:-translate-y-1 hover:scale-110 duration-300">
-          <Link href="/cart" className="">
-            <Image alt="shop_gudfy" src="/header/shop-icon.svg" width={32} height={32} />
-          </Link>
-          <span className="absolute text-[10px] px-[10px] top-[-20px] right-[-20px] bg-[#3F1C7A] rounded-[50%]">{totalItems? ` ${totalItems}`:""}</span>
+          <div className="flex relative">
+            <Link href="/cart" className="">
+              <Image
+                alt="shop_gudfy"
+                src="/header/shop-icon.svg"
+                width={32}
+                height={32}
+              />
+            </Link>
+            <span className="absolute text-[10px] px-[10px] top-[-20px] right-[-20px] bg-[#3F1C7A] rounded-[50%]">
+              {totalItems ? ` ${totalItems}` : ""}
+            </span>
           </div>
         </Popover.Button>
         <Transition
@@ -132,7 +137,9 @@ const CartDropdown = () => {
                     <Link href="/store">
                       <>
                         <span className="sr-only">Ir a la tienda</span>
-                        <Button className="rounded-30" onClick={close}>Explorar productos</Button>
+                        <Button className="rounded-30" onClick={close}>
+                          Explorar productos
+                        </Button>
                       </>
                     </Link>
                   </div>
