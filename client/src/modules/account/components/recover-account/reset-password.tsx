@@ -6,6 +6,8 @@ import Button from "@modules/common/components/button"
 import Spinner from "@modules/common/icons/spinner"
 import { FieldValues, useForm } from "react-hook-form"
 import Link from "next/link"
+import ButtonLigth from "@modules/common/components/button_light"
+import { BsFillArrowLeftCircleFill } from "react-icons/bs"
 
 type ResetCustomerPasswordFormData = {
   new_password: string
@@ -89,7 +91,9 @@ const ResetPassword: React.FC<tokenData> = ({ token, email }) => {
       </h1>
       <p className="w-auto text-[20px] mt-6 cursor-pointer hover:text-blue-800">
         <Link href={"/account/login"} className="text-[20px]">
-          {"<- "}Para continuar, inicia sesión con la nueva contraseña{" "}
+          <Button className="gap-x-2 mt-6 rounded-[5px] ">
+            Para continuar, inicia sesión con la nueva contraseña
+          </Button>
         </Link>
       </p>
     </div>
