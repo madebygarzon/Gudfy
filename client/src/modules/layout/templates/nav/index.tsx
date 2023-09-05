@@ -16,9 +16,6 @@ import NavList from "@modules/layout/components/nav-list"
 
 const Nav = () => {
   const { customer } = useAccount()
-  const pathname = usePathname()
-  const [isHome, setIsHome] = useState(false)
-  const [isLogin, setIsLogin] = useState(false)
   const [isScrolled, setIsScrolled] = useState<boolean>()
   const propsDropDown = {
     name: "Cuenta",
@@ -38,48 +35,6 @@ const Nav = () => {
     ],
   }
 
-  const restrictHeader = [
-    // Podemos agregar las urls en las que no querramos
-    { url: "/account/login" },
-    { url: "/account/register" },
-    { url: "/account/reset-password" },
-  ]
-  //useEffect that detects if window is scrolled > 5px on the Y axis
-  /*function isRestric ( path:String): boolean  {
-  const restrinc = restrictHeader.filter(restric => path.includes(restric.url))
-  return restrinc.length?  true : false;
- }*/
-
-  function isRestric(path: String): boolean {
-    return restrictHeader.some((restric) => path.includes(restric.url))
-  }
-
-  /*useEffect(() => {
-    pathname === "/" ? setIsHome(true) : setIsHome(false)
-
-    const restricPathname = isRestric(pathname)
-    restricPathname?setIsLogin(false): setIsLogin(true)
-    
-    const detectScrollY = () => {
-      if (window.scrollY > 5) {
-        setIsScrolled(true)
-      } else {
-        setIsScrolled(false)
-      }
-    }
-
-    window.addEventListener("scroll", detectScrollY)
-
-    return () => {
-      window.removeEventListener("scroll", detectScrollY)
-    }
-  }, [pathname])*/
-
-  useEffect(() => {
-    const restricPathname = isRestric(pathname)
-    restricPathname ? setIsLogin(false) : setIsLogin(true)
-  }, [pathname])
-
   useEffect(() => {
     const detectScrollY = () => {
       if (window.scrollY > 5) {
@@ -98,18 +53,14 @@ const Nav = () => {
 
   const { toggle } = useMobileMenu()
 
-  return isLogin ? (
-    <div
-      className={clsx("sticky top-0 inset-x-0 z-50 group", {
-        "!fixed": isHome,
-      })}
-    >
+  return (
+    <div className={clsx("sticky top-0 inset-x-0 z-50 group")}>
       <header className="relative h-[92px] px-8  mx-auto my-0 transition-colors bg-blue-gf border-transparent duration-500  shadow-gf border-b-1">
         <nav
           className={clsx(
             "text-white flex items-center justify-between w-full h-full text-base transition-colors duration-200",
             {
-              "text-white": isHome && !isScrolled,
+              "text-white": !isScrolled,
             }
           )}
         >
@@ -159,8 +110,6 @@ const Nav = () => {
       </header>
       {!isScrolled ? <NavList /> : <div></div>}
     </div>
-  ) : (
-    <div></div>
   )
 }
 

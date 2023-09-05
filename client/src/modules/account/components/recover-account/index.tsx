@@ -6,6 +6,8 @@ import { useForm } from "react-hook-form"
 import { BsFacebook } from "react-icons/bs"
 import { FcGoogle } from "react-icons/fc"
 import Link from "next/link"
+import ButtonLigth from "@modules/common/components/button_light"
+import { BsFillArrowLeftCircleFill } from "react-icons/bs"
 
 type FormValues = {
   email: string
@@ -25,25 +27,26 @@ const RecoverAccount: React.FC<stateProps> = ({ setIsRecovery }) => {
 
   const onSubmit = handleSubmit(async (values: FormValues) => {
     const validRegExp = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
-    if(!validRegExp.test(values.email)) return setError("email", {
-      type: "validate",
-      message: "Ingrese un correo valido",
-    })
+    if (!validRegExp.test(values.email))
+      return setError("email", {
+        type: "validate",
+        message: "Ingrese un correo valido",
+      })
     await medusaClient.auth.exists(values.email).then(async (e) => {
-      if(e.exists){
-      medusaClient.customers
-        .generatePasswordToken({
-          email: values.email,
-        })
-        .then((e) => {
-          console.log(e)
-          setSentMail(true)
-        })
-        .catch((e) => {
-          alert("error enviado")
-          console.log(e)
-        })
-      } else{
+      if (e.exists) {
+        medusaClient.customers
+          .generatePasswordToken({
+            email: values.email,
+          })
+          .then((e) => {
+            console.log(e)
+            setSentMail(true)
+          })
+          .catch((e) => {
+            alert("error enviado")
+            console.log(e)
+          })
+      } else {
         setError("email", {
           type: "validate",
           message: "Este correo no esta registrado en nuestro sistema",
@@ -73,40 +76,33 @@ const RecoverAccount: React.FC<stateProps> = ({ setIsRecovery }) => {
               errors={errors}
             />
           </div>
-          <div className="flex w-full justify-between items-center">
-            <Button className=" mt-6 rounded-full ">Restablecer</Button>
-            <p
-              className="w-[120px] mt-6 cursor-pointer hover:text-blue-800"
+          <div className="flex w-full justify-between items-center mt-6">
+            <Button className="  rounded-[5px] ">Restablecer</Button>
+            <ButtonLigth
+              className="gap-x-2 text-blue-gf border-blue-gf "
               onClick={() => setIsRecovery(false)}
             >
+              <BsFillArrowLeftCircleFill color="#1F0046" />
               Volver
-            </p>
+            </ButtonLigth>
           </div>
         </form>
       ) : (
-        <div className="">
-          <div className=" ">
-            <span className="text-center text-[20px]">
-              Le enviamos el restablecimiento a su correo
-            </span>
-            <p
-              className="w-[120px] mt-6 cursor-pointer hover:text-blue-800"
+        <div className="flex flex-col items-center ">
+          <span className="text-center text-[20px]">
+            Revisa tu email, re enviamos un correo de restablecimiento
+          </span>
+          <div className="pt-10 ">
+            <ButtonLigth
+              className="gap-x-2 text-blue-gf border-blue-gf "
               onClick={() => setIsRecovery(false)}
             >
-              {"<-"} Regresar
-            </p>
+              <BsFillArrowLeftCircleFill color="#1F0046" />
+              Volver
+            </ButtonLigth>
           </div>
         </div>
       )}
-      <p className="mt-5 font[900] text-xs">O ingresa con:</p>
-      <div className="flex gap-4 pt-2">
-        <BsFacebook className="p-[4px] bg-blue-500" color="white" size={35} />
-        <FcGoogle
-          className="p-[1px] border border-blue-500"
-          color="white"
-          size={35}
-        />
-      </div>
     </div>
   )
 }
