@@ -4,24 +4,24 @@ import { Metadata } from "next"
 import Link from "next/link"
 import Image from "next/image"
 import ButtonLigth from "@modules/common/components/button_light"
-import {BsFillArrowLeftCircleFill} from "react-icons/bs"
+import { BsFillArrowLeftCircleFill } from "react-icons/bs"
 export const metadata: Metadata = {
   title: "Iniciar sesión",
   description: "Inicia sesión en Gudfy.",
 }
 
 export default function Login() {
-  
   return (
     <div className="grid grid-cols-2 h-screen ">
       <div className="bg-blue-gf ">
         <div className="flex h-[25%] m-[20px] justify-start items-center pl-9 mb-16">
           <Link href="/">
             <Image
+              className="ml-auto mr-auto transition ease-in-out delay-150 hover:-translate-y-1 hover:scale-110 duration-300"
               alt="gudfy"
-              src="/header/logo_gudfy.webp"
-              width={160}
-              height={120}
+              src="/footer/gudfy_logo_2.svg"
+              width={251.76}
+              height={81.63}
             />
           </Link>
         </div>
