@@ -2,6 +2,7 @@
 import React, { useState } from "react"
 import Link from "next/link"
 import Image from "next/image"
+import { useAccount } from "@lib/context/account-context"
 
 type DropdownProps = {
   name: string
@@ -9,6 +10,7 @@ type DropdownProps = {
 }
 
 const DropdownGudFy: React.FC<DropdownProps> = ({ name, items }) => {
+  const { handleLogout } = useAccount()
   const [isOpen, setIsOpen] = useState(false)
   return (
     <div
@@ -16,7 +18,7 @@ const DropdownGudFy: React.FC<DropdownProps> = ({ name, items }) => {
       onMouseEnter={() => setIsOpen(!isOpen)}
       onMouseLeave={() => setIsOpen(!isOpen)}
     >
-      <div className="flex items-center text-[#FFFFFF] font-[500] text-[14px] transition ease-in-out delay-150 hover:-translate-y-1 hover:scale-110 duration-300 ">
+      <div className="flex items-center text-[#FFFFFF] font-[500] text-[14px]  ">
         <Image
           className="mr-1"
           alt="user_gudfy"
@@ -48,6 +50,9 @@ const DropdownGudFy: React.FC<DropdownProps> = ({ name, items }) => {
                   key={index}
                   href={item.href}
                   className="block px-7 py-2 text-[#FFFFFF] font-[400] text-[14px] hover:bg-gray-100 hover:text-gray-900"
+                  onClick={
+                    item.label === "Cerrar sesión" ? handleLogout : () => {}
+                  }
                 >
                   {item.label}
                 </Link>
