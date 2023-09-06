@@ -20,6 +20,7 @@
     "@types/react": "17.0.40"
   },
   "dependencies": {
+    "@clerk/nextjs": "^4.23.4",
     "@headlessui/react": "^1.6.1",
     "@hookform/error-message": "^2.0.0",
     "@medusajs/medusa-js": "^6.0.0",
