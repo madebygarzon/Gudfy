@@ -90,7 +90,7 @@ const RecoverAccount: React.FC<stateProps> = ({ setIsRecovery }) => {
       ) : (
         <div className="flex flex-col items-center ">
           <span className="text-center text-[20px]">
-            Revisa tu email, re enviamos un correo de restablecimiento
+            Revisa tu email, te enviamos un correo de restablecimiento
           </span>
           <div className="pt-10 ">
             <ButtonLigth
