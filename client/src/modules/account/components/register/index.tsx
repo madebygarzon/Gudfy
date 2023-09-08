@@ -8,7 +8,7 @@ import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { FieldValues, useForm } from "react-hook-form"
-import SocialButtons from "@modules/common/components/button_social"
+import SocialButtons from "@modules/common/components/button_socials"
 
 interface RegisterCredentials extends FieldValues {
   first_name: string
