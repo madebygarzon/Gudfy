@@ -31,6 +31,8 @@ Este recurso te proporciona instrucciones detalladas sobre cómo configurar el M
 
 # Configuracion para el entorno de SendGrid (Gestor de envios de correo)
 
+Importante mencionar que esta erramienta nos brinda un uso gratuito de 100 emails por dia, se puede considerar la opcion de 100.000 emials 
+
 estos pasos estan resumidos por lo que se recomienda mirar su [configuracion recomendada](https://docs.medusajs.com/plugins/notifications/sendgrid#install-the-sendgrid-plugin) 
 
 - [Se debe de crear un Usuarios en su pagina oficial](https://signup.sendgrid.com/) 
@@ -80,3 +82,9 @@ const plugins = [
 ]
 ```
 Ela pi_key y from Se requieren opciones. Luego, use la clave de cada plantilla que cree (de la referencia ) como nombre de la opción con el ID de la plantilla como valor.
+
+# Implementación y configuración del plugin *medusa-plugin-auth
+
+Para la implementación de la herramienta, se siguieron los pasos recomendados por la documentación oficial en https://medusa-plugins.vercel.app/authentication.
+
+Se debe tener en cuenta que en la carpeta del back-end, medusa-config.js se implementa el plugin, con una característica modificada, la cual es { strict: "none"}, esta permite que los usuarios que previamente ya se han registrado en la plataforma de gudfy puedan iniciar sesión con sus redes sociales.
