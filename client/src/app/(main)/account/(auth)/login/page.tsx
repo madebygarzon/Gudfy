@@ -34,10 +34,12 @@ export default function Login() {
           </h1>
         </div>
         <div className="flex justify-center py-14">
-          <ButtonLigth className="gap-x-2 text-[#ffffff]">
-            <BsFillArrowLeftCircleFill color="white" />
-            Inicio
-          </ButtonLigth>
+          <Link href="/">
+            <ButtonLigth className="gap-x-2 text-[#ffffff]">
+              <BsFillArrowLeftCircleFill color="white" />
+              Inicio
+            </ButtonLigth>
+          </Link>
         </div>
         <div>
           <p className="pt-8 felx text-[#ffffff] text-center text-[10px]">

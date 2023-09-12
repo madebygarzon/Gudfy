@@ -116,7 +116,7 @@ const Register = () => {
           <Spinner size={24} />
         </div>
       )}
-      <h1 className="text-large-semi  mb-6 text-3xl">Crear una Cuenta</h1>
+      <h1 className="text-large-semi text-3xl">Crear una Cuenta</h1>
       <p className="text-center text-base-regular text-gray-700  font-[500] mb-4">
         ¿Ya tienes una cuenta? <Link href={"./login"}>Accede</Link>
       </p>
@@ -172,9 +172,9 @@ const Register = () => {
             los términos y condiciones.
           </Link>
         </span>
-        <Button className="mt-6 rounded-full">Entrar</Button>
+        <Button className="mt-5 rounded-[5px]">Entrar</Button>
       </form>
-
+      <p className="my-5 font[900] text-sm">O ingresa con:</p>
       <SocialButtons />
     </div>
   )
