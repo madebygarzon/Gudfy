@@ -126,7 +126,7 @@ const LoginComponente = () => {
           <Button className=" mt-6 rounded-[5px]">Accerder</Button>
         </div>
       </form>
-      <p className="mt-5 font[900] text-sm">O ingresa con:</p>
+      <p className="my-5 font[900] text-sm">O ingresa con:</p>
       <SocialButtons />
     </div>
   ) : (
