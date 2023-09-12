@@ -13,18 +13,18 @@ const ProductPreview = ({
     <Link href={`/products/${handle}`}>
       <div>
         <Thumbnail thumbnail={thumbnail} size="full" />
-        <div className="text-base-regular mt-2">
+        <div className="text-base-regular mt-2 text-center">
           <span>{title}</span>
-          <div className="flex items-center gap-x-2 mt-1">
+          <div className="flex w-full items-center gap-x-2 mt-1">
             {price ? (
               <>
                 {price.price_type === "sale" && (
-                  <span className="line-through text-gray-500">
+                  <span className="line-through text-gray-500 text-center">
                     {price.original_price}
                   </span>
                 )}
                 <span
-                  className={clsx("font-semibold", {
+                  className={clsx("font-semibold w-full text-center ", {
                     "text-rose-500": price.price_type === "sale",
                   })}
                 >
