@@ -1,5 +1,6 @@
 import FeaturedProducts from "@modules/home/components/featured-products"
-import Hero from "@modules/home/components/hero"
+//import Hero from "@modules/home/components/hero"
+import Banner from "@modules/home/components/hero/baner_gf"
 import { Metadata } from "next"
 
 export const metadata: Metadata = {
@@ -11,7 +12,8 @@ export const metadata: Metadata = {
 const Home = () => {
   return (
     <>
-      <Hero />
+      {/* <Hero /> */}
+      <Banner />
       <FeaturedProducts />
     </>
   )

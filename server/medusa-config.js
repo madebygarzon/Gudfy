@@ -112,7 +112,7 @@ const plugins = [
 
         store: {
           callbackUrl: `${BACKEND_URL}/store/auth/facebook/cb`,
-          failureRedirect: `${STORE_CORS}/login`,
+          failureRedirect: `${STORE_CORS}/`,
 
           successRedirect: `${STORE_CORS}/`,
         },
