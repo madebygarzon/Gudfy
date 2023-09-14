@@ -83,8 +83,12 @@ const plugins = [
 ```
 Ela pi_key y from Se requieren opciones. Luego, use la clave de cada plantilla que cree (de la referencia ) como nombre de la opción con el ID de la plantilla como valor.
 
-# Implementación y configuración del plugin *medusa-plugin-auth
+# Implementación y configuración del plugin *medusa-plugin-auth*
 
 Para la implementación de la herramienta, se siguieron los pasos recomendados por la documentación oficial en https://medusa-plugins.vercel.app/authentication.
 
 Se debe tener en cuenta que en la carpeta del back-end, medusa-config.js se implementa el plugin, con una característica modificada, la cual es { strict: "none"}, esta permite que los usuarios que previamente ya se han registrado en la plataforma de gudfy puedan iniciar sesión con sus redes sociales.
+
+## Facebook & Gmail ## 
+Utilizando el plugin medusa-plugin-auth, puedes habilitar el inicio de sesión a través de Facebook y Gmail. La documentación proporciona un detallado paso a paso para configurarlo. Además, es importante mencionar que debes agregar las variables de entorno necesarias en el archivo .env. Para obtener estas variables, te recomendamos contactar directamente con la documentacion de la API de Autenticación de terceros de Facebook y Gmail.
+
