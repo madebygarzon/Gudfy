@@ -54,7 +54,7 @@ const InfiniteProducts = ({ params }: InfiniteProductsType) => {
 
   return (
     <div className="flex-1 content-container">
-      <ul className="grid grid-cols-2 small:grid-cols-3 medium:grid-cols-4 gap-x-4 gap-y-8 flex-1">
+      <ul className="grid grid-cols-2 small:grid-cols-3 medium:grid-cols-6 gap-x-4 gap-y-8 flex-1">
         {previews.map((p) => (
           <li key={p.id}>
             <ProductPreview {...p} />
@@ -67,19 +67,32 @@ const InfiniteProducts = ({ params }: InfiniteProductsType) => {
               <SkeletonProductPreview />
             </li>
           ))}
-        {isFetchingNextPage &&
+        {!isLoading && !previews.length && (
+          <div>
+            <div className="bg-red-200 text-red-800 p-4 rounded-md shadow-md">
+              <div className="font-bold text-lg mb-2">Error:</div>
+              <p className="mb-2">No se encontraron productos</p>
+              <div className="font-bold text-lg mb-2">Posible solución:</div>
+              <p>
+                Consulte con el personal de administracion o Recarge la pagina
+                con ctrl+W o consulte con su programador{" "}
+              </p>
+            </div>
+          </div>
+        )}
+        {/* {isFetchingNextPage &&
           repeat(getNumberOfSkeletons(data?.pages)).map((index) => (
             <li key={index}>
               <SkeletonProductPreview />
             </li>
-          ))}
+          ))} */}
       </ul>
-      <div
+      {/* <div
         className="py-16 flex justify-center items-center text-small-regular text-gray-700"
         ref={ref}
       >
         <span ref={ref}></span>
-      </div>
+      </div> */}
     </div>
   )
 }
