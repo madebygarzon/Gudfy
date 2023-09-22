@@ -37,15 +37,13 @@ const Nav = () => {
 
   useEffect(() => {
     const detectScrollY = () => {
-      if (window.scrollY > 5) {
+      if (window.scrollY > 10) {
         setIsScrolled(true)
       } else {
         setIsScrolled(false)
       }
     }
-
     window.addEventListener("scroll", detectScrollY)
-
     return () => {
       window.removeEventListener("scroll", detectScrollY)
     }
@@ -108,7 +106,7 @@ const Nav = () => {
         </nav>
         <MobileMenu />
       </header>
-      {!isScrolled ? <NavList /> : <div></div>}
+      {!isScrolled ? <NavList /> : <div className="h-[50px]"></div>}
     </div>
   )
 }
