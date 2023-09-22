@@ -121,7 +121,7 @@ export const fetchProductsList = async ({
   queryParams,
 }: FetchProductListParams) => {
   const { products, count, offset } = await medusaClient.products.list({
-    limit: 12,
+    limit: 6,
     offset: pageParam,
     ...queryParams,
   })
