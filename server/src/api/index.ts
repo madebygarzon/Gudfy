@@ -1,4 +1,4 @@
-import { Router } from "express";
+import { Router, json } from "express";
 import cors from "cors";
 import bodyParser from "body-parser";
 import { authenticate, ConfigModule } from "@medusajs/medusa";
@@ -30,9 +30,9 @@ export default (rootDirectory: string): Router | Router[] => {
   const router = Router();
 
   // Set up root routes for store and admin endpoints, with appropriate CORS settings
-  router.use("/store", cors(storeCorsOptions), bodyParser.json());
+  router.use("/store", cors(storeCorsOptions), bodyParser.json(), json());
   router.use("/admin", cors(adminCorsOptions), bodyParser.json());
-  router.use("/customer",cors(), bodyParser.json());
+  router.use("/customer", cors(), bodyParser.json());
 
   // Add authentication to all admin routes *except* auth and account invite ones
   router.use(/\/admin\/((?!auth)(?!invites).*)/, authenticate());
@@ -45,13 +45,12 @@ export default (rootDirectory: string): Router | Router[] => {
   // Attach these routers to the root routes
   router.use("/store", storeRouter);
   router.use("/admin", adminRouter);
-  router.use("/customer",customerRouter);
+  router.use("/customer", customerRouter);
 
   // Attach custom routes to these routers
   attachStoreRoutes(storeRouter);
   attachAdminRoutes(adminRouter);
   attachCustomerRoutes(customerRouter);
-
 
   return router;
 };
