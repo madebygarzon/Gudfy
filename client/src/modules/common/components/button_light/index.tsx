@@ -21,8 +21,7 @@ const ButtonLigth = ({
         " flex items-center justify-center h-[40px] px-[25px] py-[10px] rounded transition-colors duration-200 disabled:opacity-50",
         {
           "border-[1px] border-white border-solid": variant === "primary",
-          "text-gray-900 bg-transparent border-gray-920 hover:bg-gray-100":
-            variant === "secondary",
+          "border-[1px] border-blue-gf border-solid": variant === "secondary",
         },
         className
       )}

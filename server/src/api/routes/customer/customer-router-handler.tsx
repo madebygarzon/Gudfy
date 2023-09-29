@@ -1,13 +1,7 @@
 import React from "react";
 import { Request, Response } from "express";
+import { useAdminCustomer } from "medusa-react";
 
-
-
-export const recoverPassword = async (
-  req: Request,
-  res: Response
-): Promise<void> => {
-
-    res.status(404).json({ errorMessage:"error"})
-  
+export const Customer = async (req: Request, res: Response): Promise<void> => {
+  res.send();
 };
