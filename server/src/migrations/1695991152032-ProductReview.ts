@@ -1,11 +1,12 @@
 import { MigrationInterface, QueryRunner, TableForeignKey } from "typeorm";
 
-export class ProductReview1674838435739 implements MigrationInterface {
+export class ProductReview1695991152032 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(
       `CREATE TABLE IF NOT EXISTS "product_review" ("id" character varying NOT NULL, 
             "product_id" character varying NOT NULL, 
-            "customer_id" character varying NOT NULL, 
+            "customer_id" character varying NOT NULL,
+            "customer_name" character varying NOT NULL,
             "display_name" character varying NOT NULL, 
             "rating" integer NOT NULL, 
             "content" character varying NOT NULL, 

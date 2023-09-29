@@ -8,18 +8,50 @@ export default class ProductReviewService extends TransactionBaseService {
     super(arguments[0]);
     this.productReviewRepository_ = productReviewRepository;
   }
+  async getStarsProductReviews(product_id) {
+    const productReviewRepository = this.activeManager_.withRepository(
+      this.productReviewRepository_
+    );
+    const calculeStars = await productReviewRepository
+      .createQueryBuilder()
+      .select("rating, COUNT(*) as cantidad")
+      .where({ product_id })
+      .groupBy("rating")
+      .getRawMany();
+    const total = calculeStars.reduce((acumulador, objeto) => {
+      return acumulador + parseInt(objeto.rating);
+    }, 0);
+    const media = total / calculeStars.length;
+    return { dataStars: calculeStars, total, media };
+  }
 
-  async getProductReviews(product_id) {
+  async getProductReviews(product_id, next) {
     /* @ts-ignore */
     const productReviewRepository = this.activeManager_.withRepository(
       this.productReviewRepository_
     );
-    return await productReviewRepository.find({
-      where: {
-        product_id,
-        approved: true,
-      },
-    });
+    if (next) {
+      return await productReviewRepository.find({
+        where: {
+          product_id,
+          approved: true,
+        },
+        order: {
+          created_at: "DESC",
+        },
+        take: 5 * next,
+      });
+    } else {
+      return await productReviewRepository.find({
+        where: {
+          product_id,
+          approved: true,
+        },
+        order: {
+          created_at: "DESC",
+        },
+      });
+    }
   }
 
   async getCustomerProductReviews(customer_id) {
@@ -47,8 +79,22 @@ export default class ProductReviewService extends TransactionBaseService {
     });
   }
 
-  async create(product_id, customer_id, display_name, content, rating) {
-    if (!product_id || !customer_id || !display_name || !content || !rating) {
+  async create(
+    product_id,
+    customer_id,
+    customer_name,
+    display_name,
+    content,
+    rating
+  ) {
+    if (
+      !product_id ||
+      !customer_id ||
+      !customer_name ||
+      !display_name ||
+      !content ||
+      !rating
+    ) {
       throw new Error(
         "Adding product review requires product_id, customer_id, display_name, content, and rating"
       );
@@ -60,6 +106,7 @@ export default class ProductReviewService extends TransactionBaseService {
     const createdReview = productReviewRepository.create({
       product_id,
       customer_id,
+      customer_name,
       display_name,
       content,
       rating,
