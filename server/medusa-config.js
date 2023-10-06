@@ -94,7 +94,7 @@ const plugins = [
 
         store: {
           callbackUrl: `${BACKEND_URL}/store/auth/google/cb`,
-          failureRedirect: `${STORE_CORS}/login`,
+          failureRedirect: `${STORE_CORS}/`,
 
           successRedirect: `${STORE_CORS}/`,
         },
@@ -105,7 +105,7 @@ const plugins = [
 
         admin: {
           callbackUrl: `${BACKEND_URL}/admin/auth/facebook/cb`,
-          failureRedirect: `${ADMIN_CORS}/login`,
+          failureRedirect: `${ADMIN_CORS}/`,
 
           successRedirect: `${ADMIN_CORS}/`,
         },

@@ -19,9 +19,12 @@ export default class ProductReviewService extends TransactionBaseService {
       .groupBy("rating")
       .getRawMany();
     const total = calculeStars.reduce((acumulador, objeto) => {
-      return acumulador + parseInt(objeto.rating);
+      return acumulador + parseInt(objeto.cantidad);
     }, 0);
-    const media = total / calculeStars.length;
+    const media =
+      calculeStars.reduce((acumulador, objeto) => {
+        return acumulador + parseInt(objeto.cantidad) * parseInt(objeto.rating);
+      }, 0) / total;
     return { dataStars: calculeStars, total, media };
   }
 
@@ -116,8 +119,8 @@ export default class ProductReviewService extends TransactionBaseService {
     return productReview;
   }
 
-  async update(id, display_name, content, rating, approved = false) {
-    if (!id || !display_name || !content || !rating) {
+  async update(id_review, display_name, content, rating) {
+    if (!id_review || !display_name || !content || !rating) {
       throw new Error(
         "Updating a product review requires id, display_name, content, rating, and approved"
       );
@@ -126,11 +129,10 @@ export default class ProductReviewService extends TransactionBaseService {
     const productReviewRepository = this.activeManager_.withRepository(
       this.productReviewRepository_
     );
-    const productReview = productReviewRepository.update(id, {
+    const productReview = productReviewRepository.update(id_review, {
       display_name,
       content,
       rating,
-      approved,
     });
     return productReview;
   }
