@@ -66,7 +66,6 @@ const LoginComponente = () => {
       .authenticate(credentials)
       .then(() => {
         refetchCustomer()
-        router.push("/account")
       })
       .catch(handleError)
   })
@@ -81,7 +80,8 @@ const LoginComponente = () => {
 
       <h1 className="text-large-semi  mb-6 text-3xl">Iniciar Sesión</h1>
       <p className="text-center text-base-regular text-gray-700 mb-8">
-        ¿Nuevo usuario? <Link href={"./register"}>Crear una cuenta</Link>.
+        ¿Nuevo usuario? <Link href={"/account/register"}>Crear una cuenta</Link>
+        .
       </p>
       <form
         className="w-full font[400] shadow-xl border-2 rounded-3xl p-12 flex flex-col items-center "

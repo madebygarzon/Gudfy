@@ -1,10 +1,12 @@
 import { Router, json } from "express";
 import customRouteHandler from "./custom-route-handler";
 import postProductReviews from "./post-product-reviews";
+import updateReview from "./update-review";
 import getProductAllReviews from "./get-product-allReviews";
 import getStarsProduct from "./get-stars-product";
 import { authenticate, authenticateCustomer } from "@medusajs/medusa";
 import { wrapHandler } from "@medusajs/medusa";
+import deleteReview from "./delete-review";
 
 // Initialize a custom router
 const router = Router();
@@ -16,9 +18,23 @@ export function attachStoreRoutes(storeRouter: Router) {
   router.get("/products/:id/reviews", wrapHandler(getProductAllReviews));
   router.get("/products/:id/stars", wrapHandler(getStarsProduct));
 
+  //create new review
   router.post(
     "/products/:id/reviews",
     authenticateCustomer(),
     wrapHandler(postProductReviews)
+  );
+
+  //update new review
+  router.post(
+    "/reviews/:id",
+    authenticateCustomer(),
+    wrapHandler(updateReview)
+  );
+
+  router.delete(
+    "/reviews/:id",
+    authenticateCustomer(),
+    wrapHandler(deleteReview)
   );
 }
