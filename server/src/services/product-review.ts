@@ -15,7 +15,7 @@ export default class ProductReviewService extends TransactionBaseService {
     const calculeStars = await productReviewRepository
       .createQueryBuilder()
       .select("rating, COUNT(*) as cantidad")
-      .where({ product_id })
+      .where({ product_id, approved: true })
       .groupBy("rating")
       .getRawMany();
     const total = calculeStars.reduce((acumulador, objeto) => {
@@ -113,7 +113,7 @@ export default class ProductReviewService extends TransactionBaseService {
       display_name,
       content,
       rating,
-      approved: true,
+      approved: false,
     });
     const productReview = await productReviewRepository.save(createdReview);
     return productReview;
@@ -133,6 +133,7 @@ export default class ProductReviewService extends TransactionBaseService {
       display_name,
       content,
       rating,
+      approved: false,
     });
     return productReview;
   }
