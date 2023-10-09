@@ -23,7 +23,6 @@ const StarsReview: React.FC<props> = ({ id, review }) => {
       })
       .then((e) => {
         setDataStars(e.data)
-        console.log(e.data)
       })
       .catch((e) => {})
     // eslint-disable-next-line react-hooks/exhaustive-deps
