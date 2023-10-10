@@ -9,6 +9,7 @@ import React, { useRef } from "react"
 import ImageGallery from "../components/image-gallary"
 import MobileActions from "../components/mobile-actions"
 import { PricedProduct } from "@medusajs/medusa/dist/types/pricing"
+import ReviewProduct from "../components/product-review"
 
 type ProductTemplateProps = {
   product: PricedProduct
@@ -22,8 +23,9 @@ const ProductTemplate: React.FC<ProductTemplateProps> = ({ product }) => {
   return (
     <ProductProvider product={product}>
       <div className="content-container flex flex-col small:flex-row small:items-start py-6 relative">
-        <div className="flex flex-col gap-y-8 w-full">
+        <div className="flex flex-col gap-y-8 w-full pr-9">
           <ImageGallery images={product?.images || []} />
+          <ReviewProduct product={product} />
         </div>
         <div
           className="small:sticky small:top-20 w-full py-8 small:py-0 small:max-w-[344px] medium:max-w-[400px] flex flex-col gap-y-12"

@@ -28,6 +28,9 @@ export class ProductReview extends BaseEntity {
   customer: Customer;
 
   @Column({ type: "varchar", nullable: false })
+  customer_name: string;
+
+  @Column({ type: "varchar", nullable: false })
   display_name: string;
 
   @Column({ type: "int" })

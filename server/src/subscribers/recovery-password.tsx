@@ -1,4 +1,3 @@
-import { recoverPassword } from "src/api/routes/customer/customer-router-handler";
 import { EventBusService } from "@medusajs/medusa";
 import { render } from "@react-email/render";
 import sendgrid from "@sendgrid/mail";
