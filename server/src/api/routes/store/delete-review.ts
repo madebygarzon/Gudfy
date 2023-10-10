@@ -1,11 +1,9 @@
 import { Request, Response } from "express";
 
 export default async (req: Request, res: Response): Promise<void> => {
-  const { id, next } = req.query;
+  console.log(req.params);
   const productReviewService = req.scope.resolve("productReviewService");
-  await productReviewService
-    .getProductReviews(id, next)
-    .then((product_reviews) => {
-      return res.json({ product_reviews });
-    });
+  productReviewService.delete(req.params.id).then((e) => {
+    return res.json({ success: true, data: e });
+  });
 };

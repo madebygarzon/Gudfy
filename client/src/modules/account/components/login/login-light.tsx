@@ -10,14 +10,13 @@ import { FieldValues, useForm } from "react-hook-form"
 import { Checkbox } from "@nextui-org/checkbox"
 import Link from "next/link"
 import RecoverAccount from "../recover-account"
-import SocialButtons from "@modules/common/components/button_socials"
 
 interface SignInCredentials extends FieldValues {
   email: string
   password: string
 }
 
-const LoginComponente = () => {
+const LoginLight = () => {
   const { loginView, refetchCustomer } = useAccount()
   const [_, setCurrentView] = loginView
   const [authError, setAuthError] = useState<string | undefined>(undefined)
@@ -126,12 +125,10 @@ const LoginComponente = () => {
           <Button className=" mt-6 rounded-[5px]">Accerder</Button>
         </div>
       </form>
-      <p className="my-5 font[900] text-sm">O ingresa con:</p>
-      <SocialButtons />
     </div>
   ) : (
     <RecoverAccount setIsRecovery={setIsRecovery} />
   )
 }
 
-export default LoginComponente
+export default LoginLight
