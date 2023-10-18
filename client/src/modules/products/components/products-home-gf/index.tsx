@@ -1,5 +1,5 @@
 "use client"
-import { fetchProductsList } from "@lib/data"
+import { fetchProductsListTab } from "@lib/data"
 import usePreviews from "@lib/hooks/use-previews"
 import getNumberOfSkeletons from "@lib/util/get-number-of-skeletons"
 import repeat from "@lib/util/repeat"
@@ -21,7 +21,9 @@ const Recommendedproduct = ({ params }: InfiniteProductsType) => {
   const router = useRouter()
   const { collections } = useCollections()
   const collectionIds = params.collection_id || []
+
   const handlerSteam = () => {
+    // opcion ver mas para cada categoria seleccionada
     collections?.filter((c) => {
       if (c.id === collectionIds[0]) {
         return router.push(`/collections/${c.handle}`)
@@ -52,7 +54,7 @@ const Recommendedproduct = ({ params }: InfiniteProductsType) => {
   const { data, hasNextPage, fetchNextPage, isLoading, isFetchingNextPage } =
     useInfiniteQuery(
       [`infinite-products-store`, queryParams, cart],
-      ({ pageParam }) => fetchProductsList({ pageParam, queryParams }),
+      ({ pageParam }) => fetchProductsListTab({ pageParam, queryParams }),
       {
         getNextPageParam: (lastPage) => lastPage.nextPage,
       }
