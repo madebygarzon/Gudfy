@@ -50,7 +50,7 @@ const ProgressStars: React.FC<props> = ({ stars, total }) => {
             {a.cantidad === "0" ? (
               `${a.cantidad}%`
             ) : (
-              <span className="text-[14 px] text-right w-[10%] ">{`${handlerpercentage(
+              <span className="text-[14 px] text-right  ">{`${handlerpercentage(
                 a.cantidad
               )}%`}</span>
             )}
