@@ -22,7 +22,8 @@
     "seed": "cross-env medusa seed -f ./data/seed.json",
     "start": "cross-env npm run build && medusa start",
     "start:custom": "cross-env npm run build && node --preserve-symlinks --trace-warnings index.js",
-    "dev": "cross-env npm run build:server && medusa develop"
+    "dev": "cross-env npm run build:server && medusa develop",
+    "e2e": "jest --config ./e2e.json --verbose --detectOpenHandles"
   },
   "dependencies": {
     "@medusajs/admin": "7.0.0",
@@ -53,7 +54,7 @@
     "medusa-plugin-sendgrid": "^1.3.11",
     "node-fetch": "^3.3.2",
     "prism-react-renderer": "^2.0.4",
-    "react-email": "^1.9.4",
+    "react-email": "^1.9.5",
     "typeorm": "^0.3.17",
     "zod": "^3.22.2"
   },
@@ -69,9 +70,10 @@
     "babel-preset-medusa-package": "^1.1.13",
     "cross-env": "^7.0.3",
     "eslint": "^6.8.0",
-    "jest": "^27.3.1",
+    "jest": "^27.5.1",
     "mongoose": "^5.13.14",
     "rimraf": "^3.0.2",
+    "supertest": "^6.3.3",
     "ts-jest": "^27.0.7",
     "ts-loader": "^9.2.6",
     "typescript": "^4.5.2"
