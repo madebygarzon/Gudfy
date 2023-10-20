@@ -48,7 +48,7 @@
     "cypress/integration/product.spec.js",
     "cypress/plugins/index.js",
     ".next/types/**/*.ts"
-  ],
+, "e2e/sum.e2e.js"  ],
   "exclude": [
     "node_modules",
     ".next",

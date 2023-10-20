@@ -45,3 +45,6 @@ node_modules
 
 .yarn
 .swc
+
+/e2e
+e2e.json
