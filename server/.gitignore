@@ -24,3 +24,7 @@ build
 !.yarn/releases
 !.yarn/sdks
 !.yarn/versions
+
+
+/e2e
+e2e.json
