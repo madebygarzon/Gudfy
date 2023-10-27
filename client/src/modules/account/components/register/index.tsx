@@ -6,10 +6,11 @@ import Input from "@modules/common/components/input"
 import Spinner from "@modules/common/icons/spinner"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { FieldValues, useForm } from "react-hook-form"
 import SocialButtons from "@modules/common/components/button_socials"
-
+import Image from "next/image"
+import NumberCountry from "@modules/common/components/select_country/selectNumberCountry"
 interface RegisterCredentials extends FieldValues {
   first_name: string
   last_name: string
@@ -19,8 +20,9 @@ interface RegisterCredentials extends FieldValues {
 }
 
 const Register = () => {
-  //const { loginView, refetchCustomer } = useAccount()
+  const { refetchCustomer } = useAccount()
   const [authError, setAuthError] = useState<string | undefined>(undefined)
+  const [codeflag, setcodeFlag] = useState<number>(57)
   const router = useRouter()
   const handleError = (e: Error) => {
     setAuthError("Algo salio mal")
@@ -40,7 +42,7 @@ const Register = () => {
       last_name: /^[a-zA-Z\s]+$/,
       email: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
       password: /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/,
-      phone: /^[0-9]{10,}$/,
+      phone: /^[0-9]+$/,
     }
 
     for (const campo in validaciones) {
@@ -76,22 +78,28 @@ const Register = () => {
             case "phone":
               setError("phone", {
                 type: "validate",
-                message: "Numero no valido ",
+                message: "Numero no valido",
               })
               break
+            default:
+              true
           }
         }
       } else {
         campo === "phone" ? (isValid = true) : (isValid = false)
       }
     }
-
     return isValid
   }
 
   const onSubmit = handleSubmit(async (credentials) => {
-    const isValid = await handlerErros(credentials)
+    const isValid = await handlerErros(credentials) // rectifica si hay errores
     if (!isValid) return
+    if (credentials.phone)
+      credentials = {
+        ...credentials,
+        phone: `(+${codeflag}) ${credentials.phone}`,
+      }
     await medusaClient.auth.exists(credentials.email).then(async (e) => {
       if (e.exists) {
         setError("email", {
@@ -102,6 +110,7 @@ const Register = () => {
         await medusaClient.customers
           .create(credentials)
           .then(() => {
+            refetchCustomer()
             router.push("/account")
           })
           .catch(handleError)
@@ -127,28 +136,38 @@ const Register = () => {
         <div className="flex flex-col w-full gap-y-2">
           <Input
             label="Nombre"
-            {...register("first_name", { required: "First name is required" })}
+            {...register("first_name", { required: "Primer nombre requerido" })}
             autoComplete="given-name"
             errors={errors}
           />
           <Input
             label="Apellido"
-            {...register("last_name", { required: "Last name is required" })}
+            {...register("last_name", { required: "Segundo nombre requerido" })}
             autoComplete="family-name"
             errors={errors}
           />
           <Input
             label="Correo"
-            {...register("email", { required: "Email is required" })}
+            {...register("email", { required: "Correo requerido" })}
             autoComplete="email"
             errors={errors}
           />
-          <Input
-            label="Telefono"
-            {...register("phone")}
-            autoComplete="tel"
-            errors={errors}
-          />
+          <div className="flex items-center ">
+            <div className="w-[25%]">
+              <NumberCountry setCodeFlag={setcodeFlag} />
+            </div>
+            <div className="w-[75%]">
+              <Input
+                contentStar={`(+${codeflag})`}
+                label="Telefono"
+                {...register("phone")}
+                autoComplete="phone"
+                errors={errors}
+                required={false}
+              />
+            </div>
+          </div>
+
           <Input
             label="Contraseña"
             {...register("password", {
@@ -172,7 +191,9 @@ const Register = () => {
             los términos y condiciones.
           </Link>
         </span>
-        <Button className="mt-5 rounded-[5px]">Entrar</Button>
+        <Button type="submit" className="mt-5 rounded-[5px]">
+          Crear
+        </Button>
       </form>
       <p className="my-5 font[900] text-sm">O ingresa con:</p>
       <SocialButtons />

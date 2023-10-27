@@ -13,10 +13,14 @@ type InputProps = Omit<
   errors?: Record<string, unknown>
   touched?: Record<string, unknown>
   name: string
+  contentStar?: string
 }
 
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
-  ({ type, name, label, errors, touched, required, ...props }, ref) => {
+  (
+    { type, name, label, errors, touched, required, contentStar, ...props },
+    ref
+  ) => {
     const inputRef = React.useRef<HTMLInputElement>(null)
     const [showPassword, setShowPassword] = useState(false)
     const [inputType, setInputType] = useState(type)
@@ -43,14 +47,24 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
             name={name}
             placeholder=" "
             className={clsx(
-              "pt-4 pb-1 block w-full px-4 mt-0 bg-transparent border-2 rounded-[30px] appearance-none focus:outline-none focus:ring-0 focus:border-gray-400 border-gray-200",
+              "pt-4  pb-1 block w-full px-4 mt-0 bg-transparent border-2 rounded-[30px] appearance-none focus:outline-none focus:ring-0 focus:border-gray-400 border-gray-200",
               {
                 "border-rose-500 focus:border-rose-500": hasError,
+                "pl-16": contentStar,
               }
             )}
             {...props}
             ref={inputRef}
           />
+          {contentStar && (
+            <span
+              className={clsx(" pl-2 absolute top-3  text-gray-500", {
+                "!text-rose-500": hasError,
+              })}
+            >
+              {contentStar}
+            </span>
+          )}
           <label
             htmlFor={name}
             onClick={() => inputRef.current?.focus()}
@@ -58,6 +72,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
               "mx-3 px-1 transition-all absolute duration-300 top-3 -z-1 origin-0 text-gray-500",
               {
                 "!text-rose-500": hasError,
+                "pl-14": contentStar,
               }
             )}
           >

@@ -11,6 +11,7 @@ import { Checkbox } from "@nextui-org/checkbox"
 import Link from "next/link"
 import RecoverAccount from "../recover-account"
 import SocialButtons from "@modules/common/components/button_socials"
+import { usePathname } from "next/navigation"
 
 interface SignInCredentials extends FieldValues {
   email: string
@@ -18,8 +19,8 @@ interface SignInCredentials extends FieldValues {
 }
 
 const LoginComponente = () => {
-  const { loginView, refetchCustomer } = useAccount()
-  const [_, setCurrentView] = loginView
+  const { refetchCustomer } = useAccount()
+  const Pathname = usePathname()
   const [authError, setAuthError] = useState<string | undefined>(undefined)
   const router = useRouter()
   const [isRecovery, setIsRecovery] = useState<boolean>(false)
@@ -66,6 +67,7 @@ const LoginComponente = () => {
       .authenticate(credentials)
       .then(() => {
         refetchCustomer()
+        Pathname === "/account/login" ? router.push("/account") : ""
       })
       .catch(handleError)
   })
