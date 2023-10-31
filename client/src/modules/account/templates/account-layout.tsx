@@ -5,9 +5,11 @@ import UnderlineLink from "@modules/common/components/underline-link"
 import Spinner from "@modules/common/icons/spinner"
 import React, { useEffect } from "react"
 import AccountNav from "../components/account-nav"
+import Image from "next/image"
 
 const AccountLayout: React.FC = ({ children }) => {
-  const { customer, retrievingCustomer, checkSession } = useAccount()
+  const { customer, retrievingCustomer, checkSession, handleLogout } =
+    useAccount()
 
   useEffect(() => {
     checkSession()
@@ -22,26 +24,31 @@ const AccountLayout: React.FC = ({ children }) => {
   }
 
   return (
-    <div className="flex-1 small:py-12 small:bg-gray-50">
-      <div className="flex-1 h-full max-w-5xl mx-auto bg-white flex flex-col">
-        <div className="grid grid-cols-1 small:grid-cols-[240px_1fr] small:px-8 py-6 small:py-12 ">
-          <div>
+    <div className="flex-1  small:bg-gray-50 ">
+      <div className="flex-1 h-full w-full  bg-white flex flex-col ">
+        <div className="grid grid-cols-1 small:grid-cols-[240px_1fr]   ">
+          <div className="bg-[#1F0054] py-10 flex h-[80vh] flex-col justify-between">
             <AccountNav />
+            <div className="flex justify-center">
+              <button
+                className="flex bg-white text-[#1F0054] rounded-[5px] py-2 px-3 min-w-[165px] gap-x-2 items-center justify-center font-bold"
+                type="button"
+                onClick={handleLogout}
+              >
+                <Image
+                  alt=""
+                  src={"/account/cerrarSesion.svg"}
+                  width={30}
+                  height={30}
+                />
+                Cerrar sesión
+              </button>
+            </div>
           </div>
-          <div className="flex-1">{children}</div>
-        </div>
-        <div className="flex flex-col small:flex-row items-end justify-between small:border-t border-gray-200 px-8 py-12 gap-x-8">
-          <div>
-            <h3 className="text-xl-semi mb-4">Got questions?</h3>
-            <span className="text-small-regular">
-              You can find frequently asked questions and answers on our
-              customer service page.
-            </span>
-          </div>
-          <div>
-            <UnderlineLink href="/customer-service">
-              Customer Service
-            </UnderlineLink>
+          <div className=" m-2 max-h-[70vh] overflow-y-auto">
+            <div className="flex p-10  justify-center  max-w-[1400px]  min-w-[300px]  ">
+              {children}
+            </div>
           </div>
         </div>
       </div>
