@@ -1,11 +1,10 @@
 "use client"
 
 import { useAccount } from "@lib/context/account-context"
-import UnderlineLink from "@modules/common/components/underline-link"
 import Spinner from "@modules/common/icons/spinner"
 import React, { useEffect } from "react"
 import AccountNav from "../components/account-nav"
-import Image from "next/image"
+import Logout from "@modules/common/icons/logout"
 
 const AccountLayout: React.FC = ({ children }) => {
   const { customer, retrievingCustomer, checkSession, handleLogout } =
@@ -35,18 +34,13 @@ const AccountLayout: React.FC = ({ children }) => {
                 type="button"
                 onClick={handleLogout}
               >
-                <Image
-                  alt=""
-                  src={"/account/cerrarSesion.svg"}
-                  width={30}
-                  height={30}
-                />
+                <Logout size={30} />
                 Cerrar sesión
               </button>
             </div>
           </div>
-          <div className=" m-2 max-h-[70vh] overflow-y-auto">
-            <div className="flex p-10  justify-center  max-w-[1400px]  min-w-[300px]  ">
+          <div className=" m-2 max-h-[77vh] overflow-y-auto">
+            <div className="flex p-5 justify-center items-center h-full min-w-[300px]  ">
               {children}
             </div>
           </div>
