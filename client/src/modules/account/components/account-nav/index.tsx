@@ -51,4 +51,10 @@ const AccountNav = () => {
   )
 }
 
-export default AccountNav
+type AccountNavLinkProps = {
+  href: string
+  route: string
+  children: React.ReactNode
+}
+
+
