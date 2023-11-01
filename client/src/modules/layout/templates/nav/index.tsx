@@ -16,7 +16,7 @@ import NavList from "@modules/layout/components/nav-list"
 
 const Nav = () => {
   const { customer } = useAccount()
-  const [isScrolled, setIsScrolled] = useState<boolean>()
+  const [isScrolled, setIsScrolled] = useState<boolean>(true)
   const propsDropDown = {
     name: "Cuenta",
     items: [
@@ -37,17 +37,17 @@ const Nav = () => {
 
   useEffect(() => {
     const detectScrollY = () => {
-      if (window.scrollY > 10) {
-        setIsScrolled(true)
-      } else {
+      if (window.scrollY > 0 && isScrolled) {
         setIsScrolled(false)
+      } else if (window.scrollY === 0 && !isScrolled) {
+        setIsScrolled(true)
       }
     }
     window.addEventListener("scroll", detectScrollY)
     return () => {
       window.removeEventListener("scroll", detectScrollY)
     }
-  }, [])
+  }, [isScrolled])
 
   const { toggle } = useMobileMenu()
 
@@ -106,7 +106,7 @@ const Nav = () => {
         </nav>
         <MobileMenu />
       </header>
-      {!isScrolled ? <NavList /> : <div className="h-[50px]"></div>}
+      {isScrolled ? <NavList /> : <div className="h-[1px] bg-blue-gf"></div>}
     </div>
   )
 }
