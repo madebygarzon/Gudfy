@@ -4,7 +4,7 @@ import React from "react"
 
 type ButtonProps = {
   isLoading?: boolean
-  variant?: "primary" | "secondary"
+  variant?: "primary" | "secondary" | "tertiary"
 } & React.ButtonHTMLAttributes<HTMLButtonElement>
 
 const ButtonLigth = ({
@@ -22,6 +22,7 @@ const ButtonLigth = ({
         {
           "border-[1px] border-white border-solid": variant === "primary",
           "border-[1px] border-blue-gf border-solid": variant === "secondary",
+          "border-[1px] border-[#9B48ED] border-solid": variant === "tertiary",
         },
         className
       )}
