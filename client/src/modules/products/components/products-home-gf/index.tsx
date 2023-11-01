@@ -92,7 +92,7 @@ const Recommendedproduct = ({ params }: InfiniteProductsType) => {
               <div className="font-bold text-lg mb-2">Posible solución:</div>
               <p>
                 Consulte con el personal de administracion o Recarge la pagina
-                con ctrl+W o consulte con su programador{" "}
+                con ctrl+r o consulte con su programador{" "}
               </p>
             </div>
           </div>
