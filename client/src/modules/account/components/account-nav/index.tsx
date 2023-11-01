@@ -1,12 +1,13 @@
 import { useAccount } from "@lib/context/account-context"
-import ChevronDown from "@modules/common/icons/chevron-down"
+import Button from "@modules/common/components/button"
+import Icon from "@modules/common/icons/coin"
 import clsx from "clsx"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
+import Cart from "@modules/common/icons/cart"
 
 const AccountNav = () => {
   const route = usePathname()
-  const { handleLogout } = useAccount()
 
   return (
     <div>
@@ -22,42 +23,25 @@ const AccountNav = () => {
           </Link>
         )}
       </div>
-      <div className="hidden small:block">
+      <div className=" hidden small:block ">
         <div>
-          <div className="py-4">
-            <h3 className="text-base-semi">Account</h3>
-          </div>
-          <div className="text-base-regular">
-            <ul className="flex mb-0 justify-start items-start flex-col gap-y-4">
+          <div className="text-base h-full flex flex-col justify-start items-center">
+            <ul className="mb-auto flex flex-col gap-y-4">
               <li>
-                <AccountNavLink href="/account" route={route!}>
-                  Overview
-                </AccountNavLink>
+                <Button
+                  variant="selected"
+                  href="/account/profile"
+                  route={route!}
+                >
+                  <Cart size={30} />
+                  Comprador
+                </Button>
               </li>
               <li>
-                <AccountNavLink href="/account/profile" route={route!}>
-                  Profile
-                </AccountNavLink>
-              </li>
-              <li>
-                <AccountNavLink href="/account/addresses" route={route!}>
-                  Addresses
-                </AccountNavLink>
-              </li>
-              <li>
-                <AccountNavLink href="/account/orders" route={route!}>
-                  Orders
-                </AccountNavLink>
-              </li>
-              <li>
-                <AccountNavLink href="/account/supplier" route={route!}>
-                  Supplier
-                </AccountNavLink>
-              </li>
-              <li className="text-grey-700">
-                <button type="button" onClick={handleLogout}>
-                  Log out
-                </button>
+                <Button variant="selected" href="/account" route={route!}>
+                  <Icon size={30} />
+                  Vendedor
+                </Button>
               </li>
             </ul>
           </div>
@@ -71,20 +55,6 @@ type AccountNavLinkProps = {
   href: string
   route: string
   children: React.ReactNode
-}
-
-const AccountNavLink = ({ href, route, children }: AccountNavLinkProps) => {
-  const active = route === href
-  return (
-    <Link
-      href={href}
-      className={clsx("text-gray-700", {
-        "text-gray-900 font-semibold": active,
-      })}
-    >
-      <>{children}</>
-    </Link>
-  )
 }
 
 export default AccountNav

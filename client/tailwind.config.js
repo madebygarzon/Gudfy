@@ -1,4 +1,4 @@
-const {nextui} = require("@nextui-org/react");
+const { nextui } = require("@nextui-org/react")
 
 module.exports = {
   content: [
@@ -8,7 +8,7 @@ module.exports = {
   theme: {
     extend: {
       borderRadius: {
-        '30': '30px',
+        30: "30px",
       },
       transitionProperty: {
         width: "width",
@@ -44,6 +44,7 @@ module.exports = {
       },
       boxShadow: {
         gf: "0px 0px 10px 0px rgba(0, 0, 0, 0.68)",
+        card: "1px 1px 6px 1px rgba(0,0,0,0.3)",
       },
     },
   },
