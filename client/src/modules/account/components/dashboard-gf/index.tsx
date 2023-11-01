@@ -6,6 +6,7 @@ import ButtonLigth from "@modules/common/components/button_light"
 import Cart from "@modules/common/icons/cart"
 import Support from "@modules/common/icons/support"
 import Wallet from "@modules/common/icons/wallet"
+import Image from "next/image"
 
 type DashboardProps = {
   orders?: Order[]
@@ -54,10 +55,11 @@ const Dashboard = ({ orders, customer }: DashboardProps) => {
         <div className="min-h-[200px] p-1">
           <div className=" py-5 px-1  h-full shadow-card rounded-[10px] items-center  justify-center">
             <div className="flex items-center justify-center">
-              <Cart
+              {/* <Cart
                 size={70}
                 className="p-1 border-5 border-[#9B48ED]  rounded-full "
-              />
+              /> */}
+              <Image src="/account/cart.svg" alt="" width={100} height={100} />
             </div>
             <div className="flex flex-col items-center">
               <h3 className="text-2xl font-bold ">Compras</h3>
@@ -92,9 +94,11 @@ const Dashboard = ({ orders, customer }: DashboardProps) => {
         <div className="min-h-[200px] p-1">
           <div className=" py-5 px-1  h-full shadow-card rounded-[10px] items-center  justify-center">
             <div className="flex justify-center">
-              <Wallet
-                size={70}
-                className="p-1 border-5 border-[#9B48ED]  rounded-full "
+              <Image
+                alt="wallet_gudfy"
+                src="/account/wallet.svg"
+                width={80}
+                height={80}
               />
             </div>
             <div className="flex flex-col items-center">
