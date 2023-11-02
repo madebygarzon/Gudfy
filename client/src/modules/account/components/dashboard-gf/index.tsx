@@ -9,7 +9,6 @@ import Support from "@modules/common/icons/support"
 import Wallet from "@modules/common/icons/wallet"
 import Image from "next/image"
 
-
 type DashboardProps = {
   orders?: Order[]
   customer?: Omit<Customer, "password_hash">
@@ -26,7 +25,6 @@ const Dashboard = ({ orders, customer }: DashboardProps) => {
       </div>
 
       <div className=" w-full grid grid-cols-3 gap-2 py-1  justify-center">
-
         <div className="  row-span-2 ">
           <div className=" flex flex-col p-5 h-full shadow-card items-center justify-center rounded-[10px] ">
             <Avatar
@@ -42,71 +40,74 @@ const Dashboard = ({ orders, customer }: DashboardProps) => {
         <div className="min-h-[200px] p-1">
           <div className=" py-5 px-1  h-full shadow-card rounded-[10px] items-center  justify-center">
             <div className="flex justify-center">
-              <User
-                size={70}
-                className="p-1 border-5 border-[#9B48ED]  rounded-full "
+              <Image
+                alt="user_gudfy"
+                src="/account/user.svg"
+                width={100}
+                height={100}
               />
             </div>
             <div className="flex flex-col items-center">
               <h3 className="text-2xl font-bold ">Perfil</h3>
 
               <p className="text-sm text-center">Edita y completa tu perfil</p>
-              <ButtonLigth variant="tertiary" className="text-[#9B48ED] mt-3">
-                Ir a perfil
-
-              </ButtonLigth>
+              <Link href={"/account/profile"}>
+                <ButtonLigth variant="tertiary" className="text-[#9B48ED] mt-3">
+                  Ver mas
+                </ButtonLigth>
+              </Link>
             </div>
           </div>
         </div>
         <div className="min-h-[200px] p-1">
           <div className=" py-5 px-1  h-full shadow-card rounded-[10px] items-center  justify-center">
-
             <div className="flex items-center justify-center">
-              {/* <Cart
-                size={70}
-                className="p-1 border-5 border-[#9B48ED]  rounded-full "
-              /> */}
-              <Image src="/account/cart.svg" alt="" width={100} height={100} />
+              <Image
+                alt="sales_gudfy"
+                src="/account/cart.svg"
+                width={100}
+                height={100}
+              />
             </div>
             <div className="flex flex-col items-center">
               <h3 className="text-2xl font-bold ">Compras</h3>
               <p className="text-sm text-center">
                 Encuentra tu listado de ordenes
               </p>
-              <ButtonLigth variant="tertiary" className="text-[#9B48ED] mt-3">
-                Ir a compras
-
-              </ButtonLigth>
+              <Link href={"/account/orders"}>
+                <ButtonLigth variant="tertiary" className="text-[#9B48ED] mt-3">
+                  Ver mas
+                </ButtonLigth>
+              </Link>
             </div>
           </div>
         </div>
         <div className="min-h-[200px] p-1">
           <div className=" py-5 px-1  h-full shadow-card rounded-[10px] items-center  justify-center">
             <div className="flex justify-center">
-
-              <Support
-
-                size={70}
-                className="p-1 border-5 border-[#9B48ED]  rounded-full "
+              <Image
+                alt="support_gudfy"
+                src="/account/support.svg"
+                width={100}
+                height={100}
               />
             </div>
             <div className="flex flex-col items-center">
-
-              <h3 className="text-2xl font-bold ">Asistencia</h3>
+              <h3 className="text-2xl font-bold ">Soporte</h3>
               <p className="text-sm text-center">
                 ¿Tienes alguna pregunta? ¡Envíanos un mensaje!
               </p>
-              <ButtonLigth variant="tertiary" className="text-[#9B48ED] mt-3">
-                Ir a Asistencia
-
-              </ButtonLigth>
+              <Link href={"/account/support"}>
+                <ButtonLigth variant="tertiary" className="text-[#9B48ED] mt-3">
+                  Ver mas
+                </ButtonLigth>
+              </Link>
             </div>
           </div>
         </div>
         <div className="min-h-[200px] p-1">
           <div className=" py-5 px-1  h-full shadow-card rounded-[10px] items-center  justify-center">
             <div className="flex justify-center">
-
               <Image
                 alt="wallet_gudfy"
                 src="/account/wallet.svg"
@@ -120,11 +121,40 @@ const Dashboard = ({ orders, customer }: DashboardProps) => {
                 Ten control de tu billetera digital
               </p>
               <ButtonLigth variant="tertiary" className="text-[#9B48ED] mt-3">
-                Ir a wallet
-
+                Ver mas
               </ButtonLigth>
             </div>
           </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+type ButtonNavLinkProps = {
+  srcImage: string
+  title: string
+  description: string
+  textbutton: string
+}
+function ButtonNavLink<ButtonNavLinkProps>() {
+  return (
+    <div className="min-h-[200px] p-1">
+      <div className=" py-5 px-1  h-full shadow-card rounded-[10px] items-center  justify-center">
+        <div className="flex justify-center">
+          <Image
+            alt="user_gudfy"
+            src="/account/user.svg"
+            width={100}
+            height={100}
+          />
+        </div>
+        <div className="flex flex-col items-center">
+          <h3 className="text-2xl font-bold ">Perfil</h3>
+
+          <p className="text-sm text-center">Edita y completa tu perfil</p>
+          <ButtonLigth variant="tertiary" className="text-[#9B48ED] mt-3">
+            Ver mas
+          </ButtonLigth>
         </div>
       </div>
     </div>
