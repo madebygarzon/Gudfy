@@ -26,7 +26,12 @@ const Dashboard = ({ orders, customer }: DashboardProps) => {
 
       <div className=" w-full grid grid-cols-3 gap-2 py-1  justify-center">
         <div className="  row-span-2 ">
-          <div className=" flex flex-col p-5 h-full shadow-card items-center justify-center rounded-[10px] ">
+          <div className=" flex flex-col relative p-5 h-full shadow-card items-center justify-center rounded-[10px] ">
+            <div className="flex  absolute top-2 right-2 items-end gap-x-2 ">
+              <span className="text-sm leading-none text-gray-400 uppercase">
+                {`${getProfileCompletion(customer)}% completado`}
+              </span>
+            </div>
             <Avatar
               src="https://i.pravatar.cc/150?u=a04258114e29026708c"
               className="w-30 h-30 text-large border-solid border-5 border-[#9B48ED]"
@@ -34,7 +39,12 @@ const Dashboard = ({ orders, customer }: DashboardProps) => {
             <p className="text-xl-semi capitalize">
               {customer?.first_name} {customer?.last_name}
             </p>
-            <span className="font-semibold">{customer?.email}</span>
+            <span className="font-semibold text-gray-500">
+              {customer?.email}
+            </span>
+            <div className="flex text-gray-400 text-xs mt-[10%]">
+              <Cart size={16} /> <span>{`compras: ${orders?.length}`}</span>
+            </div>
           </div>
         </div>
         <div className="min-h-[200px] p-1">
@@ -159,5 +169,31 @@ function ButtonNavLink<ButtonNavLinkProps>() {
       </div>
     </div>
   )
+}
+
+const getProfileCompletion = (customer?: Omit<Customer, "password_hash">) => {
+  let count = 0
+
+  if (!customer) {
+    return 0
+  }
+
+  if (customer.email) {
+    count++
+  }
+
+  if (customer.first_name && customer.last_name) {
+    count++
+  }
+
+  if (customer.phone) {
+    count++
+  }
+
+  if (customer.billing_address) {
+    count++
+  }
+
+  return (count / 4) * 100
 }
 export default Dashboard
