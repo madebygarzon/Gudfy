@@ -72,7 +72,7 @@ const ProfileName: React.FC<MyInformationProps> = ({ customer }) => {
   return (
     <form onSubmit={handleSubmit(updateName)} className="w-full">
       <AccountInfo
-        label="Name"
+        label="Nombre"
         currentInfo={`${customer.first_name} ${customer.last_name}`}
         isLoading={isLoading}
         isSuccess={isSuccess}
@@ -81,7 +81,7 @@ const ProfileName: React.FC<MyInformationProps> = ({ customer }) => {
       >
         <div className="grid grid-cols-2 gap-x-4">
           <Input
-            label="First name"
+            label="Primer Nombre"
             {...register("first_name", {
               required: true,
             })}
@@ -89,7 +89,7 @@ const ProfileName: React.FC<MyInformationProps> = ({ customer }) => {
             errors={errors}
           />
           <Input
-            label="Last name"
+            label="Segundo Nombre"
             {...register("last_name", { required: true })}
             defaultValue={lastName}
             errors={errors}
