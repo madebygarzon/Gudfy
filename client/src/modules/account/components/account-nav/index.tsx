@@ -28,17 +28,17 @@ const AccountNav = () => {
           <div className="text-base h-full flex flex-col justify-start items-center">
             <ul className="mb-auto flex flex-col gap-y-4">
               <li>
-                <Button
-                  variant="selected"
-                  href="/account/profile"
-                  route={route!}
-                >
+                <Button variant="selected" href="/account" route={route!}>
                   <Cart size={30} />
                   Comprador
                 </Button>
               </li>
               <li>
-                <Button variant="selected" href="/account" route={route!}>
+                <Button
+                  variant="selected"
+                  href="/account/seller"
+                  route={route!}
+                >
                   <Icon size={30} />
                   Vendedor
                 </Button>
@@ -50,7 +50,5 @@ const AccountNav = () => {
     </div>
   )
 }
-
-export default AccountNav;
-
+export default AccountNav
 
