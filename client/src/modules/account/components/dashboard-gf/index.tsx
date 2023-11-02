@@ -9,7 +9,6 @@ import Support from "@modules/common/icons/support"
 import Wallet from "@modules/common/icons/wallet"
 import Image from "next/image"
 
-
 type DashboardProps = {
   orders?: Order[]
   customer?: Omit<Customer, "password_hash">
@@ -26,9 +25,13 @@ const Dashboard = ({ orders, customer }: DashboardProps) => {
       </div>
 
       <div className=" w-full grid grid-cols-3 gap-2 py-1  justify-center">
-
         <div className="  row-span-2 ">
-          <div className=" flex flex-col p-5 h-full shadow-card items-center justify-center rounded-[10px] ">
+          <div className=" flex flex-col relative p-5 h-full shadow-card items-center justify-center rounded-[10px] ">
+            <div className="flex  absolute top-2 right-2 items-end gap-x-2 ">
+              <span className="text-sm leading-none text-gray-400 uppercase">
+                {`${getProfileCompletion(customer)}% completado`}
+              </span>
+            </div>
             <Avatar
               src="https://i.pravatar.cc/150?u=a04258114e29026708c"
               className="w-30 h-30 text-large border-solid border-5 border-[#9B48ED]"
@@ -36,77 +39,85 @@ const Dashboard = ({ orders, customer }: DashboardProps) => {
             <p className="text-xl-semi capitalize">
               {customer?.first_name} {customer?.last_name}
             </p>
-            <span className="font-semibold">{customer?.email}</span>
+            <span className="font-semibold text-gray-500">
+              {customer?.email}
+            </span>
+            <div className="flex text-gray-400 text-xs mt-[10%]">
+              <Cart size={16} /> <span>{`compras: ${orders?.length}`}</span>
+            </div>
           </div>
         </div>
         <div className="min-h-[200px] p-1">
           <div className=" py-5 px-1  h-full shadow-card rounded-[10px] items-center  justify-center">
             <div className="flex justify-center">
-              <User
-                size={70}
-                className="p-1 border-5 border-[#9B48ED]  rounded-full "
+              <Image
+                alt="user_gudfy"
+                src="/account/user.svg"
+                width={100}
+                height={100}
               />
             </div>
             <div className="flex flex-col items-center">
               <h3 className="text-2xl font-bold ">Perfil</h3>
 
               <p className="text-sm text-center">Edita y completa tu perfil</p>
-              <ButtonLigth variant="tertiary" className="text-[#9B48ED] mt-3">
-                Ir a perfil
-
-              </ButtonLigth>
+              <Link href={"/account/profile"}>
+                <ButtonLigth variant="tertiary" className="text-[#9B48ED] mt-3">
+                  Ver mas
+                </ButtonLigth>
+              </Link>
             </div>
           </div>
         </div>
         <div className="min-h-[200px] p-1">
           <div className=" py-5 px-1  h-full shadow-card rounded-[10px] items-center  justify-center">
-
             <div className="flex items-center justify-center">
-              {/* <Cart
-                size={70}
-                className="p-1 border-5 border-[#9B48ED]  rounded-full "
-              /> */}
-              <Image src="/account/cart.svg" alt="" width={100} height={100} />
+              <Image
+                alt="sales_gudfy"
+                src="/account/cart.svg"
+                width={100}
+                height={100}
+              />
             </div>
             <div className="flex flex-col items-center">
               <h3 className="text-2xl font-bold ">Compras</h3>
               <p className="text-sm text-center">
                 Encuentra tu listado de ordenes
               </p>
-              <ButtonLigth variant="tertiary" className="text-[#9B48ED] mt-3">
-                Ir a compras
-
-              </ButtonLigth>
+              <Link href={"/account/orders"}>
+                <ButtonLigth variant="tertiary" className="text-[#9B48ED] mt-3">
+                  Ver mas
+                </ButtonLigth>
+              </Link>
             </div>
           </div>
         </div>
         <div className="min-h-[200px] p-1">
           <div className=" py-5 px-1  h-full shadow-card rounded-[10px] items-center  justify-center">
             <div className="flex justify-center">
-
-              <Support
-
-                size={70}
-                className="p-1 border-5 border-[#9B48ED]  rounded-full "
+              <Image
+                alt="support_gudfy"
+                src="/account/support.svg"
+                width={100}
+                height={100}
               />
             </div>
             <div className="flex flex-col items-center">
-
-              <h3 className="text-2xl font-bold ">Asistencia</h3>
+              <h3 className="text-2xl font-bold ">Soporte</h3>
               <p className="text-sm text-center">
                 ¿Tienes alguna pregunta? ¡Envíanos un mensaje!
               </p>
-              <ButtonLigth variant="tertiary" className="text-[#9B48ED] mt-3">
-                Ir a Asistencia
-
-              </ButtonLigth>
+              <Link href={"/account/support"}>
+                <ButtonLigth variant="tertiary" className="text-[#9B48ED] mt-3">
+                  Ver mas
+                </ButtonLigth>
+              </Link>
             </div>
           </div>
         </div>
         <div className="min-h-[200px] p-1">
           <div className=" py-5 px-1  h-full shadow-card rounded-[10px] items-center  justify-center">
             <div className="flex justify-center">
-
               <Image
                 alt="wallet_gudfy"
                 src="/account/wallet.svg"
@@ -120,8 +131,7 @@ const Dashboard = ({ orders, customer }: DashboardProps) => {
                 Ten control de tu billetera digital
               </p>
               <ButtonLigth variant="tertiary" className="text-[#9B48ED] mt-3">
-                Ir a wallet
-
+                Ver mas
               </ButtonLigth>
             </div>
           </div>
@@ -129,5 +139,61 @@ const Dashboard = ({ orders, customer }: DashboardProps) => {
       </div>
     </div>
   )
+}
+type ButtonNavLinkProps = {
+  srcImage: string
+  title: string
+  description: string
+  textbutton: string
+}
+function ButtonNavLink<ButtonNavLinkProps>() {
+  return (
+    <div className="min-h-[200px] p-1">
+      <div className=" py-5 px-1  h-full shadow-card rounded-[10px] items-center  justify-center">
+        <div className="flex justify-center">
+          <Image
+            alt="user_gudfy"
+            src="/account/user.svg"
+            width={100}
+            height={100}
+          />
+        </div>
+        <div className="flex flex-col items-center">
+          <h3 className="text-2xl font-bold ">Perfil</h3>
+
+          <p className="text-sm text-center">Edita y completa tu perfil</p>
+          <ButtonLigth variant="tertiary" className="text-[#9B48ED] mt-3">
+            Ver mas
+          </ButtonLigth>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+const getProfileCompletion = (customer?: Omit<Customer, "password_hash">) => {
+  let count = 0
+
+  if (!customer) {
+    return 0
+  }
+
+  if (customer.email) {
+    count++
+  }
+
+  if (customer.first_name && customer.last_name) {
+    count++
+  }
+
+  if (customer.phone) {
+    count++
+  }
+
+  if (customer.billing_address) {
+    count++
+  }
+
+  return (count / 4) * 100
 }
 export default Dashboard
