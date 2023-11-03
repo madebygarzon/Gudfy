@@ -16,6 +16,7 @@ export default function NotFound() {
       <Link href="/" className="mt-4 underline text-base-regular text-gray-900">
         Go to frontpage
       </Link>
+     
     </div>
   )
 }
