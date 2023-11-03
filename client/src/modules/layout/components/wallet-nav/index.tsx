@@ -10,7 +10,7 @@ const Wallet: React.FC = () => {
         width={32}
         height={32}
       />
-      <span>$0.00</span>
+      <span className="text-sm">$0.00</span>
     </div>
   )
 }
