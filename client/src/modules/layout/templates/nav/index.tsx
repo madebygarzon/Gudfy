@@ -18,18 +18,18 @@ const Nav = () => {
   const { customer } = useAccount()
   const [isScrolled, setIsScrolled] = useState<boolean>(true)
   const propsDropDown = {
-    name: "Cuenta",
+    name: "Ingresar",
     items: [
       { label: "Ingresar", href: "/account/login" },
       { label: "Registrarse", href: "/account/register" },
     ],
   }
   const propsDropDownLog = {
-    name: "Name user",
+    name: "Name user", href: "/account/orders",
     items: [
-      { label: "Mis pedidos", href: "/" },
-      { label: "Editar perfil", href: "/" },
-      { label: "Mi carrito", href: "/" },
+      { label: "Mis pedidos", href: "/account/orders" },
+      { label: "Editar perfil", href: "/account/profile" },
+      { label: "Mi carrito", href: "/cart" },
       { label: "wallet", href: "/" },
       { label: "Cerrar sesión", href: "/" },
     ],
@@ -94,7 +94,7 @@ const Nav = () => {
                 />
               ) : (
                 <DropdownGudFy
-                  name={propsDropDownLog.name}
+                  name={customer?.first_name}
                   items={propsDropDownLog.items}
                 />
               )}
