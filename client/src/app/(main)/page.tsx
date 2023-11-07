@@ -1,7 +1,10 @@
 import FeaturedProducts from "@modules/home/components/featured-products"
 import { Metadata } from "next"
 import SelectedProducts from "@modules/home/components/slector-products"
-import Hero from '@modules/home/components/hero'
+import Banner from '@modules/home/components/banner'
+import ProductsTypes from "@modules/home/components/product-types"
+import BannerSecondary from "@modules/home/components/banner_secondary"
+import FeaturedProductsSecond from "@modules/home/components/featured-products-second"
 
 export const metadata: Metadata = {
   title: "Inicio",
@@ -11,12 +14,26 @@ export const metadata: Metadata = {
 
 const Home = () => {
   return (
-    <>
-      <Hero />
-      {/* <Banner /> Borrar para producción */}
-      <SelectedProducts />
-      <FeaturedProducts />
-    </>
+    <div className="">
+      <div>
+        <Banner />
+      </div>
+      <div className="">
+        <SelectedProducts />
+      </div>
+      <div className="bg-[#EEE]">
+        <ProductsTypes />  
+      </div>
+      <div className="">
+        <FeaturedProducts />  
+      </div>
+      <div className="">
+        <BannerSecondary />  
+      </div>
+      <div className="">
+        <FeaturedProductsSecond />  
+      </div>
+    </div>
   )
 }
 

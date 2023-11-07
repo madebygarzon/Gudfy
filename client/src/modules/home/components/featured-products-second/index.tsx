@@ -7,7 +7,7 @@ import SkeletonProductPreview from "@modules/skeletons/components/skeleton-produ
 import Link from "next/dist/client/link"
 import ButtonLigth from "@modules/common/components/button_light"
 
-const FeaturedProducts = () => {
+const FeaturedProductsSecond = () => {
   const { data } = useFeaturedProductsQuery()
 
   return (
@@ -23,7 +23,7 @@ const FeaturedProducts = () => {
           <UnderlineLink href="/store">Explore products</UnderlineLink>
   </div>*/}
         <p className="text-[#1F0054] text-[24px] font-black pb-5 w-[90%] ml-8">
-          Juegos
+          Productos Digitales
         </p>
         <ul className="grid grid-cols-2 small:grid-cols-6 gap-x-6 gap-y-8">
           {data
@@ -48,4 +48,4 @@ const FeaturedProducts = () => {
   )
 }
 
-export default FeaturedProducts
+export default FeaturedProductsSecond
