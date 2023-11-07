@@ -24,8 +24,10 @@ const Nav = () => {
       { label: "Registrarse", href: "/account/register" },
     ],
   }
+
   const propsDropDownLog = {
-    name: "Name user", href: "/account/orders",
+    name: "Name user",
+    href: "/account/orders",
     items: [
       { label: "Mis pedidos", href: "/account/orders" },
       { label: "Editar perfil", href: "/account/profile" },
