@@ -12,6 +12,7 @@ import { useInView } from "react-intersection-observer"
 import { useInfiniteQuery } from "@tanstack/react-query"
 import { useCollections } from "medusa-react"
 import { useRouter } from "next/navigation"
+import ButtonLigth from "@modules/common/components/button_light"
 
 type InfiniteProductsType = {
   params: StoreGetProductsParams
@@ -23,7 +24,7 @@ const Recommendedproduct = ({ params }: InfiniteProductsType) => {
   const collectionIds = params.collection_id || []
 
   const handlerSteam = () => {
-    // opcion ver mas para cada categoria seleccionada
+    // opcion ver más para cada categoria seleccionada
     collections?.filter((c) => {
       if (c.id === collectionIds[0]) {
         return router.push(`/collections/${c.handle}`)
@@ -91,8 +92,7 @@ const Recommendedproduct = ({ params }: InfiniteProductsType) => {
               <p className="mb-2">No se encontraron productos</p>
               <div className="font-bold text-lg mb-2">Posible solución:</div>
               <p>
-                Consulte con el personal de administracion o Recarge la pagina
-                con ctrl+r o consulte con su programador{" "}
+              ¡Oh, vaya! Estamos enfrentando problemas técnicos en este momento. Te invitamos a intentarlo nuevamente.{" "}
               </p>
             </div>
           </div>
@@ -100,13 +100,16 @@ const Recommendedproduct = ({ params }: InfiniteProductsType) => {
       </ul>
       {previews.length >= 6 ? (
         <div className="flex w-full justify-center py-10">
-          <button
+          {/* <button
             type="button"
             onClick={handlerSteam}
             className="border-blue-gf text-blue-gf border-solid  border-[1px] w-[150px] h-[48px] text-[14px] font-semibold rounded-[5px] py-2 px-2"
           >
             Ver más
-          </button>
+          </button> */}
+          <ButtonLigth onClick={handlerSteam}>
+            Ver más
+          </ButtonLigth>
         </div>
       ) : (
         ""
