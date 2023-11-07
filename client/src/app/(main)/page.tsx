@@ -1,7 +1,7 @@
 import FeaturedProducts from "@modules/home/components/featured-products"
 import { Metadata } from "next"
 import SelectedProducts from "@modules/home/components/slector-products"
-import Banner from '@modules/home/components/banner'
+import Banner from "@modules/home/components/banner"
 import ProductsTypes from "@modules/home/components/product-types"
 import BannerSecondary from "@modules/home/components/banner_secondary"
 import FeaturedProductsSecond from "@modules/home/components/featured-products-second"
@@ -22,16 +22,16 @@ const Home = () => {
         <SelectedProducts />
       </div>
       <div className="bg-[#EEE]">
-        <ProductsTypes />  
+        <ProductsTypes />
       </div>
       <div className="">
-        <FeaturedProducts />  
+        <FeaturedProducts />
       </div>
       <div className="">
-        <BannerSecondary />  
+        <BannerSecondary />
       </div>
       <div className="">
-        <FeaturedProductsSecond />  
+        <FeaturedProductsSecond />
       </div>
     </div>
   )
