@@ -21,7 +21,7 @@ const Home = () => {
       <div className="">
         <SelectedProducts />
       </div>
-      <div className="bg-[#EEE]">
+      <div className="">
         <ProductsTypes />
       </div>
       <div className="">
