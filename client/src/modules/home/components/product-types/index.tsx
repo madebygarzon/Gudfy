@@ -6,8 +6,8 @@ import Link from "next/dist/client/link"
 
 const FeaturedProductsTest = () => {
   return (
-    <div className="flex text-center pl-48 pr-48">
-      <div className="content-container py-12">
+    <div className="bg-[#EEE] flex ">
+      <div className="block ml-auto mr-auto py-12">
         <Image
           src="/home/image_gift_cards.webp"
           alt="Gift Cards Products"
@@ -21,7 +21,7 @@ const FeaturedProductsTest = () => {
         </Link>
       </div>
 
-      <div className="content-container py-12 ">
+      <div className="block ml-auto mr-auto py-12 ">
         <Image
           src="/home/image_juegos.webp"
           alt="Games Products"
@@ -34,7 +34,7 @@ const FeaturedProductsTest = () => {
           </ButtonLigth>
         </Link>
       </div>
-      <div className="content-container py-12 ">
+      <div className="block ml-auto mr-auto py-12 ">
         <Image
           src="/home/image_productos_digitales.webp"
           alt="Digital Products"
