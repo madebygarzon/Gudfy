@@ -1,6 +1,3 @@
-// react sin nextjs, si da error cambiar por '/test-file-stub'
-module.exports = "test-file-stub"
-
 // react con nextjs
 module.exports = {
   src: "/img.jpg",
