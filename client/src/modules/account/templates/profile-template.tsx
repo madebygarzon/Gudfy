@@ -21,7 +21,7 @@ const ProfileTemplate = () => {
         <p className="text-base-regular">
           Ver y actualizar la información de su perfil, incluido su nombre,
           correo electrónico, y número de teléfono. También puede actualizar su
-          dirección de facturación o cambiar tu contraseña.
+          cambiar tu contraseña.
         </p>
       </div>
       <div className="flex flex-col gap-y-8 w-full">
