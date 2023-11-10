@@ -5,6 +5,7 @@ import React from "react"
 type ButtonProps = {
   isLoading?: boolean
   variant?: "primary" | "secondary" | "tertiary"
+  name?: string
 } & React.ButtonHTMLAttributes<HTMLButtonElement>
 
 const ButtonLigth = ({
@@ -12,10 +13,12 @@ const ButtonLigth = ({
   className,
   isLoading = false,
   variant = "primary",
+  name,
   ...props
 }: ButtonProps) => {
   return (
     <button
+      name={name}
       {...props}
       className={clsx(
         " flex items-center justify-center h-[48px] text-[14px] font-semibold px-12 py-[10px] rounded transition-colors duration-200 disabled:opacity-50",
