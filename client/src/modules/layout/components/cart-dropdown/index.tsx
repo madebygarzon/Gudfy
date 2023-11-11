@@ -81,7 +81,7 @@ const CartDropdown = () => {
                                   </Link>
                                 </h3>
                                 <LineItemOptions variant={item.variant} />
-                                <span>Quantity: {item.quantity}</span>
+                                <span>Cantidad: {item.quantity}</span>
                               </div>
                               <div className="flex justify-end">
                                 <LineItemPrice
@@ -111,7 +111,7 @@ const CartDropdown = () => {
                   <div className="flex items-center justify-between">
                     <span className="text-gray-700 font-semibold">
                       Subtotal{" "}
-                      <span className="font-normal">(incl. taxes)</span>
+                      <span className="font-normal">(Impuestos incluidos)</span>
                     </span>
                     <span className="text-large-semi">
                       {formatAmount({
