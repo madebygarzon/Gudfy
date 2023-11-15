@@ -92,7 +92,8 @@ const Recommendedproduct = ({ params }: InfiniteProductsType) => {
               <p className="mb-2">No se encontraron productos</p>
               <div className="font-bold text-lg mb-2">Posible solución:</div>
               <p>
-              ¡Oh, vaya! Estamos enfrentando problemas técnicos en este momento. Te invitamos a intentarlo nuevamente.{" "}
+                ¡Oh, vaya! Estamos enfrentando problemas técnicos en este
+                momento. Te invitamos a intentarlo nuevamente.{" "}
               </p>
             </div>
           </div>
@@ -107,9 +108,7 @@ const Recommendedproduct = ({ params }: InfiniteProductsType) => {
           >
             Ver más
           </button> */}
-          <ButtonLigth onClick={handlerSteam}>
-            Ver más
-          </ButtonLigth>
+          <ButtonLigth onClick={handlerSteam}>Ver más</ButtonLigth>
         </div>
       ) : (
         ""

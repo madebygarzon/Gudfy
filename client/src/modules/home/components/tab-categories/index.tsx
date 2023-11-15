@@ -1,9 +1,8 @@
-import { useProductCategories } from "medusa-react"
 import { StoreGetProductsParams } from "@medusajs/medusa"
 import { ProductCategory } from "@medusajs/medusa"
 import clsx from "clsx"
 import ButtonLigth from "@modules/common/components/button_light"
-import { useContext, useState } from "react"
+import { useContext, useState, useEffect } from "react"
 import { categoryContext } from "@lib/context/category-context"
 
 type RefinementListProps = {
@@ -16,10 +15,23 @@ const Category = ({
   setRefinementList,
 }: RefinementListProps) => {
   const category = useContext(categoryContext)
-  const categories: ProductCategory[] = category?.categoriesChildren() || []
+  const categories: ProductCategory[] = category?.childCategory() || []
   const [isSelect, setIsSelect] = useState<string>("")
 
-  const handleAllCategories = (id: string) => {
+  useEffect(() => {
+    handleAllCategories()
+  }, [category?.selectedCategory])
+
+  const handleAllCategories = () => {
+    const idCategory = category?.selectedCategory || ""
+    setRefinementList({
+      ...refinementList,
+      category_id: [idCategory],
+    })
+    return
+  }
+
+  const handleSelectCategories = (id: string) => {
     setRefinementList({
       ...refinementList,
       category_id: [id],
@@ -37,6 +49,7 @@ const Category = ({
               <ButtonLigth
                 type="button"
                 onClick={() => {
+                  handleAllCategories()
                   setIsSelect("")
                 }}
                 className={clsx(
@@ -53,7 +66,7 @@ const Category = ({
                     key={category.id}
                     type="button"
                     onClick={() => {
-                      handleAllCategories(category.id)
+                      handleSelectCategories(category.id)
                       setIsSelect(category.id)
                     }}
                     className={clsx(
