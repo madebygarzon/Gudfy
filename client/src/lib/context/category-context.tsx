@@ -9,7 +9,7 @@ interface CategoryContext {
   isLoading: boolean
   selectedCategory: string
   setSelectedCategory: React.Dispatch<React.SetStateAction<string>>
-  categoriesChildren: () => void
+  childCategory: () => void
 }
 interface CategoryProviderProps {
   children?: React.ReactNode
@@ -23,7 +23,7 @@ export const CategoryProvider = ({ children }: CategoryProviderProps) => {
   )
   const { product_categories, isLoading } = useProductCategories()
 
-  function categoryChildren() {
+  const childCategory = () => {
     const filter = product_categories?.filter(
       (category) => category.parent_category_id === isSelect
     )
@@ -36,7 +36,7 @@ export const CategoryProvider = ({ children }: CategoryProviderProps) => {
         isLoading,
         selectedCategory: isSelect,
         setSelectedCategory: setIsSelect,
-        categoriesChildren: categoryChildren,
+        childCategory: childCategory,
       }}
     >
       {children}
