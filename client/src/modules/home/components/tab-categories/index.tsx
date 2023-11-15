@@ -43,7 +43,7 @@ const Category = ({
     <>
       <div className="px-8 pb-10 pt-5 mt-[-50px]">
         <div className="flex gap-x-4">
-          {category ? (
+          {categories.length ? (
             <>
               {" "}
               <ButtonLigth
