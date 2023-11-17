@@ -1,5 +1,5 @@
-import Footer from "@modules/layout/templates/footer"
-import Nav from "@modules/layout/templates/nav"
+// import Footer from "@modules/layout/templates/footer"
+// import Nav from "@modules/layout/templates/nav"
 import Layout from "@modules/layout/templates"
 
 export default function PageLayout({
@@ -14,9 +14,7 @@ export default function PageLayout({
     //   <Footer />
     // </>
     <>
-      <Layout>
-        {children}
-      </Layout>
+      <Layout>{children}</Layout>
     </>
   )
 }

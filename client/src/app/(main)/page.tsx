@@ -18,9 +18,7 @@ const Home = () => {
       <div>
         <Banner />
       </div>
-      <div className="">
-        <SelectedProducts />
-      </div>
+      <div className=" my-5 h-8">{/* <SelectedProducts /> */} </div>
       <div className="">
         <ProductsTypes />
       </div>
