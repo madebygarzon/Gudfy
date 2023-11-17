@@ -71,16 +71,16 @@ const Recommendedproduct = ({ params }: InfiniteProductsType) => {
   }, [inView, hasNextPage])
 
   return (
-    <div className="flex-1 content-container">
+    <div className="flex-1 content-container px-10">
       <ul className="grid grid-cols-2 small:grid-cols-3 medium:grid-cols-6 gap-x-4 gap-y-8 flex-1">
         {previews.map((p) => (
-          <li key={p.id}>
+          <li key={p.id} className="text-white">
             <ProductPreview {...p} />
           </li>
         ))}
         {isLoading &&
           !previews.length &&
-          repeat(8).map((index) => (
+          repeat(6).map((index) => (
             <li key={index}>
               <SkeletonProductPreview />
             </li>
@@ -113,7 +113,14 @@ const Recommendedproduct = ({ params }: InfiniteProductsType) => {
           >
             Ver más
           </button> */}
-          <ButtonLigth onClick={handlerSteam}>Ver más</ButtonLigth>
+          <ButtonLigth
+            variant="secondary"
+            onClick={() =>
+              fetchNextPage({ cancelRefetch: false, pageParam: 6 })
+            }
+          >
+            Ver más
+          </ButtonLigth>
         </div>
       ) : (
         ""

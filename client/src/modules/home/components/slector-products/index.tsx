@@ -9,10 +9,14 @@ import Categories from "@modules/home/components/tab-categories"
 const SelectedProducts = () => {
   const [params, setParams] = useState<StoreGetProductsParams>({})
   return (
-    <div className="py-6 flex flex-col items-center">
-      <Categories refinementList={params} setRefinementList={setParams} />
+    <div className="py-6 flex ">
+      <div className=" w-[15%]">
+        <Categories refinementList={params} setRefinementList={setParams} />
+      </div>
       {/* <ButonSelector refinementList={params} setRefinementList={setParams} /> */}
-      <Recommendedproduct params={params} />
+      <div className=" w-[85%]">
+        <Recommendedproduct params={params} />
+      </div>
     </div>
   )
 }

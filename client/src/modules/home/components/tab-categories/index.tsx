@@ -40,12 +40,11 @@ const Category = ({
   }
 
   return (
-    <>
-      <div className="px-8 pb-10 pt-5 mt-[-50px]">
-        <div className="flex gap-x-4">
-          {categories.length ? (
-            <>
-              {" "}
+    <div className="flex justify-center items-start   ">
+      <div>
+        {categories.length ? (
+          <>
+            <div className=" felx flex-col gap-2">
               <ButtonLigth
                 type="button"
                 onClick={() => {
@@ -53,42 +52,41 @@ const Category = ({
                   setIsSelect("")
                 }}
                 className={clsx(
-                  "border-solid  border-[1px] w-[100px] h-[48px] text-[14px] font-semibold rounded-[5px] py-2 px-2",
-                  { "border-[#707070] text-[#707070]": isSelect !== "" },
-                  { "border-blue-gf text-blue-gf": isSelect == "" }
+                  "border-solid  border-[1px] w-[100px] h-[48px] text-[14px] text-uppercase rounded-[5px] py-2 px-2",
+                  { "border-slate-200 text-slate-200": isSelect !== "" },
+                  { "border-white text-white": isSelect == "" }
                 )}
               >
                 Todos
               </ButtonLigth>
-              <div className="flex gap-x-4">
-                {categories.map((category) => (
-                  <ButtonLigth
-                    key={category.id}
-                    type="button"
-                    onClick={() => {
-                      handleSelectCategories(category.id)
-                      setIsSelect(category.id)
-                    }}
-                    className={clsx(
-                      "border-solid  border-[1px] w-[100px] h-[48px] text-[14px] font-semibold rounded-[5px] py-2 px-2",
-                      {
-                        "border-[#707070] text-[#707070]":
-                          isSelect !== category.id,
-                      },
-                      { "border-blue-gf text-blue-gf": isSelect == category.id }
-                    )}
-                  >
-                    {category.name}
-                  </ButtonLigth>
-                ))}
-              </div>
-            </>
-          ) : (
-            <></>
-          )}
-        </div>
+
+              {categories.map((category) => (
+                <ButtonLigth
+                  key={category.id}
+                  type="button"
+                  onClick={() => {
+                    handleSelectCategories(category.id)
+                    setIsSelect(category.id)
+                  }}
+                  className={clsx(
+                    "border-solid  border-[1px] w-[100px] h-[48px] text-[14px] text-uppercase rounded-[5px] py-2 px-2 my-2",
+                    {
+                      "border-slate-300 text-slate-300":
+                        isSelect !== category.id,
+                    },
+                    { "border-white text-white": isSelect == category.id }
+                  )}
+                >
+                  {category.name}
+                </ButtonLigth>
+              ))}
+            </div>
+          </>
+        ) : (
+          <></>
+        )}
       </div>
-    </>
+    </div>
   )
 }
 
