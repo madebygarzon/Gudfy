@@ -29,8 +29,6 @@ const ButonSelector = ({
     e: FormEvent<HTMLButtonElement>,
     id: string
   ) => {
-    const collectionIds = refinementList.collection_id || []
-    const exists = collectionIds.includes(id)
     setIsSelect(id)
     setRefinementList({
       ...refinementList,
