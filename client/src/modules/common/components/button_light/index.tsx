@@ -21,10 +21,12 @@ const ButtonLigth = ({
       name={name}
       {...props}
       className={clsx(
-        " flex items-center justify-center h-[48px] text-[14px] font-semibold px-12 py-[10px] rounded transition-colors duration-200 disabled:opacity-50",
+        " flex items-center justify-center h-[48px] text-[14px]  px-12 py-[10px] rounded transition-colors duration-200 disabled:opacity-50",
         {
-          "border-[1px] border-blue-gf border-solid": variant === "primary",
-          "border-[1px] border-white border-solid": variant === "secondary",
+          "border-[1px] border-blue-gf border-solid font-light":
+            variant === "primary",
+          "border-[1px] border-white border-solid text-white":
+            variant === "secondary",
           "border-[1px] border-[#9B48ED] border-solid": variant === "tertiary",
         },
         className

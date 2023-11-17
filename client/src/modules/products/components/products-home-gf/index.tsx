@@ -71,33 +71,39 @@ const Recommendedproduct = ({ params }: InfiniteProductsType) => {
   }, [inView, hasNextPage])
 
   return (
-    <div className="flex-1 content-container">
+    <div className="flex-1 content-container px-10">
       <ul className="grid grid-cols-2 small:grid-cols-3 medium:grid-cols-6 gap-x-4 gap-y-8 flex-1">
         {previews.map((p) => (
-          <li key={p.id}>
+          <li key={p.id} className="text-white">
             <ProductPreview {...p} />
           </li>
         ))}
         {isLoading &&
           !previews.length &&
-          repeat(8).map((index) => (
+          repeat(6).map((index) => (
             <li key={index}>
               <SkeletonProductPreview />
             </li>
           ))}
-        {!isLoading && !previews.length && (
-          <div>
-            <div className="bg-red-200 text-red-800 p-4 rounded-md shadow-md">
+      </ul>
+      {!isLoading && !previews.length && (
+        <div className="flex justify-center h-[250px]  items-center w-full">
+          <h2 className="text-3xl text-center w-[70%]">
+            {" "}
+            ¡Oh, vaya! , Lamentablemente en la actualidad no contamos con
+            productos disponibles en esta categoría.
+          </h2>
+          {/* <div className="bg-red-200 text-red-800 p-4 rounded-md shadow-md">
               <div className="font-bold text-lg mb-2">Error:</div>
               <p className="mb-2">No se encontraron productos</p>
               <div className="font-bold text-lg mb-2">Posible solución:</div>
               <p>
-              ¡Oh, vaya! Estamos enfrentando problemas técnicos en este momento. Te invitamos a intentarlo nuevamente.{" "}
+                ¡Oh, vaya! Estamos enfrentando problemas técnicos en este
+                momento. Te invitamos a intentarlo nuevamente.{" "}
               </p>
-            </div>
-          </div>
-        )}
-      </ul>
+            </div> */}
+        </div>
+      )}
       {previews.length >= 6 ? (
         <div className="flex w-full justify-center py-10">
           {/* <button
@@ -107,7 +113,12 @@ const Recommendedproduct = ({ params }: InfiniteProductsType) => {
           >
             Ver más
           </button> */}
-          <ButtonLigth onClick={handlerSteam}>
+          <ButtonLigth
+            variant="secondary"
+            onClick={() =>
+              fetchNextPage({ cancelRefetch: false, pageParam: 6 })
+            }
+          >
             Ver más
           </ButtonLigth>
         </div>
