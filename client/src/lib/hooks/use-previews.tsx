@@ -5,7 +5,7 @@ import { useMemo } from "react"
 import { InfiniteProductPage, ProductPreviewType } from "types/global"
 
 type UsePreviewProps<T> = {
-  pages?: T[]
+  pages?: Array<PricedProduct>
   region?: Region
 }
 
@@ -18,11 +18,7 @@ const usePreviews = <T extends InfiniteProductPage>({
       return []
     }
 
-    const products: PricedProduct[] = []
-
-    for (const page of pages) {
-      products.push(...page.response.products)
-    }
+    const products: PricedProduct[] = pages
 
     const transformedProducts = products.map((p) =>
       transformProductPreview(p, region)

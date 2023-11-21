@@ -144,6 +144,6 @@ export const fetchProductsListTab = async ({
 
   return {
     response: { products, count },
-    nextPage: count > offset + 12 ? offset + 12 : null,
+    nextPage: count > offset + 6 ? offset + 6 : null,
   }
 }
