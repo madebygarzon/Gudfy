@@ -18,3 +18,10 @@ export declare module "@medusajs/medusa/dist/models/product" {
     store?: Store;
   }
 }
+
+export declare module "@medusajs/medusa/dist/models/CustomerRole" {
+  declare interface CustomerRole {
+    role_id: number;
+    nameRole: string;
+  }
+}

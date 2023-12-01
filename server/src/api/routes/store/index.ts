@@ -8,6 +8,7 @@ import getStarsProduct from "./get-stars-product";
 import { authenticate, authenticateCustomer } from "@medusajs/medusa";
 import { wrapHandler } from "@medusajs/medusa";
 import deleteReview from "./delete-review";
+import postSolicitudSeller from "./post-solicitud-seller";
 
 // Initialize a custom router
 const router = Router();
@@ -16,17 +17,16 @@ export function attachStoreRoutes(storeRouter: Router) {
   // Attach our router to a custom path on the store router
   storeRouter.use("/", router, json());
   // Define a GET endpoint on the root route of our custom path
+
+  // ----------------------EndPoinst for product reviws and stars------------------------
   router.get("/products/:id/reviews", wrapHandler(getProductAllReviews));
   router.get("/products/:id/stars", wrapHandler(getStarsProduct));
-
   //create new review
   router.post(
     "/products/:id/reviews",
     authenticateCustomer(),
     wrapHandler(postProductReviews)
   );
-
-  router.post("/account/seller", wrapHandler(postAccountSeller));
 
   //update new review
   router.post(
@@ -40,4 +40,13 @@ export function attachStoreRoutes(storeRouter: Router) {
     authenticateCustomer(),
     wrapHandler(deleteReview)
   );
+
+  // -----------------------------------------------------------------------------
+
+  // ---------------------------------Test Endpoins-------------------------------
+  //create a store for customer -- admin
+  router.post("/account/seller", wrapHandler(postAccountSeller));
+
+  //Seller Application
+  router.post("/account/seller-application", wrapHandler(postSolicitudSeller));
 }
