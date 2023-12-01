@@ -1,6 +1,7 @@
 import { Router, json } from "express";
 import customRouteHandler from "./custom-route-handler";
 import postProductReviews from "./post-product-reviews";
+import postAccountSeller from "./post-account-seller";
 import updateReview from "./update-review";
 import getProductAllReviews from "./get-product-allReviews";
 import getStarsProduct from "./get-stars-product";
@@ -24,6 +25,8 @@ export function attachStoreRoutes(storeRouter: Router) {
     authenticateCustomer(),
     wrapHandler(postProductReviews)
   );
+
+  router.post("/account/seller", wrapHandler(postAccountSeller));
 
   //update new review
   router.post(
