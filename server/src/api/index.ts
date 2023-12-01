@@ -6,6 +6,8 @@ import { getConfigFile } from "medusa-core-utils";
 import { attachStoreRoutes } from "./routes/store";
 import { attachAdminRoutes } from "./routes/admin";
 import { attachCustomerRoutes } from "./routes/customer";
+import configLoader from "@medusajs/medusa/dist/loaders/config";
+import authenticateCustomer from "@medusajs/medusa/dist/api/middlewares/authenticate-customer";
 
 export default (rootDirectory: string): Router | Router[] => {
   // Read currently-loaded medusa config
@@ -28,9 +30,10 @@ export default (rootDirectory: string): Router | Router[] => {
 
   // Set up express router
   const router = Router();
+  const config = configLoader(rootDirectory);
 
   // Set up root routes for store and admin endpoints, with appropriate CORS settings
-  router.use("/store", cors(storeCorsOptions), bodyParser.json(), json());
+  router.use("/store", cors(storeCorsOptions), bodyParser.json());
   router.use("/admin", cors(adminCorsOptions), bodyParser.json());
   router.use("/customer", cors(), bodyParser.json());
 

@@ -5,9 +5,18 @@ import clsx from "clsx"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import Cart from "@modules/common/icons/cart"
+import axios from "axios"
 
 const AccountNav = () => {
   const route = usePathname()
+  const { customer } = useAccount()
+
+  async function handlerseller() {
+    await axios
+      .post("http://localhost:9000/store/account/seller/", customer)
+      .then()
+      .catch((e) => console.log("error", e))
+  }
 
   return (
     <div>
@@ -34,14 +43,18 @@ const AccountNav = () => {
                 </Button>
               </li>
               <li>
-                <Button
+                {/* <Button
                   variant="selected"
-                  href="/account/seller"
+                  onClick={handlerseller}
                   route={route!}
                 >
                   <Icon size={30} />
                   Vendedor
-                </Button>
+                </Button> */}
+                <button onClick={handlerseller}>
+                  <Icon size={30} />
+                  Vendedor
+                </button>
               </li>
             </ul>
           </div>
@@ -51,4 +64,3 @@ const AccountNav = () => {
   )
 }
 export default AccountNav
-

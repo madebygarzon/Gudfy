@@ -9,10 +9,11 @@ import SkeletonProductPreview from "@modules/skeletons/components/skeleton-produ
 import { useCart } from "medusa-react"
 import { useEffect, useMemo, useState } from "react"
 import { useInView } from "react-intersection-observer"
-import { useInfiniteQuery } from "@tanstack/react-query"
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query"
 import { useCollections } from "medusa-react"
 import { useRouter } from "next/navigation"
 import ButtonLigth from "@modules/common/components/button_light"
+import { IoIosArrowForward, IoIosArrowBack } from "react-icons/io"
 
 type InfiniteProductsType = {
   params: StoreGetProductsParams
@@ -22,6 +23,7 @@ const Recommendedproduct = ({ params }: InfiniteProductsType) => {
   const router = useRouter()
   const { collections } = useCollections()
   const collectionIds = params.collection_id || []
+  const [page, setPage] = useState(0)
 
   const handlerSteam = () => {
     // opcion ver más para cada categoria seleccionada
@@ -52,48 +54,71 @@ const Recommendedproduct = ({ params }: InfiniteProductsType) => {
     }
   }, [cart?.id, params])
 
-  const { data, hasNextPage, fetchNextPage, isLoading, isFetchingNextPage } =
-    useInfiniteQuery(
-      [`infinite-products-store`, queryParams, cart],
-      ({ pageParam }) => fetchProductsListTab({ pageParam, queryParams }),
-      {
-        getNextPageParam: (lastPage) => lastPage.nextPage,
-      }
+  const { isLoading, isError, error, data, isFetching, isPreviousData } =
+    useQuery(
+      [`paginate-products-store`, page, queryParams],
+      () => fetchProductsListTab({ pageParam: page, queryParams }),
+      { keepPreviousData: true }
     )
 
-  const previews = usePreviews({ pages: data?.pages, region: cart?.region })
+  // const {
+  //   data,
+  //   fetchNextPage,
+  //   fetchPreviousPage,
+  //   isLoading,
+  //   isFetchingNextPage,
+  // } = useInfiniteQuery(
+  //   [`infinite-products-store`, queryParams, cart],
+  //   ({ pageParam }) => fetchProductsListTab({ pageParam, queryParams }),
+  //   {
+  //     getNextPageParam: (lastPage, pages) => lastPage.nextPage,
+  //     getPreviousPageParam: (firstPage, pages) => firstPage.nextPage,
+  //   }
+  // )
+
+  const previews = usePreviews({
+    pages: data?.response.products,
+    region: cart?.region,
+  })
 
   useEffect(() => {
-    if (inView && hasNextPage) {
-      fetchNextPage()
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [inView, hasNextPage])
+    setPage(0)
+  }, [params])
 
   return (
-    <div className="flex-1 content-container px-10">
-      <ul className="grid grid-cols-2 small:grid-cols-3 medium:grid-cols-6 gap-x-4 gap-y-8 flex-1">
-        {previews.map((p) => (
-          <li key={p.id} className="text-white">
-            <ProductPreview {...p} />
-          </li>
-        ))}
-        {isLoading &&
-          !previews.length &&
-          repeat(6).map((index) => (
-            <li key={index}>
-              <SkeletonProductPreview />
+    <div className="flex items-center px-10 w-full">
+      <button
+        onClick={() => setPage((old) => Math.max(old - 1, 0))}
+        className="-mr-2 px-2 tex"
+        disabled={page === 0}
+      >
+        <IoIosArrowBack size={30} color={`${page !== 0 ? "white" : "grey"}`} />
+      </button>
+
+      <div className="flex-1">
+        <ul className="grid grid-cols-2 small:grid-cols-3 medium:grid-cols-6 gap-x-2 gap-y-8 flex-1">
+          {previews.map((p) => (
+            <li key={p.id} className="text-white">
+              <ProductPreview {...p} />
             </li>
           ))}
-      </ul>
-      {!isLoading && !previews.length && (
-        <div className="flex justify-center h-[250px]  items-center w-full">
-          <h2 className="text-3xl text-center w-[70%]">
-            {" "}
-            ¡Oh, vaya! , Lamentablemente en la actualidad no contamos con
-            productos disponibles en esta categoría.
-          </h2>
-          {/* <div className="bg-red-200 text-red-800 p-4 rounded-md shadow-md">
+          {isLoading &&
+            !previews.length &&
+            repeat(6).map((index) => (
+              <li key={index}>
+                <SkeletonProductPreview />
+              </li>
+            ))}
+        </ul>
+
+        {!isLoading && !previews.length && (
+          <div className="flex justify-center h-[250px]  items-center w-full">
+            <h2 className="text-3xl text-white text-center w-[70%]">
+              {" "}
+              ¡Oh, vaya! , Lamentablemente en la actualidad no contamos con
+              productos disponibles en esta categoría.
+            </h2>
+            {/* <div className="bg-red-200 text-red-800 p-4 rounded-md shadow-md">
               <div className="font-bold text-lg mb-2">Error:</div>
               <p className="mb-2">No se encontraron productos</p>
               <div className="font-bold text-lg mb-2">Posible solución:</div>
@@ -102,29 +127,24 @@ const Recommendedproduct = ({ params }: InfiniteProductsType) => {
                 momento. Te invitamos a intentarlo nuevamente.{" "}
               </p>
             </div> */}
-        </div>
-      )}
-      {previews.length >= 6 ? (
-        <div className="flex w-full justify-center py-10">
-          {/* <button
-            type="button"
-            onClick={handlerSteam}
-            className="border-blue-gf text-blue-gf border-solid  border-[1px] w-[150px] h-[48px] text-[14px] font-semibold rounded-[5px] py-2 px-2"
-          >
-            Ver más
-          </button> */}
-          <ButtonLigth
-            variant="secondary"
-            onClick={() =>
-              fetchNextPage({ cancelRefetch: false, pageParam: 6 })
-            }
-          >
-            Ver más
-          </ButtonLigth>
-        </div>
-      ) : (
-        ""
-      )}
+          </div>
+        )}
+      </div>
+
+      <button
+        onClick={() => {
+          if (!isPreviousData && data?.nextPage) {
+            setPage((old) => old + 1)
+          }
+        }}
+        disabled={isPreviousData || !data?.nextPage}
+        className="cursor-pointer -ml-2 px-2"
+      >
+        <IoIosArrowForward
+          size={30}
+          color={`${isPreviousData || !data?.nextPage ? "grey" : "white"}`}
+        />
+      </button>
     </div>
   )
 }
