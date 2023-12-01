@@ -45,7 +45,8 @@ const Button = ({
       className={clsx(
         "px-10 py-[10px] rounded-[30] text-sm transition-colors duration-200 ",
         {
-          "text-white bg-[#402e72] hover:bg-blue-gf": variant === "primary",
+          "text-white bg-[#402e72] hover:bg-blue-gf rounded-[5px]":
+            variant === "primary",
           "text-gray-900 bg-transparent border-gray-920 hover:bg-gray-100":
             variant === "secondary",
         },
