@@ -27,7 +27,7 @@ const AccountLayout: React.FC = ({ children }) => {
     <div className="flex-1  small:bg-gray-50 ">
       <div className="flex-1 h-full w-full  bg-white flex flex-col ">
         <div className="grid grid-cols-1 small:grid-cols-[240px_1fr]   ">
-          <div className="bg-[#1F0054] py-10 flex h-[90vh] flex-col justify-between">
+          <div className="bg-[#1F0054] py-10 flex h-[85vh] flex-col justify-between">
             <AccountNav />
             <div className="flex justify-center">
               <button
@@ -41,8 +41,8 @@ const AccountLayout: React.FC = ({ children }) => {
             </div>
           </div>
 
-          <div className=" h-[90vh] overflow-y-auto flex p-5 justify-center items-center ">
-            <div className="w-[90%]">{children}</div>
+          <div className="h-[85vh] w-full overflow-y-auto flex px-10 justify-center items-center ">
+            <div className="">{children}</div>
           </div>
         </div>
       </div>

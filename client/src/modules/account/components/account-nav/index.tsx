@@ -11,12 +11,12 @@ const AccountNav = () => {
   const route = usePathname()
   const { customer } = useAccount()
 
-  async function handlerseller() {
-    await axios
-      .post("http://localhost:9000/store/account/seller/", customer)
-      .then()
-      .catch((e) => console.log("error", e))
-  }
+  // async function handlerseller() {
+  //   await axios
+  //     .post("http://localhost:9000/store/account/seller/", customer)
+  //     .then()
+  //     .catch((e) => console.log("error", e))
+  // }
 
   return (
     <div>
@@ -43,18 +43,14 @@ const AccountNav = () => {
                 </Button>
               </li>
               <li>
-                {/* <Button
+                <Button
                   variant="selected"
-                  onClick={handlerseller}
+                  href="/account/seller"
                   route={route!}
                 >
                   <Icon size={30} />
                   Vendedor
-                </Button> */}
-                <button onClick={handlerseller}>
-                  <Icon size={30} />
-                  Vendedor
-                </button>
+                </Button>
               </li>
             </ul>
           </div>
