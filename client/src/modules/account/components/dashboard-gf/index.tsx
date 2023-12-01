@@ -13,7 +13,7 @@ type DashboardProps = {
 const Dashboard = ({ orders, customer }: DashboardProps) => {
   return (
     <div className="w-full">
-      <div className="text-xl-semi capitalize flex justify-between items-start mb-4">
+      <div className="text-xl-semi capitalize flex justify-between items-start ">
         <span>
           ¡Hola {customer?.first_name} {customer?.last_name}!
         </span>
@@ -49,8 +49,8 @@ const Dashboard = ({ orders, customer }: DashboardProps) => {
               <Image
                 alt="user_gudfy"
                 src="/account/user.svg"
-                width={100}
-                height={100}
+                width={80}
+                height={80}
               />
             </div>
             <div className="flex flex-col items-center">
@@ -75,8 +75,8 @@ const Dashboard = ({ orders, customer }: DashboardProps) => {
               <Image
                 alt="sales_gudfy"
                 src="/account/cart.svg"
-                width={100}
-                height={100}
+                width={85}
+                height={85}
               />
             </div>
             <div className="flex flex-col items-center">
@@ -102,8 +102,8 @@ const Dashboard = ({ orders, customer }: DashboardProps) => {
               <Image
                 alt="support_gudfy"
                 src="/account/support.svg"
-                width={100}
-                height={100}
+                width={80}
+                height={80}
               />
             </div>
             <div className="flex flex-col items-center">
@@ -129,8 +129,8 @@ const Dashboard = ({ orders, customer }: DashboardProps) => {
               <Image
                 alt="wallet_gudfy"
                 src="/account/wallet.svg"
-                width={80}
-                height={80}
+                width={70}
+                height={70}
               />
             </div>
             <div className="flex flex-col items-center">

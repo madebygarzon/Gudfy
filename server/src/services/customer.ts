@@ -3,24 +3,30 @@ import { CustomerService as MedusaCustomerService } from "@medusajs/medusa";
 import { Customer } from "../models/customer";
 import {
   UpdateCustomerInput as MedusaUpdateCustomerInput,
-  AdminListCustomerSelector,
+  CreateCustomerInput as MedusaCreateCustomerInput,
 } from "@medusajs/medusa/dist/types/customers";
 import StoreRepository from "../repositories/store";
+import CustomerRoleRepository from "../repositories/customer-role";
 
 type UpdateCustomerInput = {
   store_id?: string;
 } & MedusaUpdateCustomerInput;
 
+type CreateCustomerInput = {
+  role_id?: number;
+} & MedusaCreateCustomerInput;
+
 class CustomerService extends MedusaCustomerService {
   static LIFE_TIME = Lifetime.SCOPED;
   protected readonly loggedInCustomer_: Customer | null;
   protected readonly storeRepository_: typeof StoreRepository;
+  protected readonly customerRoleRepository_: typeof CustomerRoleRepository;
 
   constructor(container, options) {
     // @ts-expect-error prefer-rest-params
     super(...arguments);
     this.storeRepository_ = container.storeRepository;
-
+    this.customerRoleRepository_ = container.customerRoleRepository;
     try {
       this.loggedInCustomer_ = container.loggedInCustomer;
     } catch (e) {
@@ -58,6 +64,15 @@ class CustomerService extends MedusaCustomerService {
         .then((e) => console.log("update", e));
       return;
     }
+  }
+
+  async create(customer: CreateCustomerInput): Promise<Customer> {
+    const dataCustomer: CreateCustomerInput = {
+      ...customer,
+      role_id: 1,
+    };
+
+    return await super.create(dataCustomer);
   }
 }
 
