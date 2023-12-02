@@ -13,15 +13,15 @@ import { generateEntityId } from "@medusajs/medusa/dist/utils";
 
 @Entity()
 export class SellerApplication extends BaseEntity {
-  @Column({ type: "integer", nullable: false })
+  @Column({ type: "varchar", nullable: false })
   customer_id: string;
 
   @ManyToOne(() => Customer, (customer) => customer.sellerapplication)
   @JoinColumn({ name: "customer_id", referencedColumnName: "id" })
   customer: Customer;
 
-  @Column({ type: "integer", nullable: false })
-  identification_number: number;
+  @Column({ type: "varchar", nullable: false })
+  identification_number: string;
 
   @Column({ type: "varchar", nullable: false })
   address: string;
