@@ -9,14 +9,6 @@ import axios from "axios"
 
 const AccountNav = () => {
   const route = usePathname()
-  const { customer } = useAccount()
-
-  // async function handlerseller() {
-  //   await axios
-  //     .post("http://localhost:9000/store/account/seller/", customer)
-  //     .then()
-  //     .catch((e) => console.log("error", e))
-  // }
 
   return (
     <div>
