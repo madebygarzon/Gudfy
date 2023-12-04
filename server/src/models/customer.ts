@@ -29,5 +29,5 @@ export class Customer extends MedusaCustomer {
   customerRole?: CustomerRole;
 
   @OneToMany(() => SellerApplication, (appli) => appli.customer)
-  sellerapplication: SellerApplication[];
+  sellerapplication?: SellerApplication[];
 }
