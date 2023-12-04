@@ -1,5 +1,4 @@
 "use client"
-import React from "react"
 import ButtonMedusa from "@modules/common/components/button"
 import {
   Modal,
@@ -12,6 +11,9 @@ import {
 } from "@nextui-org/react"
 import Input from "@modules/common/components/input"
 import { FieldValues, useForm } from "react-hook-form"
+import React, { useEffect } from "react"
+import { actionSellerApplication } from "../actions/action-seller-application"
+import { useAccount } from "@lib/context/account-context"
 
 interface SellerCredentials extends FieldValues {
   identification_number: string
@@ -20,6 +22,13 @@ interface SellerCredentials extends FieldValues {
 
 const SupplierTemplate: React.FC = () => {
   const { isOpen, onOpen, onOpenChange } = useDisclosure()
+  const { customer } = useAccount()
+  useEffect(() => {
+    if (customer!) {
+      console.log(customer)
+      actionSellerApplication(customer.id)
+    }
+  }, [])
 
   const {
     register,

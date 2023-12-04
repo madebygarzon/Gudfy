@@ -8,7 +8,8 @@ import getStarsProduct from "./get-stars-product";
 import { authenticate, authenticateCustomer } from "@medusajs/medusa";
 import { wrapHandler } from "@medusajs/medusa";
 import deleteReview from "./delete-review";
-import postSolicitudSeller from "./post-solicitud-seller";
+import postSellerApplication from "./post-seller-application";
+import getSellerApplication from "./get-seller-application";
 
 // Initialize a custom router
 const router = Router();
@@ -48,5 +49,10 @@ export function attachStoreRoutes(storeRouter: Router) {
   router.post("/account/seller", wrapHandler(postAccountSeller));
 
   //Seller Application
-  router.post("/account/seller-application", wrapHandler(postSolicitudSeller));
+  router.post(
+    "/account/seller-application",
+    wrapHandler(postSellerApplication)
+  );
+
+  router.get("/account/seller-application", wrapHandler(getSellerApplication));
 }
