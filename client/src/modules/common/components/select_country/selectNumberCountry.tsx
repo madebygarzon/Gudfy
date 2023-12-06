@@ -15,7 +15,6 @@ interface CountryData {
   name: string
   flags: string
   callingCodes: string
-  // Otros campos que puedas necesitar...
 }
 interface PropsChildren {
   setCodeFlag: React.Dispatch<SetStateAction<number>>
