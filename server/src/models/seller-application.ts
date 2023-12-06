@@ -29,6 +29,9 @@ export class SellerApplication extends BaseEntity {
   @Column({ type: "boolean", nullable: false })
   approved: boolean;
 
+  @Column({ type: "boolean", nullable: false })
+  rejected: boolean;
+
   @BeforeInsert()
   private beforeInsert(): void {
     this.id = generateEntityId(this.id, "appli");
