@@ -11,7 +11,7 @@ export default async (req: Request, res: Response): Promise<void> => {
     sellerApplicationRepository
       .create(customer_id, identification_number, address)
       .then((e) => {
-        return res.status(202).json({ ...e });
+        return res.status(202).json({ e });
       });
   } catch (error) {
     res.status(400).json({ error });

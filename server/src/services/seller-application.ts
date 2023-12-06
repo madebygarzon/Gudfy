@@ -10,7 +10,7 @@ export default class SellerApplicationService extends TransactionBaseService {
   }
 
   async create(customer_id, identification_number, address) {
-    if (!customer_id || !identification_number || address)
+    if (!customer_id || !identification_number || !address)
       throw new Error("Adding the data required for create seller application");
 
     const sellerApplicationRepository = this.activeManager_.withRepository(
@@ -21,6 +21,7 @@ export default class SellerApplicationService extends TransactionBaseService {
       identification_number,
       address,
       approved: false,
+      rejected: false,
     });
     const sellerapplication = await sellerApplicationRepository.save(
       createSellerapplication
@@ -41,7 +42,11 @@ export default class SellerApplicationService extends TransactionBaseService {
     });
 
     if (getApplication)
-      return { application: true, approved: getApplication.approved };
+      return {
+        application: true,
+        approved: getApplication.approved,
+        rejected: getApplication.rejected,
+      };
 
     return { application: false, approved: false };
   }
