@@ -50,4 +50,13 @@ export default class SellerApplicationService extends TransactionBaseService {
 
     return { application: false, approved: false };
   }
+
+  async getListApplication() {
+    const sellerApplicationRepository = this.activeManager_.withRepository(
+      this.sellerApplicationRepository_
+    );
+    const getList = await sellerApplicationRepository.find();
+
+    return getList;
+  }
 }
