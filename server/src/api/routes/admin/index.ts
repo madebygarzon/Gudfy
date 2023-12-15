@@ -5,6 +5,7 @@ import customRouteHandler from "./custom-route-handler";
 import { authenticate } from "@medusajs/medusa";
 import cors from "cors";
 import getListApplication from "./seller/get-seller-application";
+import UpdateSellerAplication from "./seller/update-seller-application";
 
 // Initialize a custom router
 const router = Router();
@@ -27,6 +28,12 @@ export function attachAdminRoutes(
     cors(adminCorsOptions),
     authenticate(),
     wrapHandler(getListApplication)
+  );
+  router.post(
+    "/sellerapplication",
+    cors(adminCorsOptions),
+    authenticate(),
+    wrapHandler(UpdateSellerAplication)
   );
 
   // Attach routes for onboarding experience, defined separately
