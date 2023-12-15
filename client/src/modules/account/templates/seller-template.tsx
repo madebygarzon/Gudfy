@@ -30,7 +30,11 @@ const SupplierTemplate: React.FC = () => {
       <ApplyForSeller customer_id={customer.id} handlerReset={handlerReset} />
     </>
   ) : !isSeller?.approved ? (
-    <h1 className="text-[48px]"> Su solicitud esta en proceso</h1>
+    !isSeller?.rejected ? (
+      <h1 className="text-[48px]"> Su solicitud esta en proceso </h1>
+    ) : (
+      <h1 className="text-[48px]"> Su solicitud fue rechazada </h1>
+    )
   ) : (
     <h1 className="text-[48px]"> Eres vendedor</h1>
   )
