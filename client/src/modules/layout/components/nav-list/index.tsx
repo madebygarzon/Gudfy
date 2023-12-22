@@ -18,7 +18,7 @@ const NavList: React.FC = () => {
             className="  "
             onMouseEnter={() => setIsOpen(!isOpen)}
             onMouseLeave={() => setIsOpen(!isOpen)}
-          >
+          > 
             {categories.product_categories &&
             categories.product_categories.length > 0 ? (
               <Popover className=" flex justify-center h-full gap-x-7 ">
