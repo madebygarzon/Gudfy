@@ -41,20 +41,21 @@ const Button = ({
   }
   return (
     <button
-      {...props}
-      className={clsx(
-        "px-10 py-[10px] rounded-[30] text-sm transition-colors duration-200 ",
-        {
-          "text-white bg-[#402e72] hover:bg-blue-gf rounded-[5px]":
-            variant === "primary",
-          "text-gray-900 bg-transparent border-gray-920 hover:bg-gray-100":
-            variant === "secondary",
-        },
-        className
-      )}
-    >
-      {isLoading ? <Spinner /> : children}
-    </button>
+    {...props}
+    className={clsx(
+      "px-10 py-[10px] rounded-[30] text-sm transition-colors duration-200 ",
+      {
+        "text-white bg-[#402e72] hover:bg-[#2c1f57] rounded-[5px]": variant === "primary" && !isLoading,
+        "text-gray-900 bg-transparent border-gray-920 hover:bg-gray-100":
+          variant === "secondary" && !isLoading,
+        "opacity-50 cursor-not-allowed": isLoading,
+      },
+      className
+    )}
+    disabled={isLoading}
+  >
+    {isLoading ? <Spinner /> : children}
+  </button>
   )
 }
 
