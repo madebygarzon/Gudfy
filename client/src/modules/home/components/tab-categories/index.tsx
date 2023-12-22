@@ -30,7 +30,6 @@ const Category = ({
     })
     return
   }
-
   const handleSelectCategories = (id: string) => {
     setRefinementList({
       ...refinementList,
