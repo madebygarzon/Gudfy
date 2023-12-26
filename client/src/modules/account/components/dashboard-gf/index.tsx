@@ -19,7 +19,6 @@ const Dashboard = ({ orders, customer }: DashboardProps) => {
         </span>
         <span className="text-small-regular text-gray-700"></span>
       </div>
-
       <div className=" w-full grid grid-cols-3 gap-2 py-1  justify-center">
         <div className="  row-span-2 ">
           <div className=" flex flex-col relative p-5 h-full shadow-card items-center justify-center rounded-[10px] ">

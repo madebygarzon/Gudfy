@@ -1,12 +1,28 @@
 import { TransactionBaseService } from "@medusajs/medusa";
 import { SellerApplicationRepository } from "../repositories/seller-application";
+import CustomerRepository from "../repositories/customer";
+import CustomerService from "./customer";
+import { dataSource } from "@medusajs/medusa/dist/loaders/database";
+
+type updateSellerAplication = {
+  payload: string;
+  customer_id: string;
+};
 
 export default class SellerApplicationService extends TransactionBaseService {
   protected readonly sellerApplicationRepository_: typeof SellerApplicationRepository;
+  protected readonly customerRepository_: typeof CustomerRepository;
+  protected readonly customerService_: CustomerService;
 
-  constructor({ sellerApplicationRepository }) {
+  constructor({
+    sellerApplicationRepository,
+    customerRepository,
+    customerService,
+  }) {
     super(arguments[0]);
     this.sellerApplicationRepository_ = sellerApplicationRepository;
+    this.customerRepository_ = customerRepository;
+    this.customerService_ = customerService;
   }
 
   async create(customer_id, identification_number, address) {
@@ -56,7 +72,64 @@ export default class SellerApplicationService extends TransactionBaseService {
       this.sellerApplicationRepository_
     );
     const getList = await sellerApplicationRepository.find();
+    const dataList = await Promise.all(
+      getList.map(async (data) => {
+        const dataCustomer = await this.retrieveCustomer(data.customer_id);
+        return {
+          ...data,
+          customer: dataCustomer,
+        };
+      })
+    );
 
-    return getList;
+    return dataList;
+  }
+
+  async updateSellerAplication(payload, customer_id) {
+    const sellerApplicationRepository = this.activeManager_.withRepository(
+      this.sellerApplicationRepository_
+    );
+    if (!payload || !customer_id) {
+      throw new Error(
+        "Updating a product review requires payload, customer_id"
+      );
+    }
+    if (payload === "APROBED") {
+      const sellerApplication = await sellerApplicationRepository.update(
+        { customer_id: customer_id },
+        {
+          approved: true,
+          rejected: false,
+        }
+      );
+      await this.customerService_.createStore(customer_id);
+      return sellerApplication;
+    } else if (payload === "REJECT") {
+      const sellerApplication = await sellerApplicationRepository.update(
+        { customer_id: customer_id },
+        {
+          approved: false,
+          rejected: true,
+        }
+      );
+      return sellerApplication;
+    }
+    return;
+  }
+
+  private async retrieveCustomer(customerId: string) {
+    const customerRepository = this.manager_.withRepository(
+      this.customerRepository_
+    );
+    const dataCustomer = await customerRepository.findOne({
+      where: {
+        id: customerId,
+      },
+    });
+    return {
+      name: `${dataCustomer.first_name} ${dataCustomer.last_name}`,
+      email: dataCustomer.email,
+    };
+
   }
 }

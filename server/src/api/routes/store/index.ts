@@ -6,7 +6,7 @@ import updateReview from "./update-review";
 import getProductAllReviews from "./get-product-allReviews";
 import getStarsProduct from "./get-stars-product";
 import { authenticate, authenticateCustomer } from "@medusajs/medusa";
-import { wrapHandler } from "@medusajs/medusa";
+import { wrapHandler } from "@medusajs/utils";
 import deleteReview from "./delete-review";
 import postSellerApplication from "./post-seller-application";
 import getSellerApplication from "./get-seller-application";
