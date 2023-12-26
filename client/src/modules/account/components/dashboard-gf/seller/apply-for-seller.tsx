@@ -1,7 +1,8 @@
-import React from "react"
+import React, { useState } from "react"
 import ButtonMedusa from "@modules/common/components/button"
 import {
   Modal,
+  ModalProps,
   ModalContent,
   ModalHeader,
   ModalBody,
@@ -9,105 +10,90 @@ import {
   Button,
   useDisclosure,
 } from "@nextui-org/react"
-import Input from "@modules/common/components/input"
-import { FieldValues, useForm } from "react-hook-form"
-import { actionCreateSellerApplication } from "@modules/account/actions/action-seller-application"
+import SellerRequestPerson from "@modules/account/components/seller_request_person"
+import SellerRequestCompany from "@modules/account/components/seller_request_company"
 
-interface SellerCredentials extends FieldValues {
-  identification_number: string
-  address: string
-}
 type dataCustomer = {
   customer_id: string
   handlerReset: () => void
 }
+
 const ApplyForSeller: React.FC<dataCustomer> = ({
   customer_id,
   handlerReset,
 }) => {
-  const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure()
-
+  const { isOpen, onOpen, onClose, onOpenChange } = useDisclosure()
+  const [scrollBehavior, setScrollBehavior] =
+    React.useState<ModalProps["scrollBehavior"]>("inside")
   const {
-    register,
-    handleSubmit,
-    formState: { errors, isSubmitting },
-    setError,
-  } = useForm<SellerCredentials>()
-
-  const onSubmit = handleSubmit(async (credentials) => {
-    if (!credentials.identification_number || !credentials.address)
-      return alert("Campos sin completar")
-
-    actionCreateSellerApplication(
-      customer_id,
-      credentials.identification_number,
-      credentials.address
-    ).then(() => {
-      handlerReset()
-    })
-  })
+    isOpen: isOpen2,
+    onOpen: onOpen2,
+    onClose: onClose2,
+    onOpenChange: onOpenChange2,
+  } = useDisclosure()
   return (
     <>
       <div className=" flex-col w-full space-y-10">
         <h1 className="text-center text-[38px] font-black">
           ¡ Unete a Gudfy !
         </h1>
+
         <p className=" text-center text-[18px] font-light max-w-[700px]">
-          ¡Únete a nuestro marketplace como vendedor! Completa nuestro
-          formulario de aceptación y comparte detalles sobre tu negocio y
-          productos. Revisaremos tu solicitud rápidamente para que puedas
-          empezar a vender en GUDFY. ¡Esperamos dar la bienvenida a tus
-          productos y talento!
+          ¡Únete como vendedor en GUDFY! Completa nuestro formulario y comparte
+          detalles sobre tu negocio. Revisaremos rápido para que puedas empezar
+          a vender. ¡Bienvenido a nuestra comunidad! 🚀🛍️
         </p>
-        <div className="flex justify-center">
+        <h2 className="text-center text-2xl font-semibold">
+          ¿Cómo te identificas?
+        </h2>
+        <div className="text-center">
           <ButtonMedusa
             onClick={onOpen}
+            className="text-[22px] mr-4"
+            variant="primary"
+          >
+            Soy comerciante individual
+          </ButtonMedusa>
+          <ButtonMedusa
+            onClick={onOpen2}
             className="text-[22px]"
             variant="primary"
           >
-            Conviértete en vendedor
+            Represento una empresa
           </ButtonMedusa>
         </div>
       </div>
-      {
-        //Pop up Modal
-      }
+      {}
       <>
-        <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+        <Modal
+          className=""
+          isOpen={isOpen}
+          onOpenChange={onOpenChange}
+          scrollBehavior={scrollBehavior}
+        >
           <ModalContent>
-            {(onClose) => (
-              <form onSubmit={onSubmit}>
-                <ModalHeader className="flex flex-col gap-1">
-                  Solicitud para tu tienda en Gudfy
-                </ModalHeader>
-                <ModalBody>
-                  <Input
-                    label="Numero de Identificacion"
-                    {...register("identification_number", {
-                      required: "Identidad requerida",
-                    })}
-                    autoComplete="number"
-                    errors={errors}
-                  />
-                  <Input
-                    label="Direccion"
-                    {...register("address", {
-                      required: "Direccion requerida",
-                    })}
-                    autoComplete="address"
-                    errors={errors}
-                  />
-                </ModalBody>
-                <ModalFooter>
-                  <Button color="danger" variant="light" onPress={onClose}>
-                    Cerrar
-                  </Button>
-                  <Button type="submit" color="primary">
-                    Enviar
-                  </Button>
-                </ModalFooter>
-              </form>
-            )}
+            <ModalHeader className="flex flex-col gap-1 mr-auto ml-auto">
+              Solicitud comerciante individual
+            </ModalHeader>
+            <ModalBody>
+              <SellerRequestPerson />
+            </ModalBody>
+          </ModalContent>
+        </Modal>
+
+        <Modal
+          className=""
+          isOpen={isOpen2}
+          onOpenChange={onOpenChange2}
+          scrollBehavior={scrollBehavior}
+        >
+          <ModalContent>
+            <ModalHeader className="flex flex-col gap-1 mr-auto ml-auto">
+              Represento una empresa
+            </ModalHeader>
+            <ModalBody>
+              <SellerRequestCompany />
+            </ModalBody>
           </ModalContent>
         </Modal>
       </>

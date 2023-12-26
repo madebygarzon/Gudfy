@@ -53,6 +53,7 @@ const SupplierTemplate: React.FC = () => {
     )
   ) : !store ? (
     <CustomerStore store={store} />
+
   ) : (
     <Spinner></Spinner>
   )
