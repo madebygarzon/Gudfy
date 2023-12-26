@@ -130,5 +130,6 @@ export default class SellerApplicationService extends TransactionBaseService {
       name: `${dataCustomer.first_name} ${dataCustomer.last_name}`,
       email: dataCustomer.email,
     };
+
   }
 }

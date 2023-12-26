@@ -7,6 +7,8 @@ import cors from "cors";
 import getListApplication from "./seller/get-seller-application";
 import UpdateSellerAplication from "./seller/update-seller-application";
 
+import getListApplication from "./seller/get-seller-application";
+
 // Initialize a custom router
 const router = Router();
 type adminCorsOptions = {
@@ -21,6 +23,7 @@ export function attachAdminRoutes(
   adminRouter.use("/", router);
 
   // Define a GET endpoint on the root route of our custom path
+
   //router.get("/", wrapHandler(customRouteHandler));
   router.options("/sellerapplication", cors(adminCorsOptions), authenticate());
   router.get(
@@ -35,6 +38,7 @@ export function attachAdminRoutes(
     authenticate(),
     wrapHandler(UpdateSellerAplication)
   );
+
 
   // Attach routes for onboarding experience, defined separately
   onboardingRoutes(adminRouter);
