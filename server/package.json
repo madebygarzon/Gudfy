@@ -1,5 +1,6 @@
 {
   "name": "medusa-starter-default",
+  "homepage": "https://admin-mp.gudfy.com",
   "version": "0.0.1",
   "description": "A starter for Medusa projects.",
   "author": "Sebastian Rindom <skrindom@gmail.com>",
