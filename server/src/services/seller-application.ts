@@ -68,21 +68,26 @@ export default class SellerApplicationService extends TransactionBaseService {
   }
 
   async getListApplication() {
-    const sellerApplicationRepository = this.activeManager_.withRepository(
-      this.sellerApplicationRepository_
-    );
-    const getList = await sellerApplicationRepository.find();
-    const dataList = await Promise.all(
-      getList.map(async (data) => {
-        const dataCustomer = await this.retrieveCustomer(data.customer_id);
-        return {
-          ...data,
-          customer: dataCustomer,
-        };
-      })
-    );
+    try {
+      const sellerApplicationRepository = this.activeManager_.withRepository(
+        this.sellerApplicationRepository_
+      );
+      const getList = await sellerApplicationRepository.find();
 
-    return dataList;
+      const dataList = await Promise.all(
+        getList.map(async (data) => {
+          const dataCustomer = await this.retrieveCustomer(data.customer_id);
+          return {
+            ...data,
+            customer: dataCustomer,
+          };
+        })
+      );
+
+      return dataList;
+    } catch (error) {
+      console.log("LISTA DE APLICACIONES ERROR", error);
+    }
   }
 
   async updateSellerAplication(payload, customer_id) {

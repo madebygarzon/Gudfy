@@ -14,7 +14,7 @@ import { CustomerRole } from "./customer-role";
 @Entity()
 export class Customer extends MedusaCustomer {
   @Index("CustomerStoreId")
-  @Column({ nullable: true })
+  @Column({ type: "varchar", nullable: true })
   store_id?: string;
 
   @ManyToOne(() => Store, (store) => store.members)
@@ -24,10 +24,10 @@ export class Customer extends MedusaCustomer {
   @Column({ nullable: true })
   role_id?: number;
 
-  @ManyToOne(() => CustomerRole)
+  @ManyToOne(() => CustomerRole, (role) => role.customers)
   @JoinColumn({ name: "role_id" })
   customerRole?: CustomerRole;
 
-  @OneToMany(() => SellerApplication, (appli) => appli.customer)
-  sellerapplication?: SellerApplication[];
+  @OneToMany(() => SellerApplication, (seller) => seller?.customer)
+  sellerapplications?: SellerApplication[];
 }
