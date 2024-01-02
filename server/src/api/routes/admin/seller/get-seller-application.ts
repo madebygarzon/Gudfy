@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 
 export default async function getListApplication(req: Request, res: Response) {
+
   try {
     const sellerApplicationService = req.scope.resolve(
       "sellerApplicationService"
@@ -10,4 +11,5 @@ export default async function getListApplication(req: Request, res: Response) {
   } catch (error) {
     res.status(400).json(error);
   }
+
 }
