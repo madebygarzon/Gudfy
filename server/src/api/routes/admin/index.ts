@@ -13,6 +13,7 @@ export function attachAdminRoutes(adminRouter: Router) {
   adminRouter.use("/", router);
 
   // Define a GET endpoint on the root route of our custom path
+
   //router.get("/", wrapHandler(customRouteHandler));
 
   router.get("/sellerapplication", wrapHandler(getListApplication));
