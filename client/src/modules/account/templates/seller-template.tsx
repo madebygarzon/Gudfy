@@ -4,8 +4,8 @@ import React, { useEffect, useState } from "react"
 import { actionGetSellerApplication } from "../actions/action-seller-application"
 import { useAccount } from "@lib/context/account-context"
 import ApplyForSeller from "../components/dashboard-gf/seller/apply-for-seller"
-import { getStore } from "../actions/get-customer-store"
-import CustomerStore from "../components/dashboard-gf/seller/customer-store"
+import { getStore } from "../actions/get-seller-store"
+import SellerStore from "../components/dashboard-gf/seller/seller-store"
 import Spinner from "@modules/common/icons/spinner"
 
 interface SellerRole {
@@ -30,6 +30,7 @@ const SupplierTemplate: React.FC = () => {
         })
         if (dataSellerApplication?.approved) {
           const dataStore = await getStore()
+          console.log("storeeeeeeeeeee", dataStore)
           setStore(dataStore)
         }
       }
@@ -51,8 +52,8 @@ const SupplierTemplate: React.FC = () => {
     ) : (
       <h1 className="text-[48px]"> Su solicitud fue rechazada </h1>
     )
-  ) : !store ? (
-    <CustomerStore store={store} />
+  ) : store ? (
+    <SellerStore store={store} />
   ) : (
     <Spinner></Spinner>
   )

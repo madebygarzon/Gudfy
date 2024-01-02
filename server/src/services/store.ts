@@ -22,6 +22,7 @@ class StoreService extends MedusaStoreService {
   }
 
   async retrieve(config?: FindConfig<Store>): Promise<Store> {
+    console.log("STOREEEEEEEEEEEEEEEEE", this.loggedInCustomer_);
     if (!this.loggedInCustomer_) {
       return super.retrieve(config);
     }

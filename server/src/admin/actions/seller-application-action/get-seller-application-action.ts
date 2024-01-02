@@ -1,5 +1,5 @@
 import axios from "axios";
-
+axios.defaults.withCredentials = true;
 export const getListSellerApplication = async () => {
   try {
     const getlist = await axios.get(
@@ -8,6 +8,6 @@ export const getListSellerApplication = async () => {
     );
     return getlist.data;
   } catch (error) {
-    console.log(error.message);
+    console.log("error al obtener la lista de aplicaciones", error);
   }
 };
