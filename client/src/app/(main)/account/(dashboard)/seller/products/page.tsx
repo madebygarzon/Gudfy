@@ -1,4 +1,4 @@
-import SellerTemplate from "@modules/account/templates/seller-template"
+import TemplateProduct from "@modules/account/templates/products"
 import { Metadata } from "next"
 
 export const metadata: Metadata = {
@@ -7,5 +7,5 @@ export const metadata: Metadata = {
 }
 
 export default function Profile() {
-  return <SellerTemplate />
+  return <TemplateProduct />
 }

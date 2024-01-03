@@ -45,25 +45,30 @@ class CustomerService extends MedusaCustomerService {
     });
   }
 
-  async createStore(
-    customerId: string,
-    customer: UpdateCustomerInput
-  ): Promise<Customer> {
-    console.log(customerId);
-    if (!customer.store_id) {
-      const storeRepo = this.manager_.withRepository(this.storeRepository_);
-      let newStore = storeRepo.create();
-      newStore = await storeRepo.save(newStore);
+  async createStore(customerId: string): Promise<Customer> {
+    const customerRepository = this.manager_.withRepository(
+      this.customerRepository_
+    );
 
-      const updateData: UpdateCustomerInput = {
-        ...customer,
-        store_id: newStore.id,
-      };
-      await super
-        .update(customerId, updateData)
-        .then((e) => console.log("update", e));
-      return;
-    }
+    const customer = await customerRepository.findOne({
+      where: {
+        id: customerId,
+      },
+    });
+
+    if (customer.store_id) return;
+
+    const storeRepo = this.manager_.withRepository(this.storeRepository_);
+    let newStore = storeRepo.create();
+    newStore = await storeRepo.save(newStore);
+
+    const updateData: UpdateCustomerInput = {
+      ...customer,
+      store_id: newStore.id,
+    };
+
+    await super.update(customerId, updateData);
+    return;
   }
 
   async create(customer: CreateCustomerInput): Promise<Customer> {

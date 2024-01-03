@@ -4,6 +4,9 @@ import React, { useEffect, useState } from "react"
 import { actionGetSellerApplication } from "../actions/action-seller-application"
 import { useAccount } from "@lib/context/account-context"
 import ApplyForSeller from "../components/dashboard-gf/seller/apply-for-seller"
+import { getStore } from "../actions/get-seller-store"
+import SellerStore from "../components/dashboard-gf/seller/seller-store"
+import Spinner from "@modules/common/icons/spinner"
 
 interface SellerRole {
   application: boolean
@@ -13,12 +16,26 @@ interface SellerRole {
 const SupplierTemplate: React.FC = () => {
   const { customer } = useAccount()
   const [isSeller, setIsSeller] = useState<SellerRole>()
+  const [store, setStore] = useState()
   const [reset, useReset] = useState(false)
 
   useEffect(() => {
-    if (customer!) {
-      actionGetSellerApplication(customer.id).then((data) => setIsSeller(data))
+    const functiongetData = async () => {
+      if (customer!) {
+        const dataSellerApplication = await actionGetSellerApplication(
+          customer.id
+        ).then((data) => {
+          setIsSeller(data)
+          return data
+        })
+        if (dataSellerApplication?.approved) {
+          const dataStore = await getStore()
+          console.log("storeeeeeeeeeee", dataStore)
+          setStore(dataStore)
+        }
+      }
     }
+    functiongetData()
   }, [reset])
 
   const handlerReset = () => {
@@ -30,9 +47,15 @@ const SupplierTemplate: React.FC = () => {
       <ApplyForSeller customer_id={customer.id} handlerReset={handlerReset} />
     </>
   ) : !isSeller?.approved ? (
-    <h1 className="text-[48px]"> Su solicitud está en proceso</h1>
+    !isSeller?.rejected ? (
+      <h1 className="text-[48px]"> Su solicitud esta en proceso </h1>
+    ) : (
+      <h1 className="text-[48px]"> Su solicitud fue rechazada </h1>
+    )
+  ) : store ? (
+    <SellerStore store={store} />
   ) : (
-    <h1 className="text-[48px]"> Eres vendedor</h1>
+    <Spinner></Spinner>
   )
 }
 

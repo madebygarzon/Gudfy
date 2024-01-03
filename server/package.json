@@ -32,7 +32,7 @@
     "@medusajs/cache-redis": "^1.8.7",
     "@medusajs/event-bus-redis": "^1.8.7",
     "@medusajs/file-local": "^1.0.1",
-    "@medusajs/medusa": "1.14.0",
+    "@medusajs/medusa": "1.19.0",
     "@medusajs/ui": "^2.2.0",
     "@prisma/client": "^5.7.1",
     "@react-email/button": "^0.0.10",
