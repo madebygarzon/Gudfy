@@ -99,7 +99,7 @@
       "<rootDir>/node_modules/"
     ],
     "rootDir": "src",
-    "testRegex": "(/__tests__/.*|\\.(test|spec))\\.(ts|js)$",
+    "testRegex": "(/_tests_/.*|\\.(test|spec))\\.(ts|js)$",
     "transform": {
       ".ts": "ts-jest"
     },
