@@ -15,7 +15,6 @@ export default async function UpdateSellerAplication(
     );
     res.status(200).json(data);
   } catch (error) {
-    console.log("ERROR EN LA PETICION", error);
-    res.status(400);
+    res.status(400).send(error);
   }
 }

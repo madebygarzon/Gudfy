@@ -2,12 +2,10 @@ import { Router, json } from "express";
 import cors from "cors";
 import bodyParser from "body-parser";
 import { authenticate, ConfigModule } from "@medusajs/medusa";
-import { getConfigFile, parseCorsOrigins } from "medusa-core-utils";
+import { getConfigFile } from "medusa-core-utils";
 import { attachStoreRoutes } from "./routes/store";
 import { attachAdminRoutes } from "./routes/admin";
-import { attachCustomerRoutes } from "./routes/customer";
-import configLoader from "@medusajs/medusa/dist/loaders/config";
-import authenticateCustomer from "@medusajs/medusa/dist/api/middlewares/authenticate-customer";
+import { attachCustomerRoutes } from "./routes/seller";
 
 export default (rootDirectory: string): Router | Router[] => {
   // Read currently-loaded medusa config
@@ -34,10 +32,10 @@ export default (rootDirectory: string): Router | Router[] => {
   // Set up root routes for store and admin endpoints, with appropriate CORS settings
   router.use("/store", cors(storeCorsOptions), bodyParser.json());
   router.use("/admin", cors(adminCorsOptions), bodyParser.json());
-  router.use("/customer", cors(storeCorsOptions), bodyParser.json());
+  router.use("/seller", cors(storeCorsOptions), bodyParser.json());
 
   // Add authentication to all admin routes *except* auth and account invite ones
-  router.use(/\/admin\/((?!auth)(?!invites).*)/);
+  router.use(/\/admin\/((?!auth)(?!invites).*)/, authenticate());
 
   // Set up routers for store and admin endpoints
   const storeRouter = Router();
@@ -47,11 +45,11 @@ export default (rootDirectory: string): Router | Router[] => {
   // Attach these routers to the root routes
   router.use("/store", storeRouter);
   router.use("/admin", adminRouter);
-  router.use("/customer", customerRouter);
+  router.use("/seller", customerRouter);
 
   // Attach custom routes to these routers
   attachStoreRoutes(storeRouter);
-  attachAdminRoutes(adminRouter, adminCorsOptions);
+  attachAdminRoutes(adminRouter);
   attachCustomerRoutes(customerRouter);
 
   return router;
