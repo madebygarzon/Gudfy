@@ -7,9 +7,6 @@ export const updateSellerAplicationAction = async (payload, customer_id) => {
       { payload, customer_id },
       { withCredentials: true }
     );
-    console.log(getlist.data);
     return getlist.data;
-  } catch (error) {
-    console.log(error.message);
-  }
+  } catch (error) {}
 };

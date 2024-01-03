@@ -17,6 +17,7 @@ type objectSellerApplication = {
   };
   approved: boolean;
   rejected: boolean;
+  created_at: string;
 };
 
 type ListDataSellerApplication = {
@@ -24,26 +25,25 @@ type ListDataSellerApplication = {
   dataPreview: Array<objectSellerApplication>;
   count: number;
 };
-
+const dataSelecFilter = [
+  {
+    value: "Todos",
+    label: "Todos",
+  },
+  {
+    value: "Aprobado",
+    label: "Aprobado",
+  },
+  {
+    value: "Rechazado",
+    label: "Rechazado",
+  },
+  {
+    value: "Pendiente",
+    label: "Pendiente",
+  },
+];
 const SellerApplication = () => {
-  const dataSelecFilter = [
-    {
-      value: "Todos",
-      label: "Todos",
-    },
-    {
-      value: "Aprobado",
-      label: "Aprobado",
-    },
-    {
-      value: "Rechazado",
-      label: "Rechazado",
-    },
-    {
-      value: "Pendiente",
-      label: "Pendiente",
-    },
-  ];
   const [dataCustomer, setDataCustomer] = useState<ListDataSellerApplication>({
     dataSellers: [],
     dataPreview: [],
@@ -106,6 +106,7 @@ const SellerApplication = () => {
   const handlerEditstatus = async (e) => {
     updateSellerAplicationAction(e.payload, e.customer_id).then(() => {
       handlerGetListApplication();
+      setPage(1);
     });
   };
   const handlerFilter = (value) => {
@@ -140,9 +141,9 @@ const SellerApplication = () => {
         {dataCustomer.dataPreview.length ? (
           <>
             <div className="mt-2 h-[120px] flex justify-between">
-              <h1 className=" text-xl font-bold"> Solicitudes de vendedores</h1>
-              <div className="flex gap-5 h-full items-end">
-                <div className="w-[156px]">
+              <h1 className=" text-xl font-bold"> Solicitud de vendedores</h1>
+              <div className="flex gap-5 h-full items-end py-4">
+                <div className="w-[156px] ">
                   <Select onValueChange={handlerFilter}>
                     <Select.Trigger>
                       <Select.Value placeholder="Filtar por: " />
@@ -175,7 +176,7 @@ const SellerApplication = () => {
                 {dataCustomer.dataPreview?.map((data, i) => {
                   return (
                     <Table.Row key={data.customer_id}>
-                      <Table.Cell>01 Enero 2023</Table.Cell>
+                      <Table.Cell>{formatarFecha(data.created_at)}</Table.Cell>
                       <Table.Cell>{data.customer.name}</Table.Cell>
                       <Table.Cell>{data.customer.email}</Table.Cell>
                       <Table.Cell>
@@ -233,7 +234,7 @@ const SellerApplication = () => {
           <Spinner size="large" variant="secondary" />
         )}
       </div>
-      <div className="flex justify-between">
+      <div className="flex justify-between p-4">
         <div>{`${dataCustomer.count} solicitudes`}</div>
         <div className="flex gap-5">
           <>
@@ -257,7 +258,19 @@ const SellerApplication = () => {
     </div>
   );
 };
-
+function formatarFecha(fechaString: string): string {
+  const fecha = new Date(fechaString);
+  const opcionesDeFormato: Intl.DateTimeFormatOptions = {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  };
+  const fechaFormateada: string = fecha.toLocaleDateString(
+    "en-US",
+    opcionesDeFormato
+  );
+  return fechaFormateada;
+}
 export const config: WidgetConfig = {
   zone: "customer.list.after",
 };
