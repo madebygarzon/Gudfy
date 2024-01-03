@@ -1,10 +1,6 @@
 import { Request, Response } from "express";
 
-export default async function GetCustomer(
-  req: Request,
-  res: Response
-): Promise<void> {
-  console.log("acallega");
+export async function GetSeller(req: Request, res: Response): Promise<void> {
   try {
     const sellerApplicationRepository = req.scope.resolve("storeService");
     const sotore = await sellerApplicationRepository.retrieve();

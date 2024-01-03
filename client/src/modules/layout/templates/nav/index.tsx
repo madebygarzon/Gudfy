@@ -108,7 +108,9 @@ const Nav = () => {
         </nav>
         <MobileMenu />
       </header>
-      {isScrolled ? <NavList /> : <div className="h-[1px] bg-blue-gf"></div>}
+      {
+        //isScrolled ? <NavList /> : <div className="h-[1px] bg-blue-gf"></div>
+      }
     </div>
   )
 }

@@ -16,7 +16,7 @@ export class SellerApplication extends BaseEntity {
   @Column({ type: "varchar", nullable: false })
   customer_id: string;
 
-  @ManyToOne(() => Customer, (customer) => customer.sellerapplication)
+  @ManyToOne(() => Customer, (customer) => customer.sellerapplications)
   @JoinColumn({ name: "customer_id", referencedColumnName: "id" })
   customer: Customer;
 
