@@ -4,11 +4,12 @@ export async function CreateSellerProduct(
   req: Request,
   res: Response
 ): Promise<void> {
-  const { title } = req.body;
+  const { title, is_giftcard = false } = req.body;
   try {
-    const sellerApplicationRepository = req.scope.resolve("productService");
-    const product = await sellerApplicationRepository.create({
+    const productService = req.scope.resolve("productService");
+    const product = await productService.createProductStoreCustomer({
       title,
+      is_giftcard,
     });
     res.status(200).json(product);
   } catch (error) {

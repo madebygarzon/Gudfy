@@ -83,11 +83,13 @@ class ProductService extends MedusaProductService {
     return product;
   }
 
-  async create(productObject: CreateProductInput): Promise<Product> {
-    if (!productObject.store_id && this.loggedInCustomer_?.store_id) {
-      productObject.store_id = this.loggedInCustomer_.store_id;
+  async createProductStoreCustomer(
+    productObject: CreateProductInput
+  ): Promise<Product> {
+    if (!productObject.store_id && !this.loggedInCustomer_?.store_id) {
+      throw "No hay tienda a la cual relacionar";
     }
-
+    productObject.store_id = this.loggedInCustomer_.store_id;
     return await super.create(productObject);
   }
 }
