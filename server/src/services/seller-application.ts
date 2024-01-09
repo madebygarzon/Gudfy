@@ -90,7 +90,7 @@ export default class SellerApplicationService extends TransactionBaseService {
     }
   }
 
-  async updateSellerAplication(payload, customer_id) {
+  async updateSellerAplication(payload, customer_id, comment_status?) {
     const sellerApplicationRepository = this.activeManager_.withRepository(
       this.sellerApplicationRepository_
     );
@@ -109,7 +109,7 @@ export default class SellerApplicationService extends TransactionBaseService {
       );
       await this.customerService_.createStore(customer_id);
       return sellerApplication;
-    } else if (payload === "REJECT") {
+    } else if (payload === "REJECT" && comment_status) {
       const sellerApplication = await sellerApplicationRepository.update(
         { customer_id: customer_id },
         {
@@ -135,6 +135,5 @@ export default class SellerApplicationService extends TransactionBaseService {
       name: `${dataCustomer.first_name} ${dataCustomer.last_name}`,
       email: dataCustomer.email,
     };
-
   }
 }

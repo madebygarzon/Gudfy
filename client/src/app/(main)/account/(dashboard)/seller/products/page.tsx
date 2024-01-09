@@ -1,4 +1,4 @@
-import TemplateProduct from "@modules/account/templates/products"
+import TemplateProduct from "@modules/account/templates/seller-products"
 import { Metadata } from "next"
 
 export const metadata: Metadata = {

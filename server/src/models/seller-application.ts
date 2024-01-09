@@ -32,6 +32,9 @@ export class SellerApplication extends BaseEntity {
   @Column({ type: "boolean", nullable: false })
   rejected: boolean;
 
+  @Column({ type: "varchar", nullable: true })
+  comment_status: string;
+
   @BeforeInsert()
   private beforeInsert(): void {
     this.id = generateEntityId(this.id, "appli");
