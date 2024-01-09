@@ -15,6 +15,7 @@ interface SellerRole {
 }
 const SupplierTemplate: React.FC = () => {
   const { customer } = useAccount()
+  const [isloading, setIsloading] = useState<boolean>(true)
   const [isSeller, setIsSeller] = useState<SellerRole>()
   const [store, setStore] = useState()
   const [reset, useReset] = useState(false)
@@ -26,11 +27,11 @@ const SupplierTemplate: React.FC = () => {
           customer.id
         ).then((data) => {
           setIsSeller(data)
+          setIsloading(false)
           return data
         })
         if (dataSellerApplication?.approved) {
           const dataStore = await getStore()
-          console.log("storeeeeeeeeeee", dataStore)
           setStore(dataStore)
         }
       }
@@ -42,7 +43,11 @@ const SupplierTemplate: React.FC = () => {
     useReset(!reset)
   }
 
-  return !isSeller?.application && customer ? (
+  return isloading ? (
+    <div className="w-full h-full flex justify-center items-center">
+      <Spinner size="32" />
+    </div>
+  ) : !isSeller?.application && customer ? (
     <>
       <ApplyForSeller customer_id={customer.id} handlerReset={handlerReset} />
     </>
@@ -55,7 +60,7 @@ const SupplierTemplate: React.FC = () => {
   ) : store ? (
     <SellerStore store={store} />
   ) : (
-    <Spinner></Spinner>
+    <div>No eres vendedor</div>
   )
 }
 

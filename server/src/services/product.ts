@@ -33,34 +33,13 @@ class ProductService extends MedusaProductService {
     }
   }
 
-  async list(
-    selector: ProductSelector,
-    config?: FindProductConfig
-  ): Promise<Product[]> {
-    if (!selector.store_id && this.loggedInCustomer_?.store_id) {
-      selector.store_id = this.loggedInCustomer_.store_id;
-    }
+  async listAndCountSeller(): Promise<[Product[], number]> {
+    let listproduct;
 
-    config.select?.push("store_id");
+    const selector = { store_id: this.loggedInCustomer_.store_id };
+    listproduct = await super.listAndCount(selector);
 
-    config.relations?.push("store");
-
-    return await super.list(selector, config);
-  }
-
-  async listAndCount(
-    selector: ProductSelector,
-    config?: FindProductConfig
-  ): Promise<[Product[], number]> {
-    if (!selector.store_id && this.loggedInCustomer_?.store_id) {
-      selector.store_id = this.loggedInCustomer_.store_id;
-    }
-
-    config.select?.push("store_id");
-
-    config.relations?.push("store");
-
-    return await super.listAndCount(selector, config);
+    return listproduct;
   }
 
   async retrieve(
