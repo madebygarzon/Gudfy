@@ -9,18 +9,17 @@ import type {
   MedusaResponse,
 } from "@medusajs/medusa";
 
-const registerLoggedInCustomer = async (
-  req: MedusaRequest,
+export const registerLoggedInCustomer = async (
+  req,
   res: MedusaResponse,
   next: MedusaNextFunction
 ) => {
   let loggedInCustomer: Customer | null = null;
-
-  if (req.user && req.user.customer_id) {
+  if (req.session.customer_id) {
     const customerService = req.scope.resolve(
       "customerService"
     ) as CustomerService;
-    loggedInCustomer = await customerService.retrieve(req.user.customer_id);
+    loggedInCustomer = await customerService.retrieve(req.session.customer_id);
   }
 
   req.scope.register({
@@ -30,13 +29,4 @@ const registerLoggedInCustomer = async (
   });
 
   next();
-};
-
-export const config: MiddlewaresConfig = {
-  routes: [
-    {
-      matcher: "/seller",
-      middlewares: [registerLoggedInCustomer],
-    },
-  ],
 };

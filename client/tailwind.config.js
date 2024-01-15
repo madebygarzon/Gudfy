@@ -1,9 +1,11 @@
 const { nextui } = require("@nextui-org/react")
 
 module.exports = {
+  presets: [require("@medusajs/ui-preset")],
   content: [
     "./src/**/*.{js,ts,jsx,tsx}",
     "./node_modules/@nextui-org/theme/dist/**/*.{js,ts,jsx,tsx}",
+    "./node_modules/@medusajs/ui/dist/**/*.{js,jsx,ts,tsx}",
   ],
   theme: {
     extend: {

@@ -9,6 +9,7 @@ export class SellerApplication1701493661573 implements MigrationInterface {
                 "address" character varying NOT NULL, 
                 "approved" boolean NOT NULL,
                 "rejected" boolean NOT NULL,
+                "comment_status" character varying,
                 "created_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), 
                 "updated_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now())`
     );
