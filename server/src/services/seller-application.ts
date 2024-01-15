@@ -67,12 +67,15 @@ export default class SellerApplicationService extends TransactionBaseService {
     return { application: false, approved: false };
   }
 
-  async getListApplication() {
+  async getListApplication(order) {
     try {
       const sellerApplicationRepository = this.activeManager_.withRepository(
         this.sellerApplicationRepository_
       );
-      const getList = await sellerApplicationRepository.find();
+
+      const getList = await sellerApplicationRepository.find({
+        order: { created_at: order },
+      });
 
       const dataList = await Promise.all(
         getList.map(async (data) => {
@@ -99,7 +102,10 @@ export default class SellerApplicationService extends TransactionBaseService {
         "Updating a product review requires payload, customer_id"
       );
     }
-    if (payload === "APROBED") {
+    if (payload === "REJECTED" && !comment_status) {
+      throw new Error("A comment is expected, comment_status");
+    }
+    if (payload === "APPROVED") {
       const sellerApplication = await sellerApplicationRepository.update(
         { customer_id: customer_id },
         {
@@ -109,15 +115,17 @@ export default class SellerApplicationService extends TransactionBaseService {
       );
       await this.customerService_.createStore(customer_id);
       return sellerApplication;
-    } else if (payload === "REJECT" && comment_status) {
+    } else if (payload === "REJECTED") {
       const sellerApplication = await sellerApplicationRepository.update(
         { customer_id: customer_id },
         {
           approved: false,
           rejected: true,
+          comment_status: comment_status,
         }
       );
       return sellerApplication;
+    } else {
     }
     return;
   }
