@@ -16,7 +16,7 @@ const Banner = () => {
             ¡COMPRA YA!
           </Button>
           <p className="text-[16px] text-white font-bold">
-            Paga con Criptomonedas
+            Paga con Criptomonedas.
           </p>
           <div className="flex justify-start gap-2">
             <Image
