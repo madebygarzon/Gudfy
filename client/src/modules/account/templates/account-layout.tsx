@@ -41,8 +41,8 @@ const AccountLayout: React.FC = ({ children }) => {
             </div>
           </div>
 
-          <div className="h-[85vh] w-full overflow-y-auto flex px-10 justify-center items-center ">
-            <div className="">{children}</div>
+          <div className="h-[85vh] w-full overflow-y-auto flex p-10 justify-center items-center ">
+            <div className="w-full h-full">{children}</div>
           </div>
         </div>
       </div>

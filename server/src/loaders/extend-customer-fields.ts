@@ -5,11 +5,11 @@ export default async function () {
   imports.allowedAdminUsersFields = [
     ...imports.allowedAdminUsersFields,
     "store_id",
-    ,
+    "role_id",
   ];
   imports.defaultAdminUsersFields = [
     ...imports.defaultAdminUsersFields,
     "store_id",
-    ,
+    "role_id",
   ];
 }

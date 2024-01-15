@@ -1,21 +1,21 @@
 "use client"
 import React from "react"
-import ButtonMedusa from "@modules/common/components/button"
 import {
   Modal,
   ModalContent,
   ModalHeader,
   ModalBody,
   ModalFooter,
-  Button,
   useDisclosure,
+  Button,
 } from "@nextui-org/react"
 import Input from "@modules/common/components/input"
 import { useForm } from "react-hook-form"
-import { CreateProductInput } from "@modules/account/actions/post-seller-store"
-import { getStore } from "@modules/account/actions/get-seller-store"
+import { CreateProductInput } from "@modules/account/actions/post-seller-product"
+import { Button as ButtonM } from "@medusajs/ui"
+import { Plus } from "@medusajs/icons"
 
-export default function Product() {
+export default function CreateProduct() {
   const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure()
 
   const {
@@ -27,22 +27,31 @@ export default function Product() {
 
   const onSubmit = handleSubmit(async (credentials) => {
     if (!credentials.title) return alert("Campos sin completar")
-    const store = await getStore()
+
     CreateProductInput({
       title: credentials.title,
     })
   })
+
   return (
     <>
       <div className=" flex-col w-full space-y-10">
         <div className="flex justify-center">
-          <ButtonMedusa
+          {/* <ButtonMedusa
             onClick={onOpen}
             className="text-[22px]"
             variant="primary"
           >
             Crea un producto
-          </ButtonMedusa>
+          </ButtonMedusa> */}
+          <ButtonM
+            variant="transparent"
+            className=" border rounded-[5px]"
+            onClick={onOpen}
+          >
+            Añadir producto
+            <Plus />
+          </ButtonM>
         </div>
       </div>
       {
