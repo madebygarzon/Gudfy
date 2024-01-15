@@ -33,34 +33,13 @@ class ProductService extends MedusaProductService {
     }
   }
 
-  async list(
-    selector: ProductSelector,
-    config?: FindProductConfig
-  ): Promise<Product[]> {
-    if (!selector.store_id && this.loggedInCustomer_?.store_id) {
-      selector.store_id = this.loggedInCustomer_.store_id;
-    }
+  async listAndCountSeller(): Promise<[Product[], number]> {
+    let listproduct;
 
-    config.select?.push("store_id");
+    const selector = { store_id: this.loggedInCustomer_.store_id };
+    listproduct = await super.listAndCount(selector);
 
-    config.relations?.push("store");
-
-    return await super.list(selector, config);
-  }
-
-  async listAndCount(
-    selector: ProductSelector,
-    config?: FindProductConfig
-  ): Promise<[Product[], number]> {
-    if (!selector.store_id && this.loggedInCustomer_?.store_id) {
-      selector.store_id = this.loggedInCustomer_.store_id;
-    }
-
-    config.select?.push("store_id");
-
-    config.relations?.push("store");
-
-    return await super.listAndCount(selector, config);
+    return listproduct;
   }
 
   async retrieve(
@@ -83,11 +62,13 @@ class ProductService extends MedusaProductService {
     return product;
   }
 
-  async create(productObject: CreateProductInput): Promise<Product> {
-    if (!productObject.store_id && this.loggedInCustomer_?.store_id) {
-      productObject.store_id = this.loggedInCustomer_.store_id;
+  async createProductStoreCustomer(
+    productObject: CreateProductInput
+  ): Promise<Product> {
+    if (!productObject.store_id && !this.loggedInCustomer_?.store_id) {
+      throw "No hay tienda a la cual relacionar";
     }
-
+    productObject.store_id = this.loggedInCustomer_.store_id;
     return await super.create(productObject);
   }
 }

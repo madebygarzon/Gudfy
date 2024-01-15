@@ -7,7 +7,8 @@ export const CreateProductInput = async (data: data) => {
   try {
     const product = await axios.post(
       "http://localhost:9000/seller/store/create-product/",
-      data
+      data,
+      { withCredentials: true }
     )
 
     return product.data
