@@ -13,7 +13,7 @@ const CustomerStore = (store: any) => {
   const { orders } = useCustomerOrders()
   const { customer } = useMeCustomer()
   return (
-    <div className="w-full">
+    <div className="w-full pb-5">
       <div className="text-xl-semi flex justify-between items-start ">
         <span>
           ¡Tu tienda{" "}
@@ -99,10 +99,16 @@ const CardReviewProductDashboard: React.FC = () => {
         <h3 className="text-4xl font-bold -mb-2 ">80</h3>
         <p className="text-sm ">Valoraciones a productos</p>
       </div>
-      <div className="flex w-full max-w-md justify-center mt-2">
-        <Progress className="z-20 w-[60%]" color="primary" value={100} />
-        <Progress className="z-10 w-[30%] -ml-4" color="warning" value={100} />
-        <Progress className="z-0  w-[10%] -ml-4" color="danger" value={100} />
+      <div className="flex w-[100%] max-w-md justify-center mt-2">
+        <div className=" w-[60%] z-20">
+          <Progress color="primary" value={100} />
+        </div>
+        <div className="w-[30%] z-10 -ml-4 ">
+          <Progress color="warning" value={100} />
+        </div>
+        <div className="w-[10%] z-0 -ml-4">
+          <Progress color="danger" value={100} />
+        </div>
       </div>
       <div className=" flex w-full justify-between px-10 mt-10">
         <div className="">
