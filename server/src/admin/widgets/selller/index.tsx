@@ -11,10 +11,12 @@ import {
   ArrowLongRight,
   ArrowLongLeft,
   TriangleDownMini,
+  ChatBubble,
 } from "@medusajs/icons";
 import Spinner from "../../components/shared/spinner";
 import { Input, Select, Button, Heading, Textarea, Text } from "@medusajs/ui";
 import clsx from "clsx";
+import { ModalComment } from "../../components/seller-application/modal-commet";
 
 type objectSellerApplication = {
   customer_id: string;
@@ -60,7 +62,7 @@ const dataSelecFilter = [
     label: "Pendiente",
   },
 ];
-const registerNumber = [2, 4, 6];
+const registerNumber = [5, 10, 100];
 // numero de filas por pagina predeterminado
 const APPROVED = "APPROVED";
 const REJECTED = "REJECTED";
@@ -75,7 +77,7 @@ const SellerApplication = () => {
   });
   const [pageTotal, setPagetotal] = useState<number>(); // paginas totales
   const [page, setPage] = useState(1);
-  const [rowsPages, setRowsPages] = useState<number>(2);
+  const [rowsPages, setRowsPages] = useState<number>(5);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [orderDate, setOrderDate] = useState<boolean>(true);
   //----------------------------------
@@ -90,10 +92,16 @@ const SellerApplication = () => {
     },
     comment_status: "",
   });
+  //Modals
   //modal copnfirmacion de Aceptar solicitud
-  const [openModal, changeModal] = useState(false);
+  const [openModalAccept, changeModalAccept] = useState(false);
   //modal copnfirmacion de Rechazar solicitud
-  const [openModal2, changeModal2] = useState(false);
+  const [openModalReject, changeModalReject] = useState(false);
+  //modaal commentario de la solicitud
+  const [modalComment, changeModalCommen] = useState({
+    open: false,
+    customer: { name: "", customer_id: "", email: "" },
+  });
 
   const handlerGetListApplication = async (order?: string) => {
     setIsLoading(true);
@@ -181,8 +189,8 @@ const SellerApplication = () => {
       customer_id: dataStatus.customer.customer_id,
       comment_status: dataStatus.comment_status,
     }).then(() => {
-      changeModal(false);
-      changeModal2(false);
+      changeModalAccept(false);
+      changeModalReject(false);
       handlerGetListApplication();
       setPage(1);
     });
@@ -231,7 +239,24 @@ const SellerApplication = () => {
     handlerGetListApplication(value ? "ASC" : "DESC");
     setOrderDate((data) => !data);
   };
-  const handlerSearcherbar = () => {};
+  const handlerSearcherbar = (e: string) => {
+    const dataFilter = dataCustomer.dataSellers.filter((data) => {
+      const nameIncludes = data.customer.name
+        .toLowerCase()
+        .includes(e.toLowerCase());
+      const emailIncludes = data.customer.email
+        .toLowerCase()
+        .includes(e.toLowerCase());
+
+      // Devuelve true si la palabra enviada está incluida en el nombre o el correo electrónico
+      return nameIncludes || emailIncludes;
+    });
+    setDataCustomer({
+      ...dataCustomer,
+      dataPreview: handlerPreviewSellerAplication(dataFilter, 1),
+      dataFilter: dataFilter.length ? dataFilter : [],
+    });
+  };
 
   return (
     <div className=" bg-white p-8 border border-gray-200 rounded-lg">
@@ -255,7 +280,12 @@ const SellerApplication = () => {
                 </Select>
               </div>
               <div className="w-[250px]">
-                <Input placeholder="Search" id="search-input" type="search" />
+                <Input
+                  placeholder="Search"
+                  id="search-input"
+                  type="search"
+                  onChange={(e) => handlerSearcherbar(e.target.value)}
+                />
               </div>
             </div>
           </div>
@@ -322,7 +352,7 @@ const SellerApplication = () => {
                                       ...data.customer,
                                     },
                                   });
-                                  changeModal(true);
+                                  changeModalAccept(true);
                                 }}
                               >
                                 <Check className="text-ui-fg-subtle" />
@@ -339,7 +369,7 @@ const SellerApplication = () => {
                                     },
                                     comment_status: "",
                                   });
-                                  changeModal2(true);
+                                  changeModalReject(true);
                                 }}
                               >
                                 <XMark className="text-ui-fg-subtle" />
@@ -347,6 +377,20 @@ const SellerApplication = () => {
                               </DropdownMenu.Item>
                             </DropdownMenu.Content>
                           </DropdownMenu>
+                          <IconButton
+                            onClick={() => {
+                              changeModalCommen({
+                                open: true,
+                                customer: {
+                                  name: data.customer.name,
+                                  customer_id: data.customer_id,
+                                  email: data.customer.email,
+                                },
+                              });
+                            }}
+                          >
+                            <ChatBubble />
+                          </IconButton>
                         </Table.Cell>
                       </Table.Row>
                     );
@@ -405,19 +449,27 @@ const SellerApplication = () => {
         // Modals
       }
       <ModalApprobed
-        openModal={openModal}
-        changeModal={changeModal}
+        openModal={openModalAccept}
+        changeModal={changeModalAccept}
         data={dataStatus}
         setDataStatus={setDataStatus}
         handlerActionStatus={handlerActionStatus}
       />
       <ModalRejected
-        openModal={openModal2}
-        changeModal={changeModal2}
+        openModal={openModalReject}
+        changeModal={changeModalReject}
         data={dataStatus}
         setDataStatus={setDataStatus}
         handlerActionStatus={handlerActionStatus}
       />
+      {modalComment.open ? (
+        <ModalComment
+          changeModal={changeModalCommen}
+          customer={modalComment.customer}
+        />
+      ) : (
+        <></>
+      )}
     </div>
   );
 };

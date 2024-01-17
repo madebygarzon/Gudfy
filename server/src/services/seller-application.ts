@@ -113,7 +113,11 @@ export default class SellerApplicationService extends TransactionBaseService {
           rejected: false,
         }
       );
+
+      // se crea una tienda solamente si la solicitud esta aprovada.
+      //createStore() tiene una validacion la cual retorna si ya tiene una tienda asociada
       await this.customerService_.createStore(customer_id);
+
       return sellerApplication;
     } else if (payload === "REJECTED") {
       const sellerApplication = await sellerApplicationRepository.update(
@@ -128,6 +132,34 @@ export default class SellerApplicationService extends TransactionBaseService {
     } else {
     }
     return;
+  }
+
+  async getComment(customer_id) {
+    const commentSellerApplication = this.manager_.withRepository(
+      this.sellerApplicationRepository_
+    );
+    const comment = await commentSellerApplication.findOne({
+      where: {
+        customer_id: customer_id,
+      },
+    });
+    return comment;
+  }
+
+  async updateComment(customer_id, comment_status) {
+    const sellerApplicationRepository = this.activeManager_.withRepository(
+      this.sellerApplicationRepository_
+    );
+    if (!customer_id) {
+      throw new Error("Updating a product review requires  customer_id");
+    }
+
+    const sellerApplication = await sellerApplicationRepository.update(
+      { customer_id: customer_id },
+      { comment_status: comment_status }
+    );
+
+    return sellerApplication;
   }
 
   private async retrieveCustomer(customerId: string) {
