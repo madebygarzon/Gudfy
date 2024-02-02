@@ -129,7 +129,6 @@ export default class SellerApplicationService extends TransactionBaseService {
         }
       );
       return sellerApplication;
-    } else {
     }
     return;
   }

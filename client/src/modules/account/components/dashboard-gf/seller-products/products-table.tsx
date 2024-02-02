@@ -61,6 +61,8 @@ export default function ProductsTable() {
   const [rowsPerPages, setRowsPerPages] = useState(3) // numero de filas por pagina
   const [page, setPage] = useState(1)
 
+  const [reset, setReset] = useState<boolean>(false)
+
   const handlerGetListProduct = async () => {
     const dataProduct = await getSellerProduct()
     setPagetotal(Math.ceil(dataProduct[1] / rowsPerPages))
@@ -109,7 +111,7 @@ export default function ProductsTable() {
 
   useEffect(() => {
     handlerGetListProduct()
-  }, [])
+  }, [reset])
 
   const handlerEditstatus = async (e: any) => {
     // actualizar el estatus del producto
@@ -131,13 +133,13 @@ export default function ProductsTable() {
         dataFilter = dataProducts.dataProduct.filter(
           (data) => data.status === "draft"
         )
-        console.log("draft", dataFilter)
+
         break
       case dataSelecFilter[2].value:
         dataFilter = dataProducts.dataProduct.filter(
           (data) => data.status === "published"
         )
-        console.log("published", dataFilter)
+
         break
       default:
         dataFilter = dataProducts.dataProduct
@@ -176,7 +178,7 @@ export default function ProductsTable() {
             </div>
           </div>
           <div className="flex itmes-end py-4">
-            <CreateProduct />
+            <CreateProduct setReset={setReset} />
           </div>
         </div>
         {dataProducts.dataPreview.length ? (

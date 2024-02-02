@@ -4,6 +4,7 @@ import { GetSeller } from "./get-seller-store";
 import { CreateSellerProduct } from "./post-seller-product";
 import { authenticateCustomer } from "@medusajs/medusa";
 import { getListSellerProduct } from "./get-seller-product";
+import upload from "../../middlewares/uploadThumbnail";
 
 const router = Router();
 
@@ -14,6 +15,7 @@ export function attachSellerRoutes(customerRouter: Router) {
   router.get("/products", wrapHandler(getListSellerProduct));
   router.post(
     "/create-product",
+    upload.single("image"),
     authenticateCustomer(),
     wrapHandler(CreateSellerProduct)
   );

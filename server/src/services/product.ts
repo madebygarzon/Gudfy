@@ -9,7 +9,7 @@ import {
   FindProductConfig,
   ProductSelector as MedusaProductSelector,
 } from "@medusajs/medusa/dist/types/product";
-
+import UploadsImagen from "./utils/uploads-file";
 type ProductSelector = {
   store_id?: string;
 } & MedusaProductSelector;
@@ -63,13 +63,23 @@ class ProductService extends MedusaProductService {
   }
 
   async createProductStoreCustomer(
-    productObject: CreateProductInput
+    productObject: CreateProductInput,
+    fileImage: string
   ): Promise<Product> {
     if (!productObject.store_id && !this.loggedInCustomer_?.store_id) {
       throw "No hay tienda a la cual relacionar";
     }
+
     productObject.store_id = this.loggedInCustomer_.store_id;
-    return await super.create(productObject);
+    if (fileImage) {
+      productObject.thumbnail = `${
+        process.env.BACKEND_URL ?? "http://localhost:9000"
+      }/${fileImage}`;
+    }
+
+    const newProduct = await super.create(productObject);
+
+    return newProduct;
   }
 }
 
