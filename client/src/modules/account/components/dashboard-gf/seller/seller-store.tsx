@@ -24,7 +24,7 @@ const CustomerStore = (store: any) => {
         </span>
         <span className="text-small-regular text-gray-700"></span>
       </div>
-      <div className="flex my-4 gap-2">
+      <div className="flex min-h-[230px] my-4 gap-2">
         <div className="w-[40%] flex justify-center ">
           <CardPrefileDashboard customer={customer} />
         </div>
@@ -80,7 +80,7 @@ const CardItemsDashboard: React.FC<CardDasboard> = ({
   href,
 }) => {
   return (
-    <div className="min-h-[200px] max-w-[300px]">
+    <div className="min-h-[230px] ">
       <Link href={href}>
         <div className=" flex flex-col py-5 px-2  h-full shadow-card rounded-[10px] items-center  justify-center">
           <Image alt="user_gudfy" src={image} width={80} height={80} />
