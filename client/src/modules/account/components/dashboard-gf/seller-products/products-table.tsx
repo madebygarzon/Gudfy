@@ -7,35 +7,18 @@ import { Input, Select } from "@medusajs/ui"
 import { getSellerProduct } from "@modules/account/actions/get-seller-product"
 import { Button } from "@medusajs/ui"
 import CreateProduct from "./create-product"
-
-type objectSellerApplication = {
-  id: string
-  title: string
-  status: string
-  inventory: boolean
-  categories: string
-}
+import Image from "next/image"
+import { Product, Variant } from "types/medusa"
+import ImagePlaceholderIcon from "@modules/common/icons/defaultIcon"
+import { constant } from "lodash"
 
 type ListDataSellerProduct = {
-  dataProduct: Array<objectSellerApplication>
-  dataFilter: Array<objectSellerApplication>
-  dataPreview: Array<objectSellerApplication>
+  dataProduct: Array<Product>
+  dataFilter: Array<Product>
+  dataPreview: Array<Product>
   count: number
 }
-const dataSelecterPAge = [
-  {
-    value: "2",
-    label: "2",
-  },
-  {
-    value: "3",
-    label: "3",
-  },
-  {
-    value: "5",
-    label: "5",
-  },
-]
+const dataSelecterPAge = [5, 10, 30]
 const dataSelecFilter = [
   {
     value: "todos",
@@ -58,7 +41,7 @@ export default function ProductsTable() {
     count: 0,
   })
   const [pageTotal, setPagetotal] = useState<number>() // paginas totales
-  const [rowsPerPages, setRowsPerPages] = useState(3) // numero de filas por pagina
+  const [rowsPerPages, setRowsPerPages] = useState(5) // numero de filas por pagina
   const [page, setPage] = useState(1)
 
   const [reset, setReset] = useState<boolean>(false)
@@ -197,10 +180,38 @@ export default function ProductsTable() {
                 {dataProducts.dataPreview?.map((data, i) => {
                   return (
                     <Table.Row key={data.id}>
-                      <Table.Cell>{data.title}</Table.Cell>
+                      <Table.Cell>
+                        <div className="flex gap-3 items-center">
+                          {data.thumbnail ? (
+                            <Image
+                              src={data.thumbnail}
+                              width={28}
+                              height={38}
+                              alt={data.title}
+                            />
+                          ) : (
+                            <ImagePlaceholderIcon />
+                          )}
+                          {data.title}
+                        </div>
+                      </Table.Cell>
                       <Table.Cell>{data.status}</Table.Cell>
-                      <Table.Cell>10</Table.Cell>
-                      <Table.Cell>Categoria1 ,categoria 2</Table.Cell>
+                      <Table.Cell>
+                        {data.variants.length ? (
+                          <InventoryVariants variants={data.variants} />
+                        ) : (
+                          <span>Sin Inventario</span>
+                        )}
+                      </Table.Cell>
+                      <Table.Cell>
+                        {data.categories.length ? (
+                          data.categories.map((c) => (
+                            <span className="text-[12px]">{`${c.name} `}</span>
+                          ))
+                        ) : (
+                          <p className="text-[12px]">Sin Categoria</p>
+                        )}
+                      </Table.Cell>
                       <Table.Cell className="flex gap-x-2 items-center">
                         <IconButton>
                           <Eye />
@@ -244,12 +255,12 @@ export default function ProductsTable() {
           {`${dataProducts.dataFilter.length} Productos`}{" "}
           <Select onValueChange={handlerFilterRows}>
             <Select.Trigger>
-              <Select.Value placeholder="3" />
+              <Select.Value placeholder="5" />
             </Select.Trigger>
             <Select.Content>
               {dataSelecterPAge.map((item) => (
-                <Select.Item key={item.value} value={item.value}>
-                  {item.label}
+                <Select.Item key={item} value={`${item}`}>
+                  {item}
                 </Select.Item>
               ))}
             </Select.Content>
@@ -276,4 +287,15 @@ export default function ProductsTable() {
       </div>
     </div>
   )
+}
+
+const InventoryVariants = (v: any) => {
+  const numVari = v.variants.length
+  const Inventory = v.variants.reduce(
+    (acu: any, vari: { inventory_quantity: any }) =>
+      acu + vari.inventory_quantity,
+    0
+  )
+
+  return <span>{`Variantes: ${numVari}, Inventario: ${Inventory}`}</span>
 }

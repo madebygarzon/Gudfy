@@ -7,4 +7,13 @@ export default async function () {
     "members",
     "products",
   ];
+
+  const importsAdmin = (await import(
+    "@medusajs/medusa/dist/api/routes/admin/index"
+  )) as any;
+  imports.defaultRelationsExtended = [
+    ...imports.defaultRelationsExtended,
+    "members",
+    "products",
+  ];
 }
