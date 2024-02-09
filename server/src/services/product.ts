@@ -4,12 +4,15 @@ import {
   Product,
   Customer,
 } from "@medusajs/medusa";
+
 import {
   CreateProductInput as MedusaCreateProductInput,
   FindProductConfig,
   ProductSelector as MedusaProductSelector,
 } from "@medusajs/medusa/dist/types/product";
-import UploadsImagen from "./utils/uploads-file";
+import ProductRepository from "../repositories/product";
+import StoreRepository from "../repositories/store";
+import CustomerRepository from "../repositories/customer";
 type ProductSelector = {
   store_id?: string;
 } & MedusaProductSelector;
@@ -21,25 +24,95 @@ type CreateProductInput = {
 class ProductService extends MedusaProductService {
   static LIFE_TIME = Lifetime.SCOPED;
   protected readonly loggedInCustomer_: Customer | null;
+  protected readonly storeRepository_: typeof StoreRepository;
+  protected readonly productRepository_: typeof ProductRepository;
+  protected readonly customerRepository_: typeof CustomerRepository;
 
   constructor(container, options) {
     // @ts-expect-error prefer-rest-params
     super(...arguments);
-
+    this.storeRepository_ = container.storeRepository;
+    this.productRepository_ = container.productRepository;
+    this.customerRepository_ = container.customerRepository;
     try {
       this.loggedInCustomer_ = container.loggedInCustomer;
     } catch (e) {
       // avoid errors when backend first runs
     }
   }
-
   async listAndCountSeller(): Promise<[Product[], number]> {
     let listproduct;
-
     const selector = { store_id: this.loggedInCustomer_.store_id };
-    listproduct = await super.listAndCount(selector);
-
+    listproduct = await super.listAndCount(selector, {
+      select: [
+        "collection_id",
+        "created_at",
+        "deleted_at",
+        "description",
+        "discountable",
+        "external_id",
+        "handle",
+        "height",
+        "hs_code",
+        "id",
+        "is_giftcard",
+        "length",
+        "material",
+        "metadata",
+        "mid_code",
+        "origin_country",
+        "status",
+        "store_id",
+        "subtitle",
+        "thumbnail",
+        "title",
+        "type_id",
+        "updated_at",
+        "weight",
+        "width",
+      ],
+      relations: [
+        "categories",
+        "collection",
+        "images",
+        "options",
+        "profiles",
+        "sales_channels",
+        "store",
+        "tags",
+        "type",
+        "variants",
+        "variants.options",
+        "variants.prices",
+      ],
+      skip: 0,
+      take: 50,
+      order: { created_at: "DESC" },
+    });
     return listproduct;
+  }
+
+  async listAndCount(
+    selector: ProductSelector,
+    config?: FindProductConfig
+  ): Promise<[Product[], number]> {
+    config.select?.push("store_id");
+    config.relations?.push("store");
+
+    const productsWhitStore = await super.listAndCount(selector, config);
+    const customerRepo = this.manager_.withRepository(this.customerRepository_);
+    const productsWhitCustomer = await Promise.all(
+      productsWhitStore[0].map(async (p) => {
+        const customer = await customerRepo.findOne({
+          where: {
+            store_id: p.store_id,
+          },
+        });
+        return { ...p, customer: customer || null } as unknown as Product;
+      })
+    );
+
+    return [productsWhitCustomer, productsWhitStore[1]];
   }
 
   async retrieve(
@@ -49,7 +122,6 @@ class ProductService extends MedusaProductService {
     config.relations = [...(config.relations || []), "store"];
 
     const product = await super.retrieve(productId, config);
-
     if (
       product.store?.id &&
       this.loggedInCustomer_?.store_id &&
