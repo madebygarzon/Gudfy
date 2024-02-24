@@ -1,10 +1,19 @@
 import axios from "axios"
+import { ProductCategory } from "@medusajs/medusa"
+import {
+  objetOptionVariant,
+  variant,
+} from "../components/dashboard-gf/seller-products/create-product"
 type data = {
-  title: string
-  subtitle: string
-  description: string
-  mid_code: string
-  material: string
+  product: {
+    title: string
+    subtitle: string
+    description: string
+    mid_code: string
+  }
+  categories: ProductCategory[] | undefined
+  optionVariant: objetOptionVariant[]
+  variant: variant[]
 }
 
 export const CreateProductInput = async (

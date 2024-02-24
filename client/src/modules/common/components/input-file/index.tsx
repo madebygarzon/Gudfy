@@ -11,7 +11,7 @@ const InputFile: React.FC<InputProps> = ({ setFile }) => {
     <div className="mt-4">
       <label
         htmlFor="fileInput"
-        className="cursor-pointer bg-gray-500 text-white py-2 px-4 rounded-md"
+        className="cursor-pointer bg-zinc-400 text-white text-xs py-2 px-4 rounded-md"
       >
         Seleccionar Archivo
       </label>

@@ -41,55 +41,55 @@ class ProductService extends MedusaProductService {
     }
   }
   async listAndCountSeller(): Promise<[Product[], number]> {
-    let listproduct;
-    const selector = { store_id: this.loggedInCustomer_.store_id };
-    listproduct = await super.listAndCount(selector, {
-      select: [
-        "collection_id",
-        "created_at",
-        "deleted_at",
-        "description",
-        "discountable",
-        "external_id",
-        "handle",
-        "height",
-        "hs_code",
-        "id",
-        "is_giftcard",
-        "length",
-        "material",
-        "metadata",
-        "mid_code",
-        "origin_country",
-        "status",
-        "store_id",
-        "subtitle",
-        "thumbnail",
-        "title",
-        "type_id",
-        "updated_at",
-        "weight",
-        "width",
-      ],
-      relations: [
-        "categories",
-        "collection",
-        "images",
-        "options",
-        "profiles",
-        "sales_channels",
-        "store",
-        "tags",
-        "type",
-        "variants",
-        "variants.options",
-        "variants.prices",
-      ],
-      skip: 0,
-      take: 50,
-      order: { created_at: "DESC" },
-    });
-    return listproduct;
+    try {
+      const selector = { store_id: this.loggedInCustomer_.store_id };
+      const listproduct = await super.listAndCount(selector, {
+        select: [
+          "collection_id",
+          "created_at",
+          "deleted_at",
+          "description",
+          "discountable",
+          "external_id",
+          "handle",
+          "height",
+          "hs_code",
+          "id",
+          "is_giftcard",
+          "length",
+          "material",
+          "metadata",
+          "mid_code",
+          "origin_country",
+          "status",
+          "store_id",
+          "subtitle",
+          "thumbnail",
+          "title",
+          "type_id",
+          "updated_at",
+          "weight",
+          "width",
+        ],
+        relations: [
+          "categories",
+          "collection",
+          "images",
+          "options",
+          "profiles",
+          "store",
+          "tags",
+          "type",
+          "variants",
+          "variants.options",
+          "variants.prices",
+        ],
+        skip: 0,
+        take: 50,
+        order: { created_at: "DESC" },
+      });
+      return listproduct;
+    } catch (error) {}
   }
 
   async listAndCount(
