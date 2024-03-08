@@ -92,3 +92,11 @@ Se debe tener en cuenta que en la carpeta del back-end, medusa-config.js se impl
 ## Facebook & Gmail ## 
 Utilizando el plugin medusa-plugin-auth, puedes habilitar el inicio de sesión a través de Facebook y Gmail. La documentación proporciona un detallado paso a paso para configurarlo. Además, es importante mencionar que debes agregar las variables de entorno necesarias en el archivo .env. Para obtener estas variables, te recomendamos contactar directamente con la documentacion de la API de Autenticación de terceros de Facebook y Gmail.
 
+
+## Codigo Manipulado en librerias ## 
+
+**server\node_modules\@medusajs\medusa\dist\services\product-variant.js**
+
+**comentar la linea 237:  this.validateVariantsToCreate_(product, variants_);**
+Se comento esta funcion de validacion para la creacion de la Variante de producto  por medio del id del producto, ya que esta funcion esta generando error en la forma en como se utilisa el Servicio de la tabla (Entity) ProductVariantService. este endpoint personalisado esta ubicado en server/src/api/routes/seller/update-seller-product.ts
+

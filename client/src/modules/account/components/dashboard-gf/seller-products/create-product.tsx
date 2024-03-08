@@ -46,7 +46,27 @@ type index = {
   indexOption: number
   indexVariant: number
 }
-
+type productData = {
+  product: {
+    title: string
+    subtitle: string
+    description: string
+    mid_code: string
+  }
+  categories: ProductCategory[] | undefined
+  optionVariant: objetOptionVariant[]
+  variant: variant[]
+}
+type Errors = {
+  productError: string
+  categoriesError: string
+  optionVariant: string
+  optionVariantTitle: string
+  optionVariantItem: string
+  variant: string
+  variant_inventory: string
+  variant_prices: string
+}
 export default function CreateProduct({ setReset }: Reset) {
   // const [open, setOpen] = useState(false)
   const [file, setFile] = useState<File | null>()
@@ -76,12 +96,17 @@ export default function CreateProduct({ setReset }: Reset) {
     []
   )
   const [variant, setVariant] = useState<Array<variant>>([])
-  const {
-    register,
-    handleSubmit,
-    formState: { errors, isSubmitting },
-    setError,
-  } = useForm()
+  const [numberVariant, setNumberVariant] = useState<number>(0)
+  const [Errors, setError] = useState<Errors>({
+    productError: "",
+    categoriesError: "",
+    optionVariant: "",
+    optionVariantTitle: "",
+    optionVariantItem: "",
+    variant: "",
+    variant_inventory: "",
+    variant_prices: "",
+  })
 
   useEffect(() => {
     setFile(null)
@@ -99,17 +124,95 @@ export default function CreateProduct({ setReset }: Reset) {
       setCategories(newArray)
     })
   }, [open])
-
-  const onSubmit = () => {
+  const handlerError = () => {
+    let error = false
+    setError({
+      productError: "",
+      categoriesError: "",
+      optionVariant: "",
+      optionVariantTitle: "",
+      optionVariantItem: "",
+      variant: "",
+      variant_inventory: "",
+      variant_prices: "",
+    })
     if (
-      //   !product.title ||
-      //   !product.subtitle ||
-      //   !product.description ||
-      //   !product.mid_code ||
-      !file
-    )
-      return alert("Campos sin completar")
+      !product.title ||
+      !product.mid_code ||
+      !product.subtitle ||
+      !product.description
+    ) {
+      error = true
+      setError((data) => ({ ...data, productError: "Campos incompletos" }))
+    }
+    if (!valuesSelectorCategory?.length) {
+      error = true
+      setError((data) => ({
+        ...data,
+        categoriesError: "Selecciona una categoria",
+      }))
+    }
+    if (!optionVariant.length) {
+      error = true
+      setError((data) => ({
+        ...data,
+        optionVariant: "Agrega las variaciones correspondientes al produto",
+      }))
+    } else {
+      optionVariant.forEach((v, i) => {
+        if (!v.titleOption) {
+          error = true
+          setError((data) => ({
+            ...data,
+            optionVariantTitle: "Agrega un titulo para la opcion de variacion",
+          }))
+        }
 
+        if (!v.titleValueVariant?.length) {
+          error = true
+          setError((data) => ({
+            ...data,
+            optionVariantItem: "Agrega por lo menos una opcion",
+          }))
+        }
+      })
+    }
+    if (!variant.length) {
+      error = true
+      setError((data) => ({ ...data, variant: "Agrega una variacion" }))
+    } else {
+      variant.forEach((v, i) => {
+        if (!v.inventory_quantity) {
+          error = true
+          setError((data) => ({
+            ...data,
+            variant_inventory:
+              "Inserta la cantidad correspondiente a la variacion",
+          }))
+        }
+        if (!v.prices) {
+          error = true
+          setError((data) => ({
+            ...data,
+            variant_prices: "Inserta el precio correspondiente a la variacion",
+          }))
+        }
+      })
+    }
+
+    return error
+  }
+  const handlerNumberVariant = () => {
+    // let number = 0
+    // optionVariant.forEach((v) => {
+    //   number += v.titleValueVariant?.length || 0
+    // })
+    // console.log("Number", number)
+    // setNumberVariant(number)
+  }
+  const onSubmit = () => {
+    if (handlerError()) return
+    if (!file) return
     const productData = {
       product,
       categories: valuesSelectorCategory,
@@ -209,7 +312,7 @@ export default function CreateProduct({ setReset }: Reset) {
                             setProduct({ ...product, title: e.target.value })
                           }
                           required
-                        />
+                        />{" "}
                         <Input
                           placeholder="Tarjeta Netflix"
                           label="Subtitulo"
@@ -266,6 +369,9 @@ export default function CreateProduct({ setReset }: Reset) {
                         setProduct({ ...product, description: e.target.value })
                       }
                     />
+                    {Errors.productError && (
+                      <p className="text-red-600">{Errors.productError}</p>
+                    )}
                   </AccordionItem>
                   <AccordionItem
                     key="Categorie"
@@ -310,6 +416,9 @@ export default function CreateProduct({ setReset }: Reset) {
                       Seleccionado:{" "}
                       {valuesSelectorCategory?.map((c) => ` ${c.name},`)}
                     </p>
+                    {Errors.categoriesError && (
+                      <p className="text-red-600">{Errors.categoriesError}</p>
+                    )}
                   </AccordionItem>
                   <AccordionItem
                     key="Variaciones"
@@ -328,23 +437,40 @@ export default function CreateProduct({ setReset }: Reset) {
                       Agregar opciones de variacion
                       <Plus />
                     </ButtonM>
+                    {Errors.optionVariant && (
+                      <p className="text-red-600 py-3">
+                        {Errors.optionVariant}
+                      </p>
+                    )}
                     {optionVariant.length ? (
-                      optionVariant.map((optV) => (
-                        <ProductOptionVariant
-                          objetOptionVariant={optV}
-                          setOptionVariant={setOptionVariant}
-                        />
+                      optionVariant.map((optV, i) => (
+                        <div key={i}>
+                          <ProductOptionVariant
+                            objetOptionVariant={optV}
+                            setOptionVariant={setOptionVariant}
+                            handlerNumberVariant={handlerNumberVariant}
+                          />
+                        </div>
                       ))
                     ) : (
                       <p>Agregar opciones de variacion</p>
                     )}
+                    {Errors.optionVariantTitle && (
+                      <p className="text-red-600 py-3">
+                        {Errors.optionVariantTitle}
+                      </p>
+                    )}
+                    {Errors.optionVariantItem && (
+                      <p className="text-red-600 py-3">
+                        {Errors.optionVariantItem}
+                      </p>
+                    )}
+
                     {variant.length && optionVariant.length ? (
                       variant.map((v, i) => (
                         <div key={v.index} className="flex gap-2 items-center">
                           <ProductVariat
                             variant={v}
-                            variants={variant}
-                            setVaraint={setVariant}
                             optionVariant={optionVariant}
                           />
                           <IconButton
@@ -358,7 +484,21 @@ export default function CreateProduct({ setReset }: Reset) {
                     ) : (
                       <></>
                     )}
+                    {Errors.variant && (
+                      <p className="text-red-600 py-3">{Errors.variant}</p>
+                    )}
+                    {Errors.variant_inventory && (
+                      <p className="text-red-600 py-3">
+                        {Errors.variant_inventory}
+                      </p>
+                    )}
+                    {Errors.variant_prices && (
+                      <p className="text-red-600 py-3">
+                        {Errors.variant_prices}
+                      </p>
+                    )}
 
+                    {/* {variant.length <= numberVariant && */}
                     {optionVariant.length ? (
                       <ButtonM
                         variant="transparent"

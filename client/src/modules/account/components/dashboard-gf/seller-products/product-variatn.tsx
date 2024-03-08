@@ -1,30 +1,25 @@
-import React, { useEffect, useState } from "react"
+import React from "react"
 import { variant, objetOptionVariant } from "./create-product"
-import { Select as SelectNext, SelectItem, Selection } from "@nextui-org/react"
-import { Input, Spinner, Textarea } from "@nextui-org/react"
-import { DotsSix, XCircleSolid, Trash } from "@medusajs/icons"
-import { IconButton } from "@medusajs/ui"
+import { Select as SelectNext, SelectItem } from "@nextui-org/react"
+import { Input, Spinner } from "@nextui-org/react"
+import { DotsSix } from "@medusajs/icons"
 
 type variantType = {
   variant: variant
-  variants: Array<variant>
-  setVaraint: React.Dispatch<React.SetStateAction<variant[]>>
   optionVariant: Array<objetOptionVariant>
 }
 
-const ProductVariat: React.FC<variantType> = ({
-  variant,
-  variants,
-  setVaraint,
-  optionVariant,
-}) => {
+const ProductVariat: React.FC<variantType> = ({ variant, optionVariant }) => {
   const handlerOptionVariantControl = (
     index: number,
     titleOption: string,
     titleValueVariant: string
   ) => {
     if (Array.isArray(variant.typeOpcionVariant)) {
-      variant.typeOpcionVariant[index] = { titleOption, titleValueVariant }
+      variant.typeOpcionVariant[index] = {
+        titleOption,
+        titleValueVariant,
+      }
     }
   }
 
@@ -36,7 +31,7 @@ const ProductVariat: React.FC<variantType> = ({
           <div key={obj.titleOption} className="flex ">
             <SelectNext
               label={obj.titleOption || "vacio"}
-              placeholder="Select an animal"
+              placeholder="Seleccione la variacion"
               className="w-[180px]"
               onChange={(e) => {
                 handlerOptionVariantControl(

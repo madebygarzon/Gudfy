@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from "react"
-import { Input, Spinner, Textarea, button } from "@nextui-org/react"
+import { Input } from "@nextui-org/react"
 import { objetOptionVariant } from "./create-product"
-import { includes } from "lodash"
-import { Tooltip, Button } from "@nextui-org/react"
-import { DotsSix, XCircleSolid, Trash } from "@medusajs/icons"
+import { XCircleSolid, Trash } from "@medusajs/icons"
 import { IconButton } from "@medusajs/ui"
 
 type props = {
@@ -11,11 +9,13 @@ type props = {
     React.SetStateAction<Array<objetOptionVariant>>
   >
   objetOptionVariant: objetOptionVariant
+  handlerNumberVariant: () => void
 }
 
 const ProductOptionVariant: React.FC<props> = ({
   setOptionVariant,
   objetOptionVariant,
+  handlerNumberVariant,
 }) => {
   const [valueVariant, setValueVariant] = useState<string>()
   const [valueOption, setValueOption] = useState<string>()
@@ -38,7 +38,7 @@ const ProductOptionVariant: React.FC<props> = ({
         })
         return newArray
       })
-
+      handlerNumberVariant()
       setValueVariant("")
     } else {
       setValueVariant(e)

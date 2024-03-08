@@ -11,6 +11,9 @@ export async function CreateSellerProduct(
     const productService = req.scope.resolve("productService");
     const dataProduct = {
       title: productData.product.title,
+      subtitle: productData.product.subtitle,
+      description: productData.product.description,
+      mid_code: productData.product.mid_code,
       is_giftcard: false,
       discountable: true,
       options: productData.optionVariant.map((option) => ({
@@ -20,12 +23,12 @@ export async function CreateSellerProduct(
         title: variantTitle(v.typeOpcionVariant),
         prices: [
           {
-            amount: v.prices * 100,
+            amount: v.prices,
             currency_code: "usd",
           },
         ],
         options: v.typeOpcionVariant.map((vop) => ({
-          value: vop.titleOption,
+          value: vop.titleValueVariant,
         })),
         inventory_quantity: v.inventory_quantity,
       })),
@@ -44,12 +47,9 @@ export async function CreateSellerProduct(
 //funsion para crear el titulo de la variante segun sus opciones
 function variantTitle(arrayObjetos) {
   if (Array.isArray(arrayObjetos) && arrayObjetos.length > 0) {
-    // Utilizamos el método map para extraer las propiedades 'title'
     const palabras = arrayObjetos.map((objeto) => objeto.titleValueVariant);
-    // Utilizamos el método join para unir las palabras con " / "
     return palabras.join(" / ");
   } else {
-    // Si el array está vacío o no es un array, simplemente devolvemos una cadena vacía
     return "";
   }
 }
