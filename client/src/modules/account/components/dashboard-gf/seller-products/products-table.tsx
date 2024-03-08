@@ -1,16 +1,18 @@
 import React, { useState, useEffect } from "react"
 import { Table, DropdownMenu, IconButton } from "@medusajs/ui"
-import { PencilSquare, XMark, Eye, Check, Plus } from "@medusajs/icons"
+import { PencilSquare, XMark, Eye, Check } from "@medusajs/icons"
 import Spinner from "@modules/common/icons/spinner"
 import { ArrowLongRight, ArrowLongLeft } from "@medusajs/icons"
 import { Input, Select } from "@medusajs/ui"
 import { getSellerProduct } from "@modules/account/actions/get-seller-product"
-import { Button } from "@medusajs/ui"
+
 import CreateProduct from "./create-product"
+import EditProduct from "./edit-product"
 import Image from "next/image"
 import { Product, Variant } from "types/medusa"
 import ImagePlaceholderIcon from "@modules/common/icons/defaultIcon"
-import { constant } from "lodash"
+
+import { useDisclosure } from "@nextui-org/react"
 
 type ListDataSellerProduct = {
   dataProduct: Array<Product>
@@ -135,6 +137,13 @@ export default function ProductsTable() {
       dataPreview: handlerPreviewProducts(dataFilter, 1),
     })
   }
+  // Controller from Edit Product
+  const { isOpen, onOpen, onOpenChange } = useDisclosure()
+  const [editProduct, setEditProduct] = useState<Product>()
+  const handlerEditProduct = (product: Product) => {
+    setEditProduct(product)
+    onOpen()
+  }
 
   return (
     <div className=" bg-white p-8 border border-gray-200 rounded-lg">
@@ -179,7 +188,11 @@ export default function ProductsTable() {
               <Table.Body>
                 {dataProducts.dataPreview?.map((data, i) => {
                   return (
-                    <Table.Row key={data.id}>
+                    <Table.Row
+                      key={data.id}
+                      onClick={() => handlerEditProduct(data)}
+                      className="cursor-pointer"
+                    >
                       <Table.Cell>
                         <div className="flex gap-3 items-center">
                           {data.thumbnail ? (
@@ -285,6 +298,16 @@ export default function ProductsTable() {
           </button>
         </div>
       </div>
+      {editProduct && (
+        <EditProduct
+          key={editProduct.id}
+          isOpen={isOpen}
+          onOpen={onOpen}
+          onOpenChange={onOpenChange}
+          productData={editProduct}
+          setReset={setReset}
+        />
+      )}
     </div>
   )
 }
