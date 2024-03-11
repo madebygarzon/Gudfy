@@ -15,7 +15,7 @@ type TextareatProps = Omit<
   name: string
 }
 
-const Textarea = React.forwardRef<HTMLTextAreaElement, TextareatProps>(
+const Texarea = React.forwardRef<HTMLTextAreaElement, TextareatProps>(
   ({ type, name, label, errors, touched, required, ...props }, ref) => {
     const inputRef = React.useRef<HTMLTextAreaElement>(null)
     const [current, setCurremt] = useState(false)
@@ -23,9 +23,7 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareatProps>(
     useImperativeHandle(ref, () => inputRef.current!)
 
     const hasError = get(errors, name) || get(touched, name)
-    const handlreValue = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-      console.log(e.target.value)
-    }
+    const handlreValue = (e: React.ChangeEvent<HTMLTextAreaElement>) => {}
     return (
       <div>
         <div className="relative z-0 w-full text-base-regular">
@@ -83,6 +81,6 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareatProps>(
   }
 )
 
-Textarea.displayName = "textarea"
+Texarea.displayName = "textarea"
 
-export default Textarea
+export default Texarea

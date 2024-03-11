@@ -175,10 +175,13 @@ const projectConfig = {
   // Uncomment the following lines to enable REDIS
   // redis_url: REDIS_URL
 };
-
+const featureFlags = {
+  sales_channels: false,
+};
 /** @type {import('@medusajs/medusa').ConfigModule} */
 module.exports = {
   projectConfig,
   plugins,
   modules,
+  featureFlags,
 };

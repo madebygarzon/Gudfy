@@ -12,7 +12,7 @@ type DashboardProps = {
 
 const Dashboard = ({ orders, customer }: DashboardProps) => {
   return (
-    <div className="w-full">
+    <div className="w-full ">
       <div className="text-xl-semi capitalize flex justify-between items-start ">
         <span>
           ¡Hola {customer?.first_name} {customer?.last_name}!
