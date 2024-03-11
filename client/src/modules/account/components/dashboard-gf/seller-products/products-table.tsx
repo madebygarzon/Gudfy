@@ -406,6 +406,7 @@ export default function ProductsTable() {
           setReset={setReset}
         />
       )}
+      <span></span>
     </div>
   )
 }
