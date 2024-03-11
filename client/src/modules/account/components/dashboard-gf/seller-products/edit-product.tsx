@@ -159,13 +159,12 @@ export default function EditProduct({
   }
 
   useEffect(() => {
-    onOpen()
     setFile(null)
     handlerStartValues()
     getAllCategories().then((e) => {
       setCategories(handlerControlCategories(e.product_categories))
     })
-  }, [open])
+  }, [productData])
 
   const handlerControlCategories = (arrayCatego: ProductCategory[]) => {
     const newArray: ProductCategory[] = []
@@ -208,6 +207,7 @@ export default function EditProduct({
         categoriesError: "Selecciona una categoria",
       }))
     }
+
     if (!optionVariant.length) {
       error = true
       setError((data) => ({
@@ -224,6 +224,14 @@ export default function EditProduct({
           }))
         }
       })
+    }
+    if (!variant.length && !existingVariant.length) {
+      error = true
+      setError((data) => ({
+        ...data,
+        variant_inventory:
+          "Debe de haber almenos una variacion para el producto",
+      }))
     }
     if (variant.length) {
       variant.forEach((v, i) => {

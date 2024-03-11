@@ -108,8 +108,7 @@ export default function CreateProduct({ setReset }: Reset) {
     variant_prices: "",
   })
 
-  useEffect(() => {
-    setFile(null)
+  const categoriesOrder = () => {
     getAllCategories().then((e) => {
       const newArray: ProductCategory[] = []
       e.product_categories.forEach((cateogry) => {
@@ -123,7 +122,13 @@ export default function CreateProduct({ setReset }: Reset) {
       })
       setCategories(newArray)
     })
+  }
+
+  useEffect(() => {
+    setFile(null)
+    categoriesOrder()
   }, [open])
+
   const handlerError = () => {
     let error = false
     setError({
