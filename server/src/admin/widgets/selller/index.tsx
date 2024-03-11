@@ -174,7 +174,7 @@ const SellerApplication = () => {
     const start = (page - 1) * dataRowPage;
     const end = page * dataRowPage;
     const newArray = queryParams.slice(start, end);
-    setPage(1);
+    //setPage(1);
     setPagetotal(Math.ceil(queryParams.length / dataRowPage));
     return newArray;
   };
