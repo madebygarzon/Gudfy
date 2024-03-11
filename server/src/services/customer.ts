@@ -34,18 +34,6 @@ class CustomerService extends MedusaCustomerService {
     }
   }
 
-  async retrieve(customerId: string): Promise<Customer | undefined> {
-    const customerRepository = this.manager_.withRepository(
-      this.customerRepository_
-    );
-    const customer = await customerRepository.findOne({
-      where: {
-        id: customerId,
-      },
-    });
-    return customer;
-  }
-
   async createStore(customerId: string): Promise<Customer> {
     const customerRepository = this.manager_.withRepository(
       this.customerRepository_
