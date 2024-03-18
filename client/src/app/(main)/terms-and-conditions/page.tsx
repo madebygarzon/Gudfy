@@ -3,7 +3,7 @@ import HeadTC from "@modules/terms-and-Conditions/components/head"
 import BodyTC from "@modules/terms-and-Conditions/components/body"
 
 export const metadata: Metadata = {
-  title: "Térmonos y condiciones",
+  title: "Términos y condiciones",
   description: "gudfy - te brindamos los terminos y condiciones.",
 }
 
