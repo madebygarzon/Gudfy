@@ -125,7 +125,7 @@ const Register = () => {
           <Spinner size={24} />
         </div>
       )}
-      <h1 className="text-large-semi text-3xl">Crear una Cuenta</h1>
+      <h1 className="text-large-semi text-3xl">Crear una cuenta</h1>
       <p className="text-center text-base-regular text-gray-700  font-[500] mb-4">
         ¿Ya tienes una cuenta? <Link href={"./login"}>Accede</Link>
       </p>
