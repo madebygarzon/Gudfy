@@ -125,12 +125,12 @@ const Register = () => {
           <Spinner size={24} />
         </div>
       )}
-      <h1 className="text-large-semi text-3xl">Crear una Cuenta</h1>
+      <h1 className="text-large-semi text-3xl">Crear una cuenta</h1>
       <p className="text-center text-base-regular text-gray-700  font-[500] mb-4">
         ¿Ya tienes una cuenta? <Link href={"./login"}>Accede</Link>
       </p>
       <form
-        className="w-full font[400] shadow-xl border-2 rounded-3xl p-10 flex flex-col items-center"
+        className="w-full font[400] shadow-xl rounded-3xl p-10 flex flex-col items-center"
         onSubmit={onSubmit}
       >
         <div className="flex flex-col w-full gap-y-2">
@@ -186,9 +186,8 @@ const Register = () => {
           </div>
         )}
         <span className="text-center text-gray-700 text-small-regular mt-6">
-          Acepto{" "}
-          <Link href={"https://gudfy.com/terminos-y-condiciones/"}>
-            los términos y condiciones.
+          <Link href={"/terms-and-conditions"}>
+            Acepto los términos y condiciones.
           </Link>
         </span>
         <Button type="submit" className="mt-5 rounded-[5px]">
