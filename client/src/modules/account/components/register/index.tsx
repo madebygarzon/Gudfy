@@ -187,7 +187,7 @@ const Register = () => {
         )}
         <span className="text-center text-gray-700 text-small-regular mt-6">
           Acepto{" "}
-          <Link href={"https://gudfy.com/terminos-y-condiciones/"}>
+          <Link href={"/terms-and-conditions"}>
             los términos y condiciones.
           </Link>
         </span>
