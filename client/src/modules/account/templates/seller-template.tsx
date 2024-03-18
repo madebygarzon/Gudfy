@@ -10,36 +10,35 @@ import Spinner from "@modules/common/icons/spinner"
 
 interface SellerRole {
   application: boolean
-  approved: boolean
-  rejected: boolean
+  state: string
 }
 const SupplierTemplate: React.FC = () => {
-  const { customer } = useAccount()
   const [isloading, setIsloading] = useState<boolean>(true)
   const [isSeller, setIsSeller] = useState<SellerRole>()
   const [store, setStore] = useState()
   const [reset, useReset] = useState(false)
 
-  useEffect(() => {
-    const functiongetData = async () => {
-      if (customer!) {
-        const dataSellerApplication = await actionGetSellerApplication(
-          customer.id
-        ).then((data) => {
-          setIsSeller(data)
-          setIsloading(false)
-          return data
-        })
-        if (dataSellerApplication?.approved) {
-          const dataStore = await getStore()
-          setStore(dataStore)
-        }
+  const functiongetData = async () => {
+    const dataSellerApplication = await actionGetSellerApplication().then(
+      (data) => {
+        setIsSeller(data)
+        return data
       }
+    )
+
+    if (dataSellerApplication?.state === "approved") {
+      const dataStore = await getStore()
+      setStore(dataStore)
     }
+    setIsloading(false)
+  }
+
+  useEffect(() => {
     functiongetData()
   }, [reset])
 
   const handlerReset = () => {
+    setIsloading(true)
     useReset(!reset)
   }
 
@@ -47,20 +46,23 @@ const SupplierTemplate: React.FC = () => {
     <div className="w-full h-full flex justify-center items-center">
       <Spinner size="32" />
     </div>
-  ) : !isSeller?.application && customer ? (
-    <>
-      <ApplyForSeller customer_id={customer.id} handlerReset={handlerReset} />
-    </>
-  ) : !isSeller?.approved ? (
-    !isSeller?.rejected ? (
-      <h1 className="text-[48px]"> Su solicitud esta en proceso </h1>
-    ) : (
-      <h1 className="text-[48px]"> Su solicitud fue rechazada </h1>
-    )
-  ) : store ? (
-    <SellerStore store={store} />
   ) : (
-    <div>No eres vendedor</div>
+    <>
+      {!isSeller?.application && <ApplyForSeller />}
+      {isSeller?.state === "approved" &&
+        (store ? <SellerStore store={store} /> : <Spinner size="32" />)}
+      {isSeller?.state === "pending" && (
+        <h1 className="text-[48px]"> Su solicitud esta en proceso </h1>
+      )}
+
+      {isSeller?.state === "rejected" && (
+        <h1 className="text-[48px]"> Su solicitud fue rechazada </h1>
+      )}
+
+      {isSeller?.state === "correct" && (
+        <h1 className="text-[48px]"> Su solicitud necesita ser corregida </h1>
+      )}
+    </>
   )
 }
 

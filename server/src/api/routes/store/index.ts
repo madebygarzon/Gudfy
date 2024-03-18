@@ -10,6 +10,7 @@ import { wrapHandler } from "@medusajs/utils";
 import deleteReview from "./delete-review";
 import postSellerApplication from "./post-seller-application";
 import getSellerApplication from "./get-seller-application";
+import documents from "../../middlewares/documents-seller-application";
 
 // Initialize a custom router
 const router = Router();
@@ -51,6 +52,7 @@ export function attachStoreRoutes(storeRouter: Router) {
   //Seller Application
   router.post(
     "/account/seller-application",
+    documents,
     wrapHandler(postSellerApplication)
   );
 

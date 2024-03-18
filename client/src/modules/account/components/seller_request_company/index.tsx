@@ -58,7 +58,8 @@ const SellerRequestCompany = () => {
     nombre_producto_ejemplo: "",
     cantidad_por_producto: "",
     enlaces_webs_venta: "",
-    documento_de_identidad: null,
+    front_identity_document: null,
+    subsequent_identity_document: null,
     comprobante_domicilio: null,
     campo1_metodo_pago: "",
     campo2_metodo_pago: "",
@@ -347,8 +348,8 @@ const SellerRequestCompany = () => {
           //errors={errors}
           onChange={handleInputChange}
         />
-         <p className="font-semibold text-gray-800 text-sm text-center">
-         Verificación comercial
+        <p className="font-semibold text-gray-800 text-sm text-center">
+          Verificación comercial
         </p>
         <Input
           label="Documento de identidad "
@@ -359,7 +360,7 @@ const SellerRequestCompany = () => {
           //errors={errors}
           onChange={handleInputChange}
         />
-         <Input
+        <Input
           label="Comprobante de domicilio "
           {...register("comprobante_domicilio", {
             required: "Campo requerido",
@@ -368,8 +369,8 @@ const SellerRequestCompany = () => {
           //errors={errors}
           onChange={handleInputChange}
         />
-         <p className="font-semibold text-gray-800 text-sm text-center">
-        Métodos de pago
+        <p className="font-semibold text-gray-800 text-sm text-center">
+          Métodos de pago
         </p>
         <Input
           label="Campo 1 "
@@ -390,10 +391,12 @@ const SellerRequestCompany = () => {
           onChange={handleInputChange}
         />
 
-
-
-
-        <ButtonMedusa className="mt-4 mb-4 rounded-[5px]" type="submit" color="primary">
+        <ButtonMedusa
+          className="mt-4 mb-4 rounded-[5px]"
+          type="submit"
+          color="primary"
+          //onClick={() => actionCreateSellerApplication()}
+        >
           Enviar solicitud
         </ButtonMedusa>
 

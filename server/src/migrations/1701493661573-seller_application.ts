@@ -5,10 +5,9 @@ export class SellerApplication1701493661573 implements MigrationInterface {
     await queryRunner.query(
       `CREATE TABLE IF NOT EXISTS "seller_application" ("id" character varying NOT NULL, 
                 "customer_id" character varying NOT NULL,
-                "identification_number" character varying NOT NULL,
-                "address" character varying NOT NULL, 
-                "approved" boolean NOT NULL,
-                "rejected" boolean NOT NULL,
+                "application_data_id" character varying NOT NULL,
+                "state_application_id" character varying NOT NULL,
+                "role_seller" character varying NOT NULL,
                 "comment_status" character varying,
                 "created_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), 
                 "updated_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now())`

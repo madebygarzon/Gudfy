@@ -13,15 +13,7 @@ import {
 import SellerRequestPerson from "@modules/account/components/seller_request_person"
 import SellerRequestCompany from "@modules/account/components/seller_request_company"
 
-type dataCustomer = {
-  customer_id: string
-  handlerReset: () => void
-}
-
-const ApplyForSeller: React.FC<dataCustomer> = ({
-  customer_id,
-  handlerReset,
-}) => {
+const ApplyForSeller: React.FC = ({}) => {
   const { isOpen, onOpen, onClose, onOpenChange } = useDisclosure()
   const [scrollBehavior, setScrollBehavior] =
     React.useState<ModalProps["scrollBehavior"]>("inside")

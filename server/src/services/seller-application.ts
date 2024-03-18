@@ -1,8 +1,9 @@
-import { TransactionBaseService } from "@medusajs/medusa";
+import { Lifetime } from "awilix";
+import { TransactionBaseService, Customer } from "@medusajs/medusa";
 import { SellerApplicationRepository } from "../repositories/seller-application";
+import { ApplicationDataRepository } from "../repositories/application-data";
 import CustomerRepository from "../repositories/customer";
 import CustomerService from "./customer";
-import { dataSource } from "@medusajs/medusa/dist/loaders/database";
 
 type updateSellerAplication = {
   payload: string;
@@ -10,61 +11,103 @@ type updateSellerAplication = {
 };
 
 export default class SellerApplicationService extends TransactionBaseService {
+  static LIFE_TIME = Lifetime.SCOPED;
+  protected readonly applicationDataRepository_: typeof ApplicationDataRepository;
   protected readonly sellerApplicationRepository_: typeof SellerApplicationRepository;
   protected readonly customerRepository_: typeof CustomerRepository;
   protected readonly customerService_: CustomerService;
+  protected readonly loggedInCustomer_: Customer | null | undefined;
 
   constructor({
+    loggedInCustomer,
+    applicationDataRepository,
     sellerApplicationRepository,
     customerRepository,
     customerService,
   }) {
-    super(arguments[0]);
-    this.sellerApplicationRepository_ = sellerApplicationRepository;
-    this.customerRepository_ = customerRepository;
-    this.customerService_ = customerService;
+    // @ts-expect-error prefer-rest-params
+    super(...arguments);
+    try {
+      this.loggedInCustomer_ = loggedInCustomer;
+      this.applicationDataRepository_ = applicationDataRepository;
+      this.sellerApplicationRepository_ = sellerApplicationRepository;
+      this.customerRepository_ = customerRepository;
+      this.customerService_ = customerService;
+    } catch (e) {
+      // avoid errors when backend first runs
+    }
   }
 
-  async create(customer_id, identification_number, address) {
-    if (!customer_id || !identification_number || !address)
-      throw new Error("Adding the data required for create seller application");
+  async create(
+    applicationData,
+    frontDocument,
+    reversDocument,
+    addressDocument
+  ) {
+    try {
+      if (!this.loggedInCustomer_)
+        throw new Error(
+          "Adding the data required for create seller application"
+        );
 
-    const sellerApplicationRepository = this.activeManager_.withRepository(
-      this.sellerApplicationRepository_
-    );
-    const createSellerapplication = sellerApplicationRepository.create({
-      customer_id,
-      identification_number,
-      address,
-      approved: false,
-      rejected: false,
-    });
-    const sellerapplication = await sellerApplicationRepository.save(
-      createSellerapplication
-    );
-    return sellerapplication;
+      const sellerApplicationRepository = this.activeManager_.withRepository(
+        this.sellerApplicationRepository_
+      );
+      const ApplicationDataRepository = this.activeManager_.withRepository(
+        this.applicationDataRepository_
+      );
+      const createApplication_data = await ApplicationDataRepository.create({
+        ...applicationData,
+        front_identity_document: frontDocument,
+        revers_identity_document: reversDocument,
+        address_proof: addressDocument,
+      });
+
+      const saveCreateApplication_data = await ApplicationDataRepository.save(
+        createApplication_data
+      );
+
+      const dataSellerApplication = {
+        customer_id: this.loggedInCustomer_.id,
+        application_data_id: saveCreateApplication_data["id"],
+        state_application_id: "C",
+        role_seller: "suplier",
+      };
+
+      const createSellerapplication = await sellerApplicationRepository.create(
+        dataSellerApplication
+      );
+      const sellerapplication = await sellerApplicationRepository.save(
+        createSellerapplication
+      );
+
+      return sellerapplication;
+    } catch (error) {
+      console.log("Error in the create application for seller", error);
+    }
   }
 
-  async getApplication(customer_id) {
-    if (!customer_id)
+  async getApplication() {
+    if (!this.loggedInCustomer_)
       throw new Error("Adding the data required for the seller application");
     const sellerApplicationRepository = this.activeManager_.withRepository(
       this.sellerApplicationRepository_
     );
     const getApplication = await sellerApplicationRepository.findOne({
       where: {
-        customer_id,
+        customer_id: this.loggedInCustomer_.id,
       },
+      relations: ["state_application"],
     });
 
-    if (getApplication)
+    // identificar si la persona a aplicado
+    if (getApplication) {
       return {
         application: true,
-        approved: getApplication.approved,
-        rejected: getApplication.rejected,
+        state: getApplication.state_application.state,
       };
-
-    return { application: false, approved: false };
+    }
+    return { application: false, state: "" };
   }
 
   async getListApplication(order) {
@@ -75,6 +118,7 @@ export default class SellerApplicationService extends TransactionBaseService {
 
       const getList = await sellerApplicationRepository.find({
         order: { created_at: order },
+        relations: ["state_application", "application_data"],
       });
 
       const dataList = await Promise.all(
@@ -89,7 +133,7 @@ export default class SellerApplicationService extends TransactionBaseService {
 
       return dataList;
     } catch (error) {
-      console.log("LISTA DE APLICACIONES ERROR", error);
+      console.log(error);
     }
   }
 
@@ -109,8 +153,7 @@ export default class SellerApplicationService extends TransactionBaseService {
       const sellerApplication = await sellerApplicationRepository.update(
         { customer_id: customer_id },
         {
-          approved: true,
-          rejected: false,
+          state_application_id: "A",
         }
       );
 
@@ -123,9 +166,25 @@ export default class SellerApplicationService extends TransactionBaseService {
       const sellerApplication = await sellerApplicationRepository.update(
         { customer_id: customer_id },
         {
-          approved: false,
-          rejected: true,
+          state_application_id: "B",
           comment_status: comment_status,
+        }
+      );
+      return sellerApplication;
+    } else if (payload === "CORRECT") {
+      const sellerApplication = await sellerApplicationRepository.update(
+        { customer_id: customer_id },
+        {
+          state_application_id: "D",
+          comment_status: comment_status,
+        }
+      );
+      return sellerApplication;
+    } else if (payload === "CORRECT") {
+      const sellerApplication = await sellerApplicationRepository.update(
+        { customer_id: customer_id },
+        {
+          state_application_id: "E",
         }
       );
       return sellerApplication;
