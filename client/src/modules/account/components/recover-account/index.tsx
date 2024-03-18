@@ -65,13 +65,13 @@ const RecoverAccount: React.FC<stateProps> = ({ setIsRecovery }) => {
       </p>
       {!mailSent ? (
         <form
-          className="w-full font[400] shadow-xl border-2 rounded-3xl p-12 flex flex-col items-center "
+          className="w-full font[400] shadow-xl rounded-3xl p-12 flex flex-col items-center "
           onSubmit={onSubmit}
         >
           <div className="flex flex-col w-full gap-y-2">
             <Input
               label="Nombre de usuario o correo electrónico"
-              {...register("email", { required: "Email is required" })}
+              {...register("email", { required: "Este campo es requerido" })}
               autoComplete="email"
               errors={errors}
             />

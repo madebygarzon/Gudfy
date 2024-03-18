@@ -12,6 +12,7 @@ import Link from "next/link"
 import RecoverAccount from "../recover-account"
 import SocialButtons from "@modules/common/components/button_socials"
 import { usePathname } from "next/navigation"
+import CurrentYear from "@lib/util/current-year"
 
 interface SignInCredentials extends FieldValues {
   email: string
@@ -88,7 +89,7 @@ const LoginComponente = () => {
         .
       </p>
       <form
-        className="w-full font[400] shadow-xl border-2 rounded-3xl p-12 flex flex-col items-center "
+        className="w-full font[400] shadow-xl rounded-3xl p-12 flex flex-col items-center "
         onSubmit={onSubmit}
       >
         <div className="flex flex-col w-full gap-y-2">
