@@ -21,12 +21,18 @@ export const registerLoggedInCustomer = async (
     ) as CustomerService;
     loggedInCustomer = await customerService.retrieve(req.session.customer_id);
   }
-
-  req.scope.register({
-    loggedInCustomer: {
-      resolve: () => loggedInCustomer,
-    },
-  });
-
+  if (loggedInCustomer) {
+    req.scope.register({
+      loggedInCustomer: {
+        resolve: () => loggedInCustomer,
+      },
+    });
+  } else {
+    req.scope.register({
+      loggedInCustomer: {
+        resolve: () => null,
+      },
+    });
+  }
   next();
 };

@@ -1,31 +1,70 @@
 import axios, { AxiosResponse } from "axios"
 
-export async function actionGetSellerApplication(customer_id: string) {
+export async function actionGetSellerApplication() {
   try {
     const dataSeller = await axios
       .get("http://localhost:9000/store/account/seller-application/", {
-        params: { customer_id },
+        withCredentials: true,
+        headers: { "Content-Type": "multipart/form-data" },
       })
-      .then((e) => ({
-        application: e.data.application,
-        approved: e.data.approved,
-        rejected: e.data.rejected,
-      }))
+      .then((e) => {
+        return {
+          application: e.data.application,
+          state: e.data.state,
+        }
+      })
     return dataSeller
   } catch (error) {
     return
   }
 }
 
-export async function actionCreateSellerApplication(
-  customer_id: string,
-  identification_number: string,
+interface SellerCredentials {
+  name: string
+  last_name: string
+  email: string
+  phone: string
+  contry: string
+  city: string
   address: string
+  postal_code: string
+  supplier_name: string
+  supplier_type: string
+  company_name: string
+  company_country: string
+  company_city: string
+  company_address: string
+  //supplier_documents: File | null
+  quantity_products_sale: string
+  example_product: string
+  quantity_per_product: string
+  current_stock_distribution: string
+  // front_identity_document: File | null
+  // revers_identity_document: File | null
+  // address_proof: File | null
+  // campo1_metodo_pago: string
+  // campo2_metodo_pago: string
+}
+
+export async function actionCreateSellerApplication(
+  data: SellerCredentials,
+  fileFront: File,
+  fileRevers: File,
+  fileAddress: File
 ) {
   try {
+    const formData = new FormData()
+    formData.append("applicationData", JSON.stringify(data))
+    formData.append("frontDocument", fileFront)
+    formData.append("reversDocument", fileRevers)
+    formData.append("addressDocument", fileAddress)
     const dataCreateSeller = await axios.post(
       "http://localhost:9000/store/account/seller-application/",
-      { customer_id, identification_number, address }
+      formData,
+      {
+        withCredentials: true,
+        headers: { "Content-Type": "multipart/form-data" },
+      }
     )
     return dataCreateSeller
   } catch (error) {
