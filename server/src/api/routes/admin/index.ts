@@ -6,28 +6,34 @@ import getListApplication from "./seller/get-seller-application";
 import getCommentSellerApplication from "./seller/get-comment-seller-application";
 import UpdateSellerAplication from "./seller/update-seller-application";
 import updateCommentSellerApplication from "./seller/update-comment-seller-application";
+import { registerLoggedInCustomer } from "../../middlewares/customerLogged";
 
 // Initialize a custom router
 const router = Router();
 
 export function attachAdminRoutes(adminRouter: Router) {
   // Attach our router to a custom path on the admin router
-  adminRouter.use("/", router);
+  adminRouter.use("/", router, registerLoggedInCustomer);
 
   // Define a GET endpoint on the root route of our custom path
 
   //router.get("/", wrapHandler(customRouteHandler));
 
+  //Listado de solicitudes a vendedores
   router.get("/sellerapplication", wrapHandler(getListApplication));
+
   router.get(
     "/commentsellerapplication",
     wrapHandler(getCommentSellerApplication)
   );
+
+  //Actualizar el estado de la applicacion
   router.post(
     "/sellerapplication",
     authenticate(),
     wrapHandler(UpdateSellerAplication)
   );
+
   router.post(
     "/commentsellerapplication",
     wrapHandler(updateCommentSellerApplication)
