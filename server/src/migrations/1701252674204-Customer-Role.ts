@@ -9,6 +9,11 @@ export class CustomerRole1701252674204 implements MigrationInterface {
                   "updated_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now())`
     );
     await queryRunner.createPrimaryKey("customer_role", ["role_id"]);
+    await queryRunner.query(
+      `INSERT INTO "customer_role" ("role_id", "nameRole" ) VALUES
+            (0,'seller'),
+            (1,'buyer')`
+    );
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
