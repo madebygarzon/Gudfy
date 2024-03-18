@@ -3,8 +3,10 @@ import ButtonMedusa from "@modules/common/components/button"
 import { Autocomplete, AutocompleteItem } from "@nextui-org/react"
 //import Input from "@modules/common/components/input"
 import { Input } from "@nextui-org/react"
+import Image from "next/image"
 import { FieldValues, useForm } from "react-hook-form"
 import { actionCreateSellerApplication } from "@modules/account/actions/action-seller-application"
+import InputFile from "@modules/common/components/input-file"
 
 interface Proveedor {
   value: string
@@ -12,56 +14,58 @@ interface Proveedor {
 }
 
 interface SellerCredentials extends FieldValues {
-  nombre_vendedor: string
-  apellidos_vendedor: string
-  correo_electronico_vendedor: string
-  numero_de_telefono_vendedor: string
-  pais_vendedor: string
-  ciudad_vendedor: string
-  direccion_vendedor: string
-  codigo_postal_vendedor: string
-  nombre_proveedor: string
-  tipo_proveedor: string
-  nombre_empresa_proveedor: string
-  pais_proveedor: string
-  ciudad_proveedor: string
-  direccion_proveedor: string
-  documentos_proveedor: File | null
-  productos_diferentes: string
-  nombre_producto_ejemplo: string
-  cantidad_por_producto: string
-  enlaces_webs_venta: string
-  documento_de_identidad: File | string
-  comprobante_domicilio: File | string
-  campo1_metodo_pago: string
-  campo2_metodo_pago: string
+  name: string
+  last_name: string
+  email: string
+  phone: string
+  contry: string
+  city: string
+  address: string
+  postal_code: string
+  supplier_name: string
+  supplier_type: string
+  company_name: string
+  company_country: string
+  company_city: string
+  company_address: string
+  // supplier_documents: File | null
+  quantity_products_sale: string
+  example_product: string
+  quantity_per_product: string
+  current_stock_distribution: string
+  // front_identity_document: File | null
+  // subsequent_identity_document: File | null
+  // address_proof: File | null
+  // campo1_metodo_pago: string
+  // campo2_metodo_pago: string
 }
 
 const SellerRequestPerson = () => {
-  const [formData, setFormData] = useState({
-    nombre_vendedor: "",
-    apellidos_vendedor: "",
-    correo_electronico_vendedor: "",
-    numero_de_telefono_vendedor: "",
-    pais_vendedor: "",
-    ciudad_vendedor: "",
-    direccion_vendedor: "",
-    codigo_postal_vendedor: "",
-    nombre_proveedor: "",
-    tipo_proveedor: "",
-    nombre_empresa_proveedor: "",
-    pais_proveedor: "",
-    ciudad_proveedor: "",
-    direccion_proveedor: "",
-    documentos_proveedor: null,
-    productos_diferentes: "",
-    nombre_producto_ejemplo: "",
-    cantidad_por_producto: "",
-    enlaces_webs_venta: "",
-    documento_de_identidad: null,
-    comprobante_domicilio: null,
-    campo1_metodo_pago: "",
-    campo2_metodo_pago: "",
+  const [formData, setFormData] = useState<SellerCredentials>({
+    name: "",
+    last_name: "",
+    email: "",
+    phone: "",
+    contry: "",
+    city: "",
+    address: "",
+    postal_code: "",
+    supplier_name: "",
+    supplier_type: "",
+    company_name: "",
+    company_country: "",
+    company_city: "",
+    company_address: "",
+    // supplier_documents: null,
+    quantity_products_sale: "",
+    example_product: "",
+    quantity_per_product: "",
+    current_stock_distribution: "",
+    // front_identity_document: null,
+    // reverse_identity_document: null,
+    // address_proof: null,
+    // campo1_metodo_pago: "",
+    // campo2_metodo_pago: "",
   })
 
   const {
@@ -107,19 +111,26 @@ const SellerRequestPerson = () => {
     { value: "masde500", label: "Más de 500" },
   ]
 
-  const [file, setFile] = useState()
+  const [fileFrontDocument, setFileFrontDocumet] = useState<File | null>()
+  const [fileRevertDocument, setFileRevertDocument] = useState<File | null>()
+  const [fileAddressProod, setFileAddressProod] = useState<File | null>()
 
   const onSubmit = handleSubmit(async () => {
     //Enviar solicitud después de completar todos los pasos
-    // actionCreateSellerApplication(
-    //   customer_id,
-    //   formData.identification_number,
-    //   formData.address
-    // ).then(() => {
-    //   handlerReset()
-    // })
-  })
+    if (!fileFrontDocument || !fileRevertDocument || !fileAddressProod) return
 
+    actionCreateSellerApplication(
+      formData,
+      fileFrontDocument,
+      fileRevertDocument,
+      fileAddressProod
+    ).then((e) => {
+      //handlerReset()
+    })
+  })
+  const handleAutocompletChange = (value: string, name: string) => {
+    setFormData((prevData) => ({ ...prevData, [name]: value }))
+  }
   return (
     <form onSubmit={onSubmit} className="">
       <div className="flex flex-col w-full gap-y-2 text-sm ml-auto">
@@ -131,7 +142,7 @@ const SellerRequestPerson = () => {
         </p>
         <Input
           label="Nombre"
-          {...register("nombre_vendedor", {
+          {...register("name", {
             required: "Campo requerido",
           })}
           autoComplete="on"
@@ -142,7 +153,7 @@ const SellerRequestPerson = () => {
 
         <Input
           label="Apellidos"
-          {...register("apellidos_vendedor", {
+          {...register("last_name", {
             required: "Campo requerido",
           })}
           autoComplete="on"
@@ -151,7 +162,7 @@ const SellerRequestPerson = () => {
         />
         <Input
           label="Correo electrónico"
-          {...register("correo_electronico_vendedor", {
+          {...register("email", {
             required: "Campo requerido",
           })}
           autoComplete="on"
@@ -160,7 +171,7 @@ const SellerRequestPerson = () => {
         />
         <Input
           label="Numero telefónico"
-          {...register("numero_de_telefono_vendedor", {
+          {...register("phone", {
             required: "Campo requerido",
           })}
           autoComplete="on"
@@ -175,7 +186,7 @@ const SellerRequestPerson = () => {
         </p>
         <Input
           label="País"
-          {...register("pais_vendedor", {
+          {...register("contry", {
             required: "Campo requerido",
           })}
           autoComplete="on"
@@ -184,7 +195,7 @@ const SellerRequestPerson = () => {
         />
         <Input
           label="Ciudad"
-          {...register("ciudad_vendedor", {
+          {...register("city", {
             required: "Campo requerido",
           })}
           autoComplete="on"
@@ -193,7 +204,7 @@ const SellerRequestPerson = () => {
         />
         <Input
           label="Dirección"
-          {...register("direccion_vendedor", {
+          {...register("address", {
             required: "Campo requerido",
           })}
           autoComplete="on"
@@ -202,7 +213,7 @@ const SellerRequestPerson = () => {
         />
         <Input
           label="Código postal"
-          {...register("codigo_postal_vendedor", {
+          {...register("postal_code", {
             required: "Campo requerido",
           })}
           autoComplete="number"
@@ -215,7 +226,7 @@ const SellerRequestPerson = () => {
         </p>
         <Input
           label="Nombre del proveedor"
-          {...register("nombre_proveedor", {
+          {...register("supplier_name", {
             required: "Campo requerido",
           })}
           autoComplete="on"
@@ -227,10 +238,11 @@ const SellerRequestPerson = () => {
           //variant={variant}
           defaultItems={tipo_proveedor}
           label="Tipo de proveedor"
-          {...register("tipo_proveedor", {
+          {...register("supplier_type", {
             required: "Campo requerido",
           })}
           className="max-w"
+          onInputChange={(e) => handleAutocompletChange(e, "supplier_type")}
         >
           {(item) => (
             <AutocompleteItem key={item.value}>{item.label}</AutocompleteItem>
@@ -239,7 +251,7 @@ const SellerRequestPerson = () => {
 
         <Input
           label="Nombre de empresa proveedora"
-          {...register("nombre_empresa_proveedor", {
+          {...register("company_name", {
             required: "Campo requerido",
           })}
           autoComplete="on"
@@ -248,7 +260,7 @@ const SellerRequestPerson = () => {
         />
         <Input
           label="País de la empresa proveedora"
-          {...register("pais_proveedor", {
+          {...register("company_country", {
             required: "Campo requerido",
           })}
           autoComplete="number"
@@ -257,7 +269,7 @@ const SellerRequestPerson = () => {
         />
         <Input
           label="Ciudad del proveedor"
-          {...register("ciudad_proveedor", {
+          {...register("company_city", {
             required: "Campo requerido",
           })}
           autoComplete="on"
@@ -266,7 +278,7 @@ const SellerRequestPerson = () => {
         />
         <Input
           label="Dirección del proveedor"
-          {...register("direccion_proveedor", {
+          {...register("company_address", {
             required: "Campo requerido",
           })}
           autoComplete="on"
@@ -280,7 +292,7 @@ const SellerRequestPerson = () => {
         <Input
           //type="file"
           label="Sube documentos de proveedor"
-          {...register("documentos_proveedor", {
+          {...register("supplier_documents", {
             required: "Campo requerido",
             // validate: {
             //   required: (file) => file.length > 0 || "Sube un documento",
@@ -298,10 +310,13 @@ const SellerRequestPerson = () => {
           //variant={variant}
           defaultItems={cuantos_productos}
           label="¿Cuántos productos venderás?"
-          {...register("productos_diferentes", {
+          {...register("quantity_products_sale", {
             required: "Campo requerido",
           })}
           className="max-w"
+          onInputChange={(e) =>
+            handleAutocompletChange(e, "quantity_products_sale")
+          }
         >
           {(item) => (
             <AutocompleteItem key={item.value}>{item.label}</AutocompleteItem>
@@ -313,7 +328,7 @@ const SellerRequestPerson = () => {
 
         <Input
           label="Ejemplos"
-          {...register("nombre_producto_ejemplo", {
+          {...register("example_product", {
             required: "Campo requerido",
           })}
           autoComplete="on"
@@ -325,10 +340,13 @@ const SellerRequestPerson = () => {
           //variant={variant}
           defaultItems={elementos_por_producto}
           label="Cantidad de productos de elementos por producto"
-          {...register("productos_diferentes", {
+          {...register("quantity_per_product", {
             required: "Campo requerido",
           })}
           className="max-w"
+          onInputChange={(e) =>
+            handleAutocompletChange(e, "quantity_per_product")
+          }
         >
           {(item) => (
             <AutocompleteItem key={item.value}>{item.label}</AutocompleteItem>
@@ -340,36 +358,57 @@ const SellerRequestPerson = () => {
         </p>
         <Input
           label="Ejemplos "
-          {...register("enlaces_webs_venta", {
+          {...register("current_stock_distribution", {
             required: "Campo requerido",
           })}
           autoComplete="on"
           //errors={errors}
           onChange={handleInputChange}
         />
-         <p className="font-semibold text-gray-800 text-sm text-center">
-         Verificación comercial
+        <p className="font-semibold text-gray-800 text-sm text-center">
+          Verificación comercial
         </p>
-        <Input
-          label="Documento de identidad "
-          {...register("documento_de_identidad", {
-            required: "Campo requerido",
-          })}
-          autoComplete="on"
+        {fileFrontDocument && (
+          <Image
+            alt="fileFrontDocument "
+            src={URL.createObjectURL(fileFrontDocument)}
+            width={100}
+            height={100}
+          />
+        )}
+        <InputFile
+          label="Documento de identidad parte frontal "
           //errors={errors}
-          onChange={handleInputChange}
+          setFile={setFileFrontDocumet}
         />
-         <Input
+        {fileRevertDocument && (
+          <Image
+            alt="fileRevertDocument"
+            src={URL.createObjectURL(fileRevertDocument)}
+            width={100}
+            height={100}
+          />
+        )}
+        <InputFile
+          label="Documento de identidad parte posterior "
+          //errors={errors}
+          setFile={setFileRevertDocument}
+        />
+        {fileAddressProod && (
+          <Image
+            alt="FileAddressProod"
+            src={URL.createObjectURL(fileAddressProod)}
+            width={100}
+            height={100}
+          />
+        )}
+        <InputFile
           label="Comprobante de domicilio "
-          {...register("comprobante_domicilio", {
-            required: "Campo requerido",
-          })}
-          autoComplete="on"
           //errors={errors}
-          onChange={handleInputChange}
+          setFile={setFileAddressProod}
         />
-         <p className="font-semibold text-gray-800 text-sm text-center">
-        Métodos de pago
+        <p className="font-semibold text-gray-800 text-sm text-center">
+          Métodos de pago
         </p>
         <Input
           label="Campo 1 "
@@ -390,10 +429,11 @@ const SellerRequestPerson = () => {
           onChange={handleInputChange}
         />
 
-
-
-
-        <ButtonMedusa className="mt-4 mb-4 rounded-[5px]" type="submit" color="primary">
+        <ButtonMedusa
+          className="mt-4 mb-4 rounded-[5px]"
+          type="submit"
+          color="primary"
+        >
           Enviar solicitud
         </ButtonMedusa>
 

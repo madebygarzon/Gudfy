@@ -5,6 +5,7 @@ import {
   JoinColumn,
   ManyToOne,
   OneToMany,
+  OneToOne,
 } from "typeorm";
 import { Customer as MedusaCustomer } from "@medusajs/medusa";
 import { Store } from "./store";
@@ -28,6 +29,6 @@ export class Customer extends MedusaCustomer {
   @JoinColumn({ name: "role_id" })
   customerRole?: CustomerRole;
 
-  @OneToMany(() => SellerApplication, (seller) => seller?.customer)
+  @OneToOne(() => SellerApplication, (seller) => seller?.customer)
   sellerapplications?: SellerApplication[];
 }

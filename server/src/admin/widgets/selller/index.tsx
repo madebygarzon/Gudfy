@@ -19,6 +19,37 @@ import clsx from "clsx";
 import { ModalComment } from "../../components/seller-application/modal-commet";
 
 type objectSellerApplication = {
+  application_data: {
+    address: string;
+    address_proof: string;
+    city: string;
+    company_address: string;
+    company_city: string;
+    company_country: string;
+    company_name: string;
+    contry: string;
+    created_at: string;
+    current_stock_distribution: string;
+    email: string;
+    example_product: string;
+    front_identity_document: string;
+    id: string;
+    last_name: string;
+    name: string;
+    phone: string;
+    postal_code: string;
+    quantity_per_product: string;
+    quantity_products_sal: string;
+    revers_identity_documen: string;
+    supplier_documents: string;
+    supplier_name: string;
+    supplier_type: string;
+    updated_at: string;
+  };
+  state_application: {
+    id: string;
+    state: string;
+  };
   customer_id: string;
   customer: {
     name: string;
@@ -46,26 +77,27 @@ type DataStatusSellerApplication = {
 };
 const dataSelecFilter = [
   {
-    value: "Todos",
+    value: "All",
     label: "Todos",
   },
   {
-    value: "Aprobado",
+    value: "A",
     label: "Aprobado",
   },
   {
-    value: "Rechazado",
+    value: "B",
     label: "Rechazado",
   },
   {
-    value: "Pendiente",
-    label: "Pendiente",
+    value: "D",
+    label: "A corrección",
   },
 ];
 const registerNumber = [5, 10, 100];
 // numero de filas por pagina predeterminado
 const APPROVED = "APPROVED";
 const REJECTED = "REJECTED";
+const CORRECT = "CORRECT";
 
 const SellerApplication = () => {
   //manejo de la tabla --------------
@@ -200,14 +232,18 @@ const SellerApplication = () => {
     let dataFilter;
     switch (value) {
       case dataSelecFilter[1].value:
-        dataFilter = dataCustomer.dataSellers.filter((data) => data.approved);
+        dataFilter = dataCustomer.dataSellers.filter(
+          (data) => data.state_application.id === dataSelecFilter[1].value
+        );
         break;
       case dataSelecFilter[2].value:
-        dataFilter = dataCustomer.dataSellers.filter((data) => data.rejected);
+        dataFilter = dataCustomer.dataSellers.filter(
+          (data) => data.state_application.id === dataSelecFilter[2].value
+        );
         break;
       case dataSelecFilter[3].value:
         dataFilter = dataCustomer.dataSellers.filter(
-          (data) => !data.approved && !data.rejected
+          (data) => data.state_application.id === dataSelecFilter[3].value
         );
         break;
       default:
@@ -324,13 +360,7 @@ const SellerApplication = () => {
                         </Table.Cell>
                         <Table.Cell>{data.customer.name}</Table.Cell>
                         <Table.Cell>{data.customer.email}</Table.Cell>
-                        <Table.Cell>
-                          {data.approved
-                            ? "Aprobado"
-                            : data.rejected
-                            ? "Rechazado"
-                            : "Pendiente"}
-                        </Table.Cell>
+                        <Table.Cell>{data.state_application.state}</Table.Cell>
                         <Table.Cell className="flex gap-x-2 items-center">
                           <IconButton>
                             <Eye />
@@ -363,6 +393,23 @@ const SellerApplication = () => {
                                 onClick={() => {
                                   setDataStatus({
                                     payload: REJECTED,
+                                    customer: {
+                                      customer_id: data.customer_id,
+                                      ...data.customer,
+                                    },
+                                    comment_status: "",
+                                  });
+                                  changeModalReject(true);
+                                }}
+                              >
+                                <XMark className="text-ui-fg-subtle" />
+                                Rechazar
+                              </DropdownMenu.Item>
+                              <DropdownMenu.Item
+                                className="gap-x-2"
+                                onClick={() => {
+                                  setDataStatus({
+                                    payload: CORRECT,
                                     customer: {
                                       customer_id: data.customer_id,
                                       ...data.customer,
@@ -462,6 +509,13 @@ const SellerApplication = () => {
         setDataStatus={setDataStatus}
         handlerActionStatus={handlerActionStatus}
       />
+      <ModalCorrect
+        openModal={openModalReject}
+        changeModal={changeModalReject}
+        data={dataStatus}
+        setDataStatus={setDataStatus}
+        handlerActionStatus={handlerActionStatus}
+      />
       {modalComment.open ? (
         <ModalComment
           changeModal={changeModalCommen}
@@ -542,6 +596,50 @@ const ModalRejected: React.FC<ModalProps> = ({
             </Heading>
             <Text className="text-ui-fg-subtle">
               Comenta las razones del rechazo de solicitud:
+            </Text>
+            <Textarea
+              value={data.comment_status}
+              onChange={(e) => {
+                setDataStatus((prevData) => ({
+                  ...prevData,
+                  comment_status: e.target.value,
+                }));
+              }}
+            />
+          </div>
+        </div>
+
+        <div className="flex justify-center items-center gap-5 pt-5 ">
+          <Button onClick={handlerActionStatus}>Aceptar</Button>
+          <Button variant="danger" onClick={() => changeModal(false)}>
+            Cancelar
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+};
+const ModalCorrect: React.FC<ModalProps> = ({
+  openModal,
+  changeModal,
+  data,
+  setDataStatus,
+  handlerActionStatus,
+}) => {
+  if (!openModal) {
+    return null;
+  }
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+      <div className="bg-white p-8 border border-gray-200 rounded-lg max-w-lg">
+        <div className="flex w-full max-w-lg flex-col gap-y-8 justify-center items-center">
+          <div className="flex flex-col gap-y-1">
+            <Heading>
+              Enviar corrección al usuario: {data.customer?.name} -{" "}
+              {data.customer?.email}
+            </Heading>
+            <Text className="text-ui-fg-subtle">
+              Comenta las razones de la corrección a la solicitud:
             </Text>
             <Textarea
               value={data.comment_status}
