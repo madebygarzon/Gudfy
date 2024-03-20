@@ -17,6 +17,7 @@ export default upload.fields([
   { name: "frontDocument", maxCount: 1 },
   { name: "reversDocument", maxCount: 1 },
   { name: "addressDocument", maxCount: 1 },
+  { name: "supplierDocuments", maxCount: 1 },
 ]);
 
 // //storage sem implementa para guardar el archivo con un numero rando, segun la hora

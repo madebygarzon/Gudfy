@@ -357,7 +357,7 @@ export default function CreateProduct({ setReset }: Reset) {
                             height={100}
                           />
                         )}
-                        <InputFile setFile={setFile} />
+                        <InputFile setFile={setFile} alt={""} />
                       </div>
                     </div>
                     <div className="w-[60%] text-zinc-500 py-5">

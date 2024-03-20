@@ -42,7 +42,8 @@ export default class SellerApplicationService extends TransactionBaseService {
     applicationData,
     frontDocument,
     reversDocument,
-    addressDocument
+    addressDocument,
+    supplierDocuments
   ) {
     try {
       if (!this.loggedInCustomer_)
@@ -61,6 +62,7 @@ export default class SellerApplicationService extends TransactionBaseService {
         front_identity_document: frontDocument,
         revers_identity_document: reversDocument,
         address_proof: addressDocument,
+        supplier_documents: supplierDocuments,
       });
 
       const saveCreateApplication_data = await ApplicationDataRepository.save(

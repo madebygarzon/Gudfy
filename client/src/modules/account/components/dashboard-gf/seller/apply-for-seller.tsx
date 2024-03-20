@@ -25,7 +25,7 @@ const ApplyForSeller: React.FC = ({}) => {
   } = useDisclosure()
   return (
     <>
-      <div className=" flex-col w-full space-y-10">
+      <div className=" flex flex-col w-full space-y-10 items-center">
         <h1 className="text-center text-[38px] font-black">
           ¡ Unete a Gudfy !
         </h1>
