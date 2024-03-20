@@ -4,9 +4,11 @@ import { Autocomplete, AutocompleteItem } from "@nextui-org/react"
 //import Input from "@modules/common/components/input"
 import { Input } from "@nextui-org/react"
 import Image from "next/image"
+import Link from "next/link"
 import { FieldValues, useForm } from "react-hook-form"
 import { actionCreateSellerApplication } from "@modules/account/actions/action-seller-application"
 import InputFile from "@modules/common/components/input-file"
+import { XCircleSolid } from "@medusajs/icons"
 
 interface Proveedor {
   value: string
@@ -64,8 +66,8 @@ const SellerRequestPerson = () => {
     // front_identity_document: null,
     // reverse_identity_document: null,
     // address_proof: null,
-    // campo1_metodo_pago: "",
-    // campo2_metodo_pago: "",
+    field_payment_method_1: "",
+    field_payment_method_2: "",
   })
 
   const {
@@ -110,28 +112,63 @@ const SellerRequestPerson = () => {
     { value: "de100a500", label: "Entre 100 y 500" },
     { value: "masde500", label: "Más de 500" },
   ]
-
+  const [supplierDocuments, setSuplierDocuments] = useState<File | null>()
   const [fileFrontDocument, setFileFrontDocumet] = useState<File | null>()
   const [fileRevertDocument, setFileRevertDocument] = useState<File | null>()
   const [fileAddressProod, setFileAddressProod] = useState<File | null>()
+  const [sentMessage, setSentMessage] = useState<boolean>(false)
+  const [valueInputOptions, setValueInputOptions] = useState<{
+    value: string
+    arrayValue: Array<string>
+  }>({
+    value: "",
+    arrayValue: [],
+  })
 
   const onSubmit = handleSubmit(async () => {
     //Enviar solicitud después de completar todos los pasos
-    if (!fileFrontDocument || !fileRevertDocument || !fileAddressProod) return
+    if (
+      !fileFrontDocument ||
+      !fileRevertDocument ||
+      !fileAddressProod ||
+      !supplierDocuments
+    )
+      return
 
     actionCreateSellerApplication(
       formData,
       fileFrontDocument,
       fileRevertDocument,
-      fileAddressProod
+      fileAddressProod,
+      supplierDocuments
     ).then((e) => {
-      //handlerReset()
+      setSentMessage(true)
     })
   })
+  const handlerControlVariant = (e: any) => {
+    if (e.includes(",")) {
+      // setArrayValue((variant) =>
+      //   variant.length ? [...variant, e.slice(0, -1)] : [e.slice(0, -1)]
+      // )
+      setValueInputOptions((data) => ({
+        value: "",
+        arrayValue: [...data.arrayValue, e],
+      }))
+    } else {
+      setValueInputOptions((data) => ({ ...data, value: e }))
+    }
+  }
+  const handlerTrashVariant = (valueOption: string) => {
+    if (!valueInputOptions.arrayValue.length) return
+    setValueInputOptions((data) => ({
+      ...data,
+      arrayValue: data.arrayValue.filter((v) => v !== valueOption),
+    }))
+  }
   const handleAutocompletChange = (value: string, name: string) => {
     setFormData((prevData) => ({ ...prevData, [name]: value }))
   }
-  return (
+  return !sentMessage ? (
     <form onSubmit={onSubmit} className="">
       <div className="flex flex-col w-full gap-y-2 text-sm ml-auto">
         <p className="text-xl font-extrabold  text-center">
@@ -289,6 +326,16 @@ const SellerRequestPerson = () => {
         <p className="font-semibold text-gray-800 text-sm text-center">
           Datos del proveedor
         </p>
+        <div className="my-2 flex justify-center">
+          <InputFile
+            label="Documentos del proveedor "
+            //errors={errors}
+            alt="fileFrontDocument "
+            file={supplierDocuments}
+            setFile={setSuplierDocuments}
+          />
+        </div>
+
         <Input
           //type="file"
           label="Sube documentos de proveedor"
@@ -325,8 +372,39 @@ const SellerRequestPerson = () => {
         <p className="font-semibold text-gray-800 text-sm text-center">
           Dános ejemplos de productos que venderas
         </p>
-
-        <Input
+        <div>
+          <Input
+            className="relative max-h-150px"
+            id="test1"
+            labelPlacement="outside"
+            label={`Preciona "Enter" o "," para agregar el Ejemplo`}
+            placeholder="Gif Cards, Software, Plantillas"
+            value={valueInputOptions.value}
+            onChange={(e) => handlerControlVariant(e.target.value)}
+            startContent={
+              <div className=" flex max-w-[450px] " id="test2">
+                {valueInputOptions.arrayValue.length ? (
+                  valueInputOptions.arrayValue.map((v: string, i) => (
+                    <>
+                      <button
+                        className=" mx-1 px-2 py-1 rounded-[10px] bg-slate-300 w-auto "
+                        onClick={() => handlerTrashVariant(v)}
+                      >
+                        <span className="flex gap-1 text-xs items-center">
+                          {" "}
+                          {v} <XCircleSolid />{" "}
+                        </span>
+                      </button>
+                    </>
+                  ))
+                ) : (
+                  <></>
+                )}
+              </div>
+            }
+          />
+        </div>
+        {/* <Input
           label="Ejemplos"
           {...register("example_product", {
             required: "Campo requerido",
@@ -334,7 +412,7 @@ const SellerRequestPerson = () => {
           autoComplete="on"
           //errors={errors}
           onChange={handleInputChange}
-        />
+        /> */}
 
         <Autocomplete
           //variant={variant}
@@ -368,51 +446,35 @@ const SellerRequestPerson = () => {
         <p className="font-semibold text-gray-800 text-sm text-center">
           Verificación comercial
         </p>
-        {fileFrontDocument && (
-          <Image
+        <div className=" flex flex-col items-center">
+          <InputFile
+            label="Documento de identidad parte frontal "
+            //errors={errors}
             alt="fileFrontDocument "
-            src={URL.createObjectURL(fileFrontDocument)}
-            width={100}
-            height={100}
+            file={fileFrontDocument}
+            setFile={setFileFrontDocumet}
           />
-        )}
-        <InputFile
-          label="Documento de identidad parte frontal "
-          //errors={errors}
-          setFile={setFileFrontDocumet}
-        />
-        {fileRevertDocument && (
-          <Image
+          <InputFile
+            label="Documento de identidad parte posterior "
+            //errors={errors}
             alt="fileRevertDocument"
-            src={URL.createObjectURL(fileRevertDocument)}
-            width={100}
-            height={100}
+            file={fileRevertDocument}
+            setFile={setFileRevertDocument}
           />
-        )}
-        <InputFile
-          label="Documento de identidad parte posterior "
-          //errors={errors}
-          setFile={setFileRevertDocument}
-        />
-        {fileAddressProod && (
-          <Image
+          <InputFile
+            label="Comprobante de domicilio "
             alt="FileAddressProod"
-            src={URL.createObjectURL(fileAddressProod)}
-            width={100}
-            height={100}
+            //errors={errors}
+            file={fileAddressProod}
+            setFile={setFileAddressProod}
           />
-        )}
-        <InputFile
-          label="Comprobante de domicilio "
-          //errors={errors}
-          setFile={setFileAddressProod}
-        />
+        </div>
         <p className="font-semibold text-gray-800 text-sm text-center">
           Métodos de pago
         </p>
         <Input
           label="Campo 1 "
-          {...register("campo1_metodo_pago", {
+          {...register("field_payment_method_1", {
             required: "Campo requerido",
           })}
           autoComplete="on"
@@ -421,7 +483,7 @@ const SellerRequestPerson = () => {
         />
         <Input
           label="Campo 2 "
-          {...register("campo2_metodo_pago", {
+          {...register("field_payment_method_2", {
             required: "Campo requerido",
           })}
           autoComplete="on"
@@ -438,19 +500,38 @@ const SellerRequestPerson = () => {
         </ButtonMedusa>
 
         {/* <ButtonMedusa className="rounded-[5px]" type="submit" onClick={nextStep} color="primary">
-          {step === 3 ? "Enviar solicitud" : "Siguiente"}
-        </ButtonMedusa> */}
+         {step === 3 ? "Enviar solicitud" : "Siguiente"}
+       </ButtonMedusa> */}
 
         {/* <ButtonMedusa
-            className="rounded-[5px]"
-            type={step !== 3 ? "submit" : undefined}
-            onClick={step === 3 ? nextStep : undefined}
-            color="primary"
-          >
-            {step === 3 ? "Enviar solicitud" : "Siguiente"}
-          </ButtonMedusa> */}
+           className="rounded-[5px]"
+           type={step !== 3 ? "submit" : undefined}
+           onClick={step === 3 ? nextStep : undefined}
+           color="primary"
+         >
+           {step === 3 ? "Enviar solicitud" : "Siguiente"}
+         </ButtonMedusa> */}
       </div>
     </form>
+  ) : (
+    <>
+      <div className=" flex flex-col w-full space-y-10 items-center">
+        <h1 className="text-center text-[38px] font-black">
+          ¡ Gracias por aplicar a Gudfy !
+        </h1>
+
+        <p className=" text-center text-[18px] font-light max-w-[700px]">
+          ¡Gracias por tu interés en convertirte en vendedor en GUDFY! Hemos
+          recibido tu solicitud y estamos revisándola cuidadosamente. Por favor,
+          ten en cuenta que este proceso puede tardar hasta 3 días hábiles.
+          ¡Pronto te daremos noticias sobre el estado de tu solicitud!
+          ¡Bienvenido a nuestra comunidad! 🚀🛍️
+        </p>
+        <Link href={"./account/seller"}>
+          <ButtonMedusa>Volver</ButtonMedusa>
+        </Link>
+      </div>
+    </>
   )
 }
 
