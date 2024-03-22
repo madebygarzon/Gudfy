@@ -374,7 +374,7 @@ const SellerRequestPerson = () => {
         </p>
         <div>
           <Input
-            className="relative max-h-150px"
+            className=" max-h-550px max-w-[150px]"
             id="test1"
             labelPlacement="outside"
             label={`Preciona "Enter" o "," para agregar el Ejemplo`}
@@ -382,7 +382,7 @@ const SellerRequestPerson = () => {
             value={valueInputOptions.value}
             onChange={(e) => handlerControlVariant(e.target.value)}
             startContent={
-              <div className=" flex max-w-[450px] " id="test2">
+              <div className="flex max-w-[150px] " id="test2">
                 {valueInputOptions.arrayValue.length ? (
                   valueInputOptions.arrayValue.map((v: string, i) => (
                     <>
@@ -462,7 +462,7 @@ const SellerRequestPerson = () => {
             setFile={setFileRevertDocument}
           />
           <InputFile
-            label="Comprobante de domicilio "
+            label="Comprobante de domicilio"
             alt="FileAddressProod"
             //errors={errors}
             file={fileAddressProod}
