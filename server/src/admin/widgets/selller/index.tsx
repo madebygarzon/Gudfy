@@ -12,40 +12,44 @@ import {
   ArrowLongLeft,
   TriangleDownMini,
   ChatBubble,
+  ArrowPathMini,
 } from "@medusajs/icons";
 import Spinner from "../../components/shared/spinner";
 import { Input, Select, Button, Heading, Textarea, Text } from "@medusajs/ui";
 import clsx from "clsx";
 import { ModalComment } from "../../components/seller-application/modal-commet";
+type dataView = {
+  address: string;
+  address_proof: string;
+  city: string;
+  company_address: string;
+  company_city: string;
+  company_country: string;
+  company_name: string;
+  contry: string;
+  created_at: string;
+  current_stock_distribution: string;
+  email: string;
+  example_product: string;
+  front_identity_document: string;
+  id: string;
+  last_name: string;
+  name: string;
+  phone: string;
+  postal_code: string;
+  quantity_per_product: string;
+  quantity_products_sal: string;
+  revers_identity_documen: string;
+  supplier_documents: string;
+  supplier_name: string;
+  supplier_type: string;
+  field_payment_method_1: string;
+  field_payment_method_2: string;
+  updated_at: string;
+};
 
 type objectSellerApplication = {
-  application_data: {
-    address: string;
-    address_proof: string;
-    city: string;
-    company_address: string;
-    company_city: string;
-    company_country: string;
-    company_name: string;
-    contry: string;
-    created_at: string;
-    current_stock_distribution: string;
-    email: string;
-    example_product: string;
-    front_identity_document: string;
-    id: string;
-    last_name: string;
-    name: string;
-    phone: string;
-    postal_code: string;
-    quantity_per_product: string;
-    quantity_products_sal: string;
-    revers_identity_documen: string;
-    supplier_documents: string;
-    supplier_name: string;
-    supplier_type: string;
-    updated_at: string;
-  };
+  application_data: dataView;
   state_application: {
     id: string;
     state: string;
@@ -124,11 +128,49 @@ const SellerApplication = () => {
     },
     comment_status: "",
   });
+
+  const [dataView, setDataView] = useState<dataView>({
+    address: "",
+    address_proof: "",
+    city: "",
+    company_address: "",
+    company_city: "",
+    company_country: "",
+    company_name: "",
+    contry: "",
+    created_at: "",
+    current_stock_distribution: "",
+    email: "",
+    example_product: "",
+    front_identity_document: "",
+    id: "",
+    last_name: "",
+    name: "",
+    phone: "",
+    postal_code: "",
+    quantity_per_product: "",
+    quantity_products_sal: "",
+    revers_identity_documen: "",
+    supplier_documents: "",
+    supplier_name: "",
+    supplier_type: "",
+    updated_at: "",
+    field_payment_method_1: "",
+    field_payment_method_2: "",
+  });
   //Modals
   //modal copnfirmacion de Aceptar solicitud
   const [openModalAccept, changeModalAccept] = useState(false);
+
   //modal copnfirmacion de Rechazar solicitud
   const [openModalReject, changeModalReject] = useState(false);
+
+  //modal copnfirmacion de Corrección de solicitud
+  const [openModalCorrect, changeModalCorrect] = useState(false);
+
+  //modal ver los datos de la solicitud
+  const [openModalViewSellerData, changeModalViewSellerData] = useState(false);
+
   //modaal commentario de la solicitud
   const [modalComment, changeModalCommen] = useState({
     open: false,
@@ -223,6 +265,8 @@ const SellerApplication = () => {
     }).then(() => {
       changeModalAccept(false);
       changeModalReject(false);
+      changeModalCorrect(false);
+      changeModalViewSellerData(false);
       handlerGetListApplication();
       setPage(1);
     });
@@ -362,7 +406,18 @@ const SellerApplication = () => {
                         <Table.Cell>{data.customer.email}</Table.Cell>
                         <Table.Cell>{data.state_application.state}</Table.Cell>
                         <Table.Cell className="flex gap-x-2 items-center">
-                          <IconButton>
+                          <IconButton
+                            onClick={() => {
+                              setDataStatus({
+                                customer: {
+                                  customer_id: data.customer_id,
+                                  ...data.customer,
+                                },
+                              });
+                              setDataView(data.application_data);
+                              changeModalViewSellerData(true);
+                            }}
+                          >
                             <Eye />
                           </IconButton>
                           <DropdownMenu>
@@ -416,11 +471,11 @@ const SellerApplication = () => {
                                     },
                                     comment_status: "",
                                   });
-                                  changeModalReject(true);
+                                  changeModalCorrect(true);
                                 }}
                               >
-                                <XMark className="text-ui-fg-subtle" />
-                                Rechazar
+                                <ArrowPathMini className="text-ui-fg-subtle" />
+                                Corregir
                               </DropdownMenu.Item>
                             </DropdownMenu.Content>
                           </DropdownMenu>
@@ -510,11 +565,21 @@ const SellerApplication = () => {
         handlerActionStatus={handlerActionStatus}
       />
       <ModalCorrect
-        openModal={openModalReject}
-        changeModal={changeModalReject}
+        openModal={openModalCorrect}
+        changeModal={changeModalCorrect}
         data={dataStatus}
         setDataStatus={setDataStatus}
         handlerActionStatus={handlerActionStatus}
+      />
+      <ModalViewSellerData
+        openModal={openModalViewSellerData}
+        changeModal={changeModalViewSellerData}
+        changeModalAccept={changeModalAccept}
+        changeModalCorrect={changeModalCorrect}
+        changeModalReject={changeModalReject}
+        data={dataStatus}
+        viweDataSeller={dataView}
+        setDataStatus={setDataStatus}
       />
       {modalComment.open ? (
         <ModalComment
@@ -532,6 +597,7 @@ type ModalProps = {
   openModal: boolean;
   changeModal: (value: React.SetStateAction<boolean>) => void;
   data: DataStatusSellerApplication;
+  viweDataSeller?: dataView;
   setDataStatus: React.Dispatch<
     React.SetStateAction<DataStatusSellerApplication>
   >;
@@ -550,7 +616,7 @@ const ModalApprobed: React.FC<ModalProps> = ({
   }
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-30">
       <div className="bg-white p-8 border border-gray-200 rounded-lg max-w-lg">
         <div className="flex w-full max-w-lg flex-col gap-y-8 justify-center items-center">
           <div className="flex flex-col gap-y-1">
@@ -565,8 +631,16 @@ const ModalApprobed: React.FC<ModalProps> = ({
         </div>
 
         <div className="flex justify-center items-center gap-5 pt-5">
-          <Button onClick={handlerActionStatus}>Aceptar</Button>
-          <Button variant="danger" onClick={() => changeModal(false)}>
+          <Button
+            className=" bg-emerald-700 hover:bg-emerald-80"
+            onClick={handlerActionStatus}
+          >
+            Aceptar
+          </Button>
+          <Button
+            className="bg-red-500 hover:bg-red-600 "
+            onClick={() => changeModal(false)}
+          >
             Cancelar
           </Button>
         </div>
@@ -586,7 +660,7 @@ const ModalRejected: React.FC<ModalProps> = ({
     return null;
   }
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-30">
       <div className="bg-white p-8 border border-gray-200 rounded-lg max-w-lg">
         <div className="flex w-full max-w-lg flex-col gap-y-8 justify-center items-center">
           <div className="flex flex-col gap-y-1">
@@ -610,8 +684,16 @@ const ModalRejected: React.FC<ModalProps> = ({
         </div>
 
         <div className="flex justify-center items-center gap-5 pt-5 ">
-          <Button onClick={handlerActionStatus}>Aceptar</Button>
-          <Button variant="danger" onClick={() => changeModal(false)}>
+          <Button
+            className="bg-red-700 hover:bg-red-800"
+            onClick={handlerActionStatus}
+          >
+            Aceptar
+          </Button>
+          <Button
+            className="bg-red-500 hover:bg-red-600 "
+            onClick={() => changeModal(false)}
+          >
             Cancelar
           </Button>
         </div>
@@ -630,7 +712,7 @@ const ModalCorrect: React.FC<ModalProps> = ({
     return null;
   }
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-30 ">
       <div className="bg-white p-8 border border-gray-200 rounded-lg max-w-lg">
         <div className="flex w-full max-w-lg flex-col gap-y-8 justify-center items-center">
           <div className="flex flex-col gap-y-1">
@@ -654,11 +736,235 @@ const ModalCorrect: React.FC<ModalProps> = ({
         </div>
 
         <div className="flex justify-center items-center gap-5 pt-5 ">
-          <Button onClick={handlerActionStatus}>Aceptar</Button>
-          <Button variant="danger" onClick={() => changeModal(false)}>
+          <Button
+            className="bg-blue-700 hover:bg-blue-800"
+            onClick={handlerActionStatus}
+          >
+            Corregir
+          </Button>
+          <Button
+            className="bg-red-500 hover:bg-red-600 "
+            onClick={() => changeModal(false)}
+          >
             Cancelar
           </Button>
         </div>
+      </div>
+    </div>
+  );
+};
+
+const ModalViewSellerData: React.FC<{
+  openModal: boolean;
+  changeModal: (value: React.SetStateAction<boolean>) => void;
+  changeModalAccept: (value: React.SetStateAction<boolean>) => void;
+  changeModalCorrect: (value: React.SetStateAction<boolean>) => void;
+  changeModalReject: (value: React.SetStateAction<boolean>) => void;
+  data: DataStatusSellerApplication;
+  viweDataSeller?: dataView;
+  setDataStatus: React.Dispatch<
+    React.SetStateAction<DataStatusSellerApplication>
+  >;
+}> = ({
+  openModal,
+  changeModal,
+  changeModalAccept,
+  changeModalCorrect,
+  changeModalReject,
+  data,
+  viweDataSeller,
+  setDataStatus,
+}) => {
+  if (!openModal) {
+    return null;
+  }
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex flex-col justify-center  items-center ">
+      <div className="bg-white p-8 border border-gray-200 rounded-t-lg max-w-2xl mt-5 overflow-y-scroll h-[700px]">
+        <div className="flex flex-col gap-y-1">
+          <samp className="divide-x divide-dashed" />
+          <h3 className="text-lg font-extrabold text-center border-t mt-2 py-2 border-gray-300">
+            Visualizacion de Datos
+            {/* {data.customer?.name} - {data.customer?.email} */}
+          </h3>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <p className="font-bold">Nombre:</p>
+              <p>{viweDataSeller.name}</p>
+            </div>
+            <div>
+              <p className="font-bold">Apellido:</p>
+              <p>{viweDataSeller.last_name}</p>
+            </div>
+            <div>
+              <p className="font-bold">Correo Electrónico:</p>
+              <p>{viweDataSeller.email}</p>
+            </div>
+            <div>
+              <p className="font-bold">Teléfono:</p>
+              <p>{viweDataSeller.phone}</p>
+            </div>
+            <div>
+              <p className="font-bold">Dirección:</p>
+              <p>{viweDataSeller.address}</p>
+            </div>
+            <div>
+              <p className="font-bold">Ciudad:</p>
+              <p>{viweDataSeller.city}</p>
+            </div>
+            <div>
+              <p className="font-bold">País:</p>
+              <p>{viweDataSeller.contry}</p>
+            </div>
+            <div>
+              <p className="font-bold">Código Postal:</p>
+              <p>{viweDataSeller.postal_code}</p>
+            </div>
+
+            <p className="text-lg font-extrabold  text-center col-span-2 mt-2 py-2 border-t border-gray-300">
+              Orígen del stock
+            </p>
+            <p className="font-bold text-gray-800 text-sm text-center col-span-2">
+              Datos del proveedor
+            </p>
+            <div>
+              <p className="font-bold">Nombre del proveedor:</p>
+              <p>{viweDataSeller.supplier_name}</p>
+            </div>
+            <div>
+              <p className="font-bold">Tipo de proveedor:</p>
+              <p>{viweDataSeller.supplier_type}</p>
+            </div>
+            <div>
+              <p className="font-bold">Nombre de empresa proveedora:</p>
+              <p>{viweDataSeller.company_name}</p>
+            </div>
+            <div>
+              <p className="font-bold">País de la empresa proveedora:</p>
+              <p>{viweDataSeller.company_country}</p>
+            </div>
+            <div>
+              <p className="font-bold">Ciudad del proveedor:</p>
+              <p>{viweDataSeller.company_city}</p>
+            </div>
+            <div>
+              <p className="font-bold">Dirección del proveedor:</p>
+              <p>{viweDataSeller.company_address}</p>
+            </div>
+            <div>
+              <p className="font-bold">Documentos del proveedor:</p>
+              <a href={viweDataSeller.supplier_documents}>Ver Documento</a>
+            </div>
+
+            <p className="font-bold text-gray-800 text-lg text-center mt-2 py-2 col-span-2 border-t border-gray-300">
+              Lo que vendera
+            </p>
+
+            <div>
+              <p className="font-bold">Cuántos productos vendera:</p>
+              <p> {viweDataSeller.quantity_products_sal}</p>
+            </div>
+            <div>
+              <p className="font-bold">Ejemplos de productos que vendera:</p>
+              <p> {viweDataSeller.example_product}</p>
+            </div>
+            <div>
+              <p className="font-bold">
+                Cantidad de productos de elementos por producto:
+              </p>
+              <p> {viweDataSeller.quantity_per_product}</p>
+            </div>
+            <div>
+              <p className="font-bold">
+                Donde distribuyes actualmente su stock:
+              </p>
+              <p> {viweDataSeller.current_stock_distribution}</p>
+            </div>
+
+            <p className="font-extrabold  text-gray-800 text-lg text-center mt-2 py-2 col-span-2 border-t border-gray-300">
+              Verificación comercial
+            </p>
+            <div>
+              <p className="font-bold">Documento de identidad parte frontal:</p>
+              <a href={viweDataSeller.front_identity_document}>Ver Documento</a>
+            </div>
+            <div>
+              <p className="font-bold">
+                Documento de identidad parte posterior:
+              </p>
+              <a href={viweDataSeller.revers_identity_documen}>Ver Documento</a>
+            </div>
+            <div>
+              <p className="font-bold">Comprobante de domicilio</p>
+              <a href={viweDataSeller.address_proof}>Ver Documento</a>
+            </div>
+
+            <p className="font-extrabold  text-gray-800 text-lg text-center mt-2 py-2 col-span-2 border-t border-gray-300">
+              Métodos de pago
+            </p>
+            <div>
+              <p className="font-bold">Metodo de pago 1:</p>
+              <p> {viweDataSeller.field_payment_method_1}</p>
+            </div>
+            <div>
+              <p className="font-bold">Metodo de pago 2:</p>
+              <p> {viweDataSeller.field_payment_method_2}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div className="flex justify-center items-center bg-white mb-5  pb-4 max-w-2xl rounded-b-lg gap-5 pt-5 w-full ">
+        <Button
+          className=" bg-emerald-700 hover:bg-emerald-80 "
+          onClick={() => {
+            setDataStatus({
+              payload: APPROVED,
+              customer: {
+                customer_id: data.customer.customer_id,
+                ...data.customer,
+              },
+            });
+            changeModalAccept(true);
+          }}
+        >
+          Aprobar
+        </Button>
+        <Button
+          className="bg-blue-700 hover:bg-blue-800"
+          onClick={() => {
+            setDataStatus({
+              payload: CORRECT,
+              customer: {
+                customer_id: data.customer.customer_id,
+                ...data.customer,
+              },
+            });
+            changeModalCorrect(true);
+          }}
+        >
+          Corregir
+        </Button>
+        <Button
+          className="bg-red-700 hover:bg-red-800 "
+          onClick={() => {
+            setDataStatus({
+              payload: REJECTED,
+              customer: {
+                customer_id: data.customer.customer_id,
+                ...data.customer,
+              },
+            });
+            changeModalReject(true);
+          }}
+        >
+          Rechazar
+        </Button>
+        <Button
+          className="bg-red-500 hover:bg-red-600 mx-5 "
+          onClick={() => changeModal(false)}
+        >
+          Cancelar
+        </Button>
       </div>
     </div>
   );
