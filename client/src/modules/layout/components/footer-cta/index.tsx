@@ -4,6 +4,7 @@ import { FaFacebook, FaInstagram, FaYoutube } from "react-icons/fa"
 import BotonWhatsApp from "@modules/common/components/whatsapp"
 import Link from "next/link"
 import Image from "next/image"
+import CurrentYear from "@lib/util/current-year"
 
 const FooterCTA = () => {
   const { collections } = useCollections()
@@ -24,7 +25,7 @@ const FooterCTA = () => {
           </div>
           <div className="text-[#C7C7C7] font-[300] text-sm/[14px] grid grid-cols-1 gap-y-4">
             <p className="ml-auto mr-auto mt-10 mb-16">
-              Copyright © 2023 | Powered by Gudfy
+              Copyright © <CurrentYear /> | Powered by Gudfy
             </p>
           </div>
         </div>
