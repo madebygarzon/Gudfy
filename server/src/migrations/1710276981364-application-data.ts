@@ -27,6 +27,8 @@ export class ApplicationData1710276981364 implements MigrationInterface {
               "front_identity_document" character varying NOT NULL,
               "revers_identity_document" character varying NOT NULL,
               "address_proof" character varying NOT NULL,
+              "field_payment_method_1" character varying NOT NULL,
+              "field_payment_method_2" character varying,
               "created_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), 
               "updated_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now()
             )`

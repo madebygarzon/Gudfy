@@ -2,7 +2,7 @@ const multer = require("multer");
 const path = require("path");
 
 const storage = multer.diskStorage({
-  destination: "uploads_documents/",
+  destination: "uploads/documents",
   filename: (req, file, cb) => {
     const uniqueFilename = `${Date.now()}-${Math.round(
       Math.random() * 1e9
@@ -17,6 +17,7 @@ export default upload.fields([
   { name: "frontDocument", maxCount: 1 },
   { name: "reversDocument", maxCount: 1 },
   { name: "addressDocument", maxCount: 1 },
+  { name: "supplierDocuments", maxCount: 1 },
 ]);
 
 // //storage sem implementa para guardar el archivo con un numero rando, segun la hora

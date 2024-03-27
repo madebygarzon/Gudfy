@@ -50,7 +50,8 @@ export async function actionCreateSellerApplication(
   data: SellerCredentials,
   fileFront: File,
   fileRevers: File,
-  fileAddress: File
+  fileAddress: File,
+  supplierDocuments: File
 ) {
   try {
     const formData = new FormData()
@@ -58,6 +59,7 @@ export async function actionCreateSellerApplication(
     formData.append("frontDocument", fileFront)
     formData.append("reversDocument", fileRevers)
     formData.append("addressDocument", fileAddress)
+    formData.append("supplierDocuments", supplierDocuments)
     const dataCreateSeller = await axios.post(
       "http://localhost:9000/store/account/seller-application/",
       formData,
