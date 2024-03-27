@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react"
 import { actionGetSellerApplication } from "../actions/action-seller-application"
 import { useAccount } from "@lib/context/account-context"
 import ApplyForSeller from "../components/dashboard-gf/seller/apply-for-seller"
+import PendingRequest from "../components/dashboard-gf/seller/pending-request"
 import { getStore } from "../actions/get-seller-store"
 import SellerStore from "../components/dashboard-gf/seller/seller-store"
 import Spinner from "@modules/common/icons/spinner"
@@ -48,18 +49,15 @@ const SupplierTemplate: React.FC = () => {
     </div>
   ) : (
     <>
-      {!isSeller?.application && <ApplyForSeller />}
-      {isSeller?.state === "approved" &&
+      {!isSeller?.application && <ApplyForSeller handlerReset={handlerReset} />}
+      {isSeller?.state === "aprobada" &&
         (store ? <SellerStore store={store} /> : <Spinner size="32" />)}
-      {isSeller?.state === "pending" && (
-        <h1 className="text-[48px]"> Su solicitud esta en proceso </h1>
-      )}
-
-      {isSeller?.state === "rejected" && (
+      {isSeller?.state === "pendiente" && <PendingRequest />}
+      {isSeller?.state === "rechazado" && (
         <h1 className="text-[48px]"> Su solicitud fue rechazada </h1>
       )}
 
-      {isSeller?.state === "correct" && (
+      {isSeller?.state === "correccion" && (
         <h1 className="text-[48px]"> Su solicitud necesita ser corregida </h1>
       )}
     </>
