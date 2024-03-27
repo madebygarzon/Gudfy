@@ -1,128 +1,133 @@
-import React from "react";
-
-
+import React from "react"
 
 const BodyTC: React.FC = () => {
   return (
     <div className="relative w-full px-[100px] ">
       <div className="relative w-full flex-wrap flex mt-[-80px] mb-[50px] shadow-gf bg-[#ffffff] rounded-30 px-[50px] pt-[50px] pb-[100px]">
         <div className="flex flex-col leading-7 text-[16px] text-[#3c3c3c]">
-          <h4 className="text-[#1e293b] text-[22.59px] font-black">Quienes somos:</h4>
-          <p>La dirección de nuestro sitio web es: https://gudfy.com.</p>
-          <br/>
-          <h4 className="text-[#1e293b] text-[22.59px] font-black">Comentarios:</h4>
           <p>
-            Cuando los visitantes dejan comentarios en el sitio, recopilamos los
-            datos que se muestran en el formulario de comentarios, y también la
-            dirección IP del visitante y la cadena del agente de usuario del
-            navegador para ayudar a la detección de spam.
+            Bienvenido/a a nuestra plataforma web, una marketplace diseñada para
+            conectar a vendedores y compradores de una manera eficiente y
+            segura. Antes de utilizar nuestros servicios, lea atentamente los
+            siguientes términos y condiciones, ya que constituyen un acuerdo
+            legal entre usted y nosotros. Al acceder o utilizar nuestra
+            plataforma, usted acepta estar sujeto a estos términos y
+            condiciones. Si no está de acuerdo con alguno de estos términos, por
+            favor, no utilice nuestra plataforma.
           </p>
-          <br/>
+          <br />
+          <h4 className="text-[#1e293b] text-[22.59px] font-black">
+            Uso de la Plataforma:
+          </h4>
           <p>
-            Se puede proporcionar una cadena anónima creada a partir de su
-            dirección de correo electrónico (también llamada hash) al servicio
-            Gravatar para ver si la está utilizando. La política de privacidad
-            del servicio Gravatar está disponible aquí:
-            https://automattic.com/privacy/.&nbsp; Después de la aprobación de
-            su comentario, su foto de perfil es visible para el público en el
-            contexto de su comentario.
+            <strong>a.</strong> Nuestra plataforma es una marketplace en línea
+            que facilita la compra y venta de productos entre usuarios
+            registrados.
+            <br />
+            <strong>b.</strong> Los usuarios pueden crear productos para su
+            venta en la plataforma. Sin embargo, nos reservamos el derecho de
+            revisar y aprobar los productos antes de que estén disponibles para
+            su compra.
+            <br />
+            <strong>c. </strong> Usted acepta proporcionar información precisa y
+            actualizada al registrarse en nuestra plataforma y se compromete a
+            mantener su información de contacto actualizada en todo momento
           </p>
-          <br/>
-          <h4 className="text-[#1e293b] text-[22.59px] font-black">Medios de comunicación:</h4>
+          <br />
+          <h4 className="text-[#1e293b] text-[22.59px] font-black">
+            Registro de Usuarios:
+          </h4>
           <p>
-            Si subes imágenes al sitio web, debes evitar subir imágenes con
-            datos de ubicación incrustados (GPS EXIF) incluidos. Los visitantes
-            del sitio web pueden descargar y extraer cualquier dato de ubicación
-            de las imágenes del sitio web.
+            <strong>a. </strong> Para acceder a ciertas funciones de nuestra
+            plataforma, es necesario registrarse como usuario.
+            <br />
+            <strong>b. </strong> Al registrarse, usted acepta proporcionar
+            información veraz y completa. Además, se compromete a mantener la
+            confidencialidad de su cuenta y contraseña, y a notificarnos
+            inmediatamente cualquier uso no autorizado de su cuenta.
           </p>
-          <br/>
-          <h4 className="text-[#1e293b] text-[22.59px] font-black">Cookies:</h4>
+          <br />
+          <h4 className="text-[#1e293b] text-[22.59px] font-black">
+            Proceso de Compra:
+          </h4>
           <p>
-            Si deja un comentario en nuestro sitio, puede optar por guardar su
-            nombre, dirección de correo electrónico y sitio web en cookies.
-            Estos son para su comodidad, para que no tenga que volver a rellenar
-            sus datos cuando deje otro comentario. Estas cookies tendrán una
-            duración de un año.
+            <strong>a. </strong> Los usuarios registrados pueden convertirse en
+            clientes al completar un formulario simple y proporcionar la
+            información necesaria para realizar una compra.
+            <br />
+            <strong>b. </strong> Al realizar una compra, usted acepta
+            proporcionar información de pago precisa y autoriza el cobro
+            correspondiente por los productos adquiridos.
           </p>
-          <br/>
+          <br />
+          <h4 className="text-[#1e293b] text-[22.59px] font-black">
+            Liberación de Pagos:
+          </h4>
           <p>
-            Si visita nuestra página de inicio de sesión, estableceremos una
-            cookie temporal para determinar si su navegador acepta cookies. Esta
-            cookie no contiene datos personales y se descarta cuando cierra su
-            navegador.
+            <strong>a. </strong> Los pagos por ventas realizadas a través de
+            nuestra plataforma están sujetos a nuestra aprobación y a la
+            confirmación del cliente de haber recibido el producto con éxito.
+            <br />
+            <strong>b. </strong> Nos reservamos el derecho de retener pagos en
+            caso de disputas, fraudes o incumplimiento de estos términos y
+            condiciones.
           </p>
-          <br/>
+          <br />
+          <h4 className="text-[#1e293b] text-[22.59px] font-black">
+            Propiedad Intelectual:
+          </h4>
           <p>
-            Cuando inicie sesión, también configuraremos varias cookies para
-            guardar su información de inicio de sesión y sus opciones de
-            visualización de pantalla. Las cookies de inicio de sesión duran dos
-            días y las cookies de opciones de pantalla duran un año. Si
-            selecciona “Recordarme”, su inicio de sesión persistirá durante dos
-            semanas. Si cierra sesión en su cuenta, se eliminarán las cookies de
-            inicio de sesión.
+            <strong>a. </strong> Todos los derechos de propiedad intelectual
+            relacionados con nuestra plataforma, incluidos, entre otros, los
+            derechos de autor, marcas comerciales y patentes, son propiedad
+            exclusiva de nosotros o de nuestros licenciantes.
+            <br />
+            <strong>b. </strong> Usted acepta no reproducir, distribuir,
+            modificar o crear obras derivadas basadas en el contenido de nuestra
+            plataforma sin nuestro consentimiento previo por escrito.
           </p>
-          <br/>
+          <br />
+          <h4 className="text-[#1e293b] text-[22.59px] font-black">
+            Limitación de Responsabilidad:
+          </h4>
           <p>
-            Si edita o publica un artículo, se guardará una cookie adicional en
-            su navegador. Esta cookie no incluye datos personales y simplemente
-            indica el ID de publicación del artículo que acaba de editar. Caduca
-            después de 1 día.
+            <strong>a. </strong> En la máxima medida permitida por la ley
+            aplicable, renunciamos a cualquier responsabilidad por daños
+            directos, indirectos, incidentales, especiales o consecuentes que
+            surjan del uso de nuestra plataforma.
           </p>
-          <br/>
-          <h4 className="text-[#1e293b] text-[22.59px] font-black">Contenido incrustado de otros sitios web:</h4>
+          <br />
+          <h4 className="text-[#1e293b] text-[22.59px] font-black">
+            Modificaciones de los Términos y Condiciones:
+          </h4>
           <p>
-            Los artículos de este sitio pueden incluir contenido incrustado (por
-            ejemplo, videos, imágenes, artículos, etc.). El contenido incrustado
-            de otros sitios web se comporta exactamente de la misma manera que
-            si el visitante hubiera visitado el otro sitio web.
+            <strong>a. </strong> Nos reservamos el derecho de modificar estos
+            términos y condiciones en cualquier momento. Las modificaciones
+            entrarán en vigencia inmediatamente después de su publicación en
+            nuestra plataforma.
+            <br />
+            <strong>b. </strong> Es su responsabilidad revisar periódicamente
+            estos términos y condiciones para estar al tanto de cualquier
+            cambio. El uso continuado de nuestra plataforma después de la
+            publicación de modificaciones constituye su aceptación de dichas
+            modificaciones.
           </p>
-          <br/>
+          <br />
+          <h4 className="text-[#1e293b] text-[22.59px] font-black">
+            Ley Aplicable:
+          </h4>
           <p>
-            Estos sitios web pueden recopilar datos sobre usted, usar cookies,
-            incrustar un seguimiento adicional de terceros y monitorear su
-            interacción con ese contenido incrustado, incluido el seguimiento de
-            su interacción con el contenido incrustado si tiene una cuenta y ha
-            iniciado sesión en ese sitio web.
+            <strong>a.</strong> Estos términos y condiciones se regirán e
+            interpretarán de acuerdo con las leyes del lugar donde operamos
+            nuestra plataforma, sin tener en cuenta sus disposiciones sobre
+            conflictos de leyes.
           </p>
-          <br/>
-          <h4 className="text-[#1e293b] text-[22.59px] font-black">Con quién compartimos sus datos:</h4>
+          <br />
           <p>
-            Si solicita un restablecimiento de contraseña, su dirección IP se
-            incluirá en el correo electrónico de restablecimiento.
-          </p>
-          <br/>
-          <h4 className="text-[#1e293b] text-[22.59px] font-black">Cuánto tiempo conservamos sus datos:</h4>
-          <p>
-            Si deja un comentario, el comentario y sus metadatos se conservan
-            indefinidamente. Esto es para que podamos reconocer y aprobar
-            cualquier comentario de seguimiento automáticamente en lugar de
-            mantenerlos en una cola de moderación.
-          </p>
-          <br/>
-          <p>
-            Para los usuarios que se registran en nuestro sitio web (si los
-            hay), también almacenamos la información personal que proporcionan
-            en su perfil de usuario. Todos los usuarios pueden ver, editar o
-            eliminar su información personal en cualquier momento (excepto que
-            no pueden cambiar su nombre de usuario). Los administradores del
-            sitio web también pueden ver y editar esa información.
-          </p>
-          <br/>
-          <h4 className="text-[#1e293b] text-[22.59px] font-black" >Qué derechos tienes sobre tus datos:</h4>
-          <p>
-            Si tiene una cuenta en este sitio o ha dejado comentarios, puede
-            solicitar recibir un archivo exportado de los datos personales que
-            tenemos sobre usted, incluidos los datos que nos haya proporcionado.
-            También puede solicitar que eliminemos cualquier dato personal que
-            tengamos sobre usted. Esto no incluye ningún dato que estemos
-            obligados a conservar con fines administrativos, legales o de
-            seguridad.
-          </p>
-          <br/>
-          <h4 className="text-[#1e293b] text-[22.59px]font-black">Dónde se envían sus datos:&nbsp;</h4>
-          <p>
-            Es posible que los comentarios de los visitantes los revise un
-            servicio de detección automática de spam.
+            Al utilizar nuestra plataforma, usted acepta cumplir con estos
+            términos y condiciones. Si tiene alguna pregunta o inquietud sobre
+            estos términos y condiciones, no dude en ponerse en contacto con
+            nosotros. ¡Gracias por utilizar nuestra marketplace!
           </p>
         </div>
       </div>
@@ -130,4 +135,4 @@ const BodyTC: React.FC = () => {
   )
 }
 
-export default BodyTC;
+export default BodyTC
