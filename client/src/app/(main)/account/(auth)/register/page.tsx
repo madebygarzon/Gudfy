@@ -5,6 +5,7 @@ import Image from "next/image"
 import ButtonLigth from "@modules/common/components/button_light"
 import { BsFillArrowLeftCircleFill } from "react-icons/bs"
 import Link from "next/link"
+import CurrentYear from "@lib/util/current-year"
 
 export const metadata: Metadata = {
   title: "Registratse",
@@ -44,7 +45,7 @@ export default function RegisterPages() {
         </div>
         <p className="pt-8 felx text-[#ffffff] text-center text-[10px]">
           {" "}
-          <Link href={"/"}>Volver al inicio</Link> | Copyright © 2023 | Powered
+          <Link href={"/"}>Volver al inicio</Link> | Copyright © <CurrentYear /> | Powered
           by Gudfy |{" "}
           <Link href={"/terms-and-conditions"} target="_blank">
             {" "}
