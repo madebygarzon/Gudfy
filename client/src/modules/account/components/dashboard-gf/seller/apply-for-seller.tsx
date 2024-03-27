@@ -13,8 +13,12 @@ import {
 import SellerRequestPerson from "@modules/account/components/seller_request_person"
 import SellerRequestCompany from "@modules/account/components/seller_request_company"
 
-const ApplyForSeller: React.FC = ({}) => {
+type props = {
+  handlerReset: () => void
+}
+const ApplyForSeller: React.FC<props> = ({ handlerReset }) => {
   const { isOpen, onOpen, onClose, onOpenChange } = useDisclosure()
+
   const [scrollBehavior, setScrollBehavior] =
     React.useState<ModalProps["scrollBehavior"]>("inside")
   const {
@@ -68,7 +72,10 @@ const ApplyForSeller: React.FC = ({}) => {
               Solicitud comerciante individual
             </ModalHeader>
             <ModalBody>
-              <SellerRequestPerson />
+              <SellerRequestPerson
+                onClose={onClose}
+                handlerReset={handlerReset}
+              />
             </ModalBody>
           </ModalContent>
         </Modal>
