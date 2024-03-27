@@ -39,7 +39,7 @@ type dataView = {
   postal_code: string;
   quantity_per_product: string;
   quantity_products_sal: string;
-  revers_identity_documen: string;
+  revers_identity_document: string;
   supplier_documents: string;
   supplier_name: string;
   supplier_type: string;
@@ -150,7 +150,7 @@ const SellerApplication = () => {
     postal_code: "",
     quantity_per_product: "",
     quantity_products_sal: "",
-    revers_identity_documen: "",
+    revers_identity_document: "",
     supplier_documents: "",
     supplier_name: "",
     supplier_type: "",
@@ -393,6 +393,7 @@ const SellerApplication = () => {
                     <Table.HeaderCell>Email</Table.HeaderCell>
                     <Table.HeaderCell>Estado</Table.HeaderCell>
                     <Table.HeaderCell></Table.HeaderCell>
+                    <Table.HeaderCell></Table.HeaderCell>
                   </Table.Row>
                 </Table.Header>
                 <Table.Body>
@@ -493,6 +494,24 @@ const SellerApplication = () => {
                           >
                             <ChatBubble />
                           </IconButton>
+                        </Table.Cell>
+                        <Table.Cell>
+                          {" "}
+                          {data.state_application.id === "A" && (
+                            <Check className="text-emerald-700" />
+                          )}
+                          {data.state_application.id === "B" && (
+                            <XMark className="text-red-700" />
+                          )}
+                          {data.state_application.id === "C" && (
+                            <Check className="text-yellow-500" />
+                          )}
+                          {data.state_application.id === "D" && (
+                            <ArrowPathMini className="text-blue-800" />
+                          )}
+                          {data.state_application.id === "E" && (
+                            <ArrowPathMini className="text-yellow-700" />
+                          )}
                         </Table.Cell>
                       </Table.Row>
                     );
@@ -853,7 +872,9 @@ const ModalViewSellerData: React.FC<{
             </div>
             <div>
               <p className="font-bold">Documentos del proveedor:</p>
-              <a href={viweDataSeller.supplier_documents}>Ver Documento</a>
+              <a href={viweDataSeller.supplier_documents} target="_blank">
+                Ver Documento
+              </a>
             </div>
 
             <p className="font-bold text-gray-800 text-lg text-center mt-2 py-2 col-span-2 border-t border-gray-300">
@@ -886,17 +907,23 @@ const ModalViewSellerData: React.FC<{
             </p>
             <div>
               <p className="font-bold">Documento de identidad parte frontal:</p>
-              <a href={viweDataSeller.front_identity_document}>Ver Documento</a>
+              <a href={viweDataSeller.front_identity_document} target="_blank">
+                Ver Documento
+              </a>
             </div>
             <div>
               <p className="font-bold">
                 Documento de identidad parte posterior:
               </p>
-              <a href={viweDataSeller.revers_identity_documen}>Ver Documento</a>
+              <a href={viweDataSeller.revers_identity_document} target="_blank">
+                Ver Documento
+              </a>
             </div>
             <div>
               <p className="font-bold">Comprobante de domicilio</p>
-              <a href={viweDataSeller.address_proof}>Ver Documento</a>
+              <a href={viweDataSeller.address_proof} target="_blank">
+                Ver Documento
+              </a>
             </div>
 
             <p className="font-extrabold  text-gray-800 text-lg text-center mt-2 py-2 col-span-2 border-t border-gray-300">
@@ -915,7 +942,8 @@ const ModalViewSellerData: React.FC<{
       </div>
       <div className="flex justify-center items-center bg-white mb-5  pb-4 max-w-2xl rounded-b-lg gap-5 pt-5 w-full ">
         <Button
-          className=" bg-emerald-700 hover:bg-emerald-80 "
+          variant="transparent"
+          className=" text-emerald-700 hover:text-emerald-800 border border-emerald-700 hover:border-emerald-800"
           onClick={() => {
             setDataStatus({
               payload: APPROVED,
@@ -930,7 +958,8 @@ const ModalViewSellerData: React.FC<{
           Aprobar
         </Button>
         <Button
-          className="bg-blue-700 hover:bg-blue-800"
+          variant="transparent"
+          className="text-blue-700 hover:text-blue-800 border border-blue-700 hover:border-blue-800"
           onClick={() => {
             setDataStatus({
               payload: CORRECT,
@@ -945,7 +974,8 @@ const ModalViewSellerData: React.FC<{
           Corregir
         </Button>
         <Button
-          className="bg-red-700 hover:bg-red-800 "
+          variant="transparent"
+          className="text-red-700 hover:text-red-800 border border-red-700 hover:border-red-800 "
           onClick={() => {
             setDataStatus({
               payload: REJECTED,
@@ -960,7 +990,8 @@ const ModalViewSellerData: React.FC<{
           Rechazar
         </Button>
         <Button
-          className="bg-red-500 hover:bg-red-600 mx-5 "
+          variant="transparent"
+          className="text-red-500 hover:text-red-600 border border-red-500 hover:border-red-600 mx-5 "
           onClick={() => changeModal(false)}
         >
           Cancelar

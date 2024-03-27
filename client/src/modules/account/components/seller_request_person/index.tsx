@@ -41,8 +41,12 @@ interface SellerCredentials extends FieldValues {
   // campo1_metodo_pago: string
   // campo2_metodo_pago: string
 }
+type props = {
+  onClose: () => void
+  handlerReset: () => void
+}
 
-const SellerRequestPerson = () => {
+const SellerRequestPerson = ({ onClose, handlerReset }: props) => {
   const [formData, setFormData] = useState<SellerCredentials>({
     name: "",
     last_name: "",
@@ -134,7 +138,7 @@ const SellerRequestPerson = () => {
       !supplierDocuments
     )
       return
-
+    formData.example_product = valueInputOptions.arrayValue.join(", ")
     actionCreateSellerApplication(
       formData,
       fileFrontDocument,
@@ -142,7 +146,8 @@ const SellerRequestPerson = () => {
       fileAddressProod,
       supplierDocuments
     ).then((e) => {
-      setSentMessage(true)
+      onClose()
+      handlerReset()
     })
   })
   const handlerControlVariant = (e: any) => {
@@ -152,7 +157,7 @@ const SellerRequestPerson = () => {
       // )
       setValueInputOptions((data) => ({
         value: "",
-        arrayValue: [...data.arrayValue, e],
+        arrayValue: [...data.arrayValue, e.slice(0, -1)],
       }))
     } else {
       setValueInputOptions((data) => ({ ...data, value: e }))
@@ -336,19 +341,6 @@ const SellerRequestPerson = () => {
           />
         </div>
 
-        <Input
-          //type="file"
-          label="Sube documentos de proveedor"
-          {...register("supplier_documents", {
-            required: "Campo requerido",
-            // validate: {
-            //   required: (file) => file.length > 0 || "Sube un documento",
-            // },
-          })}
-          autoComplete="on"
-          onChange={handleInputChange}
-        />
-
         <p className="font-semibold text-gray-800 text-sm text-center">
           ¿Que venderas?
         </p>
@@ -374,35 +366,31 @@ const SellerRequestPerson = () => {
         </p>
         <div>
           <Input
-            className=" max-h-550px max-w-[150px]"
-            id="test1"
-            labelPlacement="outside"
-            label={`Preciona "Enter" o "," para agregar el Ejemplo`}
+            label={`"Separa los productos por ","`}
             placeholder="Gif Cards, Software, Plantillas"
             value={valueInputOptions.value}
             onChange={(e) => handlerControlVariant(e.target.value)}
-            startContent={
-              <div className="flex max-w-[150px] " id="test2">
-                {valueInputOptions.arrayValue.length ? (
-                  valueInputOptions.arrayValue.map((v: string, i) => (
-                    <>
-                      <button
-                        className=" mx-1 px-2 py-1 rounded-[10px] bg-slate-300 w-auto "
-                        onClick={() => handlerTrashVariant(v)}
-                      >
-                        <span className="flex gap-1 text-xs items-center">
-                          {" "}
-                          {v} <XCircleSolid />{" "}
-                        </span>
-                      </button>
-                    </>
-                  ))
-                ) : (
-                  <></>
-                )}
-              </div>
-            }
           />
+          <p className="my-2 mx-3 gap-2">
+            {" "}
+            {valueInputOptions.arrayValue.length ? (
+              valueInputOptions.arrayValue.map((v: string, i) => (
+                <>
+                  <button
+                    className=" m-1 px-2 py-1 rounded-[10px] bg-slate-300 w-auto "
+                    onClick={() => handlerTrashVariant(v)}
+                  >
+                    <span className="flex gap-1 text-xs items-center">
+                      {" "}
+                      {v} <XCircleSolid />{" "}
+                    </span>
+                  </button>
+                </>
+              ))
+            ) : (
+              <></>
+            )}
+          </p>
         </div>
         {/* <Input
           label="Ejemplos"

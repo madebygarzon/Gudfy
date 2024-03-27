@@ -49,7 +49,7 @@ const SupplierTemplate: React.FC = () => {
     </div>
   ) : (
     <>
-      {!isSeller?.application && <ApplyForSeller />}
+      {!isSeller?.application && <ApplyForSeller handlerReset={handlerReset} />}
       {isSeller?.state === "aprobada" &&
         (store ? <SellerStore store={store} /> : <Spinner size="32" />)}
       {isSeller?.state === "pendiente" && <PendingRequest />}

@@ -4,7 +4,7 @@ import react from "react"
 const SelectInput = () => {
   return (
     <div>
-      <div>
+      <div className="">
         <div></div>
         <div>
           <Input />
