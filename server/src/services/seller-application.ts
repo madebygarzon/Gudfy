@@ -42,7 +42,8 @@ export default class SellerApplicationService extends TransactionBaseService {
     applicationData,
     frontDocument,
     reversDocument,
-    addressDocument
+    addressDocument,
+    supplierDocuments
   ) {
     try {
       if (!this.loggedInCustomer_)
@@ -58,9 +59,18 @@ export default class SellerApplicationService extends TransactionBaseService {
       );
       const createApplication_data = await ApplicationDataRepository.create({
         ...applicationData,
-        front_identity_document: frontDocument,
-        revers_identity_document: reversDocument,
-        address_proof: addressDocument,
+        front_identity_document: `${
+          process.env.BACKEND_URL ?? "http://localhost:9000"
+        }/${frontDocument}`,
+        revers_identity_document: `${
+          process.env.BACKEND_URL ?? "http://localhost:9000"
+        }/${reversDocument}`,
+        address_proof: `${
+          process.env.BACKEND_URL ?? "http://localhost:9000"
+        }/${addressDocument}`,
+        supplier_documents: `${
+          process.env.BACKEND_URL ?? "http://localhost:9000"
+        }/${supplierDocuments}`,
       });
 
       const saveCreateApplication_data = await ApplicationDataRepository.save(

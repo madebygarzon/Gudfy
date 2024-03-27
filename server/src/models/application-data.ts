@@ -71,6 +71,12 @@ export class ApplicationData extends BaseEntity {
   @Column({ type: "varchar", nullable: false })
   address_proof: string;
 
+  @Column({ type: "varchar", nullable: false })
+  field_payment_method_1: string;
+
+  @Column({ type: "varchar", nullable: false })
+  field_payment_method_2: string;
+
   @OneToOne(() => SellerApplication, (seller) => seller?.application_data_id)
   sellerapplication?: SellerApplication;
 
