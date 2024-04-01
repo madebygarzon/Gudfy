@@ -3,6 +3,7 @@ import clsx from "clsx"
 import React from "react"
 import Image from "next/image"
 import { XMarkMini } from "@medusajs/icons"
+import { GrDocumentPdf } from "react-icons/gr"
 import { IconButton } from "@medusajs/ui"
 
 type InputProps = {
@@ -27,12 +28,16 @@ const InputFile: React.FC<InputProps> = ({ setFile, label, alt, file }) => {
               >
                 <XMarkMini />
               </IconButton>
-              <Image
-                alt={alt}
-                src={URL.createObjectURL(file)}
-                width={200}
-                height={100}
-              />
+              {file.type === "application/pdf" ? (
+                <GrDocumentPdf size={100} />
+              ) : (
+                <Image
+                  alt={alt}
+                  src={URL.createObjectURL(file)}
+                  width={200}
+                  height={100}
+                />
+              )}
             </div>
           </div>
         </>

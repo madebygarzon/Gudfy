@@ -107,7 +107,7 @@ export default class SellerApplicationService extends TransactionBaseService {
       where: {
         customer_id: this.loggedInCustomer_.id,
       },
-      relations: ["state_application"],
+      relations: ["state_application", "application_data"],
     });
 
     // identificar si la persona a aplicado
@@ -115,6 +115,8 @@ export default class SellerApplicationService extends TransactionBaseService {
       return {
         application: true,
         state: getApplication.state_application.state,
+        comment: getApplication.comment_status || "",
+        application_data: getApplication.application_data,
       };
     }
     return { application: false, state: "" };

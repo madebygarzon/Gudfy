@@ -9,8 +9,7 @@ export async function actionGetSellerApplication() {
       })
       .then((e) => {
         return {
-          application: e.data.application,
-          state: e.data.state,
+          ...e.data,
         }
       })
     return dataSeller
