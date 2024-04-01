@@ -121,6 +121,13 @@ const SellerRequestPerson = ({ onClose, handlerReset }: props) => {
   const [fileRevertDocument, setFileRevertDocument] = useState<File | null>()
   const [fileAddressProod, setFileAddressProod] = useState<File | null>()
   const [sentMessage, setSentMessage] = useState<boolean>(false)
+  const [valueInputOptionsLinks, setValueInputOptionsLinks] = useState<{
+    value: string
+    arrayValue: Array<string>
+  }>({
+    value: "",
+    arrayValue: [],
+  })
   const [valueInputOptions, setValueInputOptions] = useState<{
     value: string
     arrayValue: Array<string>
@@ -139,6 +146,8 @@ const SellerRequestPerson = ({ onClose, handlerReset }: props) => {
     )
       return
     formData.example_product = valueInputOptions.arrayValue.join(", ")
+    formData.current_stock_distribution =
+      valueInputOptionsLinks.arrayValue.join(", ")
     actionCreateSellerApplication(
       formData,
       fileFrontDocument,
@@ -152,9 +161,6 @@ const SellerRequestPerson = ({ onClose, handlerReset }: props) => {
   })
   const handlerControlVariant = (e: any) => {
     if (e.includes(",")) {
-      // setArrayValue((variant) =>
-      //   variant.length ? [...variant, e.slice(0, -1)] : [e.slice(0, -1)]
-      // )
       setValueInputOptions((data) => ({
         value: "",
         arrayValue: [...data.arrayValue, e.slice(0, -1)],
@@ -170,6 +176,25 @@ const SellerRequestPerson = ({ onClose, handlerReset }: props) => {
       arrayValue: data.arrayValue.filter((v) => v !== valueOption),
     }))
   }
+
+  const handlerControlLinks = (e: any) => {
+    if (e.includes(",")) {
+      setValueInputOptionsLinks((data) => ({
+        value: "",
+        arrayValue: [...data.arrayValue, e.slice(0, -1)],
+      }))
+    } else {
+      setValueInputOptionsLinks((data) => ({ ...data, value: e }))
+    }
+  }
+  const handlerTrashLinks = (valueOption: string) => {
+    if (!valueInputOptionsLinks.arrayValue.length) return
+    setValueInputOptionsLinks((data) => ({
+      ...data,
+      arrayValue: data.arrayValue.filter((v) => v !== valueOption),
+    }))
+  }
+
   const handleAutocompletChange = (value: string, name: string) => {
     setFormData((prevData) => ({ ...prevData, [name]: value }))
   }
@@ -366,7 +391,7 @@ const SellerRequestPerson = ({ onClose, handlerReset }: props) => {
         </p>
         <div>
           <Input
-            label={`"Separa los productos por ","`}
+            label={`Separa los productos por ","`}
             placeholder="Gif Cards, Software, Plantillas"
             value={valueInputOptions.value}
             onChange={(e) => handlerControlVariant(e.target.value)}
@@ -422,15 +447,34 @@ const SellerRequestPerson = ({ onClose, handlerReset }: props) => {
           ¿Donde distribuyes actualmente tu stock? Si es posible, proporciona
           enlaces a tus perfiles en otras plataformas.
         </p>
-        <Input
-          label="Ejemplos "
-          {...register("current_stock_distribution", {
-            required: "Campo requerido",
-          })}
-          autoComplete="on"
-          //errors={errors}
-          onChange={handleInputChange}
-        />
+        <div>
+          <Input
+            label={`Separa los links por ","`}
+            placeholder="Linkending, web, portafolio"
+            value={valueInputOptionsLinks.value}
+            onChange={(e) => handlerControlLinks(e.target.value)}
+          />
+          <p className="my-2 mx-3 gap-2">
+            {" "}
+            {valueInputOptionsLinks.arrayValue.length ? (
+              valueInputOptionsLinks.arrayValue.map((v: string, i) => (
+                <>
+                  <button
+                    className=" m-1 px-2 py-1 rounded-[10px] bg-slate-300 w-auto "
+                    onClick={() => handlerTrashLinks(v)}
+                  >
+                    <span className="flex gap-1 text-xs items-center">
+                      {" "}
+                      {v} <XCircleSolid />{" "}
+                    </span>
+                  </button>
+                </>
+              ))
+            ) : (
+              <></>
+            )}
+          </p>
+        </div>
         <p className="font-semibold text-gray-800 text-sm text-center">
           Verificación comercial
         </p>
