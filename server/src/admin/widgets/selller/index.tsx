@@ -13,6 +13,7 @@ import {
   TriangleDownMini,
   ChatBubble,
   ArrowPathMini,
+  BellAlert,
 } from "@medusajs/icons";
 import Spinner from "../../components/shared/spinner";
 import { Input, Select, Button, Heading, Textarea, Text } from "@medusajs/ui";
@@ -38,7 +39,7 @@ type dataView = {
   phone: string;
   postal_code: string;
   quantity_per_product: string;
-  quantity_products_sal: string;
+  quantity_products_sale: string;
   revers_identity_document: string;
   supplier_documents: string;
   supplier_name: string;
@@ -89,12 +90,20 @@ const dataSelecFilter = [
     label: "Aprobado",
   },
   {
+    value: "C",
+    label: "Pendiente",
+  },
+  {
     value: "B",
     label: "Rechazado",
   },
   {
     value: "D",
-    label: "A corrección",
+    label: "A Corrección",
+  },
+  {
+    value: "E",
+    label: "Corregido",
   },
 ];
 const registerNumber = [5, 10, 100];
@@ -149,7 +158,7 @@ const SellerApplication = () => {
     phone: "",
     postal_code: "",
     quantity_per_product: "",
-    quantity_products_sal: "",
+    quantity_products_sale: "",
     revers_identity_document: "",
     supplier_documents: "",
     supplier_name: "",
@@ -504,13 +513,13 @@ const SellerApplication = () => {
                             <XMark className="text-red-700" />
                           )}
                           {data.state_application.id === "C" && (
-                            <Check className="text-yellow-500" />
+                            <BellAlert className="text-yellow-500" />
                           )}
                           {data.state_application.id === "D" && (
                             <ArrowPathMini className="text-blue-800" />
                           )}
                           {data.state_application.id === "E" && (
-                            <ArrowPathMini className="text-yellow-700" />
+                            <BellAlert className="text-yellow-800" />
                           )}
                         </Table.Cell>
                       </Table.Row>
@@ -883,7 +892,7 @@ const ModalViewSellerData: React.FC<{
 
             <div>
               <p className="font-bold">Cuántos productos vendera:</p>
-              <p> {viweDataSeller.quantity_products_sal}</p>
+              <p> {viweDataSeller.quantity_products_sale}</p>
             </div>
             <div>
               <p className="font-bold">Ejemplos de productos que vendera:</p>
