@@ -8,6 +8,7 @@ import PendingRequest from "../components/dashboard-gf/seller/pending-request"
 import { getStore } from "../actions/get-seller-store"
 import SellerStore from "../components/dashboard-gf/seller/seller-store"
 import Spinner from "@modules/common/icons/spinner"
+import CorrectionApplication from "../components/dashboard-gf/seller/correction_of_the_application"
 
 interface SellerRole {
   application: boolean
@@ -26,6 +27,7 @@ const SupplierTemplate: React.FC = () => {
         return data
       }
     )
+    console.log("Informacion de la aplicacion", dataSellerApplication)
 
     if (dataSellerApplication?.state === "approved") {
       const dataStore = await getStore()
@@ -58,7 +60,9 @@ const SupplierTemplate: React.FC = () => {
       )}
 
       {isSeller?.state === "correccion" && (
-        <h1 className="text-[48px]"> Su solicitud necesita ser corregida </h1>
+        <>
+          <CorrectionApplication handlerReset={handlerReset} />
+        </>
       )}
     </>
   )
