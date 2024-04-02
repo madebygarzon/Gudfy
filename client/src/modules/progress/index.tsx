@@ -15,3 +15,9 @@ import { Progress } from '@nextui-org/react';
         <Progress size="lg" aria-label="Loading..." value={50} className="max-w-md"/>
       );
   }
+
+  export const TaskProgressIndicatorOrder = () => {
+    return (
+        <Progress size="lg" aria-label="Loading..." value={100} className="max-w-md"/>
+      );
+  }
