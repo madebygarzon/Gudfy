@@ -1,4 +1,5 @@
 import { Lifetime } from "awilix";
+import { unlink } from "fs";
 import { TransactionBaseService, Customer } from "@medusajs/medusa";
 import { SellerApplicationRepository } from "../repositories/seller-application";
 import { ApplicationDataRepository } from "../repositories/application-data";
@@ -94,6 +95,64 @@ export default class SellerApplicationService extends TransactionBaseService {
       return sellerapplication;
     } catch (error) {
       console.log("Error in the create application for seller", error);
+    }
+  }
+
+  async update(applicationData, paramsToUpdate) {
+    try {
+      if (!this.loggedInCustomer_)
+        throw new Error(
+          "Adding the data required for create seller application"
+        );
+
+      const applicationDataRepository = this.activeManager_.withRepository(
+        this.applicationDataRepository_
+      );
+      const sellerApplicationRepository = this.activeManager_.withRepository(
+        this.sellerApplicationRepository_
+      );
+
+      if (paramsToUpdate.frontDocument) {
+        deleteFile(applicationData.front_identity_document);
+        applicationData.front_identity_document = `${
+          process.env.BACKEND_URL ?? "http://localhost:9000"
+        }/${paramsToUpdate.frontDocument}`;
+      }
+      if (paramsToUpdate.reversDocument) {
+        deleteFile(applicationData.revers_identity_document);
+        applicationData.revers_identity_document = `${
+          process.env.BACKEND_URL ?? "http://localhost:9000"
+        }/${paramsToUpdate.reversDocument}`;
+      }
+      if (paramsToUpdate.addressDocument) {
+        deleteFile(applicationData.address_proof);
+        applicationData.address_proof = `${
+          process.env.BACKEND_URL ?? "http://localhost:9000"
+        }/${paramsToUpdate.addressDocument}`;
+      }
+      if (paramsToUpdate.supplierDocuments) {
+        deleteFile(applicationData.supplier_documents);
+        applicationData.supplier_documents = `${
+          process.env.BACKEND_URL ?? "http://localhost:9000"
+        }/${paramsToUpdate.supplierDocuments}`;
+      }
+      const updateData = await applicationDataRepository.update(
+        applicationData.id,
+        {
+          ...applicationData,
+        }
+      );
+      if (updateData) {
+        const sellerApplication = await sellerApplicationRepository.update(
+          { customer_id: this.loggedInCustomer_.id },
+          {
+            state_application_id: "E",
+          }
+        );
+      }
+      return updateData;
+    } catch (error) {
+      console.log("Error in the update application for seller", error);
     }
   }
 
@@ -247,3 +306,22 @@ export default class SellerApplicationService extends TransactionBaseService {
     };
   }
 }
+
+// Función para eliminar un archivo
+const deleteFile = (filePath: string) => {
+  // Dividir la ruta del archivo en partes utilizando el separador de directorios
+  const parts = filePath.split("/");
+  // Tomar solo la parte después de la URL (desde el segundo elemento del array)
+  const relativePath = parts.slice(3).join("/");
+  // Construir la ruta completa del archivo
+  const fullPath = `${process.cwd()}/${relativePath}`;
+
+  // Utiliza la función unlink para eliminar el archivo
+  unlink(fullPath, (err) => {
+    if (err) {
+      console.error(`Error al eliminar el archivo: ${err}`);
+    } else {
+      console.log(`Archivo eliminado correctamente: ${filePath}`);
+    }
+  });
+};
