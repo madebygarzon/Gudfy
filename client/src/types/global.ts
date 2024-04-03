@@ -60,6 +60,32 @@ export type ProductPreviewType = {
     price_type: "default" | "sale"
   }
 }
+export type SellerCredentials = {
+  name: string
+  last_name: string
+  email: string
+  phone: string
+  contry: string
+  city: string
+  address: string
+  postal_code: string
+  supplier_name: string
+  supplier_type: string
+  company_name: string
+  company_country: string
+  company_city: string
+  company_address: string
+  supplier_documents?: string
+  quantity_products_sale: string
+  example_product: string
+  quantity_per_product: string
+  current_stock_distribution: string
+  front_identity_document?: string
+  revers_identity_document?: string
+  address_proof?: string
+  field_payment_method_1?: string
+  field_payment_method_2?: string
+}
 
 export type InfiniteProductPage = {
   response: {

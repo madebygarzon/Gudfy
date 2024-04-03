@@ -10,12 +10,20 @@ import {
   Button,
   useDisclosure,
 } from "@nextui-org/react"
-import SellerRequestPerson from "@modules/account/components/seller_request_person"
+import { Alert } from "@medusajs/ui"
+import type { SellerCredentials } from "types/global"
+import SellerUpdateRequest from "../../seller-update-request"
 
 type props = {
+  comment: string
+  data: SellerCredentials & { id: string }
   handlerReset: () => void
 }
-const CorrectionApplication: React.FC<props> = ({ handlerReset }) => {
+const CorrectionApplication: React.FC<props> = ({
+  handlerReset,
+  data,
+  comment,
+}) => {
   const { isOpen, onOpen, onClose, onOpenChange } = useDisclosure()
 
   const [scrollBehavior, setScrollBehavior] =
@@ -23,13 +31,16 @@ const CorrectionApplication: React.FC<props> = ({ handlerReset }) => {
 
   return (
     <>
-      <div className=" flex flex-col w-full space-y-10 items-center">
+      <div className=" flex flex-col w-full space-y-10 items-center prose ">
         <h1 className="text-center text-[38px] font-black">
           Su solicitud necesita ser corregida
         </h1>
-        <p className=" text-center text-[18px] font-light max-w-[700px]">
-          Mensaje informativo para la correccion de la solicitud
-        </p>
+        <Alert
+          variant="warning"
+          className=" text-center text-[18px] font-light max-w-[700px]"
+        >
+          {comment.charAt(0).toUpperCase() + comment.slice(1)}
+        </Alert>
         <div className="text-center">
           <ButtonMedusa
             onClick={onOpen}
@@ -53,7 +64,8 @@ const CorrectionApplication: React.FC<props> = ({ handlerReset }) => {
               Solicitud comerciante individual
             </ModalHeader>
             <ModalBody>
-              <SellerRequestPerson
+              <SellerUpdateRequest
+                data={data}
                 onClose={onClose}
                 handlerReset={handlerReset}
               />
