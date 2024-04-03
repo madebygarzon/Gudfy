@@ -1,22 +1,31 @@
 "use client"
 import clsx from "clsx"
-import React from "react"
+
 import Image from "next/image"
 import { XMarkMini } from "@medusajs/icons"
 import { GrDocumentPdf } from "react-icons/gr"
 import { IconButton } from "@medusajs/ui"
+import { useState } from "react"
 
 type InputProps = {
-  setFile: React.Dispatch<React.SetStateAction<File | null | undefined>>
-  file?: File | null
+  preview?: string
+  setFile: React.Dispatch<React.SetStateAction<File | undefined>>
+  file?: File
   alt: string
   label?: string
 }
 
-const InputFile: React.FC<InputProps> = ({ setFile, label, alt, file }) => {
+const InputFile: React.FC<InputProps> = ({
+  setFile,
+  label,
+  alt,
+  file,
+  preview,
+}) => {
+  const [previewImage, setPreviewImage] = useState<string | undefined>(preview)
   return (
     <div className="mt-4">
-      {file ? (
+      {file || previewImage ? (
         <>
           <span className="text-xs text-center w-auto">{label}</span>
           <div className="flex">
@@ -24,16 +33,20 @@ const InputFile: React.FC<InputProps> = ({ setFile, label, alt, file }) => {
               <IconButton
                 variant="transparent"
                 className="absolute top-1 right-1"
-                onClick={() => setFile(null)}
+                onClick={() => {
+                  setFile(undefined)
+                  setPreviewImage("")
+                }}
               >
                 <XMarkMini />
               </IconButton>
-              {file.type === "application/pdf" ? (
+              {file?.type === "application/pdf" ||
+              previewImage?.includes(".pdf") ? (
                 <GrDocumentPdf size={100} />
               ) : (
                 <Image
                   alt={alt}
-                  src={URL.createObjectURL(file)}
+                  src={file ? URL.createObjectURL(file) : `${previewImage}`}
                   width={200}
                   height={100}
                 />
