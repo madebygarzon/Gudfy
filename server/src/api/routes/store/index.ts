@@ -11,6 +11,7 @@ import deleteReview from "./delete-review";
 import postSellerApplication from "./post-seller-application";
 import getSellerApplication from "./get-seller-application";
 import documents from "../../middlewares/documents-seller-application";
+import UpdateSellerAplication from "./update-seller-application";
 
 // Initialize a custom router
 const router = Router();
@@ -54,6 +55,11 @@ export function attachStoreRoutes(storeRouter: Router) {
     "/account/seller-application",
     documents,
     wrapHandler(postSellerApplication)
+  );
+  router.post(
+    "/account/uptade-seller-application",
+    documents,
+    wrapHandler(UpdateSellerAplication)
   );
 
   router.get("/account/seller-application", wrapHandler(getSellerApplication));
