@@ -7,6 +7,10 @@ import OrderDetails from "@modules/order/components/order-details"
 import OrderSummary from "@modules/order/components/order-summary"
 import ShippingDetails from "@modules/order/components/shipping-details"
 import React from "react"
+import Link from "next/link"
+import ChevronDown from "@modules/common/icons/chevron-down"
+import { TaskProgressIndicatorOrder } from "../../progress/index"
+
 
 type OrderCompletedTemplateProps = {
   order: Order
@@ -16,6 +20,26 @@ const OrderCompletedTemplate: React.FC<OrderCompletedTemplateProps> = ({
   order,
 }) => {
   return (
+    <>
+     <div className="h-16 bg-white">
+        
+        <nav className="flex items-center h-full justify-between content-container">
+          <Link
+            href="/cart"
+            className="text-small-semi text-gray-700 flex items-center gap-x-2 uppercase flex-1 basis-0"
+          >
+            <>
+            
+              
+              <span className="mt-px block small:hidden">Back</span>
+            </>
+          </Link>
+          < TaskProgressIndicatorOrder  />
+         
+          <div className="flex-1 basis-0" />
+        </nav>
+      </div>
+
     <div className="bg-gray-50 py-6 min-h-[calc(100vh-64px)]">
       <div className="content-container flex justify-center">
         <div className="max-w-4xl h-full bg-white w-full">
@@ -38,6 +62,7 @@ const OrderCompletedTemplate: React.FC<OrderCompletedTemplateProps> = ({
         </div>
       </div>
     </div>
+    </>
   )
 }
 
