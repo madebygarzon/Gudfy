@@ -102,12 +102,12 @@
       "<rootDir>/node_modules/"
     ],
     "rootDir": "src",
-    "testRegex": "(/_tests_/.*|\\.(test|spec))\\.(ts|js)$",
+    "testRegex": "(/tests/.*|\\.(test|spec))\\.(ts|js)$",
     "transform": {
       ".ts": "ts-jest"
     },
     "collectCoverageFrom": [
-      "**/*.(t|j)s"
+      "/*.(t|j)s"
     ],
     "coverageDirectory": "./coverage",
     "testEnvironment": "node"
