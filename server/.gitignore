@@ -4,6 +4,7 @@
 /uploads
 /uploads_documents
 /node_modules
+/node_modules2
 yarn-error.log
 
 .idea
