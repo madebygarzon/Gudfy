@@ -8,7 +8,9 @@ import PendingRequest from "../components/dashboard-gf/seller/pending-request"
 import { getStore } from "../actions/get-seller-store"
 import SellerStore from "../components/dashboard-gf/seller/seller-store"
 import Spinner from "@modules/common/icons/spinner"
-import CorrectionApplication from "../components/dashboard-gf/seller/correction_of_the_application"
+import CorrectionApplication from "../components/dashboard-gf/seller/correction-request"
+import RejectedApplication from "../components/dashboard-gf/seller/rejected-request"
+
 import type { SellerCredentials } from "types/global"
 
 interface SellerRole {
@@ -56,10 +58,11 @@ const SupplierTemplate: React.FC = () => {
       {!isSeller?.application && <ApplyForSeller handlerReset={handlerReset} />}
       {isSeller?.state === "aprobada" &&
         (store ? <SellerStore store={store} /> : <Spinner size="32" />)}
-      {isSeller?.state === "pendiente" ||
-        (isSeller?.state === "corregido" && <PendingRequest />)}
+      {(isSeller?.state === "pendiente" || isSeller?.state === "corregido") && (
+        <PendingRequest />
+      )}
       {isSeller?.state === "rechazado" && (
-        <h1 className="text-[48px]"> Su solicitud fue rechazada </h1>
+        <RejectedApplication comment={isSeller.comment} />
       )}
 
       {isSeller?.state === "correccion" && (
