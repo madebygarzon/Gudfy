@@ -1,10 +1,17 @@
 import { Lifetime } from "awilix";
 import { unlink } from "fs";
+
 import { TransactionBaseService, Customer } from "@medusajs/medusa";
 import { SellerApplicationRepository } from "../repositories/seller-application";
 import { ApplicationDataRepository } from "../repositories/application-data";
 import CustomerRepository from "../repositories/customer";
 import CustomerService from "./customer";
+import {
+  ApprovedEmailSellerApplication,
+  CorrectionEmailSellerApplication,
+  RejectedEmailSellerApplication,
+  SendEmailSellerApplication,
+} from "../api/email/index";
 
 type updateSellerAplication = {
   payload: string;
@@ -91,6 +98,10 @@ export default class SellerApplicationService extends TransactionBaseService {
       const sellerapplication = await sellerApplicationRepository.save(
         createSellerapplication
       );
+      await SendEmailSellerApplication({
+        name: this.loggedInCustomer_?.first_name,
+        email: this.loggedInCustomer_?.email,
+      });
 
       return sellerapplication;
     } catch (error) {
@@ -143,13 +154,17 @@ export default class SellerApplicationService extends TransactionBaseService {
         }
       );
       if (updateData) {
-        const sellerApplication = await sellerApplicationRepository.update(
+        await sellerApplicationRepository.update(
           { customer_id: this.loggedInCustomer_.id },
           {
             state_application_id: "E",
           }
         );
       }
+      await SendEmailSellerApplication({
+        name: this.loggedInCustomer_?.first_name,
+        email: this.loggedInCustomer_?.email,
+      });
       return updateData;
     } catch (error) {
       console.log("Error in the update application for seller", error);
@@ -220,6 +235,7 @@ export default class SellerApplicationService extends TransactionBaseService {
     if (payload === "REJECTED" && !comment_status) {
       throw new Error("A comment is expected, comment_status");
     }
+    const customer = await this.retrieveCustomer(customer_id);
     if (payload === "APPROVED") {
       const sellerApplication = await sellerApplicationRepository.update(
         { customer_id: customer_id },
@@ -231,7 +247,10 @@ export default class SellerApplicationService extends TransactionBaseService {
       // se crea una tienda solamente si la solicitud esta aprovada.
       //createStore() tiene una validacion la cual retorna si ya tiene una tienda asociada
       await this.customerService_.createStore(customer_id);
-
+      await ApprovedEmailSellerApplication({
+        name: customer.name,
+        email: customer.email,
+      });
       return sellerApplication;
     } else if (payload === "REJECTED") {
       const sellerApplication = await sellerApplicationRepository.update(
@@ -241,6 +260,11 @@ export default class SellerApplicationService extends TransactionBaseService {
           comment_status: comment_status,
         }
       );
+      RejectedEmailSellerApplication({
+        name: customer.name,
+        email: customer.email,
+        message: comment_status,
+      });
       return sellerApplication;
     } else if (payload === "CORRECT") {
       const sellerApplication = await sellerApplicationRepository.update(
@@ -250,14 +274,11 @@ export default class SellerApplicationService extends TransactionBaseService {
           comment_status: comment_status,
         }
       );
-      return sellerApplication;
-    } else if (payload === "CORRECT") {
-      const sellerApplication = await sellerApplicationRepository.update(
-        { customer_id: customer_id },
-        {
-          state_application_id: "E",
-        }
-      );
+      await CorrectionEmailSellerApplication({
+        name: customer.name,
+        email: customer.email,
+        message: comment_status,
+      });
       return sellerApplication;
     }
     return;
