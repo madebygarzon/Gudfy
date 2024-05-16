@@ -1,19 +1,17 @@
 export default async function () {
   const imports = (await import(
-    "@medusajs/medusa/dist/api/routes/store/index"
+    "@medusajs/medusa/dist/api/routes/store/variants/index"
   )) as any;
   imports.defaultRelationsExtended = [
     ...imports.defaultRelationsExtended,
-    "members",
     "store_x_variant",
   ];
 
   const importsAdmin = (await import(
-    "@medusajs/medusa/dist/api/routes/admin/index"
+    "@medusajs/medusa/dist/api/routes/admin/variants/index"
   )) as any;
   importsAdmin.defaultRelationsExtended = [
     ...importsAdmin.defaultRelationsExtended,
-    "members",
     "store_x_variant",
   ];
 }

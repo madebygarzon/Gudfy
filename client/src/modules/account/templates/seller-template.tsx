@@ -1,5 +1,4 @@
 "use client"
-
 import React, { useEffect, useState } from "react"
 import { actionGetSellerApplication } from "../actions/action-seller-application"
 import { useAccount } from "@lib/context/account-context"
@@ -10,7 +9,6 @@ import SellerStore from "../components/dashboard-gf/seller/seller-store"
 import Spinner from "@modules/common/icons/spinner"
 import CorrectionApplication from "../components/dashboard-gf/seller/correction-request"
 import RejectedApplication from "../components/dashboard-gf/seller/rejected-request"
-
 import type { SellerCredentials } from "types/global"
 
 interface SellerRole {
@@ -33,7 +31,7 @@ const SupplierTemplate: React.FC = () => {
       }
     )
 
-    if (dataSellerApplication?.state === "approved") {
+    if (dataSellerApplication?.state === "aprobada") {
       const dataStore = await getStore()
       setStore(dataStore)
     }

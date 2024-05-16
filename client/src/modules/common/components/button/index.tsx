@@ -11,6 +11,7 @@ type ButtonProps = {
   href?: string
   route?: string
   icon?: string
+  disabled?: boolean
 } & React.ButtonHTMLAttributes<HTMLButtonElement>
 
 const Button = ({
@@ -20,6 +21,7 @@ const Button = ({
   variant = "primary",
   href = "/",
   route,
+  disabled = false,
   ...props
 }: ButtonProps) => {
   const active = route === href
@@ -39,23 +41,36 @@ const Button = ({
       </Link>
     )
   }
+  if (disabled)
+    return (
+      <button
+        className={
+          "text-white bg-[#61567e] rounded-[5px] px-10 py-[10px]  text-sm transition-colors duration-200 "
+        }
+        disabled={true}
+      >
+        {children}
+      </button>
+    )
   return (
     <button
-    {...props}
-    className={clsx(
-      "px-10 py-[10px] rounded-[30] text-sm transition-colors duration-200 ",
-      {
-        "text-white bg-[#402e72] hover:bg-[#2c1f57] rounded-[5px]": variant === "primary" && !isLoading,
-        "text-gray-900 bg-transparent border-gray-920 hover:bg-gray-100":
-          variant === "secondary" && !isLoading,
-        "opacity-50 cursor-not-allowed": isLoading,
-      },
-      className
-    )}
-    disabled={isLoading}
-  >
-    {isLoading ? <Spinner /> : children}
-  </button>
+      {...props}
+      className={clsx(
+        "px-10 py-[10px] rounded-[30] text-sm transition-colors duration-200 ",
+        {
+          "text-white bg-[#402e72] hover:bg-[#2c1f57] rounded-[5px]":
+            variant === "primary" && !isLoading,
+          "text-white bg-[#61567e] rounded-[5px]": disabled,
+          "text-gray-900 bg-transparent border-gray-920 hover:bg-gray-100":
+            variant === "secondary" && !isLoading,
+          "opacity-50 cursor-not-allowed": isLoading,
+        },
+        className
+      )}
+      disabled={isLoading || disabled}
+    >
+      {isLoading ? <Spinner /> : children}
+    </button>
   )
 }
 

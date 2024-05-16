@@ -11,7 +11,8 @@ import {
 import Spinner from "@modules/common/icons/spinner"
 import { getSellerProduct } from "@modules/account/actions/get-seller-product"
 import { ProductCategory } from "@medusajs/medusa"
-import CreateProduct from "./create-product"
+import RequestProduct from "./request-product"
+import AddProducts from "./add-product"
 import EditProduct from "./edit-product"
 import Image from "next/image"
 import { Product, Variant } from "types/medusa"
@@ -75,14 +76,17 @@ export default function ProductsTable() {
   //------------------------------------------
   const handlerGetListProduct = async () => {
     const dataProduct = await getSellerProduct()
-    setPagetotal(Math.ceil(dataProduct[1] / rowsPerPages))
-    setDataProducts({
-      dataProduct: dataProduct[0],
-      dataFilter: dataProduct[0],
-      dataPreview: handlerPreviewProducts(dataProduct[0], 1),
-      count: dataProduct[1],
-    })
-    setLoading(false)
+    if (dataProduct) {
+      setPagetotal(Math.ceil(dataProduct[1] / rowsPerPages))
+      setDataProducts({
+        dataProduct: dataProduct[0],
+        dataFilter: dataProduct[0],
+        dataPreview: handlerPreviewProducts(dataProduct[0], 1),
+        count: dataProduct[1],
+      })
+    }
+    console.log("productos", dataProducts.dataPreview.length)
+    setLoading(true)
   }
 
   const handlerNextPage = (action: any) => {
@@ -136,6 +140,7 @@ export default function ProductsTable() {
   const handlerPreviewProducts = (queryParams: any, page: any, rows?: any) => {
     // cadena de array para filtrar segun la pagina , se debe de pensar en cambiar el llamado a la api para poder
     // solicitar unicamente los que se estan pidiendo en la paginacion
+    if (!Array.isArray(queryParams)) return []
     const dataRowPage = rows || rowsPerPages
     const start = (page - 1) * dataRowPage
     const end = page * dataRowPage
@@ -267,8 +272,10 @@ export default function ProductsTable() {
               />
             </div>
           </div>
-          <div className="flex itmes-end py-4">
-            <CreateProduct setReset={setReset} />
+
+          <div className="flex itmes-end py-4 gap-x-3">
+            <AddProducts setReset={setReset} />
+            <RequestProduct setReset={setReset} />
           </div>
         </div>
         {!isLoading && dataProducts.dataPreview.length ? (
@@ -357,6 +364,13 @@ export default function ProductsTable() {
               </Table.Body>
             </Table>
           </>
+        ) : isLoading && !dataProducts.dataPreview.length ? (
+          <div className="flex justify-center items-center py-10">
+            <p>
+              <XMark /> No tienes productos en tu tienda, por favor agrega tus
+              productos
+            </p>
+          </div>
         ) : (
           <Spinner size="32" />
         )}
