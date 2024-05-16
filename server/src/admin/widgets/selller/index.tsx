@@ -409,9 +409,7 @@ const SellerApplication = () => {
                   {dataCustomer.dataPreview?.map((data, i) => {
                     return (
                       <Table.Row key={data.customer_id}>
-                        <Table.Cell>
-                          {formatarFecha(data.created_at)}
-                        </Table.Cell>
+                        <Table.Cell>{DateFormat(data.created_at)}</Table.Cell>
                         <Table.Cell>{data.customer.name}</Table.Cell>
                         <Table.Cell>{data.customer.email}</Table.Cell>
                         <Table.Cell>{data.state_application.state}</Table.Cell>
@@ -1010,18 +1008,26 @@ const ModalViewSellerData: React.FC<{
   );
 };
 
-function formatarFecha(fechaString: string): string {
+function DateFormat(fechaString: string): string {
   const fecha = new Date(fechaString);
-  const opcionesDeFormato: Intl.DateTimeFormatOptions = {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-  };
-  const fechaFormateada: string = fecha.toLocaleDateString(
-    "en-US",
-    opcionesDeFormato
-  );
-  return fechaFormateada;
+  const meses = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
+  const dia = fecha.getDate().toString().padStart(2, "0");
+  const mes = meses[fecha.getMonth()];
+  const año = fecha.getFullYear();
+  return `${dia} ${mes} ${año}`;
 }
 export const config: WidgetConfig = {
   zone: "customer.list.after",
