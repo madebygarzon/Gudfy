@@ -5,9 +5,7 @@ export async function getListSellerProduct(
   res: Response
 ): Promise<void> {
   try {
-    const productService = req.scope.resolve("productService");
-    const product = await productService.listAndCountSeller();
-    res.status(200).json(product);
+    res.send(200);
   } catch (error) {
     res.status(400).json({ error });
   }

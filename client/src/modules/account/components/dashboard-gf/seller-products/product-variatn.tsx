@@ -1,5 +1,5 @@
 import React from "react"
-import { variant, objetOptionVariant } from "./create-product"
+import { variant, objetOptionVariant } from "./request-product"
 import { Select as SelectNext, SelectItem } from "@nextui-org/react"
 import { Input, Spinner } from "@nextui-org/react"
 import { DotsSix } from "@medusajs/icons"
