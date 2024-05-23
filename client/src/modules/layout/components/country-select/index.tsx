@@ -1,5 +1,4 @@
 "use client"
-
 import { Listbox, Transition } from "@headlessui/react"
 import { useStore } from "@lib/context/store-context"
 import useToggleState from "@lib/hooks/use-toggle-state"
@@ -18,6 +17,7 @@ const CountrySelect = () => {
   const { regions } = useRegions()
   const [current, setCurrent] = useState<CountryOption | undefined>(undefined)
   const { state, open, close } = useToggleState()
+  const [selectedLanguage, setSelectedLanguage] = useState<string>("en") 
 
   const options: CountryOption[] | undefined = useMemo(() => {
     return regions
@@ -35,15 +35,23 @@ const CountrySelect = () => {
   useEffect(() => {
     if (countryCode) {
       const option = options?.find((o) => o.country === countryCode )
-        if(!option) {setCurrent(options?.find((o) => o.country === "es"))}
-      else{setCurrent(option)}
+        if(!option) {setCurrent(options?.find((o) => o.country === "es"))
+          setSelectedLanguage("es") 
+        } else {
+          setCurrent(option)
+          setSelectedLanguage("en") 
+        }
     }
   }, [countryCode, options])
 
   const handleChange = (option: CountryOption) => {
     setRegion(option.region, option.country)
     close()
+    setSelectedLanguage(option.country === "es" ? "es" : "en")
   }
+  useEffect(() => {
+    document.documentElement.lang = selectedLanguage
+  }, [selectedLanguage])
 
   return (
     <div onMouseEnter={open} onMouseLeave={close}>
