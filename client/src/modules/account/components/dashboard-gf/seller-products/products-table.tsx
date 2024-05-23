@@ -15,19 +15,33 @@ import RequestProduct from "./request-product"
 import AddProducts from "./add-product"
 import EditProduct from "./edit-product"
 import Image from "next/image"
-import { Product, Variant } from "types/medusa"
+import { Variant } from "types/medusa"
 import ImagePlaceholderIcon from "@modules/common/icons/defaultIcon"
 import getAllCategories from "@modules/account/actions/get-data-categories"
 
 import { useDisclosure } from "@nextui-org/react"
 
+type StoreProducVariant = {
+  description: string
+  thumbnail: string
+  productid: string
+  producttitle: string
+  productvariantid: string
+  storeid: string
+  storexvariantid: string
+  variantid: string
+  productvarianttitle: string
+  amount: string
+  price: string
+}
+
 type ListDataSellerProduct = {
-  dataProduct: Array<Product>
-  dataFilter: Array<Product>
-  dataPreview: Array<Product>
+  dataProduct: Array<StoreProducVariant>
+  dataFilter: Array<StoreProducVariant>
+  dataPreview: Array<StoreProducVariant>
   count: number
 }
-const dataSelecterPAge = [3, 6, 10]
+const dataSelecterPAge = [10, 20, 30]
 const dataSelecFilter = [
   {
     value: "todos",
@@ -53,7 +67,7 @@ export default function ProductsTable() {
   //Control de paginacion para los productos
   const [pageTotal, setPagetotal] = useState<number>() // paginas totales
   const [page, setPage] = useState(1)
-  const [rowsPerPages, setRowsPerPages] = useState(3) // numero de filas por pagina
+  const [rowsPerPages, setRowsPerPages] = useState(dataSelecterPAge[0]) // numero de filas por pagina
   const [reset, setReset] = useState<boolean>(false)
   const [isLoading, setLoading] = useState<boolean>(true)
   const [categories, setCategories] = useState<ProductCategory[]>()
@@ -76,17 +90,17 @@ export default function ProductsTable() {
   //------------------------------------------
   const handlerGetListProduct = async () => {
     const dataProduct = await getSellerProduct()
+
     if (dataProduct) {
       setPagetotal(Math.ceil(dataProduct[1] / rowsPerPages))
       setDataProducts({
-        dataProduct: dataProduct[0],
-        dataFilter: dataProduct[0],
-        dataPreview: handlerPreviewProducts(dataProduct[0], 1),
-        count: dataProduct[1],
+        dataProduct: dataProduct,
+        dataFilter: dataProduct,
+        dataPreview: handlerPreviewProducts(dataProduct, 1),
+        count: dataProduct.length,
       })
     }
-    console.log("productos", dataProducts.dataPreview.length)
-    setLoading(true)
+    setLoading(false)
   }
 
   const handlerNextPage = (action: any) => {
@@ -152,7 +166,7 @@ export default function ProductsTable() {
   useEffect(() => {
     setLoading(true)
     handlerGetListProduct()
-    categoriesOrder()
+    // categoriesOrder()
   }, [reset])
 
   const handlerFilterRows = (value: any) => {
@@ -167,58 +181,60 @@ export default function ProductsTable() {
       ),
     })
   }
-  const handlerFilterStatus = (value: any) => {
-    setPage(1)
-    let dataFilter
-    switch (value) {
-      case dataSelecFilter[1].value:
-        dataFilter = dataProducts.dataProduct.filter(
-          (data) => data.status === "draft"
-        )
+  // const handlerFilterStatus = (value: any) => {
+  //   setPage(1)
+  //   let dataFilter
+  //   switch (value) {
+  //     case dataSelecFilter[1].value:
+  //       dataFilter = dataProducts.dataProduct.filter(
+  //         (data) => data.status === "draft"
+  //       )
 
-        break
-      case dataSelecFilter[2].value:
-        dataFilter = dataProducts.dataProduct.filter(
-          (data) => data.status === "published"
-        )
+  //       break
+  //     case dataSelecFilter[2].value:
+  //       dataFilter = dataProducts.dataProduct.filter(
+  //         (data) => data.status === "published"
+  //       )
 
-        break
-      default:
-        dataFilter = dataProducts.dataProduct
-        break
-    }
-    setPagetotal(Math.ceil(dataFilter.length / rowsPerPages))
-    setDataProducts({
-      ...dataProducts,
-      dataFilter: dataFilter,
-      dataPreview: handlerPreviewProducts(dataFilter, 1),
-    })
-  }
-  const handlerFilterCategories = (value: any) => {
-    setPage(1)
+  //       break
+  //     default:
+  //       dataFilter = dataProducts.dataProduct
+  //       break
+  //   }
+  //   setPagetotal(Math.ceil(dataFilter.length / rowsPerPages))
+  //   setDataProducts({
+  //     ...dataProducts,
+  //     dataFilter: dataFilter,
+  //     dataPreview: handlerPreviewProducts(dataFilter, 1),
+  //   })
+  // }
+  // const handlerFilterCategories = (value: any) => {
+  //   setPage(1)
 
-    const dataFilter = dataProducts.dataProduct.filter((data) => {
-      const category = data.categories.find((ct) => ct.name === value)
-      if (category) return true
-      return false
-    })
-    setPagetotal(Math.ceil(dataFilter.length / rowsPerPages))
-    setDataProducts({
-      ...dataProducts,
-      dataFilter: dataFilter,
-      dataPreview: handlerPreviewProducts(dataFilter, 1),
-    })
-  }
+  //   const dataFilter = dataProducts.dataProduct.filter((data) => {
+  //     const category = data.categories.find((ct) => ct.name === value)
+  //     if (category) return true
+  //     return false
+  //   })
+  //   setPagetotal(Math.ceil(dataFilter.length / rowsPerPages))
+  //   setDataProducts({
+  //     ...dataProducts,
+  //     dataFilter: dataFilter,
+  //     dataPreview: handlerPreviewProducts(dataFilter, 1),
+  //   })
+  // }
   // Controller from Edit Product
   const { isOpen, onOpen, onOpenChange } = useDisclosure()
-  const [editProduct, setEditProduct] = useState<Product>()
-  const handlerEditProduct = (product: Product) => {
+  const [editProduct, setEditProduct] = useState<StoreProducVariant>()
+  const handlerEditProduct = (product: StoreProducVariant) => {
     setEditProduct(product)
     onOpen()
   }
   const handlerSearcherbar = (e: string) => {
     const dataFilter = dataProducts.dataProduct.filter((data) => {
-      const nameIncludes = data.title.toLowerCase().includes(e.toLowerCase())
+      const nameIncludes = data.producttitle
+        .toLowerCase()
+        .includes(e.toLowerCase())
 
       return nameIncludes
     })
@@ -236,41 +252,14 @@ export default function ProductsTable() {
         <div className="mt-2 flex justify-between">
           <div className="flex gap-5 h-full items-end py-4">
             <div className="w-[170px] ">
-              <Select onValueChange={handlerFilterStatus}>
-                <Select.Trigger>
-                  <Select.Value placeholder="Filtar por Estado " />
-                </Select.Trigger>
-                <Select.Content>
-                  {dataSelecFilter.map((item) => (
-                    <Select.Item key={item.value} value={item.value}>
-                      {item.label}
-                    </Select.Item>
-                  ))}
-                </Select.Content>
-              </Select>
-            </div>
-            <div className="w-[170px] ">
-              <Select onValueChange={handlerFilterCategories}>
-                <Select.Trigger>
-                  <Select.Value placeholder="Filtar por categoria: " />
-                </Select.Trigger>
-                <Select.Content>
-                  {categories?.map((item) => (
-                    <Select.Item key={item.id} value={item.name}>
-                      {item.name}
-                    </Select.Item>
-                  ))}
-                </Select.Content>
-              </Select>
-            </div>
-            <div className="w-[250px]">
               <Input
-                placeholder="Search"
+                placeholder="Buscar"
                 id="search-input"
                 type="search"
                 onChange={(e) => handlerSearcherbar(e.target.value)}
               />
             </div>
+            <div className="w-[250px]"></div>
           </div>
 
           <div className="flex itmes-end py-4 gap-x-3">
@@ -284,7 +273,7 @@ export default function ProductsTable() {
               <Table.Header>
                 <Table.Row>
                   <Table.HeaderCell>Nombre</Table.HeaderCell>
-                  <Table.HeaderCell>Estado</Table.HeaderCell>
+                  <Table.HeaderCell>Cantidad</Table.HeaderCell>
                   <Table.HeaderCell>Inventario</Table.HeaderCell>
                   <Table.HeaderCell>Categorias</Table.HeaderCell>
                   <Table.HeaderCell></Table.HeaderCell>
@@ -294,7 +283,7 @@ export default function ProductsTable() {
                 {dataProducts.dataPreview?.map((data, i) => {
                   return (
                     <Table.Row
-                      key={data.id}
+                      key={data.storexvariantid}
                       onClick={() => handlerEditProduct(data)}
                       className="cursor-pointer"
                     >
@@ -305,30 +294,24 @@ export default function ProductsTable() {
                               src={data.thumbnail}
                               width={28}
                               height={38}
-                              alt={data.title}
+                              alt={data.producttitle}
                             />
                           ) : (
                             <ImagePlaceholderIcon />
                           )}
-                          {data.title}
+                          {` ${data.productvarianttitle} `}
                         </div>
                       </Table.Cell>
-                      <Table.Cell>{data.status}</Table.Cell>
+                      <Table.Cell>{data.price}</Table.Cell>
+                      <Table.Cell>{data.amount}</Table.Cell>
                       <Table.Cell>
-                        {data.variants.length ? (
-                          <InventoryVariants variants={data.variants} />
-                        ) : (
-                          <span>Sin Inventario</span>
-                        )}
-                      </Table.Cell>
-                      <Table.Cell>
-                        {data.categories.length ? (
+                        {/* {data.categories.length ? (
                           data.categories.map((c) => (
                             <span className="text-[12px] capitalize">{`${c.name}, `}</span>
                           ))
                         ) : (
                           <p className="text-[12px]">Sin Categoria</p>
-                        )}
+                        )} */}
                       </Table.Cell>
                       <Table.Cell className="flex gap-x-2 items-center">
                         {/* <IconButton>
@@ -410,7 +393,7 @@ export default function ProductsTable() {
           </button>
         </div>
       </div>
-      {editProduct && (
+      {/* {editProduct && (
         <EditProduct
           key={editProduct.id}
           isOpen={isOpen}
@@ -419,7 +402,7 @@ export default function ProductsTable() {
           productData={editProduct}
           setReset={setReset}
         />
-      )}
+      )} */}
       <span></span>
     </div>
   )

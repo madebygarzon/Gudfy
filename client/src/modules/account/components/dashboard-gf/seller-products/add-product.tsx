@@ -7,11 +7,14 @@ import {
   ModalFooter,
   Button,
   useDisclosure,
+  Spinner,
 } from "@nextui-org/react"
 import { Plus, XMark } from "@medusajs/icons"
-import { Button as ButtonM, FocusModal, IconButton, Input } from "@medusajs/ui"
+import { Button as ButtonM } from "@medusajs/ui"
+import { Input } from "@nextui-org/react"
 import { getListProductVariant } from "../../../actions/get-list-product-variants"
-
+import { AddProductsVariant } from "../../../actions/post-add-product-variant"
+import Image from "next/image"
 import FileUploader from "./file-uploader-txt"
 
 type Reset = {
@@ -30,6 +33,16 @@ interface listproducts {
   unselectedProducts: Array<listProductsVariant>
   selectedProducts: Array<listProductsVariant>
 }
+interface CodesResult {
+  variantID: string
+  codes: string[]
+  amount: number
+  duplicates: { [key: string]: number } | number
+}
+interface ProductPrice {
+  variantID: string
+  price: number
+}
 
 export default function AddProducts({ setReset }: Reset) {
   const { isOpen, onOpen, onOpenChange } = useDisclosure()
@@ -39,10 +52,10 @@ export default function AddProducts({ setReset }: Reset) {
     unselectedProducts: [],
     selectedProducts: [],
   })
-  const [filePlane, setFilePlane] = useState<File>()
-  const [codes, setCodes] = useState<Array<string>>([])
-
-  const onSubmit = () => {}
+  const [addResult, setAddResult] = useState<CodesResult[]>([])
+  const [addPrice, setAddPrice] = useState<ProductPrice[]>([])
+  const [isloadingPV, setLoadingPV] = useState<boolean>(false)
+  const [susccessful, setSusccessful] = useState<boolean>(false)
 
   useEffect(() => {
     if (isOpen)
@@ -101,6 +114,35 @@ export default function AddProducts({ setReset }: Reset) {
         ),
         productsReviwe: [productAdd, ...data.productsReviwe],
       }))
+    setAddResult((old) => old.filter((result) => result.variantID != variantID))
+  }
+
+  const handlerChangePrice = (value: number, variantID: string) => {
+    if (addPrice.length) {
+      const newArrayPrice = addPrice.map((price) => {
+        if (price.variantID === variantID) {
+          return { price: value, variantID }
+        }
+        return price
+      })
+      setAddPrice(newArrayPrice)
+    }
+    setAddPrice((addPrice) => [...addPrice, { price: value, variantID }])
+  }
+
+  const onSubmit = () => {
+    setLoadingPV(true)
+    const dataSend = addResult.map((data) => {
+      const dataPrice = addPrice.find(
+        (price) => price.variantID === data.variantID
+      )
+      return { ...data, ...dataPrice }
+    })
+
+    AddProductsVariant(dataSend).then(() => {
+      setLoadingPV(false)
+      setSusccessful(true)
+    })
   }
 
   return (
@@ -123,7 +165,7 @@ export default function AddProducts({ setReset }: Reset) {
               </ModalHeader>
               <ModalBody className="py-2 px-20 ">
                 <div className=" flex w-full">
-                  <div className="w-[50%]">
+                  <div className="w-[30%]">
                     <Input
                       placeholder="Busca tu producto"
                       id="search-input"
@@ -143,11 +185,16 @@ export default function AddProducts({ setReset }: Reset) {
                             {listProducts.productsReviwe ? (
                               listProducts.productsReviwe.map((product) => (
                                 <tr key={product.id} className="border-b">
-                                  <td className="py-2 flex">
-                                    <img
+                                  <td
+                                    className="py-2 flex justify-start items-center"
+                                    colSpan={2}
+                                  >
+                                    <Image
                                       src={product.thumbnail}
                                       alt={product.titulo}
-                                      className="w-16 h-16 object-cover mx-auto"
+                                      width={64}
+                                      height={64}
+                                      className="object-cover mr-3 "
                                     />
                                     <div className="flex flex-col items-start justify-center h-full">
                                       <span className="font-bold">
@@ -156,7 +203,7 @@ export default function AddProducts({ setReset }: Reset) {
                                       <span>{product.titleVariant}</span>
                                     </div>
                                   </td>
-                                  <td className="py-2 text-center"></td>
+
                                   <td className="py-2 text-center">
                                     <Button
                                       onPress={() =>
@@ -177,10 +224,12 @@ export default function AddProducts({ setReset }: Reset) {
                         </table>
                       </div>
                     ) : (
-                      <p>Ocurrió un error</p>
+                      <div className="py-10">
+                        <h4>No hay mas productos</h4>
+                      </div>
                     )}
                   </div>
-                  <div className="w-[50%] pt-8 pl-8">
+                  <div className="w-[70%] pt-8 pl-8">
                     <h2 className="font-bold text-base">
                       Lista de productos seleccionados
                     </h2>
@@ -191,31 +240,46 @@ export default function AddProducts({ setReset }: Reset) {
                             <th className="w-1/4 py-2"></th>
                             <th className="w-1/4 py-2"></th>
                             <th className="w-1/4 py-2"></th>
+                            <th className="w-1/4 py-2"></th>
                           </tr>
                         </thead>
                         <tbody>
                           {listProducts.selectedProducts.map((product) => (
                             <tr key={product.id} className="border-b">
                               <td className="py-2 flex">
-                                <img
+                                <Image
                                   src={product.thumbnail}
                                   alt={product.titulo}
-                                  className="w-16 h-16 object-cover mx-auto"
+                                  width={64}
+                                  height={64}
+                                  className="object-cover mr-3 "
                                 />
-                                <div className="flex flex-col items-start justify-center h-full">
+                                <div className="flex flex-col items-start justify-center mx-5 h-full">
                                   <span className="font-bold">
                                     {product.titulo}
                                   </span>
                                   <span>{product.titleVariant}</span>
                                 </div>
                               </td>
-                              <td className="py-2 text-center">
+                              <td className="py-2  text-center ">
                                 <FileUploader
-                                  codes={codes}
-                                  setCodes={setCodes}
+                                  variantID={product.id}
+                                  setAddResult={setAddResult}
                                 />
                               </td>
-                              <td className="py-2 text-center">
+                              <td className="py-2  text-center ">
+                                <Input
+                                  label={"Precio"}
+                                  type="number"
+                                  onChange={(e) => {
+                                    handlerChangePrice(
+                                      parseFloat(e.target.value),
+                                      product.id
+                                    )
+                                  }}
+                                />
+                              </td>
+                              <td className="py-2  text-center ">
                                 {" "}
                                 <ButtonM
                                   variant="danger"
@@ -236,16 +300,33 @@ export default function AddProducts({ setReset }: Reset) {
                         Agrega un producto de la lista de productos
                       </div>
                     )}
+                    {susccessful && (
+                      <div className=" flex items-center justify-center font-semibold text-lg text-center text-blue-700 h-full">
+                        Productos agregados correctamente{" "}
+                      </div>
+                    )}
                   </div>
                 </div>
               </ModalBody>
-              <ModalFooter>
-                <Button color="danger" variant="light" onPress={onClose}>
+              <ModalFooter className="mb-[2%] justify-center">
+                <ButtonM
+                  variant="transparent"
+                  className="text-red-700 border border-red-700"
+                  onClick={onClose}
+                >
                   Cancelar
-                </Button>
-                <Button color="primary" onPress={onSubmit}>
-                  Guardar productos
-                </Button>
+                </ButtonM>
+                <ButtonM
+                  variant="transparent"
+                  className="text-blue-700  border border-blue-700"
+                  onClick={onSubmit}
+                >
+                  {isloadingPV ? (
+                    <Spinner color="secondary" />
+                  ) : (
+                    "Guardar productos"
+                  )}
+                </ButtonM>
               </ModalFooter>
             </>
           )}

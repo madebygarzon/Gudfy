@@ -7,6 +7,9 @@ import { getListSellerProduct } from "./get-seller-product";
 import upload from "../../middlewares/uploadThumbnail";
 import { deleteVariant } from "./delete-seller-variant";
 import { updateProduct } from "./update-seller-product";
+import { postAddProductVariant } from "./post-add-product-variant";
+import { getListStoreProductVariant } from "./get-list-store-products-variants";
+import { getStoreProductVarian } from "./get-store-product-variant";
 
 const router = Router();
 
@@ -15,18 +18,25 @@ export function attachSellerRoutes(customerRouter: Router) {
   router.get("/", wrapHandler(GetSeller));
 
   router.get("/products-variants", wrapHandler(getListSellerProduct));
-  router.post(
-    "/create-product",
-    upload.single("image"),
-    authenticateCustomer(),
-    wrapHandler(CreateSellerProduct)
+  router.post("/add-product-variant", wrapHandler(postAddProductVariant));
+  router.get(
+    "/store-products-variants",
+    wrapHandler(getListStoreProductVariant)
   );
-  router.delete("/variant", wrapHandler(deleteVariant));
+  router.get("/store-product-variant", wrapHandler(getStoreProductVarian));
 
-  router.post(
-    "/edit-product",
-    upload.single("image"),
-    authenticateCustomer(),
-    wrapHandler(updateProduct)
-  );
+  // router.post(
+  //   "/create-product",
+  //   upload.single("image"),
+  //   authenticateCustomer(),
+  //   wrapHandler(CreateSellerProduct)
+  // );
+  // router.delete("/variant", wrapHandler(deleteVariant));
+
+  // router.post(
+  //   "/edit-product",
+  //   upload.single("image"),
+  //   authenticateCustomer(),
+  //   wrapHandler(updateProduct)
+  // );
 }

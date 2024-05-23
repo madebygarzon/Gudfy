@@ -9,9 +9,10 @@ import { useState } from "react"
 import { Tooltip } from "@nextui-org/react"
 
 interface CodesResult {
+  variantID: string
   codes: string[]
   amount: number
-  duplicates: { [key: string]: number }
+  duplicates: { [key: string]: number } | number
 }
 type InputProps = {
   type?: "Normal" | "Plane"
@@ -40,11 +41,11 @@ const InputFile: React.FC<InputProps> = ({
       <div className="">
         {file || previewImage ? (
           <>
-            <div className=" relative flex min-w-min bg-zinc-400 text-white text-sm py-2 px-4 rounded-md">
+            <div className=" relative flex min-w-min bg-zinc-400 text-white text-sm py-2 px-4   rounded-md">
               <IconButton
                 size="2xsmall"
                 variant="transparent"
-                className="absolute top-[25%] right-2 text-white hover:text-zinc-400"
+                className="absolute top-[5%] right-[2px] text-white ml-5 hover:text-zinc-400"
                 onClick={() => {
                   setFile(undefined)
                   if (setResult) setResult(null)
