@@ -67,9 +67,9 @@ type Errors = {
   variant_inventory: string
   variant_prices: string
 }
-export default function CreateProduct({ setReset }: Reset) {
+export default function RequestProduct({ setReset }: Reset) {
   // const [open, setOpen] = useState(false)
-  const [file, setFile] = useState<File | null>()
+  const [file, setFile] = useState<File>()
   const [product, setProduct] = useState({
     title: "",
     subtitle: "",
@@ -125,7 +125,7 @@ export default function CreateProduct({ setReset }: Reset) {
   }
 
   useEffect(() => {
-    setFile(null)
+    setFile(undefined)
     categoriesOrder()
   }, [open])
 
@@ -280,7 +280,7 @@ export default function CreateProduct({ setReset }: Reset) {
         className=" border rounded-[5px]"
         onClick={onOpen}
       >
-        Agregar Producto
+        Solicitar producto
         <Plus />
       </ButtonM>
 

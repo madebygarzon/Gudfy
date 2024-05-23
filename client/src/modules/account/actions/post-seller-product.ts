@@ -3,7 +3,7 @@ import { ProductCategory } from "@medusajs/medusa"
 import {
   objetOptionVariant,
   variant,
-} from "../components/dashboard-gf/seller-products/create-product"
+} from "../components/dashboard-gf/seller-products/request-product"
 type data = {
   product: {
     title: string

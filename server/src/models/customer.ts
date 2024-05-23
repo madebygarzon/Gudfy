@@ -11,6 +11,7 @@ import { Customer as MedusaCustomer } from "@medusajs/medusa";
 import { Store } from "./store";
 import { SellerApplication } from "./seller-application";
 import { CustomerRole } from "./customer-role";
+import { StoreOrder } from "./store-order";
 
 @Entity()
 export class Customer extends MedusaCustomer {
@@ -31,4 +32,10 @@ export class Customer extends MedusaCustomer {
 
   @OneToOne(() => SellerApplication, (seller) => seller?.customer)
   sellerapplications?: SellerApplication[];
+
+  @OneToOne(() => StoreOrder, (seller) => seller?.seller)
+  sellerorder?: SellerApplication[];
+
+  @OneToOne(() => StoreOrder, (custo) => custo?.customer)
+  customerorder?: SellerApplication[];
 }

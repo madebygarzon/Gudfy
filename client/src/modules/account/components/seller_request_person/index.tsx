@@ -9,6 +9,7 @@ import { FieldValues, useForm } from "react-hook-form"
 import { actionCreateSellerApplication } from "@modules/account/actions/action-seller-application"
 import InputFile from "@modules/common/components/input-file"
 import { XCircleSolid } from "@medusajs/icons"
+import { useMeCustomer } from "medusa-react"
 
 interface Proveedor {
   value: string
@@ -47,11 +48,12 @@ type props = {
 }
 
 const SellerRequestPerson = ({ onClose, handlerReset }: props) => {
+  const { customer } = useMeCustomer()
   const [formData, setFormData] = useState<SellerCredentials>({
-    name: "",
-    last_name: "",
-    email: "",
-    phone: "",
+    name: customer?.first_name || "",
+    last_name: customer?.last_name || "",
+    email: customer?.email || "",
+    phone: customer?.phone || "",
     contry: "",
     city: "",
     address: "",
@@ -208,6 +210,7 @@ const SellerRequestPerson = ({ onClose, handlerReset }: props) => {
           Datos personales
         </p>
         <Input
+          value={formData.name}
           label="Nombre"
           {...register("name", {
             required: "Campo requerido",
@@ -219,6 +222,7 @@ const SellerRequestPerson = ({ onClose, handlerReset }: props) => {
         />
 
         <Input
+          value={formData.last_name}
           label="Apellidos"
           {...register("last_name", {
             required: "Campo requerido",
@@ -228,6 +232,7 @@ const SellerRequestPerson = ({ onClose, handlerReset }: props) => {
           onChange={handleInputChange}
         />
         <Input
+          value={formData.email}
           label="Correo electrónico"
           {...register("email", {
             required: "Campo requerido",
@@ -237,6 +242,7 @@ const SellerRequestPerson = ({ onClose, handlerReset }: props) => {
           onChange={handleInputChange}
         />
         <Input
+          value={formData.phone}
           label="Numero telefónico"
           {...register("phone", {
             required: "Campo requerido",

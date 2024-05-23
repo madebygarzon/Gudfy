@@ -1,13 +1,13 @@
 import { Entity, OneToMany } from "typeorm";
 import { Store as MedusaStore } from "@medusajs/medusa";
 import { Customer } from "./customer";
-import { Product } from "./product";
+import { StoreXVariant } from "./store_x_variant";
 
 @Entity()
 export class Store extends MedusaStore {
   @OneToMany(() => Customer, (customer) => customer?.store)
   members?: Customer[];
 
-  @OneToMany(() => Product, (product) => product?.store)
-  products?: Product[];
+  @OneToMany(() => StoreXVariant, (customer) => customer?.store)
+  store_x_variant?: StoreXVariant[];
 }
