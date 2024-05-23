@@ -8,14 +8,14 @@ export default class ProductReviewService extends TransactionBaseService {
     super(arguments[0]);
     this.productReviewRepository_ = productReviewRepository;
   }
-  async getStarsProductReviews(product_id) {
+  async getStarsProductReviews(product_store_variant_id) {
     const productReviewRepository = this.activeManager_.withRepository(
       this.productReviewRepository_
     );
     const calculeStars = await productReviewRepository
       .createQueryBuilder()
       .select("rating, COUNT(*) as cantidad")
-      .where({ product_id, approved: true })
+      .where({ product_store_variant_id, approved: true })
       .groupBy("rating")
       .getRawMany();
     const total = calculeStars.reduce((acumulador, objeto) => {
@@ -28,7 +28,7 @@ export default class ProductReviewService extends TransactionBaseService {
     return { dataStars: calculeStars, total, media };
   }
 
-  async getProductReviews(product_id, next) {
+  async getProductReviews(product_store_variant_id, next) {
     /* @ts-ignore */
     const productReviewRepository = this.activeManager_.withRepository(
       this.productReviewRepository_
@@ -36,7 +36,7 @@ export default class ProductReviewService extends TransactionBaseService {
     if (next) {
       return await productReviewRepository.find({
         where: {
-          product_id,
+          product_store_variant_id,
           approved: true,
         },
         order: {
@@ -47,7 +47,7 @@ export default class ProductReviewService extends TransactionBaseService {
     } else {
       return await productReviewRepository.find({
         where: {
-          product_id,
+          product_store_variant_id,
           approved: true,
         },
         order: {
@@ -83,7 +83,7 @@ export default class ProductReviewService extends TransactionBaseService {
   }
 
   async create(
-    product_id,
+    product_store_variant_id,
     customer_id,
     customer_name,
     display_name,
@@ -91,7 +91,7 @@ export default class ProductReviewService extends TransactionBaseService {
     rating
   ) {
     if (
-      !product_id ||
+      !product_store_variant_id ||
       !customer_id ||
       !customer_name ||
       !display_name ||
@@ -99,7 +99,7 @@ export default class ProductReviewService extends TransactionBaseService {
       !rating
     ) {
       throw new Error(
-        "Adding product review requires product_id, customer_id, display_name, content, and rating"
+        "Adding product review requires product_store_variant_id, customer_id, display_name, content, and rating"
       );
     }
     /* @ts-ignore */
@@ -107,7 +107,7 @@ export default class ProductReviewService extends TransactionBaseService {
       this.productReviewRepository_
     );
     const createdReview = productReviewRepository.create({
-      product_id,
+      product_store_variant_id,
       customer_id,
       customer_name,
       display_name,

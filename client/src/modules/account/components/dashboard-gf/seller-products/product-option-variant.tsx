@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react"
 import { Input } from "@nextui-org/react"
-import { objetOptionVariant } from "./create-product"
+import { objetOptionVariant } from "./request-product"
 import { XCircleSolid, Trash } from "@medusajs/icons"
 import { IconButton } from "@medusajs/ui"
 
