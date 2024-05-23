@@ -1,19 +1,21 @@
 // components/FileUploader.tsx
 import InputFile from "@modules/common/components/input-file"
 import { Button, Tooltip } from "@nextui-org/react"
-import React, { useState } from "react"
+import React, { useState, useEffect } from "react"
 
 interface CodesResult {
+  storeID?: string
+  variantID: string
   codes: string[]
   amount: number
-  duplicates: { [key: string]: number }
+  duplicates: { [key: string]: number } | number
 }
 interface CodesArray {
-  codes: string[]
-  setCodes: React.Dispatch<React.SetStateAction<string[]>>
+  variantID: string
+  setAddResult: React.Dispatch<React.SetStateAction<CodesResult[]>>
 }
 
-const FileUploader: React.FC<CodesArray> = () => {
+const FileUploader: React.FC<CodesArray> = ({ variantID, setAddResult }) => {
   const [result, setResult] = useState<CodesResult | null>(null)
   const [filePlane, setFilePlane] = useState<File>()
   const [error, setError] = useState<string | null>(null)
@@ -50,10 +52,23 @@ const FileUploader: React.FC<CodesArray> = () => {
       )
 
       setResult({
+        variantID,
         codes: codesArray,
         amount: codesArray.length,
+
         duplicates,
       })
+
+      setAddResult((old) => [
+        ...old,
+        {
+          variantID,
+          codes: codesArray,
+          amount: codesArray.length,
+
+          duplicates: Object.keys(duplicates).length,
+        },
+      ])
     } catch (error) {
       if (error instanceof Error) {
         setError(error.message)
@@ -62,7 +77,13 @@ const FileUploader: React.FC<CodesArray> = () => {
       }
     }
   }
-
+  useEffect(() => {
+    if (!result) {
+      setAddResult((old) =>
+        old.filter((result) => result.variantID != variantID)
+      )
+    }
+  }, [result])
   return (
     <div className="flex justify-center w-[250px] ">
       <div>
