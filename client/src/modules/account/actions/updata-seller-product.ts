@@ -1,6 +1,6 @@
 import axios from "axios"
 import { ProductCategory } from "@medusajs/medusa"
-import { variant } from "../components/dashboard-gf/seller-products/create-product"
+import { variant } from "../components/dashboard-gf/seller-products/request-product"
 
 type editProductData = {
   id: string

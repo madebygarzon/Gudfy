@@ -86,7 +86,7 @@ const Nav = () => {
           </div>
           <div className="flex items-center gap-x-4 sm:gap-x-8 ">
             <div>
-              <Wallet />
+              {/* <Wallet /> */}
             </div>
             <div>
               {!customer ? (
