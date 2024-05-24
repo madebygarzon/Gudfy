@@ -15,6 +15,7 @@ import RequestProduct from "./request-product"
 import AddProducts from "./add-product"
 import EditProduct from "./edit-product"
 import Image from "next/image"
+import Link from "next/link"
 import { Variant } from "types/medusa"
 import ImagePlaceholderIcon from "@modules/common/icons/defaultIcon"
 import getAllCategories from "@modules/account/actions/get-data-categories"
@@ -273,7 +274,7 @@ export default function ProductsTable() {
               <Table.Header>
                 <Table.Row>
                   <Table.HeaderCell>Nombre</Table.HeaderCell>
-                  <Table.HeaderCell>Cantidad</Table.HeaderCell>
+                  <Table.HeaderCell>Precio</Table.HeaderCell>
                   <Table.HeaderCell>Inventario</Table.HeaderCell>
                   <Table.HeaderCell>Categorias</Table.HeaderCell>
                   <Table.HeaderCell></Table.HeaderCell>
@@ -288,23 +289,26 @@ export default function ProductsTable() {
                       className="cursor-pointer"
                     >
                       <Table.Cell>
-                        <div className="flex gap-3 items-center">
-                          {data.thumbnail ? (
-                            <Image
-                              src={data.thumbnail}
-                              width={28}
-                              height={38}
-                              alt={data.producttitle}
-                            />
-                          ) : (
-                            <ImagePlaceholderIcon />
-                          )}
-                          {` ${data.productvarianttitle} `}
-                        </div>
+                        <Link href={`./products/${data.storexvariantid}`}>
+                          <div className="flex gap-3 items-center">
+                            {data.thumbnail ? (
+                              <Image
+                                src={data.thumbnail}
+                                width={28}
+                                height={38}
+                                alt={data.producttitle}
+                              />
+                            ) : (
+                              <ImagePlaceholderIcon />
+                            )}
+                            {` ${data.productvarianttitle} `}
+                          </div>
+                        </Link>
                       </Table.Cell>
-                      <Table.Cell>{data.price}</Table.Cell>
-                      <Table.Cell>{data.amount}</Table.Cell>
+                      <Table.Cell> $ {data.price} USD</Table.Cell>
+                      <Table.Cell>{data.amount} Codigos </Table.Cell>
                       <Table.Cell>
+                        GifCards
                         {/* {data.categories.length ? (
                           data.categories.map((c) => (
                             <span className="text-[12px] capitalize">{`${c.name}, `}</span>
@@ -314,10 +318,13 @@ export default function ProductsTable() {
                         )} */}
                       </Table.Cell>
                       <Table.Cell className="flex gap-x-2 items-center">
+                        <IconButton>
+                          <PencilSquare className="text-ui-fg-subtle" />
+                        </IconButton>
                         {/* <IconButton>
                           <Eye />
-                        </IconButton>
-                        <DropdownMenu>
+                        </IconButton> */}
+                        {/* <DropdownMenu>
                           <DropdownMenu.Trigger asChild>
                             <IconButton>
                               <PencilSquare className="text-ui-fg-subtle" />
@@ -339,7 +346,7 @@ export default function ProductsTable() {
                               Privado
                             </DropdownMenu.Item>
                           </DropdownMenu.Content>
-                        </DropdownMenu> */}
+                        </DropdownMenu>  */}
                       </Table.Cell>
                     </Table.Row>
                   )
@@ -363,7 +370,7 @@ export default function ProductsTable() {
           {`${dataProducts.dataFilter.length} Productos`}{" "}
           <Select onValueChange={handlerFilterRows} size="small">
             <Select.Trigger>
-              <Select.Value placeholder="3" />
+              <Select.Value placeholder="10" />
             </Select.Trigger>
             <Select.Content>
               {dataSelecterPAge.map((item) => (

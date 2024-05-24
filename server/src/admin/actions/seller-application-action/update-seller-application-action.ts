@@ -1,4 +1,5 @@
 import axios from "axios";
+import { BACKEND } from "../index";
 
 export const updateSellerAplicationAction = async ({
   payload,
@@ -7,7 +8,7 @@ export const updateSellerAplicationAction = async ({
 }) => {
   try {
     const getlist = await axios.post(
-      "http://localhost:9000/admin/sellerapplication",
+      `${BACKEND}/admin/sellerapplication`,
       { payload, customer_id, comment_status },
       { withCredentials: true }
     );

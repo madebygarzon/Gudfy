@@ -1,10 +1,10 @@
 import axios, { AxiosResponse } from "axios"
 import { SellerCredentials } from "types/global"
-
+import { BACKEND_URL } from "."
 export async function actionGetSellerApplication() {
   try {
     const dataSeller = await axios
-      .get("http://localhost:9000/store/account/seller-application/", {
+      .get(`${BACKEND_URL}/store/account/seller-application/`, {
         withCredentials: true,
         headers: { "Content-Type": "multipart/form-data" },
       })
@@ -34,7 +34,7 @@ export async function actionCreateSellerApplication(
     formData.append("addressDocument", fileAddress)
     formData.append("supplierDocuments", supplierDocuments)
     const dataCreateSeller = await axios.post(
-      "http://localhost:9000/store/account/seller-application/",
+      `${BACKEND_URL}/store/account/seller-application/`,
       formData,
       {
         withCredentials: true,
@@ -63,7 +63,7 @@ export async function actionUpdateSellerApplication(
     if (supplierDocuments)
       formData.append("supplierDocuments", supplierDocuments)
     const dataCreateSeller = await axios.post(
-      "http://localhost:9000/store/account/uptade-seller-application/",
+      `${BACKEND_URL}/store/account/uptade-seller-application/`,
       formData,
       {
         withCredentials: true,

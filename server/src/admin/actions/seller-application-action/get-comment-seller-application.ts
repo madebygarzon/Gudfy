@@ -1,9 +1,10 @@
 import axios from "axios";
+import { BACKEND } from "../index";
 
 export const getCommenSellerApplication = async (customer_id: string) => {
   try {
     const getComment = await axios.get(
-      "http://localhost:9000/admin/commentsellerapplication",
+      `${BACKEND}/admin/commentsellerapplication`,
       { params: { customer_id } }
     );
 

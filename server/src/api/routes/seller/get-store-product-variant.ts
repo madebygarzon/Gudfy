@@ -5,15 +5,15 @@ export async function getStoreProductVarian(
   res: Response
 ): Promise<void> {
   try {
-    const id_SPV = req.body;
+    const { handle } = req.query;
     const productService = req.scope.resolve("storeXVariantService");
 
-    const get = await productService.getStoreVariant(id_SPV);
+    const get = await productService.getStoreVariant(handle);
 
     if (get) {
       res.status(200).send(get);
     }
   } catch (error) {
-    console.log("Error Endpoint add product variant for store", error);
+    console.log("Error Endpoint get product variant for store", error);
   }
 }
