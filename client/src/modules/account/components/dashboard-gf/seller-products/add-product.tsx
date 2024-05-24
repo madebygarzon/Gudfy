@@ -86,6 +86,7 @@ export default function AddProducts({ setReset }: Reset) {
     }))
   }
   const handlerAddProduct = (variantID: string) => {
+    setSusccessful(false)
     const productAdd = listProducts.unselectedProducts.find(
       (producto) => producto.id === variantID
     )
@@ -142,6 +143,9 @@ export default function AddProducts({ setReset }: Reset) {
     AddProductsVariant(dataSend).then(() => {
       setLoadingPV(false)
       setSusccessful(true)
+      setListProducts((data) => ({ ...data, selectedProducts: [] }))
+      setAddPrice([])
+      setReset((reset) => !reset)
     })
   }
 

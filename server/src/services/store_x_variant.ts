@@ -28,6 +28,7 @@ class StoreXVariantService extends TransactionBaseService {
     const productV = this.manager_.withRepository(
       this.storeXVariantRepository_
     );
+
     const Product = await productV
       .createQueryBuilder("sxv")
       .innerJoinAndSelect("sxv.variant", "pv")

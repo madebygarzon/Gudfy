@@ -1,9 +1,10 @@
 import axios, { AxiosResponse } from "axios"
+import { BACKEND_URL } from "."
 
 export async function getSellerProduct() {
   try {
     const products = await axios.get(
-      "http://localhost:9000/seller/store/store-products-variants",
+      `${BACKEND_URL}/seller/store/store-products-variants`,
       {
         withCredentials: true,
       }
