@@ -1,6 +1,7 @@
 import axios from "axios"
 import { ProductCategory } from "@medusajs/medusa"
 import { variant } from "../components/dashboard-gf/seller-products/request-product"
+import { BACKEND_URL } from "."
 
 type editProductData = {
   id: string
@@ -26,7 +27,7 @@ export const updateProduct = async (
     formData.append("payload", JSON.stringify(payload))
     if (fileImage) formData.append("image", fileImage.get("image") as Blob)
     const product = await axios.post(
-      "http://localhost:9000/seller/store/edit-product/",
+      `${BACKEND_URL}/seller/store/edit-product/`,
       formData,
       {
         withCredentials: true,

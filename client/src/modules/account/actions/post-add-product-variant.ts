@@ -1,4 +1,5 @@
 import axios from "axios"
+import { BACKEND_URL } from "."
 
 type data = {
   variantID: string
@@ -11,7 +12,7 @@ type data = {
 export const AddProductsVariant = async (productData: data) => {
   try {
     const product = await axios.post(
-      "http://localhost:9000/seller/store/add-product-variant/",
+      `${BACKEND_URL}/seller/store/add-product-variant/`,
       productData,
       {
         withCredentials: true,
