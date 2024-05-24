@@ -1,5 +1,5 @@
 import axios, { AxiosResponse } from "axios"
-
+import { BACKEND_URL } from "."
 export async function getContries() {
   try {
     const response = await axios
