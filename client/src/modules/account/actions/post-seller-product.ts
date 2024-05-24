@@ -4,6 +4,8 @@ import {
   objetOptionVariant,
   variant,
 } from "../components/dashboard-gf/seller-products/request-product"
+import { BACKEND_URL } from "."
+
 type data = {
   product: {
     title: string
@@ -25,7 +27,7 @@ export const CreateProductInput = async (
     formData.append("productData", JSON.stringify(productData))
     formData.append("image", fileImage.get("image") as Blob)
     const product = await axios.post(
-      "http://localhost:9000/seller/store/create-product/",
+      `${BACKEND_URL}/seller/store/create-product/`,
       formData,
       {
         withCredentials: true,
