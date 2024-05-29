@@ -20,6 +20,7 @@
     "checkJs": false,
     "noEmit": false,
     "strict": false,
+    "types": ["node"]
     
   },
   "include": ["src/"],
