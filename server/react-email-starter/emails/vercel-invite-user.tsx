@@ -16,6 +16,7 @@ import {
   Text,
 } from '@react-email/components';
 import * as React from 'react';
+import * as process from 'process';
 
 interface VercelInviteUserEmailProps {
   username?: string;
