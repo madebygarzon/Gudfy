@@ -8,11 +8,6 @@ on:
     paths:
       - "server/**"
     branches: [ "main" ]
-  
-  pull_request:
-    paths:
-      - "server/**"
-    branches: [ "main" ]
     
 jobs:
   build:
@@ -33,8 +28,10 @@ jobs:
         cache: 'npm'
         cache-dependency-path: server/package-lock.json
 
-    - run: npm install
+    - name: Install dependencies
+      run: npm install
       working-directory: ./server
 
-    - run: npm run build --if-present
+    - name: Build the project
+      run: npm run build --if-present
       working-directory: ./server
