@@ -8,6 +8,11 @@ on:
     paths:
       - "client/**"
     branches: [ "main" ]
+  
+  pull_request:
+    paths:
+      - "client/**" 
+    branches: [ "main" ]
     
 jobs:
   build:
