@@ -101,4 +101,4 @@ Se comento esta funcion de validacion para la creacion de la Variante de product
 
 **server/node_modules/@medusajs/medusa/dist/loaders/plugins.js:524:70**
 **comentar la linea 524 - 534:  else if (utils_1.SearchUtils.isSearchService(loaded.prototype))**
-Se commento esta validacioon que causaba conflictos con el arranque del sistema.
+Se commento esta validacioon que causaba conflictos con el arranque del sistema. Test
