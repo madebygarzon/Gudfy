@@ -27,23 +27,24 @@ jobs:
     - uses: actions/checkout@v4
 
     - name: Set working directory
-      run: echo "WORKDIR=$(pwd)/server" >> $GITHUB_ENV
+      id: set-working-directory
+      run: echo "workdir=$(pwd)/server" >> $GITHUB_ENV
 
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v3
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
-        cache-dependency-path: ${{ env.WORKDIR }}/package-lock.json
+        cache-dependency-path: server/package-lock.json
 
     - name: List files in server directory
-      run: ls -la ${{ env.WORKDIR }}
-
+      run: ls -la server
+      
     - name: Install dependencies
       run: npm install
-      working-directory: ${{ env.WORKDIR }}
+      working-directory: server
 
     - name: Build the project
       run: npm run build --if-present
-      working-directory: ${{ env.WORKDIR }}
+      working-directory: server
 
