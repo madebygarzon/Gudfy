@@ -10,7 +10,11 @@ El módulo de bus de eventos local es adecuado para entornos de desarrollo. Aqu�
 
 Este recurso ya esta implementado por lo que se debe de comentar si se desea llevar a producción: configuracion en **medusa-config.js**.
 
+<<<<<<< HEAD
+```javascript test 
+=======
 ```javascript '''
+>>>>>>> fb3a021ca42d92b5e78942bfa2d1838003b8c1fc
 
 const modules = {
   //codigo a comentar 
