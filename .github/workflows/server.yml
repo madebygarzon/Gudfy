@@ -7,7 +7,7 @@ on:
   push:
     paths:
       - "server/**"
-    branches: [ "devCarlos" ]
+    branches: [ "main" ]
     
 jobs:
   build:
