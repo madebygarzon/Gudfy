@@ -21,23 +21,23 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - name: Verify repository structure
-      run: ls -R
+    - name: Set working directory
+      run: echo "::set-output name=workdir::$(pwd)/server"
 
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v3
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
-        cache-dependency-path: server/package-lock.json
+        cache-dependency-path: ${{ steps.set-working-directory.outputs.workdir }}/package-lock.json
 
     - name: List files in server directory
-      run: ls -la ./server
+      run: ls -la ${{ steps.set-working-directory.outputs.workdir }}
       
     - name: Install dependencies
       run: npm install
-      working-directory: ./server
+      working-directory: ${{ steps.set-working-directory.outputs.workdir }}
 
     - name: Build the project
       run: npm run build --if-present
-      working-directory: ./server
+      working-directory: ${{ steps.set-working-directory.outputs.workdir }}
