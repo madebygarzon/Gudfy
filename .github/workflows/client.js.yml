@@ -33,6 +33,9 @@ jobs:
         cache: 'npm'
         cache-dependency-path: client/package-lock.json
 
+    - name: List files in server directory
+      run: ls -la ./client
+
     - name: Install dependencies
       run: npm install
       working-directory: ./client
