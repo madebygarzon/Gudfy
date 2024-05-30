@@ -21,10 +21,15 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+    - name: Change to server directory
+      run: cd server
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v3
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
-    - run: npm i
+    - run: npm install
+      working-directory: ./server
+
     - run: npm run build --if-present
+      working-directory: ./server
