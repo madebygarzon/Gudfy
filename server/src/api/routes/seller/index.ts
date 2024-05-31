@@ -23,7 +23,9 @@ export function attachSellerRoutes(customerRouter: Router) {
     "/store-products-variants",
     wrapHandler(getListStoreProductVariant)
   );
-  router.get("/store-product-variant", wrapHandler(getStoreProductVarian));
+
+  // obtener un producto en el dashboard del vendedor
+  //router.get("/store-product-variant", wrapHandler(getStoreProductVarian));
 
   // router.post(
   //   "/create-product",
