@@ -14,7 +14,7 @@ interface Seller {
 interface TableProps {
   sellers: Seller[]
   selectedSeller: Seller | null
-  setSelectedSeller: React.Dispatch<React.SetStateAction<Seller | null>>
+  setSelectedSeller: React.Dispatch<React.SetStateAction<Seller>>
 }
 const dataSelecterPAge = [10, 20, 30]
 const TableSeller: React.FC<TableProps> = ({
@@ -106,7 +106,7 @@ const TableSeller: React.FC<TableProps> = ({
               (page) => (
                 <button
                   key={page}
-                  className={`px-3 py-1 border rounded-md ${
+                  className={`px-3 py-1 border rounded-md text-xs ${
                     page === currentPage
                       ? "bg-blue-500 text-white"
                       : "bg-white text-blue-500"
