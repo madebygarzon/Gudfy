@@ -471,7 +471,7 @@ export default function EditProduct({
                         width={100}
                         height={100}
                       />
-                      <InputFile setFile={setFile} />
+                      {/* <InputFile setFile={setFile} /> */}
                     </div>
                   </div>
                   <div className="w-[60%] text-zinc-500 py-5">
