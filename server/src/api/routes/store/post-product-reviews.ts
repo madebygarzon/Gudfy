@@ -15,7 +15,7 @@ export default async (req: Request, res: Response): Promise<void> => {
   const { success, error, data } = schema.safeParse(req.body);
 
   if (!success) {
-    throw new MedusaError(MedusaError.Types.INVALID_DATA, error);
+    //throw new MedusaError(MedusaError.Types.INVALID_DATA, error);
   } else {
     const productReviewService = req.scope.resolve("productReviewService");
     productReviewService
