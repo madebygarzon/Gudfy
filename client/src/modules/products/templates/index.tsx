@@ -9,7 +9,7 @@ import React, { useRef } from "react"
 import ImageGallery from "../components/image-gallary"
 import MobileActions from "../components/mobile-actions"
 import { PricedProduct } from "@medusajs/medusa/dist/types/pricing"
-import ReviewProduct from "../components/product-review"
+import ReviewProduct from "../../product-variant/components/product-review"
 
 type ProductTemplateProps = {
   product: PricedProduct
