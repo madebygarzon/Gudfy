@@ -113,7 +113,7 @@ export default class ProductReviewService extends TransactionBaseService {
       display_name,
       content,
       rating,
-      approved: false,
+      approved: true,
     });
     const productReview = await productReviewRepository.save(createdReview);
     return productReview;

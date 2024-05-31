@@ -88,6 +88,10 @@ class StoreXVariantService extends TransactionBaseService {
 
       const listSellerxVariant = Array.from(variantMap.values());
 
+      listSellerxVariant.forEach((variant) => {
+        variant.sellers.sort((a, b) => a.price - b.price);
+      });
+
       return listSellerxVariant[0];
     } catch (error) {
       console.log(error);

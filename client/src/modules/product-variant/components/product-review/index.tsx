@@ -20,6 +20,7 @@ import ButtonLigth from "@modules/common/components/button_light"
 import StarsReview from "./stars-review"
 import LoginLight from "@modules/account/components/login/login-light"
 import { storeProductVariant } from "types/global"
+import { AddProductsReview } from "../../actions/post-product-variant-review"
 
 type props = {
   product: storeProductVariant
@@ -81,9 +82,10 @@ const ReviewProduct: React.FC<props> = ({ product }) => {
     onOpen()
   }
   const onSubmit = handleSubmit(async () => {
+    if (!customer) return
     const body = {
-      id: product.id,
-      customer_id: customer?.id,
+      product_store_variant_id: product.id,
+      customer_id: customer.id,
       customer_name: `${customer?.first_name} ${customer?.last_name}`,
       display_name: title || "",
       content: content || "",
@@ -93,11 +95,7 @@ const ReviewProduct: React.FC<props> = ({ product }) => {
       setAuthError("Ingrese las credenciales correctas")
       return
     } else {
-      axios
-        .post(
-          `http://localhost:9000/store/products/${product.id}/reviews/`,
-          body
-        )
+      AddProductsReview(body, product.id)
         .then((e) => {
           setSuccess(true)
           handlerGetProducsReviews()
@@ -115,7 +113,7 @@ const ReviewProduct: React.FC<props> = ({ product }) => {
     <>
       <StarsReview id={product.id || " "} review={arrayReviews} />
       <Divider className="" />
-      <div className="flex flex-wrap  pl-[39px]">
+      <div className="flex flex-wrap ">
         <Button
           onPress={Open}
           className="bg-[#402e72] hover:bg-blue-gf text-white rounded-[5px]"

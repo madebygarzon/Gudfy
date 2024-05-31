@@ -30,7 +30,10 @@ const ProductPreview = ({
             <span className="font-bold">{title}</span>
             <div className="flex w-full items-center">
               <span className="font-semibold w-full text-center">
-                Precio: {`${prices[0]} - ${prices[prices.length - 1]}`}
+                Precio: $
+                {prices.length == 1
+                  ? `${prices[0]}`
+                  : `${prices[0]} - ${prices[prices.length - 1]}`}
               </span>
             </div>
           </div>
