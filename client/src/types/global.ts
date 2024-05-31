@@ -47,6 +47,29 @@ export type NextPageWithLayout<P = {}, IP = P> = NextPage<P, IP> & {
 export type AppPropsWithLayout<P = {}, IP = P> = AppProps<P> & {
   Component: NextPageWithLayout<P, IP>
 }
+export type storeProductVariant = {
+  id: string
+  title: string
+  description: string
+  thumbnail: string
+  productparent: string
+  sellers: {
+    store_id: string
+    store_name: string
+    email: string
+    amount: number
+    price: number
+  }[]
+}
+
+export type productVariant = {
+  id: string
+  title: string
+  prices: number[]
+  productparent: string
+  thumbnail: string
+  desciption: string
+}
 
 export type ProductPreviewType = {
   id: string

@@ -5,6 +5,7 @@ import StoreXVariantRepository from "../repositories/store-x-variant";
 import ProductRepository from "@medusajs/medusa/dist/repositories/product";
 import ProductVariantRepository from "@medusajs/medusa/dist/repositories/product-variant";
 import StoreService from "./store";
+import { map } from "zod";
 
 class StoreXVariantService extends TransactionBaseService {
   static LIFE_TIME = Lifetime.SCOPED;
@@ -17,14 +18,113 @@ class StoreXVariantService extends TransactionBaseService {
     super(...arguments);
 
     try {
-      this.loggedInCustomer_ = container.loggedInCustomer;
+      this.loggedInCustomer_ = container.loggedInCustomer || "";
       this.storeXVariantRepository_ = container.storeXVariantRepository;
       this.serialCodeRepository_ = container.serialCodeRepository;
     } catch (e) {
       // avoid errors when backend first runs
     }
   }
-  async getStoreVariant(id_SPV) {
+
+  async product(variantProduct) {
+    try {
+      const productV = this.manager_.withRepository(
+        this.storeXVariantRepository_
+      );
+
+      const rawVariants = await productV
+        .createQueryBuilder("sxv")
+        .innerJoinAndSelect("sxv.variant", "pv")
+        .innerJoinAndSelect("pv.product", "p")
+        .innerJoinAndSelect("sxv.store", "s")
+        .leftJoinAndSelect("s.members", "c")
+        .where("pv.title = :title ", {
+          title: variantProduct,
+        })
+        .select([
+          "sxv.id AS id",
+          "sxv.ammount_store AS amount",
+          "sxv.price AS price",
+          "pv.id AS variantid",
+          "pv.title AS titlevariant",
+          "p.title AS productparent",
+          "p.thumbnail AS thumbnail",
+          "p.description AS description",
+          "s.id AS store_id",
+          "s.name AS store_name",
+          "c.email AS customer_email",
+        ])
+        .getRawMany();
+
+      const variantMap = new Map();
+
+      rawVariants.forEach((variant) => {
+        if (!variantMap.has(variant.variantid)) {
+          variantMap.set(variant.variantid, {
+            id: variant.variantid,
+            title: variant.titlevariant,
+            description: variant.description,
+            thumbnail: variant.thumbnail,
+            productparent: variant.productparent,
+            sellers: [
+              {
+                store_id: variant.store_id,
+                store_name: variant.store_name,
+                email: variant.customer_email,
+                amount: variant.amount,
+                price: variant.price,
+              },
+            ],
+          });
+        } else
+          variantMap.get(variant.variantid).sellers.push({
+            store_id: variant.store_id,
+            store_name: variant.store_name,
+            email: variant.customer_email,
+            amount: variant.amount,
+            price: variant.price,
+          });
+      });
+
+      const listSellerxVariant = Array.from(variantMap.values());
+
+      return listSellerxVariant[0];
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async listSellersVariant() {
+    const productV = this.manager_.withRepository(
+      this.storeXVariantRepository_
+    );
+
+    const product = await productV
+      .createQueryBuilder("sxv")
+      .innerJoinAndSelect("sxv.variant", "pv")
+      .innerJoinAndSelect("pv.product", "p")
+      .innerJoinAndSelect("sxv.store", "s") // Relacionar StoreXVariant con Store
+      .leftJoinAndSelect("s.members", "c") // Left join Store con Customer
+      .select([
+        "sxv.id AS id",
+        "sxv.ammount_store AS amount",
+        "sxv.price AS price",
+        "pv.id AS variantID",
+        "pv.title AS titleVariant",
+        "p.title AS productParent",
+        "p.thumbnail AS thumbnail",
+        "p.description AS desciption",
+        "s.id AS storeID",
+        "s.name AS storeName",
+        "c.id AS customerID",
+        "c.email AS customerEmail",
+      ])
+      .getRawMany();
+
+    return product;
+  }
+
+  async listStoreVariant(id_SPV) {
     const productV = this.manager_.withRepository(
       this.storeXVariantRepository_
     );
@@ -50,7 +150,7 @@ class StoreXVariantService extends TransactionBaseService {
       .getRawMany();
     return Product;
   }
-  async list() {
+  async listxSeller() {
     const productV = this.manager_.withRepository(
       this.storeXVariantRepository_
     );

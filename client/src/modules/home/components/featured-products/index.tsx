@@ -1,15 +1,23 @@
 "use client"
-
+import React, { useState, useEffect } from "react"
 import { useFeaturedProductsQuery } from "@lib/hooks/use-layout-data"
 import UnderlineLink from "@modules/common/components/underline-link"
-import ProductPreview from "@modules/products/components/product-preview"
+import ProductVariantPreview from "@modules/product-variant/components/product-variant-preview"
 import SkeletonProductPreview from "@modules/skeletons/components/skeleton-product-preview"
 import Link from "next/dist/client/link"
 import ButtonLigth from "@modules/common/components/button_light"
+import { getListProductVariantWithSellers } from "@modules/home/actions/get-list-product-variant-with-sellers"
+import { productVariant } from "types/global"
 
 const FeaturedProducts = () => {
-  const { data } = useFeaturedProductsQuery()
+  //const { data } = useFeaturedProductsQuery()
+  const [products, setProducts] = useState<productVariant[]>([])
 
+  useEffect(() => {
+    getListProductVariantWithSellers().then((data) => {
+      setProducts(data)
+    })
+  }, [])
   return (
     <div className="py-12">
       <div className="content-container py-12">
@@ -17,7 +25,7 @@ const FeaturedProducts = () => {
           <span className="text-base-regular text-gray-600 mb-6">
             Latest products
           </span>
-          <p className="text-2xl-regular text-gray-900 max-w-lg mb-4">
+          <p className="text-2xl-regular text-gray-9, 00 max-w-lg mb-4">
             Our newest styles are here to help you look your best.
           </p>
           <UnderlineLink href="/store">Explore products</UnderlineLink>
@@ -26,10 +34,10 @@ const FeaturedProducts = () => {
           Juegos
         </p>
         <ul className="grid grid-cols-2 small:grid-cols-6 gap-x-6 gap-y-8">
-          {data
-            ? data.map((product) => (
+          {products.length
+            ? products.map((product) => (
                 <li key={product.id}>
-                  <ProductPreview {...product} />
+                  <ProductVariantPreview {...product} />
                 </li>
               ))
             : Array.from(Array(4).keys()).map((i) => (
