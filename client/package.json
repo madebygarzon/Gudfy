@@ -38,9 +38,10 @@
     "axios": "^1.4.0",
     "babel-preset-medusa-package": "^1.1.19",
     "clsx": "^1.1.1",
+    "crypto-browserify": "^3.12.0",
     "formik": "^2.4.3",
     "framer-motion": "^10.16.16",
-    "i18next": "^23.11.2",
+    "i18next": "^23.11.5",
     "i18next-http-backend": "^2.5.1",
     "jest-css-modules-transform": "^4.4.2",
     "lodash": "^4.17.21",
@@ -54,7 +55,8 @@
     "react-icons": "^4.10.1",
     "react-instantsearch-hooks-web": "^6.29.0",
     "react-intersection-observer": "^9.3.4",
-    "sharp": "^0.30.7"
+    "sharp": "^0.30.7",
+    "stream": "^0.0.2"
   },
   "devDependencies": {
     "@babel/core": "^7.23.9",
@@ -85,6 +87,6 @@
     "react-test-renderer": "^18.2.0",
     "tailwindcss": "^3.0.23",
     "ts-jest": "^29.1.1",
-    "typescript": "4.6.2"
+    "typescript": "^5.4.5"
   }
 }

@@ -69,7 +69,7 @@ const CollectionTemplate: React.FC<CollectionTemplateProps> = ({
   }, [cart?.region_id, refetch])
 
   const previews = usePreviews({
-    pages: infiniteData?.pages,
+    //pages: infiniteData?.pages,
     region: cart?.region,
   })
 
