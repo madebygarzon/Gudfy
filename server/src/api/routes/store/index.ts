@@ -13,6 +13,8 @@ import getSellerApplication from "./get-seller-application";
 import documents from "../../middlewares/documents-seller-application";
 import UpdateSellerAplication from "./update-seller-application";
 import getListProductsVariant from "./get-list-product-variant";
+import { getListProductVariantWithSellers } from "./get-list-product-variant-with-sellers";
+import { getProductVariant } from "./get-store-product-variant";
 
 // Initialize a custom router
 const router = Router();
@@ -68,6 +70,11 @@ export function attachStoreRoutes(storeRouter: Router) {
   // ---------------------------------Endpoins for List products Variants-------------------------------
 
   router.get("/list-products-variant", wrapHandler(getListProductsVariant));
+  router.get(
+    "/list-products-variant-with-sellers",
+    wrapHandler(getListProductVariantWithSellers)
+  );
+  router.get("/products-variant", wrapHandler(getProductVariant));
 
   //----------------------------------------------------------------------------------------------------
 }

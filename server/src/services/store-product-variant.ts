@@ -65,6 +65,41 @@ class StoreProductVariantService extends TransactionBaseService {
 
     return listFilter;
   }
+
+  async listProductVariantWithSellers() {
+    const variantRepository = this.manager_.withRepository(
+      this.productVariantRepository_
+    );
+
+    const rawVariants = await variantRepository
+      .createQueryBuilder("pv")
+      .innerJoin("pv.store_x_variant", "sxv")
+      .innerJoinAndSelect("pv.product", "p")
+      .select([
+        "pv.id AS id",
+        "pv.title AS title",
+        "sxv.price AS price",
+        "p.title AS productparent",
+        "p.thumbnail AS thumbnail",
+        "p.description AS desciption",
+      ])
+      .getRawMany();
+
+    const variantMap = new Map();
+
+    rawVariants.forEach((variant) => {
+      if (!variantMap.has(variant.id)) {
+        variantMap.set(variant.id, {
+          ...variant,
+          prices: [variant.price],
+        });
+      } else variantMap.get(variant.id).prices.push(variant.price);
+    });
+
+    const listVariant = Array.from(variantMap.values());
+
+    return listVariant;
+  }
 }
 
 export default StoreProductVariantService;
