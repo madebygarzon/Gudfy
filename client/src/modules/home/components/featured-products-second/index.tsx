@@ -1,13 +1,23 @@
 "use client"
 
 import { useFeaturedProductsQuery } from "@lib/hooks/use-layout-data"
-import ProductPreview from "@modules/products/components/product-preview"
+import ProductVariantPreview from "@modules/product-variant/components/product-variant-preview"
 import SkeletonProductPreview from "@modules/skeletons/components/skeleton-product-preview"
 import Link from "next/dist/client/link"
 import ButtonLigth from "@modules/common/components/button_light"
+import { productVariant } from "types/global"
+import { useEffect, useState } from "react"
+import { getListProductVariantWithSellers } from "@modules/home/actions/get-list-product-variant-with-sellers"
 
 const FeaturedProductsSecond = () => {
-  const { data } = useFeaturedProductsQuery()
+  //const { data } = useFeaturedProductsQuery()
+  const [products, setProducts] = useState<productVariant[]>([])
+
+  useEffect(() => {
+    getListProductVariantWithSellers().then((data) => {
+      setProducts(data)
+    })
+  }, [])
 
   return (
     <div className="py-12">
@@ -25,10 +35,10 @@ const FeaturedProductsSecond = () => {
           Productos Digitales
         </p>
         <ul className="grid grid-cols-2 small:grid-cols-6 gap-x-6 gap-y-8">
-          {data
-            ? data.map((product) => (
+          {products.length
+            ? products.map((product) => (
                 <li key={product.id}>
-                  <ProductPreview {...product} />
+                  <ProductVariantPreview {...product} />
                 </li>
               ))
             : Array.from(Array(4).keys()).map((i) => (

@@ -1,7 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from "react"
 import axios from "axios"
-import { PricedProduct } from "@medusajs/medusa/dist/types/pricing"
 import { useAccount } from "@lib/context/account-context"
 import Input from "@modules/common/components/input"
 import { FieldValues, useForm } from "react-hook-form"
@@ -20,9 +19,10 @@ import {
 import ButtonLigth from "@modules/common/components/button_light"
 import StarsReview from "./stars-review"
 import LoginLight from "@modules/account/components/login/login-light"
+import { storeProductVariant } from "types/global"
 
 type props = {
-  product: PricedProduct
+  product: storeProductVariant
 }
 
 const ReviewProduct: React.FC<props> = ({ product }) => {
@@ -53,7 +53,7 @@ const ReviewProduct: React.FC<props> = ({ product }) => {
         setArrayReviews(e.data.product_reviews)
       })
       .catch((e) => {
-        console.log("no se logro", e)
+        console.log(e)
       })
   }
 
@@ -144,7 +144,7 @@ const ReviewProduct: React.FC<props> = ({ product }) => {
           </div>
         </div>
       ) : (
-        <div> ¡Se el primero en comentar!</div>
+        <div className="text-center"> ¡Se el primero en comentar!</div>
       )}
       <Divider className="" />
       <Modal backdrop={"opaque"} isOpen={isOpen} onClose={onClose}>
