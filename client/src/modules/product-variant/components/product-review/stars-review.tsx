@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react"
 import axios from "axios"
 import ProgressStars from "./progress-stars"
+import { BACKEND_URL } from "../../actions/index"
 
 type props = {
   id: string
@@ -13,12 +14,16 @@ type dataStars = {
 }
 
 const StarsReview: React.FC<props> = ({ id, review }) => {
-  const [dataStars, setDataStars] = useState<dataStars>()
+  const [dataStars, setDataStars] = useState<dataStars>({
+    dataStars: [],
+    media: 0,
+    total: 0,
+  })
 
   const data = { id }
   useEffect(() => {
     axios
-      .get(`http://localhost:9000/store/products/${id}/stars/`, {
+      .get(`${BACKEND_URL}/store/products/${id}/stars/`, {
         params: data,
       })
       .then((e) => {
@@ -29,10 +34,10 @@ const StarsReview: React.FC<props> = ({ id, review }) => {
   }, [review])
 
   return (
-    <div>
+    <div className=" w-full ">
       {dataStars ? (
         <div className="flex px-5 justify-center">
-          <div className="flex flex-col w-[500] items-center">
+          <div className="flex flex-col w-[30%] items-center justify-center">
             <samp className="text-[48px] text-center font-black w-full mt-">
               {!dataStars.media ? "0" : dataStars.media.toFixed(1)}
             </samp>
@@ -51,7 +56,11 @@ const StarsReview: React.FC<props> = ({ id, review }) => {
                 </button>
               ))}
             </div>
-            <span>{`Basado en ${dataStars.total} reseñas.`}</span>
+            <span>
+              {dataStars.total
+                ? `Basado en ${dataStars.total} reseñas.`
+                : "sin reseñas"}
+            </span>
           </div>
 
           <div className="mx-5 w-[70%] max-w-[600px]">
