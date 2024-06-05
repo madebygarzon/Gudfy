@@ -21,6 +21,7 @@ import StarsReview from "./stars-review"
 import LoginLight from "@modules/account/components/login/login-light"
 import { storeProductVariant } from "types/global"
 import { AddProductsReview } from "../../actions/post-product-variant-review"
+import { BACKEND_URL } from "../../actions/index"
 
 type props = {
   product: storeProductVariant
@@ -47,7 +48,7 @@ const ReviewProduct: React.FC<props> = ({ product }) => {
       data = { id: product.id || " ", next: dataNext }
     }
     axios
-      .get(`http://localhost:9000/store/products/${product.id}/reviews/`, {
+      .get(`${BACKEND_URL}/store/products/${product.id}/reviews/`, {
         params: data,
       })
       .then((e) => {
@@ -104,7 +105,7 @@ const ReviewProduct: React.FC<props> = ({ product }) => {
           setRating(0)
         })
         .catch((e) => {
-          console.log(e, "error en axios")
+          console.log(e, "")
         })
     }
   })
