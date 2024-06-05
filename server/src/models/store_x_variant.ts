@@ -43,9 +43,6 @@ export class StoreXVariant extends BaseEntity {
   @OneToMany(() => SerialCode, (sc) => sc?.store_variant)
   serial_code?: SerialCode[];
 
-  @OneToMany(() => ProductReview, (pr) => pr?.product_store_variant)
-  product_review?: ProductReview[];
-
   @BeforeInsert()
   private beforeInsert(): void {
     this.id = generateEntityId(this.id, "store_variant_id");
