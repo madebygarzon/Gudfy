@@ -52,7 +52,7 @@ const ProductTemplate: React.FC<ProductVariantTemplateProps> = ({
   }
   useEffect(() => {
     setAmount(1)
-    handlerPrice(amount)
+    handlerPrice(1)
   }, [selectedSeller])
   return (
     <div>
