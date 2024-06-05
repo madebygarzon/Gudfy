@@ -2,6 +2,7 @@ export declare module "@medusajs/medusa/dist/models/store" {
   declare interface Store {
     members?: Customer[];
     store_x_variant?: StoreXVariant[];
+    reviews?: ProductReview[];
   }
 }
 
