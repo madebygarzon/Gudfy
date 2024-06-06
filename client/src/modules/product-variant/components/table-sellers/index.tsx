@@ -2,6 +2,8 @@ import React, { useState, useMemo } from "react"
 import { CheckCircleSolid } from "@medusajs/icons"
 import { Badge } from "@medusajs/ui"
 import { Table, DropdownMenu, IconButton, Input, Select } from "@medusajs/ui"
+import { Avatar } from "@nextui-org/react"
+import { HiOutlineShoppingCart } from "react-icons/hi2"
 
 interface Seller {
   store_id: string
@@ -55,7 +57,6 @@ const TableSeller: React.FC<TableProps> = ({
             <Table.Header>
               <Table.Row>
                 <Table.HeaderCell>Nombre Tienda</Table.HeaderCell>
-                <Table.HeaderCell>Correo</Table.HeaderCell>
                 <Table.HeaderCell>Stock</Table.HeaderCell>
                 <Table.HeaderCell>Precio</Table.HeaderCell>
               </Table.Row>
@@ -71,8 +72,35 @@ const TableSeller: React.FC<TableProps> = ({
                   }`}
                   onClick={() => handleRowClick(seller)}
                 >
-                  <Table.Cell>{seller.store_name}</Table.Cell>
-                  <Table.Cell>{seller.email}</Table.Cell>
+                  <Table.Cell>
+                    <div className="flex gap-4">
+                      <div className="flex items-center">
+                        <Avatar
+                          isBordered
+                          size="md"
+                          color="secondary"
+                          className=""
+                          name={seller.store_name}
+                        />
+                      </div>
+                      <div>
+                        <h3 className=" text-sm font-bold">
+                          {seller.store_name}
+                        </h3>
+                        <p className="text-xs font-normal text-gray-500">
+                          VENDEDOR EXCLENTE
+                        </p>
+                        <p className="text-xs font-normal text-gray-500">
+                          <span className="font-bold">100%</span> Comentarios
+                          positivos
+                        </p>
+                      </div>
+                      <div className=" flex items-end gap-2">
+                        | <HiOutlineShoppingCart size={15} /> 0
+                      </div>
+                    </div>
+                  </Table.Cell>
+
                   <Table.Cell>
                     {seller.amount ? (
                       <Badge color="green">Con Stock: {seller.amount}</Badge>
