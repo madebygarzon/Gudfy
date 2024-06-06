@@ -62,11 +62,11 @@ const ProductTemplate: React.FC<ProductVariantTemplateProps> = ({
           <Thumbnail thumbnail={product.thumbnail} size="medium" />
           {/* <ImageGallery images={product?.images || []} />
            */}
-          <div className="flex w-full h-auto border-t-1 border-solid">
-            <div className="w-[50%] p-5 flex flex-col justify-center items-center">
+          <div className="flex w-full h-auto border-t-1 border-solid items-center justify-center">
+            {/* <div className="w-[50%] p-5 flex flex-col justify-center items-center">
               <ReviewProduct product={product} />
-            </div>
-            <div className="w-[50%] p-5">
+            </div> */}
+            <div className="w-[80%] p-5">
               <TableSeller
                 sellers={product.sellers}
                 selectedSeller={selectedSeller}
