@@ -1,6 +1,6 @@
 "use client"
-import i18next from "i18next";
-import { initReactI18next } from "react-i18next";
+//import i18next from "i18next";
+//import { initReactI18next } from "react-i18next";
 
 export const langs = [
     {
@@ -30,13 +30,13 @@ const resources = {
     },    
 }
 
-i18next.use(initReactI18next).init({
-    resources,
-    lng: "en",
-    fallbackLng: "en",
-    keySeparator: false, // we do
-    interpolation: {
-        escapeValue: false // not needed for react as it escapes by default
-    }
-})
-export default i18next; 
+// i18next.use(initReactI18next).init({
+//     resources,
+//     lng: "en",
+//     fallbackLng: "en",
+//     keySeparator: false, // we do
+//     interpolation: {
+//         escapeValue: false // not needed for react as it escapes by default
+//     }
+// })
+// export default i18next; 
