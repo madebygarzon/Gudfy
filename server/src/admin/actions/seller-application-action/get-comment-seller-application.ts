@@ -1,5 +1,6 @@
 import axios from "axios";
-import { BACKEND } from "../index";
+//import { BACKEND } from "../index";
+const BACKEND = process.env.BACKEND_URL || "http://localhost:9000";
 
 export const getCommenSellerApplication = async (customer_id: string) => {
   try {
