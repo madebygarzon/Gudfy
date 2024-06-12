@@ -3,6 +3,9 @@ import { useAdminPublishableApiKeys } from "medusa-react";
 import Button from "../../shared/button";
 import CodeSnippets from "../../shared/code-snippets";
 import { StepContentProps } from "../../../widgets/onboarding-flow/onboarding-flow";
+import dotenv from "dotenv";
+
+dotenv.config({ path: '.env.production' });
 
 const BASEURL = process.env.BACKEND_URL ?? "http://localhost:9000";
 const ProductDetail = ({ onNext, isComplete, data }: StepContentProps) => {
