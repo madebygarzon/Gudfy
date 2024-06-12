@@ -2,8 +2,6 @@ import React, { useEffect, useState } from "react"
 import axios from "axios"
 import ProgressStars from "./progress-stars"
 
-const BACKENDURL = process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL ?? "http://localhost:9000"
-
 type props = {
   id: string
   review: Array<object>
@@ -20,7 +18,7 @@ const StarsReview: React.FC<props> = ({ id, review }) => {
   const data = { id }
   useEffect(() => {
     axios
-      .get(`${BACKENDURL}/store/products/${id}/stars/`, {
+      .get(`http://localhost:9000/store/products/${id}/stars/`, {
         params: data,
       })
       .then((e) => {
