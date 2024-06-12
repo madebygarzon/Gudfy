@@ -1,5 +1,8 @@
 import CollectionTemplate from "@modules/collections/templates"
 import { Metadata } from "next"
+import dotenv from "dotenv";
+
+dotenv.config({ path: '.env.local' });
 
 type Props = {
   params: { handle: string }
