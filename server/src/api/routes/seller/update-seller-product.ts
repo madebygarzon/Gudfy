@@ -1,5 +1,7 @@
 import { Request, Response } from "express";
+import dotenv from "dotenv";
 
+dotenv.config({ path: '.env.production' });
 export async function updateProduct(
   req: Request,
   res: Response

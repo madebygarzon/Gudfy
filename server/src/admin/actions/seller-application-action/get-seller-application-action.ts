@@ -1,6 +1,8 @@
 import axios from "axios";
+import dotenv from "dotenv";
 //import { BACKEND } from "../index";
 
+dotenv.config({ path: '.env.production' });
 const BACKEND = process.env.BACKEND_URL || "http://localhost:9000";
 
 axios.defaults.withCredentials = true;
