@@ -1,5 +1,8 @@
 import Medusa from "@medusajs/medusa-js";
-import { BACKEND } from "../index";
+//import { BACKEND } from "../index";
+
+const BACKEND = process.env.BACKEND_URL || "http://localhost:9000";
+
 const medusa = new Medusa({
   baseUrl: BACKEND,
   maxRetries: 3,
