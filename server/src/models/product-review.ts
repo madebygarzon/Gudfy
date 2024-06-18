@@ -1,5 +1,6 @@
 import { BaseEntity, Customer } from "@medusajs/medusa";
 import { StoreXVariant } from "./store_x_variant";
+import { Store } from "./store";
 import { generateEntityId } from "@medusajs/utils";
 import {
   BeforeInsert,
@@ -15,11 +16,11 @@ import { Max, Min } from "class-validator";
 export class ProductReview extends BaseEntity {
   @Index()
   @Column({ type: "varchar", nullable: true })
-  product_store_variant_id: string;
+  store_id: string;
 
-  @ManyToOne(() => StoreXVariant, (sv) => sv.product_review)
-  @JoinColumn({ name: "product_store_variant_id", referencedColumnName: "id" })
-  product_store_variant: StoreXVariant;
+  @ManyToOne(() => Store, (sv) => sv.reviews)
+  @JoinColumn({ name: "store_id", referencedColumnName: "id" })
+  store: Store;
 
   @Column({ type: "varchar", nullable: false })
   customer_id: string;

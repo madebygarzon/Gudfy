@@ -12,9 +12,6 @@ import {
   RejectedEmailSellerApplication,
   SendEmailSellerApplication,
 } from "../api/email/index";
-import dotenv from "dotenv";
-
-dotenv.config({ path: '.env.production' });
 
 type updateSellerAplication = {
   payload: string;

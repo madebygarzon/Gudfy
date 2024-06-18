@@ -28,7 +28,7 @@ export default class ProductReviewService extends TransactionBaseService {
     return { dataStars: calculeStars, total, media };
   }
 
-  async getProductReviews(product_store_variant_id, next) {
+  async getProductReviews(store_id, next) {
     /* @ts-ignore */
     const productReviewRepository = this.activeManager_.withRepository(
       this.productReviewRepository_
@@ -36,7 +36,7 @@ export default class ProductReviewService extends TransactionBaseService {
     if (next) {
       return await productReviewRepository.find({
         where: {
-          product_store_variant_id,
+          store_id,
           approved: true,
         },
         order: {
@@ -47,7 +47,7 @@ export default class ProductReviewService extends TransactionBaseService {
     } else {
       return await productReviewRepository.find({
         where: {
-          product_store_variant_id,
+          store_id,
           approved: true,
         },
         order: {
@@ -83,7 +83,7 @@ export default class ProductReviewService extends TransactionBaseService {
   }
 
   async create(
-    product_store_variant_id,
+    store_id,
     customer_id,
     customer_name,
     display_name,
@@ -91,7 +91,7 @@ export default class ProductReviewService extends TransactionBaseService {
     rating
   ) {
     if (
-      !product_store_variant_id ||
+      !store_id ||
       !customer_id ||
       !customer_name ||
       !display_name ||
@@ -107,13 +107,13 @@ export default class ProductReviewService extends TransactionBaseService {
       this.productReviewRepository_
     );
     const createdReview = productReviewRepository.create({
-      product_store_variant_id,
+      store_id,
       customer_id,
       customer_name,
       display_name,
       content,
       rating,
-      approved: false,
+      approved: true,
     });
     const productReview = await productReviewRepository.save(createdReview);
     return productReview;

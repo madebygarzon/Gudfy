@@ -5,14 +5,14 @@ export class ProductReview1715170833208 implements MigrationInterface {
     await queryRunner.query(`
         CREATE TABLE IF NOT EXISTS "product_review" (
             "id" SERIAL PRIMARY KEY,
-            "product_store_variant_id" VARCHAR(255),
+            "store_id" VARCHAR(255),
             "customer_id" VARCHAR(255) NOT NULL,
             "customer_name" VARCHAR(255) NOT NULL,
             "display_name" VARCHAR(255) NOT NULL,
             "rating" INTEGER NOT NULL,
             "content" VARCHAR(255) NOT NULL,
             "approved" BOOLEAN NOT NULL,
-            CONSTRAINT "FK_product_review_product_store_variant_id" FOREIGN KEY ("product_store_variant_id") REFERENCES "store_x_variant"("id") ON DELETE CASCADE ON UPDATE CASCADE,
+            CONSTRAINT "FK_product_review_store_id" FOREIGN KEY ("store_id") REFERENCES "store"("id") ON DELETE CASCADE ON UPDATE CASCADE,
             CONSTRAINT "FK_product_review_customer_id" FOREIGN KEY ("customer_id") REFERENCES "customer"("id") ON DELETE CASCADE ON UPDATE CASCADE
         )
     `);
