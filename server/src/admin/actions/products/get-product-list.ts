@@ -1,10 +1,5 @@
 import Medusa from "@medusajs/medusa-js";
-import dotenv from "dotenv";
-//import { BACKEND } from "../index";
-
-dotenv.config({ path: '.env.production' });
-const BACKEND = process.env.BACKEND_URL || "http://localhost:9000";
-
+import { BACKEND } from "../index";
 const medusa = new Medusa({
   baseUrl: BACKEND,
   maxRetries: 3,
