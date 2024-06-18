@@ -35,8 +35,8 @@ const ProgressStars: React.FC<props> = ({ stars, total }) => {
     <div>
       {array.reverse().map((a) => {
         return (
-          <div key={a.rating} className="flex items-center gap-2">
-            <span className=" font-black w-[15%]">{`${a.rating} estrellas`}</span>
+          <div key={a.rating} className="flex items-center gap-2 ">
+            <span className=" text-xs font-black w-[20%] ">{`${a.rating} estrellas`}</span>
             <div className="w-[70%]">
               <Progress
                 aria-label={`star ${a.rating}`}
@@ -48,7 +48,7 @@ const ProgressStars: React.FC<props> = ({ stars, total }) => {
               />
             </div>
             {a.cantidad === "0" ? (
-              `${a.cantidad}%`
+              <p className="text-sm">${a.cantidad}%</p>
             ) : (
               <span className="text-[14 px] text-right  ">{`${handlerpercentage(
                 a.cantidad
