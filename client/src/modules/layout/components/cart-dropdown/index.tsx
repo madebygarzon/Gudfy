@@ -11,10 +11,12 @@ import { formatAmount, useCart } from "medusa-react"
 import Link from "next/link"
 import Image from "next/image"
 import { Fragment } from "react"
+import { useCartGudfyDropdown } from "@lib/context/cart-gudfy"
 
 const CartDropdown = () => {
   const { cart, totalItems } = useCart()
-  const items = useEnrichedLineItems()
+  //const items = useEnrichedLineItems()
+  const { items } = useCartGudfyDropdown()
   const { deleteItem } = useStore()
   const { state, open, close } = useCartDropdown()
 
@@ -32,7 +34,7 @@ const CartDropdown = () => {
               />
             </Link>
             <span className="absolute text-[10px] px-[10px] top-[-20px] right-[-20px] bg-[#3F1C7A] rounded-[50%]">
-              {totalItems ? ` ${totalItems}` : ""}
+              {items ? ` ${items.length}` : ""}
             </span>
           </div>
         </Popover.Button>
@@ -73,22 +75,22 @@ const CartDropdown = () => {
                             <div className="flex items-start justify-between">
                               <div>
                                 <h3 className="text-base-regular overflow-ellipsis overflow-hidden whitespace-nowrap mr-4 w-[130px]">
-                                  <Link
+                                  {/* <Link
                                     href={`/products/${item.variant.product.handle}`}
                                     legacyBehavior
                                   >
                                     {item.title}
-                                  </Link>
+                                  </Link> */}
                                 </h3>
-                                <LineItemOptions variant={item.variant} />
+                                {/* <LineItemOptions variant={item.variant} /> */}
                                 <span>Cantidad: {item.quantity}</span>
                               </div>
                               <div className="flex justify-end">
-                                <LineItemPrice
+                                {/* <LineItemPrice
                                   region={cart.region}
                                   item={item}
                                   style="tight"
-                                />
+                                /> */}
                               </div>
                             </div>
                           </div>
