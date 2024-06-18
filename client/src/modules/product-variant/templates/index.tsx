@@ -9,6 +9,7 @@ import { storeProductVariant } from "types/global"
 import TableSeller from "../components/table-sellers"
 import { Input, Button } from "@nextui-org/react"
 import { useCart } from "medusa-react"
+import { useCartGudfyDropdown } from "@lib/context/cart-gudfy"
 
 type ProductVariantTemplateProps = {
   product: storeProductVariant
@@ -25,6 +26,7 @@ const ProductTemplate: React.FC<ProductVariantTemplateProps> = ({
   product,
 }) => {
   const { createCart, cart } = useCart()
+  const { addItem, open, timedOpen } = useCartGudfyDropdown()
   const [selectedSeller, setSelectedSeller] = useState<Seller>(
     product.sellers[0]
   )
@@ -60,9 +62,20 @@ const ProductTemplate: React.FC<ProductVariantTemplateProps> = ({
   }
 
   const handlerAddCart = () => {
-    if (!cart?.items.length) {
-      createCart
-    }
+    addItem(
+      {
+        description: product.title,
+        id: product.id,
+        thumbnail: product.thumbnail,
+        price: selectedSeller.price,
+        title: product.title,
+      },
+      amount,
+      selectedSeller.store_id
+    ).then((e) => {
+      open()
+      timedOpen()
+    })
   }
   useEffect(() => {
     setAmount(1)

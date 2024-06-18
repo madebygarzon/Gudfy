@@ -5,20 +5,14 @@ import { createContext, useContext, useEffect, useState } from "react"
 import { Variant } from "types/medusa"
 import { useCart, useCreateLineItem } from "medusa-react"
 import axios from "axios"
+import { LineItem } from "@medusajs/medusa"
 
 interface variant {
   id: string
   title: string
   description: string
   thumbnail: string
-  productparent: string
-  sellers: {
-    store_id: string
-    store_name: string
-    email: string
-    amount: number
-    price: number
-  }
+  price: number
 }
 
 interface variantsxstore {
@@ -31,8 +25,10 @@ interface CartDropdownContext {
   open: () => void
   timedOpen: () => void
   close: () => void
+  listItem: () => void
+  items: LineItem[]
   addItem: (
-    variantId: variant,
+    variant: variant,
     quantity: number,
     storeId: string
   ) => Promise<void>
@@ -41,11 +37,16 @@ interface CartDropdownContext {
 
 export const CartContext = createContext<CartDropdownContext | null>(null)
 
-export const CartProvider = ({ children }: { children: React.ReactNode }) => {
+export const CartGudfyProvider = ({
+  children,
+}: {
+  children: React.ReactNode
+}) => {
   const { state, close, open } = useToggleState()
   const [activeTimer, setActiveTimer] = useState<NodeJS.Timer | undefined>(
     undefined
   )
+  const [items, setItems] = useState<LineItem[]>([])
   const { cart, createCart } = useCart()
 
   const createNewCart = () => {
@@ -63,26 +64,47 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
     )
   }
 
-  const addItem = async (
-    variant: variant,
-    quantity: number,
-    storeId: string
-  ) => {
-    if (!cart) throw new Error("No hay un carro al cal relacionar el producto")
-    const response = await axios.post(
-      `${process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL}/store/carts/${cart.id}/add-item`,
+  const listItem = async () => {
+    if (!cart) throw new Error("No hay un carro")
+    const ListItems = await axios.get(
+      `${process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL}/store/cart/items`,
       {
-        variant: variant,
-        quantity: quantity,
-        store_id: storeId,
-      },
-      {
+        params: { cartId: cart.id },
         withCredentials: true,
         headers: {
           "Content-Type": "application/json",
         },
       }
     )
+    setItems(ListItems.data.cartItems.items)
+    return
+  }
+
+  const addItem = async (
+    variant: variant,
+    quantity: number,
+    storeId: string
+  ) => {
+    //Cre
+    if (!cart) throw new Error("No hay un carro al cual relacionar el producto")
+    const response = await axios
+      .post(
+        `${process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL}/store/carts/${cart.id}/add-item`,
+        {
+          variant: variant,
+          quantity: quantity,
+          store_id: storeId,
+        },
+        {
+          withCredentials: true,
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      )
+      .then((e) => {
+        listItem()
+      })
   }
 
   const timedOpen = () => {
@@ -117,6 +139,8 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
         close,
         open: openAndCancel,
         timedOpen,
+        items,
+        listItem,
         addItem,
         createNewCart,
       }}
@@ -126,7 +150,7 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
   )
 }
 
-export const useCartDropdown = () => {
+export const useCartGudfyDropdown = () => {
   const context = useContext(CartContext)
 
   if (context === null) {
