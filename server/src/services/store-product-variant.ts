@@ -96,7 +96,12 @@ class StoreProductVariantService extends TransactionBaseService {
       } else variantMap.get(variant.id).prices.push(variant.price);
     });
 
-    const listVariant = Array.from(variantMap.values());
+    const listVariant = Array.from(variantMap.values()).map((variant) => {
+      return {
+        ...variant,
+        prices: variant.prices.sort((a, b) => a - b),
+      };
+    });
 
     return listVariant;
   }

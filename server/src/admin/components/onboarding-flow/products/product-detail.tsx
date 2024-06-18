@@ -3,11 +3,7 @@ import { useAdminPublishableApiKeys } from "medusa-react";
 import Button from "../../shared/button";
 import CodeSnippets from "../../shared/code-snippets";
 import { StepContentProps } from "../../../widgets/onboarding-flow/onboarding-flow";
-import dotenv from "dotenv";
 
-dotenv.config({ path: '.env.production' });
-
-const BASEURL = process.env.BACKEND_URL ?? "http://localhost:9000";
 const ProductDetail = ({ onNext, isComplete, data }: StepContentProps) => {
   const { publishable_api_keys: keys, isLoading } = useAdminPublishableApiKeys({
     offset: 0,
@@ -28,7 +24,7 @@ const ProductDetail = ({ onNext, isComplete, data }: StepContentProps) => {
               {
                 label: "cURL",
                 language: "markdown",
-                code: `curl -H 'x-publishable-key: ${api_key}' '${BASEURL}/store/products/${data?.product_id}'`,
+                code: `curl -H 'x-publishable-key: ${api_key}' 'http://localhost:9000/store/products/${data?.product_id}'`,
               },
               {
                 label: "Medusa JS Client",
@@ -46,7 +42,7 @@ const ProductDetail = ({ onNext, isComplete, data }: StepContentProps) => {
       </div>
       <div className="flex mt-base gap-2">
         <a
-          href={`${BASEURL}/store/products/${data?.product_id}`}
+          href={`http://localhost:9000/store/products/${data?.product_id}`}
           target="_blank"
         >
           <Button variant="secondary" size="small">
