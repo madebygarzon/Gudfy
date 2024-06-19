@@ -1,10 +1,5 @@
 "use client"
 
-import { ProductProvider } from "@lib/context/product-context"
-import { useIntersection } from "@lib/hooks/use-in-view"
-import ProductTabs from "@modules/products/components/product-tabs"
-import RelatedProducts from "@modules/products/components/related-products"
-import ProductInfo from "@modules/products/templates/product-info"
 import React, { useEffect, useRef, useState } from "react"
 // import ImageGallery from "../components/image-gallary"
 // import MobileActions from "../components/mobile-actions"
@@ -13,6 +8,7 @@ import Thumbnail from "@modules/products/components/thumbnail"
 import { storeProductVariant } from "types/global"
 import TableSeller from "../components/table-sellers"
 import { Input, Button } from "@nextui-org/react"
+import { useCart } from "medusa-react"
 
 type ProductVariantTemplateProps = {
   product: storeProductVariant
@@ -28,6 +24,7 @@ interface Seller {
 const ProductTemplate: React.FC<ProductVariantTemplateProps> = ({
   product,
 }) => {
+  const { createCart, cart } = useCart()
   const [selectedSeller, setSelectedSeller] = useState<Seller>(
     product.sellers[0]
   )
@@ -35,7 +32,11 @@ const ProductTemplate: React.FC<ProductVariantTemplateProps> = ({
   const [amount, setAmount] = useState<number>(1)
 
   const handlerPrice = (amountvalue: number) => {
-    setPrice(selectedSeller ? selectedSeller.price * amountvalue : 0)
+    setPrice(
+      roundToTwoDecimals(
+        selectedSeller ? selectedSeller.price * amountvalue : 0
+      )
+    )
   }
   const handlerAmount = (value: string) => {
     const numberAmount = parseInt(value)
@@ -50,10 +51,24 @@ const ProductTemplate: React.FC<ProductVariantTemplateProps> = ({
       handlerPrice(numberAmount)
     }
   }
+
+  const roundToTwoDecimals = (num: number) => {
+    let tempNum = num * 1000
+    tempNum = Math.round(tempNum)
+    tempNum = tempNum / 10
+    return tempNum / 100
+  }
+
+  const handlerAddCart = () => {
+    if (!cart?.items.length) {
+      createCart
+    }
+  }
   useEffect(() => {
     setAmount(1)
     handlerPrice(1)
   }, [selectedSeller])
+
   return (
     <div>
       <div className="content-container flex flex-col small:flex-row small:items-start py-6 relative">
@@ -103,7 +118,7 @@ const ProductTemplate: React.FC<ProductVariantTemplateProps> = ({
           <ProductTabs product={product} />  */}
           <Button
             disabled={amount ? false : true}
-            onPress={() => {}}
+            onPress={handlerAddCart}
             className="bg-[#402e72] hover:bg-blue-gf text-white rounded-[5px]"
           >
             Añadir al Carrito

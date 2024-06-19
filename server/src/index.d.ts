@@ -5,6 +5,7 @@ export declare module "@medusajs/medusa/dist/models/store" {
     members?: Customer[];
     store_x_variant?: StoreXVariant[];
     reviews?: ProductReview[];
+    store_line_items?: LineItem[];
   }
 }
 
