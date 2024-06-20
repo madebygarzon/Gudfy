@@ -8,8 +8,11 @@ interface lineItem extends LineItem {
   store: { store_name: string; customer_email: string }
 }
 
-const Summary = ({ items }: lineItem[]) => {
-  console.log("listado en el precio", items)
+type ItemsTemplateProps = {
+  items?: lineItem[]
+}
+
+const Summary = ({ items }: ItemsTemplateProps) => {
   const handlerTotalPrice = () => {
     let total = 0
     if (items?.length) {
