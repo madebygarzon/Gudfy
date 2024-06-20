@@ -15,18 +15,15 @@ interface variant {
   price: number
 }
 
-interface variantsxstore {
-  variant: variant
-  sotore_id: string
+interface lineItem extends LineItem {
+  store_id: string
+  store: { store_name: string; customer_email: string }
 }
 
-interface CartDropdownContext {
-  state: boolean
-  open: () => void
-  timedOpen: () => void
-  close: () => void
+interface CartContext {
+  existingVariant: validateItemExistence
   listItem: () => void
-  items: LineItem[]
+  items: lineItem[]
   addItem: (
     variant: variant,
     quantity: number,
@@ -35,19 +32,31 @@ interface CartDropdownContext {
   createNewCart: () => void
 }
 
-export const CartContext = createContext<CartDropdownContext | null>(null)
+type validateItemExistence = {
+  variantId: string
+  storeId: string
+}
+
+export const CartContext = createContext<CartContext | null>(null)
 
 export const CartGudfyProvider = ({
   children,
 }: {
   children: React.ReactNode
 }) => {
-  const { state, close, open } = useToggleState()
-  const [activeTimer, setActiveTimer] = useState<NodeJS.Timer | undefined>(
-    undefined
+  const [items, setItems] = useState<lineItem[]>([])
+  //Cambiar logica para que apunte al id de storeXVariant
+  const [existingVariant, setExistingVariant] = useState<validateItemExistence>(
+    {
+      storeId: "",
+      variantId: "",
+    }
   )
-  const [items, setItems] = useState<LineItem[]>([])
   const { cart, createCart } = useCart()
+
+  useEffect(() => {
+    if (!items?.length) listItem()
+  }, [items])
 
   const createNewCart = () => {
     if (cart) {
@@ -65,19 +74,33 @@ export const CartGudfyProvider = ({
   }
 
   const listItem = async () => {
-    if (!cart) throw new Error("No hay un carro")
     const ListItems = await axios.get(
       `${process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL}/store/cart/items`,
       {
-        params: { cartId: cart.id },
+        params: { cartId: cart?.id || localStorage.getItem("cart_id") },
         withCredentials: true,
         headers: {
           "Content-Type": "application/json",
         },
       }
     )
-    setItems(ListItems.data.cartItems.items)
+    setItems(ListItems.data.items)
     return
+  }
+
+  const validateItemExistence = (itemData: validateItemExistence) => {
+    //cambiar por el id de storexvariant
+    const existence = items?.find(
+      (item) =>
+        item.variant_id === itemData.variantId &&
+        item.store_id === itemData.storeId
+    )
+
+    if (existence) {
+      setExistingVariant(itemData)
+      return true
+    }
+    return existence!!
   }
 
   const addItem = async (
@@ -85,8 +108,9 @@ export const CartGudfyProvider = ({
     quantity: number,
     storeId: string
   ) => {
-    //Cre
     if (!cart) throw new Error("No hay un carro al cual relacionar el producto")
+    if (validateItemExistence({ variantId: variant.id, storeId: storeId }))
+      return
     const response = await axios
       .post(
         `${process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL}/store/carts/${cart.id}/add-item`,
@@ -107,38 +131,10 @@ export const CartGudfyProvider = ({
       })
   }
 
-  const timedOpen = () => {
-    open()
-
-    const timer = setTimeout(close, 5000)
-
-    setActiveTimer(timer)
-  }
-
-  const openAndCancel = () => {
-    if (activeTimer) {
-      clearTimeout(activeTimer)
-    }
-
-    open()
-  }
-
-  // Clean up the timer when the component unmounts
-  useEffect(() => {
-    return () => {
-      if (activeTimer) {
-        clearTimeout(activeTimer)
-      }
-    }
-  }, [activeTimer])
-
   return (
     <CartContext.Provider
       value={{
-        state,
-        close,
-        open: openAndCancel,
-        timedOpen,
+        existingVariant,
         items,
         listItem,
         addItem,
@@ -150,7 +146,7 @@ export const CartGudfyProvider = ({
   )
 }
 
-export const useCartGudfyDropdown = () => {
+export const useCartGudfy = () => {
   const context = useContext(CartContext)
 
   if (context === null) {
