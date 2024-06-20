@@ -21,15 +21,15 @@ export default function Providers({ children }: { children: React.ReactNode }) {
       <CartDropdownProvider>
         <MobileMenuProvider>
           <CartProvider>
-            <StoreProvider>
-              <AccountProvider>
-                <NextUIProvider>
-                  <CartGudfyProvider>
+            <CartGudfyProvider>
+              <StoreProvider>
+                <AccountProvider>
+                  <NextUIProvider>
                     <CategoryProvider>{children}</CategoryProvider>
-                  </CartGudfyProvider>
-                </NextUIProvider>
-              </AccountProvider>
-            </StoreProvider>
+                  </NextUIProvider>
+                </AccountProvider>
+              </StoreProvider>
+            </CartGudfyProvider>
           </CartProvider>
         </MobileMenuProvider>
       </CartDropdownProvider>

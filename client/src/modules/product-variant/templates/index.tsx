@@ -9,7 +9,7 @@ import { storeProductVariant } from "types/global"
 import TableSeller from "../components/table-sellers"
 import { Input, Button } from "@nextui-org/react"
 import { useCart } from "medusa-react"
-import { useCartGudfyDropdown } from "@lib/context/cart-gudfy"
+import { useCartGudfy } from "@lib/context/cart-gudfy"
 
 type ProductVariantTemplateProps = {
   product: storeProductVariant
@@ -26,7 +26,7 @@ const ProductTemplate: React.FC<ProductVariantTemplateProps> = ({
   product,
 }) => {
   const { createCart, cart } = useCart()
-  const { addItem, open, timedOpen } = useCartGudfyDropdown()
+  const { addItem, existingVariant } = useCartGudfy()
   const [selectedSeller, setSelectedSeller] = useState<Seller>(
     product.sellers[0]
   )
@@ -72,10 +72,7 @@ const ProductTemplate: React.FC<ProductVariantTemplateProps> = ({
       },
       amount,
       selectedSeller.store_id
-    ).then((e) => {
-      open()
-      timedOpen()
-    })
+    )
   }
   useEffect(() => {
     setAmount(1)
@@ -129,6 +126,14 @@ const ProductTemplate: React.FC<ProductVariantTemplateProps> = ({
           )}
           {/* <ProductInfo product={product} />
           <ProductTabs product={product} />  */}
+          {existingVariant.storeId === selectedSeller.store_id &&
+          existingVariant.variantId === product.id ? (
+            <p className="text-red-700 text-sm">
+              El producto ya ha sido seleccionado
+            </p>
+          ) : (
+            <></>
+          )}
           <Button
             disabled={amount ? false : true}
             onPress={handlerAddCart}
