@@ -1,7 +1,4 @@
 import Medusa from "@medusajs/medusa-js"
-import dotenv from "dotenv";
-
-dotenv.config({ path: '.env.local' });
 export default async function getAllCategories() {
   const medusa = new Medusa({
     baseUrl:

@@ -10,13 +10,20 @@ import Thumbnail from "@modules/products/components/thumbnail"
 import { formatAmount, useCart } from "medusa-react"
 import Link from "next/link"
 import Image from "next/image"
-import { Fragment } from "react"
+import { Fragment, useEffect } from "react"
+import { useCartGudfyDropdown } from "@lib/context/cart-gudfy"
 
 const CartDropdown = () => {
   const { cart, totalItems } = useCart()
-  const items = useEnrichedLineItems()
+  //const items = useEnrichedLineItems()
+  const { items, listItem } = useCartGudfyDropdown()
   const { deleteItem } = useStore()
   const { state, open, close } = useCartDropdown()
+  console.log("item en el carrito", items)
+
+  useEffect(() => {
+    listItem()
+  }, [])
 
   return (
     <div className="h-full z-50" onMouseEnter={open} onMouseLeave={close}>
@@ -32,7 +39,7 @@ const CartDropdown = () => {
               />
             </Link>
             <span className="absolute text-[10px] px-[10px] top-[-20px] right-[-20px] bg-[#3F1C7A] rounded-[50%]">
-              {totalItems ? ` ${totalItems}` : ""}
+              {items ? ` ${items.length}` : ""}
             </span>
           </div>
         </Popover.Button>
@@ -73,22 +80,26 @@ const CartDropdown = () => {
                             <div className="flex items-start justify-between">
                               <div>
                                 <h3 className="text-base-regular overflow-ellipsis overflow-hidden whitespace-nowrap mr-4 w-[130px]">
-                                  <Link
+                                  {/* <Link
                                     href={`/products/${item.variant.product.handle}`}
                                     legacyBehavior
                                   >
                                     {item.title}
-                                  </Link>
+                                  </Link> */}
+                                  {item.title}
                                 </h3>
-                                <LineItemOptions variant={item.variant} />
+                                <h4 className="text-sm text-slate-700">
+                                  Por: {item.store.store_name}
+                                </h4>
+                                {/* <LineItemOptions variant={item.variant} /> */}
                                 <span>Cantidad: {item.quantity}</span>
                               </div>
                               <div className="flex justify-end">
-                                <LineItemPrice
+                                {/* <LineItemPrice
                                   region={cart.region}
                                   item={item}
                                   style="tight"
-                                />
+                                /> */}
                               </div>
                             </div>
                           </div>

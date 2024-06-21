@@ -10,13 +10,14 @@ import ItemsTemplate from "./items"
 import Summary from "./summary"
 import Link from "next/link"
 import ChevronDown from "@modules/common/icons/chevron-down"
-import {TaskProgressIndicatorCart} from "../../progress/index"
+import { TaskProgressIndicatorCart } from "../../progress/index"
+import { useCartGudfyDropdown } from "@lib/context/cart-gudfy"
 
 const CartTemplate = () => {
   const { cart } = useCart()
   const { customer, isLoading } = useMeCustomer()
-  const items = useEnrichedLineItems()
-
+  const { items } = useCartGudfyDropdown()
+  console.log("Items Encontrados", items)
   if (!cart || !cart?.id?.length || isLoading) {
     return <SkeletonCartPage />
   }
