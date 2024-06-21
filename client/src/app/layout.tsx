@@ -1,6 +1,6 @@
 import Providers from "@modules/providers"
 import "styles/globals.css"
-import "./locales/i18n"
+
 
 export default function RootLayout({
   children,

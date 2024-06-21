@@ -7,8 +7,13 @@ import ReviewProduct from "@modules/product-variant/components/product-review"
 import Thumbnail from "@modules/products/components/thumbnail"
 import { storeProductVariant } from "types/global"
 import TableSeller from "../components/table-sellers"
+import TableSellerDefault from "../components/table-sellers/seller_default"
 import { Input, Button } from "@nextui-org/react"
 import { useCart } from "medusa-react"
+<<<<<<< HEAD
+=======
+import { useCartGudfyDropdown } from "@lib/context/cart-gudfy"
+>>>>>>> origin/devCarlos
 
 type ProductVariantTemplateProps = {
   product: storeProductVariant
@@ -25,6 +30,10 @@ const ProductTemplate: React.FC<ProductVariantTemplateProps> = ({
   product,
 }) => {
   const { createCart, cart } = useCart()
+<<<<<<< HEAD
+=======
+  const { addItem, open, timedOpen } = useCartGudfyDropdown()
+>>>>>>> origin/devCarlos
   const [selectedSeller, setSelectedSeller] = useState<Seller>(
     product.sellers[0]
   )
@@ -60,9 +69,26 @@ const ProductTemplate: React.FC<ProductVariantTemplateProps> = ({
   }
 
   const handlerAddCart = () => {
+<<<<<<< HEAD
     if (!cart?.items.length) {
       createCart
     }
+=======
+    addItem(
+      {
+        description: product.title,
+        id: product.id,
+        thumbnail: product.thumbnail,
+        price: selectedSeller.price,
+        title: product.title,
+      },
+      amount,
+      selectedSeller.store_id
+    ).then((e) => {
+      open()
+      timedOpen()
+    })
+>>>>>>> origin/devCarlos
   }
   useEffect(() => {
     setAmount(1)
@@ -70,65 +96,95 @@ const ProductTemplate: React.FC<ProductVariantTemplateProps> = ({
   }, [selectedSeller])
 
   return (
-    <div>
-      <div className="content-container flex flex-col small:flex-row small:items-start py-6 relative">
-        <div className="flex flex-col gap-y-8 w-full pr-9 justify-center items-center ">
-          <h3 className="text-3xl font-extrabold">{product.title}</h3>
-          <Thumbnail thumbnail={product.thumbnail} size="medium" />
-          {/* <ImageGallery images={product?.images || []} />
-           */}
-          <div className="flex w-full h-auto border-t-1 border-solid items-center justify-center">
-            {/* <div className="w-[50%] p-5 flex flex-col justify-center items-center">
-              <ReviewProduct product={product} />
-            </div> */}
-            <div className="w-[80%] p-5">
-              <TableSeller
-                sellers={product.sellers}
-                selectedSeller={selectedSeller}
-                setSelectedSeller={setSelectedSeller}
-              />
-            </div>
+    <div className="w-full flex">
+      <div className="w-2/3">
+        <div className="content-container flex flex-col small:flex-row small:items-start py-6 relative mt-10">
+          <div className="col1 flex flex-col gap-y-8 w-full pr-9 justify-center items-center">
+            <Thumbnail thumbnail={product.thumbnail} size="medium" />
+            {/* <ImageGallery images={product?.images || []} /> */}
+          </div>
+
+          <div className="col2 flex flex-col gap-y-8 w-full pr-9">
+            <h3 className="text-3xl font-extrabold">{product.title}</h3>
+            <p className="text-base-regular">{product.description}</p>
           </div>
         </div>
-        <div className="small:sticky small:top-20 w-full py-8 small:py-0 small:max-w-[344px] medium:max-w-[400px] flex flex-col gap-y-12 mr-10">
+
+        <div
+          className="flex w-full  h-auto  items-center"
+          // id="list-sellers"
+        >
+          <div className="w-full p-10">
+            <TableSeller
+              sellers={product.sellers}
+              selectedSeller={selectedSeller}
+              setSelectedSeller={setSelectedSeller}
+            />
+          </div>
+        </div>
+
+        <div className="content-container my-16 px-6 small:px-8 small:my-32">
+          {/* <RelatedProducts product={product} /> */}
+        </div>
+        {/* <MobileActions product={product} show={!inView} /> */}
+      </div>
+
+      <div className="w-1/3">
+        <div className="sticky top-[120px] col3 mt-[-35px] w-full small:max-w-[344px] medium:max-w-[400px] flex flex-col gap-y-8 mr-10">
           <div id="product-info">
             <div className="flex flex-col gap-y-12 lg:max-w-[500px] mx-auto">
-              <div>
-                <h3 className="text-xl-regular">{product.title}</h3>
-                <p className="text-base-regular">{product.description}</p>
-              </div>
+              <div></div>
             </div>
           </div>
-          {selectedSeller ? (
-            <>
-              <Input
-                value={`${amount}`}
-                type="number"
-                label="Cantidad"
-                placeholder="Seleccione una cantidad"
-                labelPlacement="outside"
-                onChange={(e) => handlerAmount(e.target.value)}
-              />
-              <p>Precio: $ {price || 0}</p>
-            </>
-          ) : (
-            <p>Selecciona un Vendedor</p>
-          )}
-          {/* <ProductInfo product={product} />
-          <ProductTabs product={product} />  */}
+
+          <div className="  border border-solid border-gray-200 p-5 rounded-[5px]">
+            <TableSellerDefault
+              sellers={product.sellers}
+              selectedSeller={selectedSeller}
+              setSelectedSeller={setSelectedSeller}
+            />
+
+            {selectedSeller ? (
+              <div className="mt-10">
+                <Input
+                  value={`${amount}`}
+                  type="number"
+                  label="Cantidad"
+                  placeholder="Seleccione una cantidad"
+                  labelPlacement="outside"
+                  onChange={(e) => handlerAmount(e.target.value)}
+                />
+
+                <p className="bg-[#ececec] rounded-[10px] mt-6 p-2">
+                  Precio: $ {price || 0}
+                </p>
+              </div>
+            ) : (
+              <p>Selecciona un Vendedor</p>
+            )}
+            {/* <ProductInfo product={product} />
+            <ProductTabs product={product} />  */}
+          </div>
+
           <Button
             disabled={amount ? false : true}
             onPress={handlerAddCart}
+<<<<<<< HEAD
             className="bg-[#402e72] hover:bg-blue-gf text-white rounded-[5px]"
+=======
+            className="bg-[#402e72] hover:bg-blue-gf text-white rounded-[5px] mb-[120px]"
+>>>>>>> origin/devCarlos
           >
             Añadir al Carrito
           </Button>
+
+          {/* <a className ="mb-[80px]" href="#list-sellers">
+            <span className="text-[#402e72] text-sm font-bold">
+              Ver más vendedores de este producto
+            </span>
+          </a> */}
         </div>
       </div>
-      <div className="content-container my-16 px-6 small:px-8 small:my-32">
-        {/* <RelatedProducts product={product} /> */}
-      </div>
-      {/* <MobileActions product={product} show={!inView} /> */}
     </div>
   )
 }
