@@ -23,7 +23,7 @@ const Item = ({ item, region }: ItemProps) => {
         <div className="flex items-start justify-between">
           <div className="flex flex-col">
             <span>{item.title}</span>
-            <LineItemOptions variant={item.variant} />
+            {/* <LineItemOptions variant={item.variant} /> */}
           </div>
           <NativeSelect
             value={item.quantity}
@@ -35,7 +35,7 @@ const Item = ({ item, region }: ItemProps) => {
             }
             className="max-h-[35px] w-[75px]"
           >
-            {Array.from(
+            {/* {Array.from(
               [
                 ...Array(
                   item.variant.inventory_quantity > 0
@@ -52,7 +52,7 @@ const Item = ({ item, region }: ItemProps) => {
                     {value}
                   </option>
                 )
-              })}
+              })} */}
           </NativeSelect>
         </div>
         <div className="flex items-end justify-between text-small-regular flex-1">
@@ -66,7 +66,8 @@ const Item = ({ item, region }: ItemProps) => {
             </button>
           </div>
           <div>
-            <LineItemPrice item={item} region={region} />
+            {" "}
+            <LineItemPrice item={item} region={region} />{" "}
           </div>
         </div>
       </div>
