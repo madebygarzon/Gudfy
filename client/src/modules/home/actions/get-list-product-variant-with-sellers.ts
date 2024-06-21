@@ -4,7 +4,7 @@ import { BACKEND_URL } from "."
 export async function getListProductVariantWithSellers() {
   try {
     const response = await axios.get(
-      `${BACKEND_URL}/store/list-products-variant-with-sellers/`
+      `${BACKEND_URL}/store//list-products-variant-with-sellers/`
     )
 
     return response.data
