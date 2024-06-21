@@ -68,6 +68,7 @@ class StoreXVariantService extends TransactionBaseService {
             productparent: variant.productparent,
             sellers: [
               {
+                store_variant_id: variant.id,
                 store_id: variant.store_id,
                 store_name: variant.store_name,
                 email: variant.customer_email,
@@ -78,6 +79,7 @@ class StoreXVariantService extends TransactionBaseService {
           });
         } else
           variantMap.get(variant.variantid).sellers.push({
+            store_variant_id: variant.id,
             store_id: variant.store_id,
             store_name: variant.store_name,
             email: variant.customer_email,

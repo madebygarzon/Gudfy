@@ -15,6 +15,7 @@ type ProductVariantTemplateProps = {
   product: storeProductVariant
 }
 interface Seller {
+  store_variant_id: string
   store_id: string
   store_name: string
   email: string
@@ -62,6 +63,7 @@ const ProductTemplate: React.FC<ProductVariantTemplateProps> = ({
   }
 
   const handlerAddCart = () => {
+    console.log("info del producto", product)
     addItem(
       {
         description: product.title,
@@ -71,7 +73,7 @@ const ProductTemplate: React.FC<ProductVariantTemplateProps> = ({
         title: product.title,
       },
       amount,
-      selectedSeller.store_id
+      selectedSeller.store_variant_id
     )
   }
   useEffect(() => {
@@ -126,8 +128,7 @@ const ProductTemplate: React.FC<ProductVariantTemplateProps> = ({
           )}
           {/* <ProductInfo product={product} />
           <ProductTabs product={product} />  */}
-          {existingVariant.storeId === selectedSeller.store_id &&
-          existingVariant.variantId === product.id ? (
+          {existingVariant === selectedSeller.store_variant_id ? (
             <p className="text-red-700 text-sm">
               El producto ya ha sido seleccionado
             </p>

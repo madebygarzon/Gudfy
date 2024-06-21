@@ -5,11 +5,11 @@ export default async function () {
   )) as any;
   LineItemImports.allowedStoreCustomersFields = [
     ...LineItemImports.allowedStoreCustomersFields,
-    "store_id",
+    "store_variant_id",
   ];
   LineItemImports.defaultStoreCustomersFields = [
     ...LineItemImports.defaultStoreCustomersFields,
-    "store_id",
+    "store_variant_id",
   ];
 
   // Para las rutas del administrador
@@ -18,10 +18,10 @@ export default async function () {
   )) as any;
   adminLineItemImports.allowedAdminCustomersFields = [
     ...adminLineItemImports.allowedAdminCustomersFields,
-    "store_id",
+    "store_variant_id",
   ];
   adminLineItemImports.defaultAdminCustomersFields = [
     ...adminLineItemImports.defaultAdminCustomersFields,
-    "store_id",
+    "store_variant_id",
   ];
 }
