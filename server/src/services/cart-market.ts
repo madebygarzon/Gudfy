@@ -3,27 +3,27 @@ import { TransactionBaseService } from "@medusajs/medusa";
 import LineItemRepository from "../repositories/line-item";
 import ProductVariantRepository from "@medusajs/medusa/dist/repositories/product-variant";
 import CartRepository from "@medusajs/medusa/dist/repositories/cart";
-import StoreRepository from "../repositories/store";
+import StoreXVariantRepository from "../repositories/store-x-variant";
 
 class CartMarketService extends TransactionBaseService {
   static LIFE_TIME = Lifetime.SCOPED;
   protected readonly lineItemRepository_: typeof LineItemRepository;
   protected readonly productVariantRepository_: typeof ProductVariantRepository;
   protected readonly cartRepository_: typeof CartRepository;
-  protected readonly storeRepository_: typeof StoreRepository;
+  protected readonly storeXVariantRepository_: typeof StoreXVariantRepository;
 
   constructor({
     lineItemRepository,
     productVariantRepository,
     cartRepository,
-    storeRepository,
+    storeXVariantRepository,
   }) {
     super(arguments[0]);
 
     this.lineItemRepository_ = lineItemRepository;
     this.productVariantRepository_ = productVariantRepository;
     this.cartRepository_ = cartRepository;
-    this.storeRepository_ = storeRepository;
+    this.storeXVariantRepository_ = storeXVariantRepository;
   }
 
   async recoveryCart(cart_id) {
@@ -34,8 +34,8 @@ class CartMarketService extends TransactionBaseService {
       const lineItemsRepo = this.activeManager_.withRepository(
         this.lineItemRepository_
       );
-      const storeRepo = this.activeManager_.withRepository(
-        this.storeRepository_
+      const storexVariantRepo = this.activeManager_.withRepository(
+        this.storeXVariantRepository_
       );
 
       const itemsCart = await lineItemsRepo.find({
@@ -44,24 +44,29 @@ class CartMarketService extends TransactionBaseService {
         },
       });
 
-      // Obtener todos los store_ids únicos
-      const storeIds = itemsCart.map((item) => item.store_id);
-      const uniqueStoreIds = [...new Set(storeIds)];
-
-      // Realizar LEFT JOIN para obtener los datos de las tiendas junto con los clientes
-      const storesWithCustomers = await storeRepo
-        .createQueryBuilder("store")
-        .leftJoinAndSelect("store.members", "customer")
-        .where("store.id IN (:...storeIds)", { storeIds: uniqueStoreIds })
-        .select(["store.id", "store.name", "customer.email AS customer_email"])
+      const storeVariantIds = itemsCart.map((item) => item.store_variant_id);
+      const uniqueStoreIds = [...new Set(storeVariantIds)];
+      console.log("datos Carrito", cart_id, itemsCart);
+      const storesWithCustomers = await storexVariantRepo
+        .createQueryBuilder("sxv")
+        .innerJoinAndSelect("sxv.store", "s")
+        .leftJoinAndSelect("s.members", "c")
+        .where("sxv.id IN (:...storeVariantIds)", {
+          storeVariantIds: uniqueStoreIds,
+        })
+        .select([
+          "sxv.id AS id",
+          "s.name as store_name",
+          "c.email AS seller_email",
+        ])
         .getRawMany();
 
-      // Crear un mapa de tiendas con clientes por id para acceso rápido
       const storeMap = new Map();
+      console.log("ACA ESTAN LOS DATOS BUSCADOS", storesWithCustomers);
       storesWithCustomers.forEach((store) => {
-        storeMap.set(store.store_id, {
+        storeMap.set(store.id, {
           store_name: store.store_name,
-          email: store.customer_email,
+          email: store.seller_email,
         });
       });
 
@@ -69,15 +74,15 @@ class CartMarketService extends TransactionBaseService {
       const itemsCartWithStore = itemsCart.map((item) => {
         return {
           ...item,
-          store: storeMap.get(item.store_id),
+          store: storeMap.get(item.store_variant_id),
         };
       });
-
+      console.log("DATOD GUARDADOS", itemsCartWithStore);
       return itemsCartWithStore;
     } catch (error) {}
   }
 
-  async postAddItem(cartId, variant, store_id, quantity) {
+  async postAddItem(cartId, variant, store_variant_id, quantity) {
     try {
       const lineItemRepo = this.activeManager_.withRepository(
         this.lineItemRepository_
@@ -91,9 +96,10 @@ class CartMarketService extends TransactionBaseService {
         unit_price: variant.price,
         variant_id: variant.id,
         quantity: quantity,
-        store_id: store_id,
+        store_variant_id: store_variant_id,
       });
       addItem = await lineItemRepo.save(addItem);
+      console.log("DATOS GUARDADOS", addItem);
       return addItem;
     } catch (error) {
       console.log("Error al agregar el itemen el servicio", error);

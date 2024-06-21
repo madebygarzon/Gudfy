@@ -16,18 +16,18 @@ interface variant {
 }
 
 interface lineItem extends LineItem {
-  store_id: string
+  storeVariantId: string
   store: { store_name: string; customer_email: string }
 }
 
 interface CartContext {
-  existingVariant: validateItemExistence
+  existingVariant: string
   listItem: () => void
   items: lineItem[]
   addItem: (
     variant: variant,
     quantity: number,
-    storeId: string
+    storeVariantId: string
   ) => Promise<void>
   createNewCart: () => void
 }
@@ -46,12 +46,7 @@ export const CartGudfyProvider = ({
 }) => {
   const [items, setItems] = useState<lineItem[]>([])
   //Cambiar logica para que apunte al id de storeXVariant
-  const [existingVariant, setExistingVariant] = useState<validateItemExistence>(
-    {
-      storeId: "",
-      variantId: "",
-    }
-  )
+  const [existingVariant, setExistingVariant] = useState<string>("")
   const { cart, createCart } = useCart()
 
   useEffect(() => {
@@ -84,20 +79,19 @@ export const CartGudfyProvider = ({
         },
       }
     )
+    console.log("ESTE ES EL LISTAD:", ListItems)
     setItems(ListItems.data.items)
     return
   }
 
-  const validateItemExistence = (itemData: validateItemExistence) => {
+  const validateItemExistence = (storeVariantId: string) => {
     //cambiar por el id de storexvariant
     const existence = items?.find(
-      (item) =>
-        item.variant_id === itemData.variantId &&
-        item.store_id === itemData.storeId
+      (item) => item.storeVariantId === storeVariantId
     )
 
     if (existence) {
-      setExistingVariant(itemData)
+      setExistingVariant(storeVariantId)
       return true
     }
     return existence!!
@@ -106,18 +100,17 @@ export const CartGudfyProvider = ({
   const addItem = async (
     variant: variant,
     quantity: number,
-    storeId: string
+    storeVariantId: string
   ) => {
     if (!cart) throw new Error("No hay un carro al cual relacionar el producto")
-    if (validateItemExistence({ variantId: variant.id, storeId: storeId }))
-      return
+    if (validateItemExistence(storeVariantId)) return
     const response = await axios
       .post(
         `${process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL}/store/carts/${cart.id}/add-item`,
         {
           variant: variant,
           quantity: quantity,
-          store_id: storeId,
+          store_variant_id: storeVariantId,
         },
         {
           withCredentials: true,
