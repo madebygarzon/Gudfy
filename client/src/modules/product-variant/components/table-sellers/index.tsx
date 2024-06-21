@@ -107,7 +107,7 @@ const TableSeller: React.FC<TableProps> = ({
                         className="bg-white border-0 shadow-md"
                         color="green"
                       >
-                        Con: {seller.amount} en stock:
+                        Con {seller.amount} en stock.
                       </Badge>
                     ) : (
                       <Badge
