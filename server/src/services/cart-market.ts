@@ -46,7 +46,6 @@ class CartMarketService extends TransactionBaseService {
 
       const storeVariantIds = itemsCart.map((item) => item.store_variant_id);
       const uniqueStoreIds = [...new Set(storeVariantIds)];
-      console.log("datos Carrito", cart_id, itemsCart);
       const storesWithCustomers = await storexVariantRepo
         .createQueryBuilder("sxv")
         .innerJoinAndSelect("sxv.store", "s")
@@ -62,7 +61,6 @@ class CartMarketService extends TransactionBaseService {
         .getRawMany();
 
       const storeMap = new Map();
-      console.log("ACA ESTAN LOS DATOS BUSCADOS", storesWithCustomers);
       storesWithCustomers.forEach((store) => {
         storeMap.set(store.id, {
           store_name: store.store_name,
@@ -77,7 +75,6 @@ class CartMarketService extends TransactionBaseService {
           store: storeMap.get(item.store_variant_id),
         };
       });
-      console.log("DATOD GUARDADOS", itemsCartWithStore);
       return itemsCartWithStore;
     } catch (error) {}
   }
@@ -99,7 +96,6 @@ class CartMarketService extends TransactionBaseService {
         store_variant_id: store_variant_id,
       });
       addItem = await lineItemRepo.save(addItem);
-      console.log("DATOS GUARDADOS", addItem);
       return addItem;
     } catch (error) {
       console.log("Error al agregar el itemen el servicio", error);

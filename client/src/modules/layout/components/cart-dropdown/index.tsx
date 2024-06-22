@@ -19,7 +19,6 @@ const CartDropdown = () => {
   const { items, listItem } = useCartGudfy()
   const { deleteItem } = useStore()
   const { state, open, close } = useCartDropdown()
-  console.log("item en el carrito", items)
 
   useEffect(() => {
     listItem()
