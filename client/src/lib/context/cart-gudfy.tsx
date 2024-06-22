@@ -16,7 +16,7 @@ interface variant {
 }
 
 interface lineItem extends LineItem {
-  storeVariantId: string
+  store_variant_id: string
   store: { store_name: string; customer_email: string }
 }
 
@@ -79,15 +79,13 @@ export const CartGudfyProvider = ({
         },
       }
     )
-    console.log("ESTE ES EL LISTAD:", ListItems)
     setItems(ListItems.data.items)
     return
   }
 
   const validateItemExistence = (storeVariantId: string) => {
-    //cambiar por el id de storexvariant
     const existence = items?.find(
-      (item) => item.storeVariantId === storeVariantId
+      (item) => item.store_variant_id === storeVariantId
     )
 
     if (existence) {
@@ -103,6 +101,7 @@ export const CartGudfyProvider = ({
     storeVariantId: string
   ) => {
     if (!cart) throw new Error("No hay un carro al cual relacionar el producto")
+
     if (validateItemExistence(storeVariantId)) return
     const response = await axios
       .post(
