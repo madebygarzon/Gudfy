@@ -4,6 +4,7 @@ import { Badge } from "@medusajs/ui"
 import { Table, DropdownMenu, IconButton, Input, Select } from "@medusajs/ui"
 import { Avatar } from "@nextui-org/react"
 import { HiOutlineShoppingCart } from "react-icons/hi2"
+import { Button } from "@nextui-org/react"
 
 interface Seller {
   store_variant_id: string
@@ -50,30 +51,29 @@ const TableSeller: React.FC<TableProps> = ({
   }, [sellers, currentPage, itemsPerPage])
 
   return (
-    <div className=" bg-white p-8 border border-gray-200 rounded-lg">
-      <h3 className="text-lg font-blod"> Vendedores </h3>
-      <div className=" w-full h-full">
-        <div className="overflow-x-auto">
-          <Table>
-            <Table.Header>
-              <Table.Row>
-                <Table.HeaderCell>Nombre Tienda</Table.HeaderCell>
-                <Table.HeaderCell>Stock</Table.HeaderCell>
-                <Table.HeaderCell>Precio</Table.HeaderCell>
-              </Table.Row>
-            </Table.Header>
-            <Table.Body>
+    <div
+      className=" bg-white p-8 border border-gray-200 rounded-lg"
+      id="list-sellers"
+    >
+      <h3 className="mt-[-45px] bg-white text-center font-normal  text-gray-600 w-[50%] mb-4">
+        {" "}
+        Más vendedores para este producto{" "}
+      </h3>
+      <div className="">
+        <div className="">
+          <table className="rounded-[5px] ">
+            <tbody>
               {paginatedSellers.map((seller) => (
-                <Table.Row
+                <tr
                   key={seller.store_id}
-                  className={`cursor-pointer ${
+                  className={`w-full border-2  border-[#e7e7e7] cursor-pointer  ${
                     selectedSeller?.store_id === seller.store_id
-                      ? "bg-blue-100 border  shadow"
-                      : ""
+                      ? "bg-gray-100 hover:bg-gray-100 shadow-lg"
+                      : "bg-white hover:bg-gray-100"
                   }`}
                   onClick={() => handleRowClick(seller)}
                 >
-                  <Table.Cell>
+                  <td className="w-[40%] p-4">
                     <div className="flex gap-4">
                       <div className="flex items-center">
                         <Avatar
@@ -85,68 +85,50 @@ const TableSeller: React.FC<TableProps> = ({
                         />
                       </div>
                       <div>
-                        <h3 className=" text-sm font-bold">
+                        <h3 className="text-sm font-bold">
                           {seller.store_name}
                         </h3>
                         <p className="text-xs font-normal text-gray-500">
-                          VENDEDOR EXCLENTE
+                          Vendedor excelente
                         </p>
                         <p className="text-xs font-normal text-gray-500">
                           <span className="font-bold">100%</span> Comentarios
                           positivos
                         </p>
                       </div>
-                      <div className=" flex items-end gap-2">
+                      <div className="mt-8 flex items-center gap-2 ite">
                         | <HiOutlineShoppingCart size={15} /> 0
                       </div>
                     </div>
-                  </Table.Cell>
+                  </td>
 
-                  <Table.Cell>
+                  <td className=" w-[20%] p-4">
                     {seller.amount ? (
-                      <Badge color="green">Con Stock: {seller.amount}</Badge>
+                      <Badge
+                        className="bg-white border-0 shadow-md"
+                        color="green"
+                      >
+                        Con: {seller.amount} en stock:
+                      </Badge>
                     ) : (
-                      <Badge color="red">Sin Stock</Badge>
+                      <Badge
+                        className="bg-white border-0 shadow-md"
+                        color="red"
+                      >
+                        Sin stock
+                      </Badge>
                     )}
-                  </Table.Cell>
-                  <Table.Cell>$ {seller.price}</Table.Cell>
-                </Table.Row>
+                  </td>
+
+                  <td className="w-[20%] p-4">
+                    <span className=" text-sm font-extrabold ">
+                      Precio: $ {seller.price}
+                    </span>
+                  </td>
+                </tr>
               ))}
-            </Table.Body>
-          </Table>
-        </div>
-        <div className="flex justify-between items-center py-3">
-          <div>
-            <Select onValueChange={handleItemsPerPageChange} size="small">
-              <Select.Trigger>
-                <Select.Value placeholder="10" />
-              </Select.Trigger>
-              <Select.Content>
-                {dataSelecterPAge.map((item) => (
-                  <Select.Item key={item} value={`${item}`}>
-                    {item}
-                  </Select.Item>
-                ))}
-              </Select.Content>
-            </Select>
-          </div>
-          <div className="flex space-x-1">
-            {Array.from({ length: totalPages }, (_, index) => index + 1).map(
-              (page) => (
-                <button
-                  key={page}
-                  className={`px-3 py-1 border rounded-md text-xs ${
-                    page === currentPage
-                      ? "bg-blue-500 text-white"
-                      : "bg-white text-blue-500"
-                  }`}
-                  onClick={() => handlePageChange(page)}
-                >
-                  {page}
-                </button>
-              )
-            )}
-          </div>
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
