@@ -152,6 +152,13 @@ const ProductTemplate: React.FC<ProductVariantTemplateProps> = ({
             {/* <ProductInfo product={product} />
             <ProductTabs product={product} />  */}
           </div>
+          {existingVariant === selectedSeller.store_variant_id ? (
+            <p className="text-red-700 text-sm">
+              El producto ya ha sido seleccionado
+            </p>
+          ) : (
+            <></>
+          )}
 
           <Button
             disabled={amount ? false : true}
