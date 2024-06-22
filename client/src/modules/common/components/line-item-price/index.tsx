@@ -15,8 +15,7 @@ const LineItemPrice = ({
   region,
   style = "default",
 }: LineItemPriceProps) => {
-  const originalPrice =
-    (item.variant as CalculatedVariant).original_price * item.quantity
+  const originalPrice = item.unit_price * item.quantity
   const hasReducedPrice = (item.total || 0) < originalPrice
 
   return (

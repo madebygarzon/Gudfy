@@ -39,7 +39,8 @@ export default class SellerApplicationService extends TransactionBaseService {
         unit_price: variant.price,
         variant_id: variant.id,
         quantity: quantity,
-        store_id: store_id,
+
+
       });
       return addItem;
     } catch (error) {

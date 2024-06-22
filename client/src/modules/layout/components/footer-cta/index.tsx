@@ -5,11 +5,11 @@ import BotonWhatsApp from "@modules/common/components/whatsapp"
 import Link from "next/link"
 import Image from "next/image"
 import CurrentYear from "@lib/util/current-year"
-//import { useTranslation } from "react-i18next"
+import { useTranslation } from "react-i18next"
 
 const FooterCTA = () => {
   const { collections } = useCollections()
-  //const { t } = useTranslation();
+  const { t } = useTranslation();
   return (
     <div className="bg-blue-gf text-white content-container flex flex-col gap-y-8 pt-[50px] pb-8">
       <div className="footer-menu">
@@ -27,8 +27,7 @@ const FooterCTA = () => {
           </div>
           <div className="text-[#C7C7C7] font-[300] text-sm/[14px] grid grid-cols-1 gap-y-4">
             <p className="ml-auto mr-auto mt-10 mb-16">
-            {/* {t("projects_title")}.  */}
-            Copyright © <CurrentYear /> | Powered by Gudfy
+            {t("projects_title")}. Copyright © <CurrentYear /> | Powered by Gudfy
             </p>
           </div>
         </div>

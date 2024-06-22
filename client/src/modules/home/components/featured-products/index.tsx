@@ -40,7 +40,7 @@ const FeaturedProducts = () => {
                   <ProductVariantPreview {...product} />
                 </li>
               ))
-            : Array.from(Array(5).keys()).map((i) => (
+            : Array.from(Array(4).keys()).map((i) => (
                 <li key={i}>
                   <SkeletonProductPreview />
                 </li>

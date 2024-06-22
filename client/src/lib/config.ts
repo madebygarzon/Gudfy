@@ -1,10 +1,6 @@
 import Medusa from "@medusajs/medusa-js"
 import { QueryClient } from "@tanstack/react-query"
 
-import dotenv from "dotenv";
-
-dotenv.config({ path: '.env.local' });
-
 // Defaults to standard port for Medusa server
 let MEDUSA_BACKEND_URL = "http://localhost:9000"
 

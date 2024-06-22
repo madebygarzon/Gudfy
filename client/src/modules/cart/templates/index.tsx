@@ -10,12 +10,13 @@ import ItemsTemplate from "./items"
 import Summary from "./summary"
 import Link from "next/link"
 import ChevronDown from "@modules/common/icons/chevron-down"
-import {TaskProgressIndicatorCart} from "../../progress/index"
+import { TaskProgressIndicatorCart } from "../../progress/index"
+import { useCartGudfy } from "@lib/context/cart-gudfy"
 
 const CartTemplate = () => {
   const { cart } = useCart()
   const { customer, isLoading } = useMeCustomer()
-  const items = useEnrichedLineItems()
+  const { items } = useCartGudfy()
 
   if (!cart || !cart?.id?.length || isLoading) {
     return <SkeletonCartPage />
@@ -40,7 +41,7 @@ const CartTemplate = () => {
       </div>
 
       <div className="content-container pt-12">
-        {cart.items.length ? (
+        {items?.length ? (
           <div className="grid grid-cols-1 small:grid-cols-[1fr_360px] gap-x-8">
             <div className="flex flex-col bg-white p-6 gap-y-6">
               {!customer && <SignInPrompt />}
@@ -51,7 +52,7 @@ const CartTemplate = () => {
                 {cart && cart.region && (
                   <>
                     <div className="bg-white p-6">
-                      <Summary cart={cart} />
+                      <Summary items={items} />
                     </div>
                     <div className="bg-white p-6">
                       <DiscountCode cart={cart} />

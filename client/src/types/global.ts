@@ -54,6 +54,7 @@ export type storeProductVariant = {
   thumbnail: string
   productparent: string
   sellers: {
+    store_variant_id: string
     store_id: string
     store_name: string
     email: string
