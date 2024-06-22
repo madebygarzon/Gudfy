@@ -94,6 +94,7 @@ const ProductTemplate: React.FC<ProductVariantTemplateProps> = ({
           <div className="col2 flex flex-col gap-y-8 w-full pr-9">
             <h3 className="text-3xl font-extrabold">{product.title}</h3>
             <p className="text-base-regular">{product.description}</p>
+            
           </div>
         </div>
 
@@ -102,12 +103,14 @@ const ProductTemplate: React.FC<ProductVariantTemplateProps> = ({
           // id="list-sellers"
         >
           <div className="w-full p-10">
+          
             <TableSeller
               sellers={product.sellers}
               selectedSeller={selectedSeller}
               setSelectedSeller={setSelectedSeller}
             />
           </div>
+          
         </div>
 
         <div className="content-container my-16 px-6 small:px-8 small:my-32">
@@ -124,7 +127,7 @@ const ProductTemplate: React.FC<ProductVariantTemplateProps> = ({
             </div>
           </div>
 
-          <div className="  border border-solid border-gray-200 p-5 rounded-[5px]">
+          <div className="  border border-solid border-gray-200 p-5 rounded-[5px] shadow-lg">
             <TableSellerDefault
               sellers={product.sellers}
               selectedSeller={selectedSeller}
