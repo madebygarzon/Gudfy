@@ -89,7 +89,7 @@ const TableSeller: React.FC<TableProps> = ({
                           {seller.store_name}
                         </h3>
                         <p className="text-xs font-normal text-gray-500">
-                          VENDEDOR EXCELENTE
+                          Vendedor excelente
                         </p>
                         <p className="text-xs font-normal text-gray-500">
                           <span className="font-bold">100%</span> Comentarios
