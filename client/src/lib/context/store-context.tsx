@@ -11,6 +11,7 @@ import {
 } from "medusa-react"
 import React, { useEffect, useState } from "react"
 import { useCartDropdown } from "./cart-dropdown-context"
+import { useCartGudfy } from "@lib/context/cart-gudfy"
 
 interface VariantInfoProps {
   variantId: string
@@ -34,6 +35,7 @@ interface StoreContext {
 const StoreContext = React.createContext<StoreContext | null>(null)
 
 export const useStore = () => {
+  
   const context = React.useContext(StoreContext)
   if (context === null) {
     throw new Error("useStore must be used within a StoreProvider")
@@ -50,6 +52,7 @@ const CART_KEY = "medusa_cart_id"
 const REGION_KEY = "medusa_region"
 
 export const StoreProvider = ({ children }: StoreProps) => {
+  const { listItem } = useCartGudfy()
   const { cart, setCart, createCart, updateCart } = useCart()
   const [countryCode, setCountryCode] = useState<string | undefined>(undefined)
   const { timedOpen } = useCartDropdown()
@@ -262,6 +265,7 @@ export const StoreProvider = ({ children }: StoreProps) => {
         onSuccess: ({ cart }) => {
           setCart(cart)
           storeCart(cart.id)
+          listItem()
         },
         onError: (error) => {
           handleError(error)

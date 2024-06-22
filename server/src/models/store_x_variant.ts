@@ -14,6 +14,7 @@ import { Store } from "./store";
 import { StoreVariantOrder } from "./store-variant-order";
 import { SerialCode } from "./serial-code";
 import { ProductReview } from "./product-review";
+import { LineItem } from "./line-item";
 
 @Entity()
 export class StoreXVariant extends BaseEntity {
@@ -42,6 +43,9 @@ export class StoreXVariant extends BaseEntity {
 
   @OneToMany(() => SerialCode, (sc) => sc?.store_variant)
   serial_code?: SerialCode[];
+
+  @OneToMany(() => LineItem, (store) => store?.store_variant)
+  store_line_items?: LineItem[];
 
   @BeforeInsert()
   private beforeInsert(): void {

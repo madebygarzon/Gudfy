@@ -3,6 +3,7 @@
 import { MEDUSA_BACKEND_URL, queryClient } from "@lib/config"
 import { AccountProvider } from "@lib/context/account-context"
 import { CartDropdownProvider } from "@lib/context/cart-dropdown-context"
+import { CartGudfyProvider } from "@lib/context/cart-gudfy"
 import { MobileMenuProvider } from "@lib/context/mobile-menu-context"
 import { StoreProvider } from "@lib/context/store-context"
 import { MedusaProvider, CartProvider } from "medusa-react"
@@ -20,13 +21,15 @@ export default function Providers({ children }: { children: React.ReactNode }) {
       <CartDropdownProvider>
         <MobileMenuProvider>
           <CartProvider>
-            <StoreProvider>
-              <AccountProvider>
-                <NextUIProvider>
-                  <CategoryProvider>{children}</CategoryProvider>
-                </NextUIProvider>
-              </AccountProvider>
-            </StoreProvider>
+            <CartGudfyProvider>
+              <StoreProvider>
+                <AccountProvider>
+                  <NextUIProvider>
+                    <CategoryProvider>{children}</CategoryProvider>
+                  </NextUIProvider>
+                </AccountProvider>
+              </StoreProvider>
+            </CartGudfyProvider>
           </CartProvider>
         </MobileMenuProvider>
       </CartDropdownProvider>

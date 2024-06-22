@@ -10,13 +10,19 @@ import Thumbnail from "@modules/products/components/thumbnail"
 import { formatAmount, useCart } from "medusa-react"
 import Link from "next/link"
 import Image from "next/image"
-import { Fragment } from "react"
+import { Fragment, useEffect } from "react"
+import { useCartGudfy } from "@lib/context/cart-gudfy"
 
 const CartDropdown = () => {
   const { cart, totalItems } = useCart()
-  const items = useEnrichedLineItems()
+  //const items = useEnrichedLineItems()
+  const { items, listItem } = useCartGudfy()
   const { deleteItem } = useStore()
   const { state, open, close } = useCartDropdown()
+
+  useEffect(() => {
+    if (!items?.length) listItem()
+  }, [items])
 
   return (
     <div className="h-full z-50" onMouseEnter={open} onMouseLeave={close}>
@@ -32,7 +38,7 @@ const CartDropdown = () => {
               />
             </Link>
             <span className="absolute text-[10px] px-[10px] top-[-20px] right-[-20px] bg-[#3F1C7A] rounded-[50%]">
-              {totalItems ? ` ${totalItems}` : ""}
+              {items ? ` ${items.length}` : ""}
             </span>
           </div>
         </Popover.Button>
@@ -72,33 +78,44 @@ const CartDropdown = () => {
                           <div className="flex flex-col flex-1">
                             <div className="flex items-start justify-between">
                               <div>
-                                <h3 className="text-base-regular overflow-ellipsis overflow-hidden whitespace-nowrap mr-4 w-[130px]">
-                                  <Link
+                                <h3 className="text-lg overflow-ellipsis overflow-hidden whitespace-nowrap mr-4 w-[130px]">
+                                  {/* <Link
                                     href={`/products/${item.variant.product.handle}`}
                                     legacyBehavior
                                   >
                                     {item.title}
-                                  </Link>
+                                  </Link> */}
+                                  {item.title}
                                 </h3>
-                                <LineItemOptions variant={item.variant} />
-                                <span>Cantidad: {item.quantity}</span>
+                                <h4 className="text-xs text-slate-400">
+                                  Por: {item.store?.store_name}
+                                </h4>
+                                {/* <LineItemOptions variant={item.variant} /> */}
+                                <div className="text-xs text-slate-400">
+                                  <p> Cantidad: {item.quantity}</p>
+                                  <p> Precio: {item.unit_price} </p>
+                                </div>
                               </div>
                               <div className="flex justify-end">
-                                <LineItemPrice
+                                {/* <LineItemPrice
                                   region={cart.region}
                                   item={item}
                                   style="tight"
-                                />
+                                /> */}
                               </div>
                             </div>
                           </div>
                           <div className="flex items-end justify-between text-small-regular flex-1">
                             <div>
+                              <h4 className="text-sm">
+                                Total: ${item.unit_price * item.quantity}
+                              </h4>
+
                               <button
                                 className="flex items-center gap-x-1 text-gray-500"
                                 onClick={() => deleteItem(item.id)}
                               >
-                                <Trash size={14} />
+                                <Trash size={14} className="text-red-600" />
                                 <span>Remover</span>
                               </button>
                             </div>
@@ -114,11 +131,11 @@ const CartDropdown = () => {
                       <span className="font-normal">(Impuestos incluidos)</span>
                     </span>
                     <span className="text-large-semi">
-                      {formatAmount({
+                      {/* {formatAmount({
                         amount: cart.subtotal || 0,
                         region: cart.region,
                         includeTaxes: false,
-                      })}
+                      })} */}
                     </span>
                   </div>
                   <Link href="/cart" passHref>
