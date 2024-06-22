@@ -4,7 +4,7 @@ import CartTotals from "@modules/common/components/cart-totals"
 import Link from "next/link"
 
 interface lineItem extends LineItem {
-  store_id: string
+  storeVariantId: string
   store: { store_name: string; customer_email: string }
 }
 

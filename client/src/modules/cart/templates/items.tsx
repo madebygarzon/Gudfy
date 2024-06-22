@@ -8,7 +8,7 @@ import { useStore } from "@lib/context/store-context"
 import Link from "next/link"
 
 interface lineItem extends LineItem {
-  store_id: string
+  storeVariantId: string
   store: { store_name: string; customer_email: string }
 }
 type ItemsTemplateProps = {
