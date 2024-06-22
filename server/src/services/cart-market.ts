@@ -10,12 +10,14 @@ class CartMarketService extends TransactionBaseService {
   protected readonly lineItemRepository_: typeof LineItemRepository;
   protected readonly productVariantRepository_: typeof ProductVariantRepository;
   protected readonly cartRepository_: typeof CartRepository;
+
   protected readonly storeXVariantRepository_: typeof StoreXVariantRepository;
 
   constructor({
     lineItemRepository,
     productVariantRepository,
     cartRepository,
+
     storeXVariantRepository,
   }) {
     super(arguments[0]);
@@ -37,7 +39,6 @@ class CartMarketService extends TransactionBaseService {
       const storexVariantRepo = this.activeManager_.withRepository(
         this.storeXVariantRepository_
       );
-
       const itemsCart = await lineItemsRepo.find({
         where: {
           cart_id: cart_id,
@@ -74,10 +75,12 @@ class CartMarketService extends TransactionBaseService {
       const itemsCartWithStore = itemsCart.map((item) => {
         return {
           ...item,
+
           store: storeMap.get(item.store_variant_id),
         };
       });
       console.log("DATOD GUARDADOS", itemsCartWithStore);
+
       return itemsCartWithStore;
     } catch (error) {}
   }
@@ -100,6 +103,7 @@ class CartMarketService extends TransactionBaseService {
       });
       addItem = await lineItemRepo.save(addItem);
       console.log("DATOS GUARDADOS", addItem);
+
       return addItem;
     } catch (error) {
       console.log("Error al agregar el itemen el servicio", error);
