@@ -52,7 +52,7 @@ const TableSeller: React.FC<TableProps> = ({
 
   return (
     <div
-      className=" bg-white p-8 border border-gray-200 rounded-lg"
+      className=" bg-white p-8 border border-gray-200 rounded-lg shadow-lg"
       id="list-sellers"
     >
       <h3 className="mt-[-45px] bg-white text-center font-normal  text-gray-600 w-[50%] mb-4">
@@ -125,6 +125,17 @@ const TableSeller: React.FC<TableProps> = ({
                       Precio: $ {seller.price}
                     </span>
                   </td>
+
+                  <td className="w-[20%] p-4">
+                    <Button
+                      //disabled={amount ? false : true}
+                      //onPress={handlerAddCart}
+                      className="bg-[#402e72] hover:bg-blue-gf text-white rounded-[5px]"
+                    >
+                      Añadir al Carrito
+                    </Button>
+                  </td>
+
                 </tr>
               ))}
             </tbody>
