@@ -13,10 +13,9 @@ interface lineItem extends LineItem {
 }
 type ItemsTemplateProps = {
   items?: lineItem[]
-  region?: Region
 }
 
-const ItemsTemplate = ({ items, region }: ItemsTemplateProps) => {
+const ItemsTemplate = ({ items }: ItemsTemplateProps) => {
   const { deleteItem } = useStore()
   return (
     <div>
