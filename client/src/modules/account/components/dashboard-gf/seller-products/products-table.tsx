@@ -249,7 +249,7 @@ export default function ProductsTable() {
   return (
     <div className=" bg-white p-8 border border-gray-200 rounded-lg">
       <div className="w-full h-full ">
-        <h1 className=" text-xl font-bold">Tus Productos</h1>
+        <h1 className=" text-xl font-bold">Tus productos</h1>
         <div className="mt-2 flex justify-between">
           <div className="flex gap-5 h-full items-end py-4">
             <div className="w-[170px] ">
@@ -274,7 +274,7 @@ export default function ProductsTable() {
 
 
             <table className="table w-full">
-              <thead className="heade_table rounded text-left ">
+              <thead className="heade_table rounded text-left border-1 border-gray-200">
                 <tr className="table_header  shadow-sm border-[15px] border-white">
                   <th className="my-8">Nombre</th>
                   <th>Precio</th>
@@ -289,7 +289,7 @@ export default function ProductsTable() {
                     <tr
                       key={data.storexvariantid}
                       onClick={() => handlerEditProduct(data)}
-                      className="cursor-pointer"
+                      className="cursor-pointer my-6 "
                     >
                       <td>
                         <Link href={`./products/${data.storexvariantid}`}>
@@ -324,10 +324,10 @@ export default function ProductsTable() {
                         <IconButton>
                           <PencilSquare className="text-ui-fg-subtle" />
                         </IconButton>
-                        <IconButton>
+                        {/* <IconButton>
                           <Eye />
-                        </IconButton>
-                        <DropdownMenu>
+                        </IconButton> */}
+                        {/* <DropdownMenu>
                           <DropdownMenu.Trigger asChild>
                             <IconButton>
                               <PencilSquare className="text-ui-fg-subtle" />
@@ -349,7 +349,7 @@ export default function ProductsTable() {
                               Privado
                             </DropdownMenu.Item>
                           </DropdownMenu.Content>
-                        </DropdownMenu>
+                        </DropdownMenu> */}
                       </td>
                     </tr>
                   )
@@ -372,12 +372,12 @@ export default function ProductsTable() {
           <Spinner size="32" />
         )}
       </div>
-      <div className="flex justify-between p-4">
+      <div className="flex justify-between p-4 mt-6">
         <div>
           {`${dataProducts.dataFilter.length} Productos`}{" "}
           <Select onValueChange={handlerFilterRows} size="small">
-            <Select.Trigger>
-              <Select.Value placeholder="10" />
+            <Select.Trigger className="bg-white text-[#C2C2C2] text-gra-200">
+              <Select.Value  placeholder="10" />
             </Select.Trigger>
             <Select.Content>
               {dataSelecterPAge.map((item) => (
