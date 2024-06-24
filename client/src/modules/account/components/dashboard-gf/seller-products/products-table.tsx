@@ -274,9 +274,9 @@ export default function ProductsTable() {
 
 
             <table className="table w-full">
-              <thead className="heade_table text-left mx-8">
-                <tr className="table_header my-6">
-                  <th>Nombre</th>
+              <thead className="heade_table rounded text-left ">
+                <tr className="table_header  shadow-sm border-[15px] border-white">
+                  <th className="my-8">Nombre</th>
                   <th>Precio</th>
                   <th>Inventario</th>
                   <th>Categorias</th>
