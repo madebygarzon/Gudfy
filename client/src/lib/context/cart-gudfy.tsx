@@ -113,7 +113,7 @@ export const CartGudfyProvider = ({
   }
 
   const deleteLineItem = async (lineItemId: string) => {
-    if (cart && cart.id)
+    if (cart && cart.id) {
       await axios
         .delete(
           `${process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL}/store/carts/${cart.id}/line-items/${lineItemId}`,
@@ -123,11 +123,17 @@ export const CartGudfyProvider = ({
         )
         .then((response) => {
           const { cart } = response.data
+
           setCart(cart)
+          setItems((old) => {
+            const dataFilter = old.filter((i) => i.id !== lineItemId)
+            return dataFilter
+          })
         })
         .catch((error) => {
           console.error("Error deleting line item:", error)
         })
+    }
   }
   const updateLineItem = (lineItemId: string, quantity: number) => {
     if (cart && cart.id)
