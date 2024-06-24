@@ -35,7 +35,6 @@ interface StoreContext {
 const StoreContext = React.createContext<StoreContext | null>(null)
 
 export const useStore = () => {
-  
   const context = React.useContext(StoreContext)
   if (context === null) {
     throw new Error("useStore must be used within a StoreProvider")
@@ -155,21 +154,24 @@ export const StoreProvider = ({ children }: StoreProps) => {
   }
 
   const createNewCart = async (regionId?: string) => {
-    await createCart.mutateAsync(
-      { region_id: regionId },
-      {
-        onSuccess: ({ cart }) => {
-          setCart(cart)
-          storeCart(cart.id)
-          ensureRegion(cart.region, cart.shipping_address?.country_code)
-        },
-        onError: (error) => {
-          if (process.env.NODE_ENV === "development") {
-            console.error(error)
-          }
-        },
-      }
+    console.log(
+      "Funcion Crear tienda desabilitada en el contexto de store-context"
     )
+    // await createCart.mutateAsync(
+    //   { region_id: regionId },
+    //   {
+    //     onSuccess: ({ cart }) => {
+    //       setCart(cart)
+    //       storeCart(cart.id)
+    //       ensureRegion(cart.region, cart.shipping_address?.country_code)
+    //     },
+    //     onError: (error) => {
+    //       if (process.env.NODE_ENV === "development") {
+    //         console.error(error)
+    //       }
+    //     },
+    //   }
+    // )
   }
 
   const resetCart = () => {
