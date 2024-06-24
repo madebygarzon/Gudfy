@@ -14,15 +14,10 @@ import { Fragment, useEffect } from "react"
 import { useCartGudfy } from "@lib/context/cart-gudfy"
 
 const CartDropdown = () => {
-  const { cart, totalItems } = useCart()
   //const items = useEnrichedLineItems()
   const { items, listItem } = useCartGudfy()
   const { deleteItem } = useStore()
   const { state, open, close } = useCartDropdown()
-
-  useEffect(() => {
-    listItem()
-  }, [])
 
   useEffect(() => {
     if (!items?.length) listItem()
@@ -42,7 +37,7 @@ const CartDropdown = () => {
               />
             </Link>
             <span className="absolute text-[10px] px-[10px] top-[-20px] right-[-20px] bg-[#3F1C7A] rounded-[50%]">
-              {items ? ` ${items.length}` : ""}
+              {items?.length ? ` ${items.length}` : ""}
             </span>
           </div>
         </Popover.Button>
@@ -63,7 +58,7 @@ const CartDropdown = () => {
             <div className="p-4 flex items-center justify-center">
               <h3 className="text-large-semi">Carrito de compras</h3>
             </div>
-            {cart && items?.length ? (
+            {items?.length ? (
               <>
                 <div className="overflow-y-scroll max-h-[402px] px-4 grid grid-cols-1 gap-y-8 no-scrollbar">
                   {items
