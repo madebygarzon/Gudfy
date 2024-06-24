@@ -9,7 +9,7 @@ import FeaturedProductsSecond from "@modules/home/components/featured-products-s
 export const metadata: Metadata = {
   title: "Inicio",
   description:
-    "Compre todos los gif cards que necesitas. Pagos seguros con criptomonedas .",
+    "Compra todas los gif cards que necesites. Pagos seguros con criptomonedas .",
 }
 
 const Home = () => {
