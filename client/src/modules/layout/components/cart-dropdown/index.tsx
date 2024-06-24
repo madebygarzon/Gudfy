@@ -15,8 +15,8 @@ import { useCartGudfy } from "@lib/context/cart-gudfy"
 
 const CartDropdown = () => {
   //const items = useEnrichedLineItems()
-  const { items, listItem } = useCartGudfy()
-  const { deleteItem } = useStore()
+  const { items, listItem, deleteLineItem } = useCartGudfy()
+
   const { state, open, close } = useCartDropdown()
 
   useEffect(() => {
@@ -112,7 +112,7 @@ const CartDropdown = () => {
 
                               <button
                                 className="flex items-center gap-x-1 text-gray-500"
-                                onClick={() => deleteItem(item.id)}
+                                onClick={() => deleteLineItem(item.id)}
                               >
                                 <Trash size={14} className="text-red-600" />
                                 <span>Remover</span>
