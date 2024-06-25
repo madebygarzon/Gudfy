@@ -1,10 +1,11 @@
 import React, { useState, useMemo } from "react"
 import { CheckCircleSolid } from "@medusajs/icons"
 import { Badge } from "@medusajs/ui"
-import { Table, DropdownMenu, IconButton, Input, Select } from "@medusajs/ui"
+import { Table, DropdownMenu, IconButton, Select } from "@medusajs/ui"
 import { Avatar } from "@nextui-org/react"
 import { HiOutlineShoppingCart } from "react-icons/hi2"
 import { Button } from "@nextui-org/react"
+import { Input } from "@nextui-org/react"
 
 interface Seller {
   store_variant_id: string
@@ -74,7 +75,7 @@ const TableSeller: React.FC<TableProps> = ({
                   onClick={() => handleRowClick(seller)}
                 >
                   <td className="w-[40%] p-4">
-                    <div className="flex gap-4">
+                    <div className="flex gap-2">
                       <div className="flex items-center">
                         <Avatar
                           isBordered
@@ -108,7 +109,7 @@ const TableSeller: React.FC<TableProps> = ({
                         className="bg-white border-0 shadow-md"
                         color="green"
                       >
-                        Con: {seller.amount} en stock:
+                       En stock: {seller.amount}
                       </Badge>
                     ) : (
                       <Badge
@@ -124,6 +125,17 @@ const TableSeller: React.FC<TableProps> = ({
                     <span className=" text-sm font-extrabold ">
                       Precio: $ {seller.price}
                     </span>
+                  </td>
+
+                  <td className="w-[20%] p-4">
+                    <Input
+                      //value={`${amount}`}
+                      type="number"
+                      label=""
+                      placeholder="Cantid."
+                      labelPlacement="outside"
+                      //onChange={(e) => handlerAmount(e.target.value)}
+                    />
                   </td>
 
                   <td className="w-[20%] p-4">
