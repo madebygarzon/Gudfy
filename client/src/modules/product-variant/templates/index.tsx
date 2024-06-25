@@ -116,7 +116,7 @@ const ProductTemplate: React.FC<ProductVariantTemplateProps> = ({
       </div>
 
       <div className="w-1/3">
-        <div className="sticky top-[120px] col3 mt-[-35px] w-full small:max-w-[344px] medium:max-w-[400px] flex flex-col gap-y-8 mr-10">
+        <div className="sticky top-[180px] col3 mt-[-35px] w-full small:max-w-[344px] medium:max-w-[400px] flex flex-col gap-y-8 mr-10">
           <div id="product-info">
             <div className="flex flex-col gap-y-12 lg:max-w-[500px] mx-auto">
               <div></div>
