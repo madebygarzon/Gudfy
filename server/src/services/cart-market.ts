@@ -11,12 +11,14 @@ class CartMarketService extends TransactionBaseService {
   protected readonly productVariantRepository_: typeof ProductVariantRepository;
   protected readonly cartRepository_: typeof CartRepository;
 
+
   protected readonly storeXVariantRepository_: typeof StoreXVariantRepository;
 
   constructor({
     lineItemRepository,
     productVariantRepository,
     cartRepository,
+
 
     storeXVariantRepository,
   }) {
@@ -47,7 +49,8 @@ class CartMarketService extends TransactionBaseService {
 
       const storeVariantIds = itemsCart.map((item) => item.store_variant_id);
       const uniqueStoreIds = [...new Set(storeVariantIds)];
-      console.log("datos Carrito", cart_id, itemsCart);
+
+
       const storesWithCustomers = await storexVariantRepo
         .createQueryBuilder("sxv")
         .innerJoinAndSelect("sxv.store", "s")
@@ -79,7 +82,6 @@ class CartMarketService extends TransactionBaseService {
           store: storeMap.get(item.store_variant_id),
         };
       });
-      console.log("DATOD GUARDADOS", itemsCartWithStore);
 
       return itemsCartWithStore;
     } catch (error) {}

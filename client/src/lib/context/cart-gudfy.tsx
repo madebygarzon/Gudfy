@@ -5,7 +5,7 @@ import { createContext, useContext, useEffect, useState } from "react"
 import { Variant } from "types/medusa"
 import { useCart, useCreateLineItem } from "medusa-react"
 import axios from "axios"
-import { LineItem } from "@medusajs/medusa"
+import { Cart, LineItem } from "@medusajs/medusa"
 
 interface variant {
   id: string
@@ -16,7 +16,9 @@ interface variant {
 }
 
 interface lineItem extends LineItem {
-  storeVariantId: string
+
+  store_variant_id: string
+
   store: { store_name: string; customer_email: string }
 }
 
@@ -30,6 +32,8 @@ interface CartContext {
     storeVariantId: string
   ) => Promise<void>
   createNewCart: () => void
+  deleteLineItem: (lineItemId: string) => void
+  updateLineItem: (lineItemId: string, quantity: number) => void
 }
 
 type validateItemExistence = {
@@ -39,6 +43,9 @@ type validateItemExistence = {
 
 export const CartContext = createContext<CartContext | null>(null)
 
+let auxCreateCart = false
+
+
 export const CartGudfyProvider = ({
   children,
 }: {
@@ -47,47 +54,122 @@ export const CartGudfyProvider = ({
   const [items, setItems] = useState<lineItem[]>([])
   //Cambiar logica para que apunte al id de storeXVariant
   const [existingVariant, setExistingVariant] = useState<string>("")
-  const { cart, createCart } = useCart()
+
+  const [cart, setCart] = useState<Cart>()
+  const [isCartRetrive, setIsCartRetrive] = useState<boolean>(false)
 
   useEffect(() => {
-    if (!items?.length) listItem()
-  }, [items])
+    if (!auxCreateCart) {
+      auxCreateCart = true
+      retriveCart()
+      setIsCartRetrive(true)
 
-  const createNewCart = () => {
-    if (cart) {
-      return
     }
+  }, [isCartRetrive])
 
-    createCart.mutate(
-      {},
-      {
-        onSuccess: ({ cart }) => {
-          localStorage.setItem("cart_id", cart.id)
-        },
-      }
-    )
+  const retriveCart = async () => {
+    const id = localStorage.getItem("cart_id")
+    await axios
+      .get(`${process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL}/store/carts/${id}`, {
+        withCredentials: true,
+      })
+      .then((response) => {
+        const { cart } = response.data
+        setCart(cart)
+      })
+      .catch(async (error) => {
+        await createNewCart()
+      })
+  }
+
+  const createNewCart = async () => {
+    auxCreateCart = true
+    await axios
+      .post(
+        `${process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL}/store/carts`,
+        {},
+        { withCredentials: true }
+      )
+      .then((response) => {
+        const { cart } = response.data
+        localStorage.setItem("cart_id", cart.id)
+        setCart(cart)
+      })
+      .catch((error) => {
+        console.error("Error al crear el carro:", error)
+      })
   }
 
   const listItem = async () => {
-    const ListItems = await axios.get(
-      `${process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL}/store/cart/items`,
-      {
-        params: { cartId: cart?.id || localStorage.getItem("cart_id") },
-        withCredentials: true,
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    )
-    console.log("ESTE ES EL LISTAD:", ListItems)
-    setItems(ListItems.data.items)
+
+    const dataCartId = cart?.id || localStorage.getItem("cart_id")
+    if (dataCartId) {
+      await axios
+        .get(`${process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL}/store/cart/items`, {
+          params: { cartId: dataCartId },
+          withCredentials: true,
+          headers: {
+            "Content-Type": "application/json",
+          },
+        })
+        .then((data) => {
+          setItems(data.data.items)
+        })
+    }
     return
   }
 
+  const deleteLineItem = async (lineItemId: string) => {
+    if (cart && cart.id) {
+      await axios
+        .delete(
+          `${process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL}/store/carts/${cart.id}/line-items/${lineItemId}`,
+          {
+            withCredentials: true,
+          }
+        )
+        .then((response) => {
+          const { cart } = response.data
+
+          setCart(cart)
+          setItems((old) => {
+            const dataFilter = old.filter((i) => i.id !== lineItemId)
+            return dataFilter
+          })
+        })
+        .catch((error) => {
+          console.error("Error deleting line item:", error)
+        })
+    }
+  }
+  const updateLineItem = (lineItemId: string, quantity: number) => {
+    if (cart && cart.id)
+      axios
+        .post(
+          `<BACKEND_URL>/store/carts/${cart.id}/line-items/${lineItemId}`,
+          {
+            quantity: 3,
+          },
+          {
+            withCredentials: true,
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        )
+        .then((response) => {
+          const { cart } = response.data
+          setCart(cart)
+        })
+        .catch((error) => {
+          console.error("Error updating line item:", error)
+        })
+  }
+
   const validateItemExistence = (storeVariantId: string) => {
-    //cambiar por el id de storexvariant
     const existence = items?.find(
-      (item) => item.storeVariantId === storeVariantId
+      (item) => item.store_variant_id === storeVariantId
+
     )
 
     if (existence) {
@@ -103,6 +185,9 @@ export const CartGudfyProvider = ({
     storeVariantId: string
   ) => {
     if (!cart) throw new Error("No hay un carro al cual relacionar el producto")
+
+
+
     if (validateItemExistence(storeVariantId)) return
     const response = await axios
       .post(
@@ -132,6 +217,8 @@ export const CartGudfyProvider = ({
         listItem,
         addItem,
         createNewCart,
+        deleteLineItem,
+        updateLineItem,
       }}
     >
       {children}
