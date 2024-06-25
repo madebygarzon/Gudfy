@@ -11,6 +11,9 @@ import TableSellerDefault from "../components/table-sellers/seller_default"
 import { Input, Button } from "@nextui-org/react"
 import { useCart } from "medusa-react"
 
+import { useCartGudfy } from "@lib/context/cart-gudfy"
+
+
 type ProductVariantTemplateProps = {
   product: storeProductVariant
 }
@@ -26,7 +29,10 @@ interface Seller {
 const ProductTemplate: React.FC<ProductVariantTemplateProps> = ({
   product,
 }) => {
-  const { createCart, cart } = useCart()
+
+  const { addItem, existingVariant } = useCartGudfy()
+
+
   const [selectedSeller, setSelectedSeller] = useState<Seller>(
     product.sellers[0]
   )
@@ -62,9 +68,19 @@ const ProductTemplate: React.FC<ProductVariantTemplateProps> = ({
   }
 
   const handlerAddCart = () => {
-    if (!cart?.items.length) {
-      createCart
-    }
+
+    addItem(
+      {
+        description: product.title,
+        id: product.id,
+        thumbnail: product.thumbnail,
+        price: selectedSeller.price,
+        title: product.title,
+      },
+      amount,
+      selectedSeller.store_variant_id
+    )
+
   }
   useEffect(() => {
     setAmount(1)
@@ -106,29 +122,51 @@ const ProductTemplate: React.FC<ProductVariantTemplateProps> = ({
       </div>
 
       <div className="w-1/3">
-        <div className="sticky top-[120px] col3 mt-[-35px] w-full small:max-w-[344px] medium:max-w-[400px] flex flex-col gap-y-8 mr-10">
+        <div className="sticky top-[180px] col3 mt-[-35px] w-full small:max-w-[344px] medium:max-w-[400px] flex flex-col gap-y-8 mr-10">
           <div id="product-info">
             <div className="flex flex-col gap-y-12 lg:max-w-[500px] mx-auto">
               <div></div>
             </div>
           </div>
-          {selectedSeller ? (
-            <>
-              <Input
-                value={`${amount}`}
-                type="number"
-                label="Cantidad"
-                placeholder="Seleccione una cantidad"
-                labelPlacement="outside"
-                onChange={(e) => handlerAmount(e.target.value)}
-              />
-              <p>Precio: $ {price || 0}</p>
-            </>
+
+
+          <div className="  border border-solid border-gray-200 p-5 rounded-[5px] shadow-lg">
+            <TableSellerDefault
+              sellers={product.sellers}
+              selectedSeller={selectedSeller}
+              setSelectedSeller={setSelectedSeller}
+            />
+
+            {selectedSeller ? (
+              <div className="mt-10">
+                <Input
+                  value={`${amount}`}
+                  type="number"
+                  label="Cantidad"
+                  placeholder="Seleccione una cantidad"
+                  labelPlacement="outside"
+                  onChange={(e) => handlerAmount(e.target.value)}
+                />
+
+                <p className="bg-[#ececec] rounded-[10px] mt-6 p-2">
+                  Precio: $ {price || 0}
+                </p>
+              </div>
+            ) : (
+              <p>Selecciona un Vendedor</p>
+            )}
+            {/* <ProductInfo product={product} />
+            <ProductTabs product={product} />  */}
+          </div>
+          {existingVariant === selectedSeller.store_variant_id ? (
+            <p className="text-red-700 text-sm">
+              El producto ya ha sido seleccionado
+            </p>
           ) : (
-            <p>Selecciona un Vendedor</p>
+            <></>
           )}
-          {/* <ProductInfo product={product} />
-          <ProductTabs product={product} />  */}
+
+
           <Button
             disabled={amount ? false : true}
             onPress={handlerAddCart}

@@ -10,19 +10,34 @@ import Thumbnail from "@modules/products/components/thumbnail"
 import { formatAmount, useCart } from "medusa-react"
 import Link from "next/link"
 import Image from "next/image"
-import { Fragment, useEffect } from "react"
+
+import { Fragment, useEffect, useState } from "react"
+
 import { useCartGudfy } from "@lib/context/cart-gudfy"
 
 const CartDropdown = () => {
-  const { cart, totalItems } = useCart()
   //const items = useEnrichedLineItems()
-  const { items, listItem } = useCartGudfy()
-  const { deleteItem } = useStore()
+
+  const { items, listItem, deleteLineItem } = useCartGudfy()
+
   const { state, open, close } = useCartDropdown()
+  const [subTotal, setSubtotal] = useState<number>(0)
 
   useEffect(() => {
     if (!items?.length) listItem()
+    handlerSubTotal()
   }, [items])
+
+  const handlerSubTotal = () => {
+    let total = items.length
+      ? items.reduce((total: any, i: any) => {
+          return total + i.unit_price * i.quantity
+        }, 0)
+      : 0
+    setSubtotal(total)
+    console.log("este el el subtotal", total, items)
+  }
+
 
   return (
     <div className="h-full z-50" onMouseEnter={open} onMouseLeave={close}>
@@ -38,7 +53,7 @@ const CartDropdown = () => {
               />
             </Link>
             <span className="absolute text-[10px] px-[10px] top-[-20px] right-[-20px] bg-[#3F1C7A] rounded-[50%]">
-              {items ? ` ${items.length}` : ""}
+              {items?.length ? ` ${items.length}` : ""}
             </span>
           </div>
         </Popover.Button>
@@ -59,7 +74,7 @@ const CartDropdown = () => {
             <div className="p-4 flex items-center justify-center">
               <h3 className="text-large-semi">Carrito de compras</h3>
             </div>
-            {cart && items?.length ? (
+            {items?.length ? (
               <>
                 <div className="overflow-y-scroll max-h-[402px] px-4 grid grid-cols-1 gap-y-8 no-scrollbar">
                   {items
@@ -113,7 +128,7 @@ const CartDropdown = () => {
 
                               <button
                                 className="flex items-center gap-x-1 text-gray-500"
-                                onClick={() => deleteItem(item.id)}
+                                onClick={() => deleteLineItem(item.id)}
                               >
                                 <Trash size={14} className="text-red-600" />
                                 <span>Remover</span>
@@ -127,7 +142,7 @@ const CartDropdown = () => {
                 <div className="p-4 flex flex-col gap-y-4 text-small-regular">
                   <div className="flex items-center justify-between">
                     <span className="text-gray-700 font-semibold">
-                      Subtotal{" "}
+                      Subtotal: {subTotal}
                       <span className="font-normal">(Impuestos incluidos)</span>
                     </span>
                     <span className="text-large-semi">

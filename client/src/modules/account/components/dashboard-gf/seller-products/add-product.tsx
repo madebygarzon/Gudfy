@@ -153,7 +153,7 @@ export default function AddProducts({ setReset }: Reset) {
     <>
       <ButtonM
         variant="transparent"
-        className=" border rounded-[5px]"
+        className=" bg-white hover:bg-gray-100 text-gray-600 border-gray-300 border rounded-[5px]"
         onClick={onOpen}
       >
         Agregar producto

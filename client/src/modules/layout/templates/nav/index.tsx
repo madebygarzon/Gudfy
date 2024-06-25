@@ -85,9 +85,7 @@ const Nav = () => {
             </div>
           </div>
           <div className="flex items-center gap-x-4 sm:gap-x-8 ">
-            <div>
-              {/* <Wallet /> */}
-            </div>
+            <div>{/* <Wallet /> */}</div>
             <div>
               {!customer ? (
                 <DropdownGudFy
@@ -108,9 +106,8 @@ const Nav = () => {
         </nav>
         <MobileMenu />
       </header>
-      {
-        //isScrolled ? <NavList /> : <div className="h-[1px] bg-blue-gf"></div>
-      }
+      <NavList />
+      {/* {isScrolled ? <NavList /> : <div className="h-[1px] bg-blue-gf"></div>} */}
     </div>
   )
 }

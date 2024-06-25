@@ -6,6 +6,7 @@ import { Avatar } from "@nextui-org/react"
 import { HiOutlineShoppingCart } from "react-icons/hi2"
 
 interface Seller {
+  store_variant_id: string
   store_id: string
   store_name: string
   email: string

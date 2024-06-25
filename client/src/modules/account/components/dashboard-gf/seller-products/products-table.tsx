@@ -249,11 +249,12 @@ export default function ProductsTable() {
   return (
     <div className=" bg-white p-8 border border-gray-200 rounded-lg">
       <div className="w-full h-full ">
-        <h1 className=" text-xl font-bold"> Tus Productos</h1>
+        <h1 className=" text-xl font-bold">Tus productos</h1>
         <div className="mt-2 flex justify-between">
           <div className="flex gap-5 h-full items-end py-4">
             <div className="w-[170px] ">
               <Input
+                className="bg-white hover:bg-gray-100 text-gray-600 border border-gray-300 "
                 placeholder="Buscar"
                 id="search-input"
                 type="search"
@@ -270,25 +271,27 @@ export default function ProductsTable() {
         </div>
         {!isLoading && dataProducts.dataPreview.length ? (
           <>
-            <Table>
-              <Table.Header>
-                <Table.Row>
-                  <Table.HeaderCell>Nombre</Table.HeaderCell>
-                  <Table.HeaderCell>Precio</Table.HeaderCell>
-                  <Table.HeaderCell>Inventario</Table.HeaderCell>
-                  <Table.HeaderCell>Categorias</Table.HeaderCell>
-                  <Table.HeaderCell></Table.HeaderCell>
-                </Table.Row>
-              </Table.Header>
-              <Table.Body>
+
+
+            <table className="table w-full">
+              <thead className="heade_table rounded text-left border-1 border-gray-200">
+                <tr className="table_header  shadow-sm border-[15px] border-white">
+                  <th className="my-8">Nombre</th>
+                  <th>Precio</th>
+                  <th>Inventario</th>
+                  <th>Categorias</th>
+                  <th>Ajustes</th>
+                </tr>
+              </thead>
+              <tbody className="heade_body">
                 {dataProducts.dataPreview?.map((data, i) => {
                   return (
-                    <Table.Row
+                    <tr
                       key={data.storexvariantid}
                       onClick={() => handlerEditProduct(data)}
-                      className="cursor-pointer"
+                      className="cursor-pointer my-6 "
                     >
-                      <Table.Cell>
+                      <td>
                         <Link href={`./products/${data.storexvariantid}`}>
                           <div className="flex gap-3 items-center">
                             {data.thumbnail ? (
@@ -304,20 +307,20 @@ export default function ProductsTable() {
                             {` ${data.productvarianttitle} `}
                           </div>
                         </Link>
-                      </Table.Cell>
-                      <Table.Cell> $ {data.price} USD</Table.Cell>
-                      <Table.Cell>{data.amount} Codigos </Table.Cell>
-                      <Table.Cell>
+                      </td>
+                      <td> $ {data.price} USD</td>
+                      <td>{data.amount} Codigos </td>
+                      <td>
                         GifCards
                         {/* {data.categories.length ? (
-                          data.categories.map((c) => (
-                            <span className="text-[12px] capitalize">{`${c.name}, `}</span>
-                          ))
-                        ) : (
-                          <p className="text-[12px]">Sin Categoria</p>
-                        )} */}
-                      </Table.Cell>
-                      <Table.Cell className="flex gap-x-2 items-center">
+              data.categories.map((c) => (
+                <span className="text-[12px] capitalize">{`${c.name}, `}</span>
+              ))
+            ) : (
+              <p className="text-[12px]">Sin Categoria</p>
+            )} */}
+                      </td>
+                      <td className="flex gap-x-2 items-center">
                         <IconButton>
                           <PencilSquare className="text-ui-fg-subtle" />
                         </IconButton>
@@ -346,13 +349,17 @@ export default function ProductsTable() {
                               Privado
                             </DropdownMenu.Item>
                           </DropdownMenu.Content>
-                        </DropdownMenu>  */}
-                      </Table.Cell>
-                    </Table.Row>
+                        </DropdownMenu> */}
+                      </td>
+                    </tr>
                   )
                 })}
-              </Table.Body>
-            </Table>
+              </tbody>
+            </table>
+
+
+
+            
           </>
         ) : isLoading && !dataProducts.dataPreview.length ? (
           <div className="flex justify-center items-center py-10">
@@ -365,12 +372,12 @@ export default function ProductsTable() {
           <Spinner size="32" />
         )}
       </div>
-      <div className="flex justify-between p-4">
+      <div className="flex justify-between p-4 mt-6">
         <div>
           {`${dataProducts.dataFilter.length} Productos`}{" "}
           <Select onValueChange={handlerFilterRows} size="small">
-            <Select.Trigger>
-              <Select.Value placeholder="10" />
+            <Select.Trigger className="bg-white text-[#C2C2C2] text-gra-200">
+              <Select.Value  placeholder="10" />
             </Select.Trigger>
             <Select.Content>
               {dataSelecterPAge.map((item) => (
