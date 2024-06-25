@@ -35,6 +35,7 @@ interface StoreContext {
 const StoreContext = React.createContext<StoreContext | null>(null)
 
 export const useStore = () => {
+  
   const context = React.useContext(StoreContext)
   if (context === null) {
     throw new Error("useStore must be used within a StoreProvider")

@@ -17,7 +17,9 @@ const CartTemplate = () => {
   const { customer, isLoading } = useMeCustomer()
   const { items } = useCartGudfy()
 
+
   if (isLoading) {
+
     return <SkeletonCartPage />
   }
 
@@ -48,9 +50,11 @@ const CartTemplate = () => {
             </div>
             <div className="relative">
               <div className="flex flex-col gap-y-8 sticky top-12">
+
                 <div className="bg-white p-6">
                   <Summary items={items} />
                 </div>
+
               </div>
             </div>
           </div>
