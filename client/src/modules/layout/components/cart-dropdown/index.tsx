@@ -10,7 +10,7 @@ import Thumbnail from "@modules/products/components/thumbnail"
 import { formatAmount, useCart } from "medusa-react"
 import Link from "next/link"
 import Image from "next/image"
-import { Fragment, useEffect } from "react"
+import { Fragment, useEffect, useState } from "react"
 import { useCartGudfy } from "@lib/context/cart-gudfy"
 
 const CartDropdown = () => {
@@ -18,10 +18,22 @@ const CartDropdown = () => {
   const { items, listItem, deleteLineItem } = useCartGudfy()
 
   const { state, open, close } = useCartDropdown()
+  const [subTotal, setSubtotal] = useState<number>(0)
 
   useEffect(() => {
     if (!items?.length) listItem()
+    handlerSubTotal()
   }, [items])
+
+  const handlerSubTotal = () => {
+    let total = items.length
+      ? items.reduce((total: any, i: any) => {
+          return total + i.unit_price * i.quantity
+        }, 0)
+      : 0
+    setSubtotal(total)
+    console.log("este el el subtotal", total, items)
+  }
 
   return (
     <div className="h-full z-50" onMouseEnter={open} onMouseLeave={close}>
@@ -126,7 +138,7 @@ const CartDropdown = () => {
                 <div className="p-4 flex flex-col gap-y-4 text-small-regular">
                   <div className="flex items-center justify-between">
                     <span className="text-gray-700 font-semibold">
-                      Subtotal{" "}
+                      Subtotal: {subTotal}
                       <span className="font-normal">(Impuestos incluidos)</span>
                     </span>
                     <span className="text-large-semi">
