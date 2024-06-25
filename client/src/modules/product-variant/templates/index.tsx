@@ -10,7 +10,9 @@ import TableSeller from "../components/table-sellers"
 import TableSellerDefault from "../components/table-sellers/seller_default"
 import { Input, Button } from "@nextui-org/react"
 import { useCart } from "medusa-react"
+
 import { useCartGudfy } from "@lib/context/cart-gudfy"
+
 
 type ProductVariantTemplateProps = {
   product: storeProductVariant
@@ -27,7 +29,9 @@ interface Seller {
 const ProductTemplate: React.FC<ProductVariantTemplateProps> = ({
   product,
 }) => {
+
   const { addItem, existingVariant } = useCartGudfy()
+
 
   const [selectedSeller, setSelectedSeller] = useState<Seller>(
     product.sellers[0]
@@ -64,6 +68,7 @@ const ProductTemplate: React.FC<ProductVariantTemplateProps> = ({
   }
 
   const handlerAddCart = () => {
+
     addItem(
       {
         description: product.title,
@@ -75,6 +80,7 @@ const ProductTemplate: React.FC<ProductVariantTemplateProps> = ({
       amount,
       selectedSeller.store_variant_id
     )
+
   }
   useEffect(() => {
     setAmount(1)
@@ -123,6 +129,7 @@ const ProductTemplate: React.FC<ProductVariantTemplateProps> = ({
             </div>
           </div>
 
+
           <div className="  border border-solid border-gray-200 p-5 rounded-[5px] shadow-lg">
             <TableSellerDefault
               sellers={product.sellers}
@@ -158,6 +165,7 @@ const ProductTemplate: React.FC<ProductVariantTemplateProps> = ({
           ) : (
             <></>
           )}
+
 
           <Button
             disabled={amount ? false : true}

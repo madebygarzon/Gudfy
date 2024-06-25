@@ -16,7 +16,9 @@ interface variant {
 }
 
 interface lineItem extends LineItem {
+
   store_variant_id: string
+
   store: { store_name: string; customer_email: string }
 }
 
@@ -40,7 +42,9 @@ type validateItemExistence = {
 }
 
 export const CartContext = createContext<CartContext | null>(null)
+
 let auxCreateCart = false
+
 
 export const CartGudfyProvider = ({
   children,
@@ -50,6 +54,7 @@ export const CartGudfyProvider = ({
   const [items, setItems] = useState<lineItem[]>([])
   //Cambiar logica para que apunte al id de storeXVariant
   const [existingVariant, setExistingVariant] = useState<string>("")
+
   const [cart, setCart] = useState<Cart>()
   const [isCartRetrive, setIsCartRetrive] = useState<boolean>(false)
 
@@ -58,6 +63,7 @@ export const CartGudfyProvider = ({
       auxCreateCart = true
       retriveCart()
       setIsCartRetrive(true)
+
     }
   }, [isCartRetrive])
 
@@ -95,6 +101,7 @@ export const CartGudfyProvider = ({
   }
 
   const listItem = async () => {
+
     const dataCartId = cart?.id || localStorage.getItem("cart_id")
     if (dataCartId) {
       await axios
@@ -162,6 +169,7 @@ export const CartGudfyProvider = ({
   const validateItemExistence = (storeVariantId: string) => {
     const existence = items?.find(
       (item) => item.store_variant_id === storeVariantId
+
     )
 
     if (existence) {
@@ -177,6 +185,8 @@ export const CartGudfyProvider = ({
     storeVariantId: string
   ) => {
     if (!cart) throw new Error("No hay un carro al cual relacionar el producto")
+
+
 
     if (validateItemExistence(storeVariantId)) return
     const response = await axios
