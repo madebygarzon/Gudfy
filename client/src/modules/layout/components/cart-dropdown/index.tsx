@@ -26,13 +26,17 @@ const CartDropdown = () => {
   }, [items])
 
   const handlerSubTotal = () => {
+    if (!items || !Array.isArray(items)) {
+      return 0
+    }
+
     let total = items.length
-      ? items.reduce((total: any, i: any) => {
+      ? items.reduce((total: number, i: any) => {
           return total + i.unit_price * i.quantity
         }, 0)
       : 0
-    setSubtotal(total)
-    console.log("este el el subtotal", total, items)
+
+    return total
   }
 
   return (
