@@ -160,7 +160,7 @@ const ProductTemplate: React.FC<ProductVariantTemplateProps> = ({
           </div>
           {existingVariant === selectedSeller.store_variant_id ? (
             <p className="text-red-700 text-sm">
-              El producto ya ha sido seleccionado
+              Este vendedor ya ha sido seleccionado
             </p>
           ) : (
             <></>
@@ -170,10 +170,12 @@ const ProductTemplate: React.FC<ProductVariantTemplateProps> = ({
           <Button
             disabled={amount ? false : true}
             onPress={handlerAddCart}
-            className="bg-[#402e72] hover:bg-blue-gf text-white rounded-[5px] mb-[120px]"
+            className="bg-[#402e72] hover:bg-blue-gf text-white rounded-[5px] mb-[120px] "
           >
             Añadir al Carrito
           </Button>
+
+          
 
           {/* <a className ="mb-[80px]" href="#list-sellers">
             <span className="text-[#402e72] text-sm font-bold">
