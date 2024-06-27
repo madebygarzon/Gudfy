@@ -8,14 +8,18 @@ import { useStore } from "@lib/context/store-context"
 import Link from "next/link"
 
 interface lineItem extends LineItem {
+
   store_variant_id: string
+
   store: { store_name: string; customer_email: string }
 }
 type ItemsTemplateProps = {
   items?: lineItem[]
+
 }
 
 const ItemsTemplate = ({ items }: ItemsTemplateProps) => {
+
   const { deleteItem } = useStore()
   return (
     <div>

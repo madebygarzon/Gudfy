@@ -10,12 +10,16 @@ class CartMarketService extends TransactionBaseService {
   protected readonly lineItemRepository_: typeof LineItemRepository;
   protected readonly productVariantRepository_: typeof ProductVariantRepository;
   protected readonly cartRepository_: typeof CartRepository;
+
+
   protected readonly storeXVariantRepository_: typeof StoreXVariantRepository;
 
   constructor({
     lineItemRepository,
     productVariantRepository,
     cartRepository,
+
+
     storeXVariantRepository,
   }) {
     super(arguments[0]);
@@ -37,7 +41,6 @@ class CartMarketService extends TransactionBaseService {
       const storexVariantRepo = this.activeManager_.withRepository(
         this.storeXVariantRepository_
       );
-
       const itemsCart = await lineItemsRepo.find({
         where: {
           cart_id: cart_id,
@@ -46,6 +49,8 @@ class CartMarketService extends TransactionBaseService {
 
       const storeVariantIds = itemsCart.map((item) => item.store_variant_id);
       const uniqueStoreIds = [...new Set(storeVariantIds)];
+
+
       const storesWithCustomers = await storexVariantRepo
         .createQueryBuilder("sxv")
         .innerJoinAndSelect("sxv.store", "s")
@@ -61,6 +66,7 @@ class CartMarketService extends TransactionBaseService {
         .getRawMany();
 
       const storeMap = new Map();
+      console.log("ACA ESTAN LOS DATOS BUSCADOS", storesWithCustomers);
       storesWithCustomers.forEach((store) => {
         storeMap.set(store.id, {
           store_name: store.store_name,
@@ -72,9 +78,11 @@ class CartMarketService extends TransactionBaseService {
       const itemsCartWithStore = itemsCart.map((item) => {
         return {
           ...item,
+
           store: storeMap.get(item.store_variant_id),
         };
       });
+
       return itemsCartWithStore;
     } catch (error) {}
   }
@@ -96,6 +104,8 @@ class CartMarketService extends TransactionBaseService {
         store_variant_id: store_variant_id,
       });
       addItem = await lineItemRepo.save(addItem);
+      console.log("DATOS GUARDADOS", addItem);
+
       return addItem;
     } catch (error) {
       console.log("Error al agregar el itemen el servicio", error);
