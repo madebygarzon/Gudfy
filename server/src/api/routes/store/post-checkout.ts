@@ -44,7 +44,8 @@ const autoBinancePay = async (cartItems) => {
       fiatAmount: handlerTotalPrice(cartItems),
       fiatCurrency: 'USD',
       goodsDetails: goods,
-      webhookUrl: '',
+      webhookUrl: 'http://localhost:9000/binance_pay/webhook',
+      returnUrl: 'https://success_url',
       description: 'Buy Order',
       supportPayCurrency: "USDT,BNB,BTC"
     }
