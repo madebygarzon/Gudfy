@@ -1,5 +1,6 @@
 import { useCart } from "medusa-react"
 import { useEffect, useState } from "react"
+import axios from "axios"
 import Payment from "@modules/checkout/components/payment"
 import CheckautVirtualForm from "../checkout-virtual-form"
 import PaymentContainer from "../payment-container"
@@ -33,7 +34,7 @@ type CompleteForm = {
 const CheckoutForm = () => {
   const { cart } = useCart()
 
-  const [checkbox, selectedCheckbox] = useState<string>("Binance_pay_automatic")
+  const [checkbox, selectedCheckbox] = useState<string>("automatic_binance_pay")
   const [selectedKeys, setSelectedKeys] = useState<Selection>(
     new Set([checkbox])
   )
@@ -53,7 +54,28 @@ const CheckoutForm = () => {
   if (!cart?.id) {
     return null
   }
-  const handlersubmit = () => {}
+  const handlersubmit = async () => {
+    const response = await axios
+      .post(
+        `${process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL}/store/carts/${cart.id}/checkout`,
+        {
+          payment_method: checkbox
+        },
+        {
+          withCredentials: true,
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      )
+      .then((res) => {
+        const result = res.data.result;
+        location.href = result.data.checkoutUrl; //redirect user to pay link
+      })
+      .catch((e) => {
+        alert(e.error.errorMessage)
+      })
+  }
 
   return (
     <div>
