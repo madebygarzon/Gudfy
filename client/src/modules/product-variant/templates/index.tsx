@@ -10,7 +10,9 @@ import TableSeller from "../components/table-sellers"
 import TableSellerDefault from "../components/table-sellers/seller_default"
 import { Input, Button } from "@nextui-org/react"
 import { useCart } from "medusa-react"
+
 import { useCartGudfy } from "@lib/context/cart-gudfy"
+
 
 type ProductVariantTemplateProps = {
   product: storeProductVariant
@@ -27,7 +29,9 @@ interface Seller {
 const ProductTemplate: React.FC<ProductVariantTemplateProps> = ({
   product,
 }) => {
+
   const { addItem, existingVariant } = useCartGudfy()
+
 
   const [selectedSeller, setSelectedSeller] = useState<Seller>(
     product.sellers[0]
@@ -64,6 +68,7 @@ const ProductTemplate: React.FC<ProductVariantTemplateProps> = ({
   }
 
   const handlerAddCart = () => {
+
     addItem(
       {
         description: product.title,
@@ -75,6 +80,7 @@ const ProductTemplate: React.FC<ProductVariantTemplateProps> = ({
       amount,
       selectedSeller.store_variant_id
     )
+
   }
   useEffect(() => {
     setAmount(1)
@@ -116,12 +122,13 @@ const ProductTemplate: React.FC<ProductVariantTemplateProps> = ({
       </div>
 
       <div className="w-1/3">
-        <div className="sticky top-[120px] col3 mt-[-35px] w-full small:max-w-[344px] medium:max-w-[400px] flex flex-col gap-y-8 mr-10">
+        <div className="sticky top-[180px] col3 mt-[-35px] w-full small:max-w-[344px] medium:max-w-[400px] flex flex-col gap-y-8 mr-10">
           <div id="product-info">
             <div className="flex flex-col gap-y-12 lg:max-w-[500px] mx-auto">
               <div></div>
             </div>
           </div>
+
 
           <div className="  border border-solid border-gray-200 p-5 rounded-[5px] shadow-lg">
             <TableSellerDefault
@@ -153,19 +160,22 @@ const ProductTemplate: React.FC<ProductVariantTemplateProps> = ({
           </div>
           {existingVariant === selectedSeller.store_variant_id ? (
             <p className="text-red-700 text-sm">
-              El producto ya ha sido seleccionado
+              Este vendedor ya ha sido seleccionado
             </p>
           ) : (
             <></>
           )}
 
+
           <Button
             disabled={amount ? false : true}
             onPress={handlerAddCart}
-            className="bg-[#402e72] hover:bg-blue-gf text-white rounded-[5px] mb-[120px]"
+            className="bg-[#402e72] hover:bg-blue-gf text-white rounded-[5px] mb-[120px] "
           >
             Añadir al Carrito
           </Button>
+
+          
 
           {/* <a className ="mb-[80px]" href="#list-sellers">
             <span className="text-[#402e72] text-sm font-bold">

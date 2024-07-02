@@ -21,6 +21,7 @@ interface lineItem
     "beforeInsert" | "beforeUpdate" | "afterUpdateOrLoad"
   > {
   store_variant_id: string
+
   store: { store_name: string; customer_email: string }
 }
 
@@ -44,6 +45,7 @@ type validateItemExistence = {
 }
 
 export const CartContext = createContext<CartContext | null>(null)
+
 let auxCreateCart = false
 
 export const CartGudfyProvider = ({
@@ -54,6 +56,7 @@ export const CartGudfyProvider = ({
   const [items, setItems] = useState<lineItem[]>([])
   //Cambiar logica para que apunte al id de storeXVariant
   const [existingVariant, setExistingVariant] = useState<string>("")
+
   const [cart, setCart] = useState<Cart>()
 
   useEffect(() => {

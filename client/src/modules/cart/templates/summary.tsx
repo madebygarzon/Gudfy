@@ -11,6 +11,7 @@ interface lineItem
     "beforeInsert" | "beforeUpdate" | "afterUpdateOrLoad"
   > {
   store_variant_id: string
+
   store: { store_name: string; customer_email: string }
 }
 
