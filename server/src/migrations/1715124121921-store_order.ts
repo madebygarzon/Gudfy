@@ -5,7 +5,6 @@ export class StoreOrder1715124121921 implements MigrationInterface {
     await queryRunner.query(`
     CREATE TABLE IF NOT EXISTS "store_order" (
       "id" character varying NOT NULL,
-      "seller_id" character varying NOT NULL,
       "customer_id" character varying NOT NULL,
       "pay_method_id" character varying NOT NULL,
       "order_status_id" character varying NOT NULL,
@@ -22,7 +21,6 @@ export class StoreOrder1715124121921 implements MigrationInterface {
       "created_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
       "updated_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
       CONSTRAINT "PK_store_order" PRIMARY KEY ("id"),
-      CONSTRAINT "FK_store_order_seller_id" FOREIGN KEY ("seller_id") REFERENCES "customer"("id") ON DELETE CASCADE ON UPDATE CASCADE,
       CONSTRAINT "FK_store_order_customer_id" FOREIGN KEY ("customer_id") REFERENCES "customer"("id") ON DELETE CASCADE ON UPDATE CASCADE,
       CONSTRAINT "FK_store_order_pay_method_id" FOREIGN KEY ("pay_method_id") REFERENCES "pay_method"("id") ON DELETE CASCADE ON UPDATE CASCADE,
       CONSTRAINT "FK_store_order_order_status_id" FOREIGN KEY ("order_status_id") REFERENCES "order_status"("id") ON DELETE CASCADE ON UPDATE CASCADE

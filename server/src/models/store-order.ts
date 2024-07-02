@@ -19,13 +19,6 @@ import { OrderDiscussion } from "./order-discussion";
 @Entity()
 export class StoreOrder extends BaseEntity {
   @Column({ nullable: false })
-  seller_id?: string;
-
-  @ManyToOne(() => Customer, (seller) => seller?.sellerorder)
-  @JoinColumn({ name: "seller_id", referencedColumnName: "id" })
-  seller?: Customer[];
-
-  @Column({ nullable: false })
   customer_id?: string;
 
   @ManyToOne(() => Customer, (os) => os?.customerorder)

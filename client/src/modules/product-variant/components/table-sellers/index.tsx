@@ -11,7 +11,7 @@ interface Seller {
   store_id: string
   store_name: string
   email: string
-  amount: number
+  quantity: number
   price: number
 }
 
@@ -103,12 +103,12 @@ const TableSeller: React.FC<TableProps> = ({
                   </td>
 
                   <td className=" w-[20%] p-4">
-                    {seller.amount ? (
+                    {seller.quantity ? (
                       <Badge
                         className="bg-white border-0 shadow-md"
                         color="green"
                       >
-                        Con: {seller.amount} en stock:
+                        Con: {seller.quantity} en stock:
                       </Badge>
                     ) : (
                       <Badge
@@ -135,7 +135,6 @@ const TableSeller: React.FC<TableProps> = ({
                       Añadir al Carrito
                     </Button>
                   </td>
-
                 </tr>
               ))}
             </tbody>

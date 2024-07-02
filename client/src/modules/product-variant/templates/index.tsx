@@ -20,7 +20,7 @@ interface Seller {
   store_id: string
   store_name: string
   email: string
-  amount: number
+  quantity: number
   price: number
 }
 
@@ -44,9 +44,9 @@ const ProductTemplate: React.FC<ProductVariantTemplateProps> = ({
   }
   const handlerAmount = (value: string) => {
     const numberAmount = parseInt(value)
-    if (numberAmount > selectedSeller.amount) {
-      setAmount(selectedSeller.amount)
-      handlerPrice(selectedSeller.amount)
+    if (numberAmount > selectedSeller.quantity) {
+      setAmount(selectedSeller.quantity)
+      handlerPrice(selectedSeller.quantity)
     } else if (numberAmount < 0) {
       setAmount(0)
       handlerPrice(0)

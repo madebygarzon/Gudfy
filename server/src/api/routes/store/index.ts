@@ -17,6 +17,9 @@ import { getListProductVariantWithSellers } from "./get-list-product-variant-wit
 import { getProductVariant } from "./get-store-product-variant";
 import postAddItem from "./post-add-item";
 import getCartItems from "./get-cart-items";
+import getCartVariantStock from "./get-cart-variant-stock";
+import updateLine_item from "./update-line_item";
+import postAddOrder from "./post-add-order";
 
 // Initialize a custom router
 const router = Router();
@@ -83,6 +86,8 @@ export function attachStoreRoutes(storeRouter: Router) {
   // -----------------------------------Endpoins for cart --------------------------------
 
   router.post("/carts/:id/add-item", wrapHandler(postAddItem));
-
+  router.get("/cart/variant-stock", wrapHandler(getCartVariantStock));
   router.get("/cart/items", wrapHandler(getCartItems));
+  router.post("/cart/update-item", wrapHandler(updateLine_item));
+  router.post("/cart/add-order", wrapHandler(postAddOrder));
 }

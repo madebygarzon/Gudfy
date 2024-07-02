@@ -1,9 +1,15 @@
 import { LineItem } from "@medusajs/medusa"
 import Button from "@modules/common/components/button"
 import CartTotals from "@modules/common/components/cart-totals"
+import { postAddOrder } from "../actions/post-addOrder"
 import Link from "next/link"
+import { useState } from "react"
 
-interface lineItem extends LineItem {
+interface lineItem
+  extends Omit<
+    LineItem,
+    "beforeInsert" | "beforeUpdate" | "afterUpdateOrLoad"
+  > {
   store_variant_id: string
   store: { store_name: string; customer_email: string }
 }
@@ -13,6 +19,11 @@ type ItemsTemplateProps = {
 }
 
 const Summary = ({ items }: ItemsTemplateProps) => {
+  const [success, setSuccess] = useState<{ success: false; data: string[] }>({
+    success: false,
+    data: [],
+  })
+
   const handlerTotalPrice = () => {
     let total = 0
     if (items?.length) {
@@ -21,6 +32,12 @@ const Summary = ({ items }: ItemsTemplateProps) => {
       })
     }
     return total
+  }
+
+  const handlerAddOrder = async () => {
+    if (items?.length) {
+      postAddOrder(items).then((e) => {})
+    }
   }
   return (
     <div className="grid grid-cols-1 gap-y-6">
@@ -37,9 +54,20 @@ const Summary = ({ items }: ItemsTemplateProps) => {
           </div>
         </div>
         {/* <CartTotals cart={cart} /> */}
-        <Link href="/checkout">
-          <Button className="rounded-3xl">Ir a pagar</Button>
-        </Link>
+        <Button className="rounded-3xl" onClick={handlerAddOrder}>
+          Ir a pagar
+        </Button>
+
+        {success.success && success.data.length ? (
+          <>
+            hace dalta stock{" "}
+            {success.data.map((e) => (
+              <p>{e}</p>
+            ))}
+          </>
+        ) : (
+          <></>
+        )}
       </div>
     </div>
   )

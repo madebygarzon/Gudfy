@@ -4,6 +4,8 @@ import LineItemRepository from "../repositories/line-item";
 import ProductVariantRepository from "@medusajs/medusa/dist/repositories/product-variant";
 import CartRepository from "@medusajs/medusa/dist/repositories/cart";
 import StoreXVariantRepository from "../repositories/store-x-variant";
+import StoreOrderRepository from "../repositories/store-order";
+import StoreVariantOrderRepository from "../repositories/store-variant-order";
 
 class CartMarketService extends TransactionBaseService {
   static LIFE_TIME = Lifetime.SCOPED;
@@ -11,12 +13,16 @@ class CartMarketService extends TransactionBaseService {
   protected readonly productVariantRepository_: typeof ProductVariantRepository;
   protected readonly cartRepository_: typeof CartRepository;
   protected readonly storeXVariantRepository_: typeof StoreXVariantRepository;
+  protected readonly storeOrderRepository_: typeof StoreOrderRepository;
+  protected readonly storeVariantOrderRepository_: typeof StoreVariantOrderRepository;
 
   constructor({
     lineItemRepository,
     productVariantRepository,
     cartRepository,
     storeXVariantRepository,
+    storeOrderRepository,
+    storeVariantOrderRepository,
   }) {
     super(arguments[0]);
 
@@ -24,13 +30,12 @@ class CartMarketService extends TransactionBaseService {
     this.productVariantRepository_ = productVariantRepository;
     this.cartRepository_ = cartRepository;
     this.storeXVariantRepository_ = storeXVariantRepository;
+    this.storeOrderRepository_ = storeOrderRepository;
+    this.storeVariantOrderRepository_ = storeVariantOrderRepository;
   }
 
   async recoveryCart(cart_id) {
     try {
-      const cartRepo = this.activeManager_.withRepository(
-        this.lineItemRepository_
-      );
       const lineItemsRepo = this.activeManager_.withRepository(
         this.lineItemRepository_
       );
@@ -101,5 +106,144 @@ class CartMarketService extends TransactionBaseService {
       console.log("Error al agregar el itemen el servicio", error);
     }
   }
+
+  async variantAndStock(items) {
+    try {
+      const idsVariants = items.map((item) => item.store_variant_id);
+
+      const storexVariantRepo = this.activeManager_.withRepository(
+        this.storeXVariantRepository_
+      );
+
+      const variantStoc = await storexVariantRepo
+        .createQueryBuilder("sxv")
+        .where("sxv.id IN (:...storeVariantIds)", {
+          storeVariantIds: idsVariants,
+        })
+        .select(["sxv.id AS store_variant_id", "sxv.quantity_store AS stock"])
+        .getRawMany();
+
+      return variantStoc;
+    } catch (error) {
+      console.log("ERROR EN EL SERVICIO DEL CARRITO PORDUCTO POR STOCK");
+    }
+  }
+
+  async updateItemStock(itemId, quantity) {
+    const lineItemsRepo = this.activeManager_.withRepository(
+      this.lineItemRepository_
+    );
+
+    await lineItemsRepo.update(itemId, { quantity: quantity });
+    return;
+  }
+
+  async compareSuccessfulStocks(items) {
+    try {
+      const dataVarianStock = await this.variantAndStock(items);
+
+      const result = compararStock(items, dataVarianStock);
+
+      if (result.length) return result;
+
+      let auxTotalProce = 0;
+      let auxTotalProducts = 0;
+
+      items.map((item) => {
+        auxTotalProce += parseInt(item.unit_price) * item.quantity;
+      });
+      items.map((item) => {
+        auxTotalProducts += item.quantity;
+      });
+
+      const newOrder = await this.createStore_order(
+        auxTotalProce,
+        auxTotalProducts
+      );
+
+      const storeVariantOrderRepo = this.activeManager_.withRepository(
+        this.storeVariantOrderRepository_
+      );
+
+      for (let index = 0; index < items.length; index++) {
+        const newSVO = await storeVariantOrderRepo.create({
+          store_variant_id: items[index].store_variant_id,
+          store_order_id: newOrder.id,
+          quantity: items[index].quantity,
+          total_price: items[index].unit_price * items[index].quantity,
+        });
+        const saveSVO = await storeVariantOrderRepo.save(newSVO);
+
+        await this.reserverStock(
+          items[index].store_variant_id,
+          items[index].quantity
+        );
+      }
+      return;
+    } catch (error) {
+      console.log("ERROR EN EL SERVICIO CREATE ORDER", error);
+    }
+  }
+
+  private async reserverStock(store_variant_id, quantity) {
+    const storeVariantRepo = this.activeManager_.withRepository(
+      this.storeXVariantRepository_
+    );
+    const storeVaraint = await storeVariantRepo.findOne({
+      where: {
+        id: store_variant_id,
+      },
+    });
+    await storeVariantRepo.update(store_variant_id, {
+      quantity_store: storeVaraint.quantity_store - quantity,
+      quantity_reserved: quantity,
+    });
+  }
+
+  private async createStore_order(total_price, quantity) {
+    const storeOrderRepo = this.activeManager_.withRepository(
+      this.storeOrderRepository_
+    );
+
+    const createOrder = await storeOrderRepo.create({
+      customer_id: "cus_01HZM9Q40SDRBS3W7XYMEDD609",
+      pay_method_id: "Secondary_Method_BINANCE_ID",
+      order_status_id: "Payment_Pending_ID",
+      SellerApproved: true,
+      CustomerApproved: false,
+      quantity_products: quantity,
+      total_price: total_price,
+      name: "Jane",
+      last_name: "Smith",
+      email: "jane.smith@example.com",
+      conty: "USA",
+      city: "New York",
+      phone: "123-456-7890",
+    });
+
+    const saveOrder = await storeOrderRepo.save(createOrder);
+
+    return saveOrder;
+  }
 }
+interface Item {
+  store_variant_id: string;
+  stock: number;
+}
+
+function compararStock(arrayEnviado, arrayRecuperado: Item[]): string[] {
+  // Crear un mapa de arrayRecuperado para acceso rápido
+  const mapRecuperado = new Map(
+    arrayRecuperado.map((item) => [item.store_variant_id, item])
+  );
+
+  // Iterar sobre arrayEnviado y comparar los valores
+  return arrayEnviado
+    .filter((enviado) => {
+      const recuperado = mapRecuperado.get(enviado.store_variant_id);
+      return recuperado !== undefined && enviado.stock > recuperado.stock;
+    })
+    .map((item) => item.store_variant_id);
+}
+
 export default CartMarketService;

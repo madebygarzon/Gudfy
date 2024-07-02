@@ -15,7 +15,11 @@ interface variant {
   price: number
 }
 
-interface lineItem extends LineItem {
+interface lineItem
+  extends Omit<
+    LineItem,
+    "beforeInsert" | "beforeUpdate" | "afterUpdateOrLoad"
+  > {
   store_variant_id: string
   store: { store_name: string; customer_email: string }
 }
@@ -51,15 +55,13 @@ export const CartGudfyProvider = ({
   //Cambiar logica para que apunte al id de storeXVariant
   const [existingVariant, setExistingVariant] = useState<string>("")
   const [cart, setCart] = useState<Cart>()
-  const [isCartRetrive, setIsCartRetrive] = useState<boolean>(false)
 
   useEffect(() => {
     if (!auxCreateCart) {
       auxCreateCart = true
       retriveCart()
-      setIsCartRetrive(true)
     }
-  }, [isCartRetrive])
+  }, [cart])
 
   const retriveCart = async () => {
     const id = localStorage.getItem("cart_id")
@@ -136,27 +138,32 @@ export const CartGudfyProvider = ({
     }
   }
   const updateLineItem = (lineItemId: string, quantity: number) => {
-    if (cart && cart.id)
-      axios
-        .post(
-          `<BACKEND_URL>/store/carts/${cart.id}/line-items/${lineItemId}`,
-          {
-            quantity: 3,
+    axios
+      .post(
+        `${process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL}/store//cart/update-item`,
+        {
+          itemId: lineItemId,
+          quantity: quantity,
+        },
+        {
+          withCredentials: true,
+          headers: {
+            "Content-Type": "application/json",
           },
-          {
-            withCredentials: true,
-            headers: {
-              "Content-Type": "application/json",
-            },
+        }
+      )
+      .then(() => {
+        const newItem: lineItem[] = items.map((item) => {
+          if (item.id === lineItemId) {
+            return { ...item, quantity: quantity }
           }
-        )
-        .then((response) => {
-          const { cart } = response.data
-          setCart(cart)
+          return item
         })
-        .catch((error) => {
-          console.error("Error updating line item:", error)
-        })
+        setItems(newItem)
+      })
+      .catch((error) => {
+        console.error("Error updating line item:", error)
+      })
   }
 
   const validateItemExistence = (storeVariantId: string) => {
