@@ -10,11 +10,14 @@ import Thumbnail from "@modules/products/components/thumbnail"
 import { formatAmount, useCart } from "medusa-react"
 import Link from "next/link"
 import Image from "next/image"
+
 import { Fragment, useEffect, useState } from "react"
+
 import { useCartGudfy } from "@lib/context/cart-gudfy"
 
 const CartDropdown = () => {
   //const items = useEnrichedLineItems()
+
   const { items, listItem, deleteLineItem } = useCartGudfy()
 
   const { state, open, close } = useCartDropdown()
