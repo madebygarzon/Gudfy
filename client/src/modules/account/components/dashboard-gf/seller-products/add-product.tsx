@@ -36,7 +36,7 @@ interface listproducts {
 interface CodesResult {
   variantID: string
   codes: string[]
-  amount: number
+  quantity: number
   duplicates: { [key: string]: number } | number
 }
 interface ProductPrice {

@@ -1,22 +1,52 @@
 import { LineItem, Region } from "@medusajs/medusa"
-import Item from "@modules/cart/components/item"
 import Thumbnail from "@modules/products/components/thumbnail"
 import SkeletonLineItem from "@modules/skeletons/components/skeleton-line-item"
 import Trash from "@modules/common/icons/trash"
 import Button from "@modules/common/components/button"
-import { useStore } from "@lib/context/store-context"
 import Link from "next/link"
+import { useCartGudfy } from "@lib/context/cart-gudfy"
+import { useState, useEffect } from "react"
+import { getListVariantAndStock } from "../actions/get-listvariandAndStock"
+import { Avatar } from "@nextui-org/react"
+import { Divider } from "@nextui-org/react"
+import InputSelectStock from "../components/input-stock"
 
-interface lineItem extends LineItem {
+interface lineItem
+  extends Omit<
+    LineItem,
+    "beforeInsert" | "beforeUpdate" | "afterUpdateOrLoad"
+  > {
   store_variant_id: string
   store: { store_name: string; customer_email: string }
 }
 type ItemsTemplateProps = {
   items?: lineItem[]
 }
+type IdStoreVariantAndStock = {
+  store_variant_id: string
+  stock: number
+}[]
 
 const ItemsTemplate = ({ items }: ItemsTemplateProps) => {
-  const { deleteItem } = useStore()
+  const { deleteLineItem, updateLineItem } = useCartGudfy()
+  const [selectProducts, setSelectProducts] = useState<IdStoreVariantAndStock>()
+
+  const handlerVariantStock = async () => {
+    if (items?.length) {
+      const variantStock = await getListVariantAndStock(items)
+      setSelectProducts(variantStock.itemsStock)
+    }
+  }
+
+  const handlerSelectStock = (id: string) => {
+    if (selectProducts?.length)
+      return selectProducts.find((idSV) => idSV.store_variant_id === id)?.stock
+  }
+
+  useEffect(() => {
+    handlerVariantStock()
+  }, [items])
+
   return (
     <div>
       <div className="border-b border-gray-200 pb-3 flex items-center">
@@ -25,83 +55,91 @@ const ItemsTemplate = ({ items }: ItemsTemplateProps) => {
       <div className="grid grid-cols-1 gap-y-8 py-8">
         {items?.length ? (
           <>
-            <div className="overflow-y-scroll max-h-[402px] px-4 grid grid-cols-1 gap-y-8 no-scrollbar">
+            <div className="overflow-y-scroll max-h-[402px] px-4 grid grid-cols-1 gap-y-2 no-scrollbar">
               {items
                 .sort((a, b) => {
                   return a.created_at > b.created_at ? -1 : 1
                 })
                 .map((item) => (
-                  <div
-                    className="grid grid-cols-[122px_1fr] gap-x-4"
-                    key={item.id}
-                  >
-                    <div className="w-[122px]">
-                      <Thumbnail thumbnail={item.thumbnail} size="full" />
-                    </div>
-                    <div className="flex flex-col justify-between flex-1">
-                      <div className="flex flex-col flex-1">
-                        <div className="flex items-start justify-between">
-                          <div>
-                            <h3 className="text-lg  whitespace-nowrap mr-4 ">
-                              {/* <Link
-                                    href={`/products/${item.variant.product.handle}`}
-                                    legacyBehavior
-                                  >
-                                    {item.title}
-                                  </Link> */}
-                              {item.title}
-                            </h3>
-                            <h4 className="text-xs text-slate-400">
-                              Por: {item.store?.store_name}
-                            </h4>
-                            {/* <LineItemOptions variant={item.variant} /> */}
-                            <div className="text-xs text-slate-400">
-                              <p> Cantidad: {item.quantity}</p>
-                              <p> Precio: {item.unit_price} </p>
-                            </div>
-                          </div>
-                          <div className="flex justify-end">
-                            {/* <LineItemPrice
+                  <>
+                    <div className="flex relative w-full justify-between ">
+                      <div
+                        className="grid grid-cols-[122px_1fr] gap-x-4 "
+                        key={item.id}
+                      >
+                        <div className="w-[122px]">
+                          <Thumbnail thumbnail={item.thumbnail} size="full" />
+                        </div>
+                        <div className="flex flex-col justify-between flex-1">
+                          <div className="flex flex-col flex-1">
+                            <div className="flex items-start justify-between">
+                              <div>
+                                <h3 className="text-xl font-bold  whitespace-nowrap mr-4 ">
+                                  {item.title}
+                                </h3>
+                                <div className=" flex first-line:text-slate-400 gap-2 rounded-[5px]  mt-4">
+                                  <Avatar
+                                    size="sm"
+                                    color="secondary"
+                                    className=""
+                                    name={item.store.store_name.charAt(0)}
+                                  />{" "}
+                                  <div>
+                                    <p className="text-base font-semibold">
+                                      {" "}
+                                      {item.store?.store_name}{" "}
+                                    </p>
+                                    <div className="text-xs">
+                                      <p> Precio: {item.unit_price} </p>
+                                      <p>
+                                        Stock:{" "}
+                                        {handlerSelectStock(
+                                          item.store_variant_id
+                                        ) || 0}
+                                      </p>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="flex justify-end">
+                                {/* <LineItemPrice
                                   region={cart.region}
                                   item={item}
                                   style="tight"
                                 /> */}
+                              </div>
+                            </div>
                           </div>
                         </div>
                       </div>
-                      <div className="flex items-end justify-between text-small-regular flex-1">
-                        <div>
-                          <h4 className="text-sm">
-                            Total: ${item.unit_price * item.quantity}
-                          </h4>
+                      <div className="mx-5 flex items-center justify-center text-base w-[50%]">
+                        <InputSelectStock
+                          currentStock={
+                            handlerSelectStock(item.store_variant_id) || 0
+                          }
+                          itemId={item.id}
+                          currentQuantity={item.quantity}
+                          key={item.id}
+                          unitPrice={item.unit_price}
+                          updateLineItem={updateLineItem}
+                        />
+                      </div>
 
-                          <button
-                            className="flex items-center gap-x-1 text-gray-500"
-                            onClick={() => deleteItem(item.id)}
-                          >
-                            <Trash size={14} className="text-red-600" />
-                            <span>Remover</span>
-                          </button>
-                        </div>
+                      <div className="absolute  bottom-0 right-6 gap-2  py-1 px-">
+                        <button
+                          className="flex items-center gap-x-1 text-gray-500"
+                          onClick={() => deleteLineItem(item.id)}
+                        >
+                          <Trash size={15} className="text-red-600" />
+                          <span className="text-sm">Remover</span>
+                        </button>
                       </div>
                     </div>
-                  </div>
+                    <Divider className="my-4" />
+                  </>
                 ))}
             </div>
             <div className="p-4 flex flex-col gap-y-4 text-small-regular">
-              <div className="flex items-center justify-between">
-                <span className="text-gray-700 font-semibold">
-                  Subtotal{" "}
-                  <span className="font-normal">(Impuestos incluidos)</span>
-                </span>
-                <span className="text-large-semi">
-                  {/* {formatAmount({
-                        amount: cart.subtotal || 0,
-                        region: cart.region,
-                        includeTaxes: false,
-                      })} */}
-                </span>
-              </div>
               <Link href="/cart" passHref>
                 <Button className="rounded-30">Ir a pagar</Button>
               </Link>
