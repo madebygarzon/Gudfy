@@ -3,7 +3,8 @@ import Button from "@modules/common/components/button"
 import CartTotals from "@modules/common/components/cart-totals"
 import { postAddOrder } from "../actions/post-addOrder"
 import Link from "next/link"
-import { useState } from "react"
+import React, { useState } from "react"
+import { useRouter } from "next/navigation"
 
 interface lineItem
   extends Omit<
@@ -17,14 +18,12 @@ interface lineItem
 
 type ItemsTemplateProps = {
   items?: lineItem[]
+  setModifyProduct: React.Dispatch<React.SetStateAction<string[]>>
 }
 
-const Summary = ({ items }: ItemsTemplateProps) => {
-  const [success, setSuccess] = useState<{ success: false; data: string[] }>({
-    success: false,
-    data: [],
-  })
-
+const Summary = ({ items, setModifyProduct }: ItemsTemplateProps) => {
+  const [success, setSuccess] = useState<{ success: false; data: string[] }>()
+  const router = useRouter()
   const handlerTotalPrice = () => {
     let total = 0
     if (items?.length) {
@@ -32,12 +31,22 @@ const Summary = ({ items }: ItemsTemplateProps) => {
         total = total + item.unit_price * item.quantity
       })
     }
-    return total
+    return parseFloat(total.toFixed(2))
   }
 
   const handlerAddOrder = async () => {
     if (items?.length) {
-      postAddOrder(items).then((e) => {})
+      postAddOrder(items).then((e) => {
+        if (!e.success) {
+          setSuccess({
+            success: e.success,
+            data: e.data,
+          })
+          setModifyProduct(e.data)
+        } else {
+          router.push("/checkout")
+        }
+      })
     }
   }
   return (
@@ -59,13 +68,10 @@ const Summary = ({ items }: ItemsTemplateProps) => {
           Ir a pagar
         </Button>
 
-        {success.success && success.data.length ? (
-          <>
-            hace dalta stock{" "}
-            {success.data.map((e) => (
-              <p>{e}</p>
-            ))}
-          </>
+        {success && !success.success && success.data.length ? (
+          <div className="text-center text-sm text-slate-400 mt-5">
+            Algunos productos no tienen stock suficiente
+          </div>
         ) : (
           <></>
         )}

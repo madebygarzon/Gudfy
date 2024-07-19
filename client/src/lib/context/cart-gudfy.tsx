@@ -29,6 +29,7 @@ interface CartContext {
   existingVariant: string
   listItem: () => void
   items: lineItem[]
+  cart: Cart | undefined
   addItem: (
     variant: variant,
     quantity: number,
@@ -74,6 +75,7 @@ export const CartGudfyProvider = ({
       })
       .then((response) => {
         const { cart } = response.data
+
         setCart(cart)
       })
       .catch(async (error) => {
@@ -143,7 +145,7 @@ export const CartGudfyProvider = ({
   const updateLineItem = (lineItemId: string, quantity: number) => {
     axios
       .post(
-        `${process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL}/store//cart/update-item`,
+        `${process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL}/store/cart/update-item`,
         {
           itemId: lineItemId,
           quantity: quantity,
@@ -212,6 +214,7 @@ export const CartGudfyProvider = ({
   return (
     <CartContext.Provider
       value={{
+        cart,
         existingVariant,
         items,
         listItem,

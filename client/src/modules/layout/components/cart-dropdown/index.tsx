@@ -122,7 +122,10 @@ const CartDropdown = () => {
                           <div className="flex items-end justify-between text-small-regular flex-1">
                             <div>
                               <h4 className="text-sm">
-                                Total: ${item.unit_price * item.quantity}
+                                Total: $
+                                {parseFloat(
+                                  (item.unit_price * item.quantity).toFixed(2)
+                                )}
                               </h4>
 
                               <button
@@ -141,7 +144,7 @@ const CartDropdown = () => {
                 <div className="p-4 flex flex-col gap-y-4 text-small-regular">
                   <div className="flex items-center justify-between">
                     <span className="text-gray-700 font-semibold">
-                      Subtotal: {subTotal}
+                      Subtotal: {parseFloat(subTotal.toFixed(2))}
                       <span className="font-normal">(Impuestos incluidos)</span>
                     </span>
                     <span className="text-large-semi">

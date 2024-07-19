@@ -20,6 +20,9 @@ import getCartItems from "./get-cart-items";
 import getCartVariantStock from "./get-cart-variant-stock";
 import updateLine_item from "./update-line_item";
 import postAddOrder from "./post-add-order";
+import postCheckout from "./post-checkout";
+import deleteStoreOrder from "./delete-store-order";
+import { getListCustomerOrders } from "./get-list-customer-orders";
 
 // Initialize a custom router
 const router = Router();
@@ -57,8 +60,7 @@ export function attachStoreRoutes(storeRouter: Router) {
   // ---------------------------------Test Endpoins-------------------------------
   //create a store for customer -- admin
   router.post("/account/seller", wrapHandler(postAccountSeller));
-
-  //Seller Application
+  router.get("/account/orders", wrapHandler(getListCustomerOrders));
   router.post(
     "/account/seller-application",
     documents,
@@ -87,7 +89,12 @@ export function attachStoreRoutes(storeRouter: Router) {
 
   router.post("/carts/:id/add-item", wrapHandler(postAddItem));
   router.get("/cart/variant-stock", wrapHandler(getCartVariantStock));
+  router.post("/carts/:id/checkout", wrapHandler(postCheckout));
   router.get("/cart/items", wrapHandler(getCartItems));
   router.post("/cart/update-item", wrapHandler(updateLine_item));
   router.post("/cart/add-order", wrapHandler(postAddOrder));
+
+  //-----------------------------------Endpoins for Store Order ------------------------------------------
+
+  router.delete("/order/:id/order", wrapHandler(deleteStoreOrder));
 }

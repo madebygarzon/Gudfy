@@ -188,10 +188,13 @@ const SellerApplication = () => {
 
   const handlerGetListApplication = async (order?: string) => {
     setIsLoading(true);
-    const dataApplication = await getListSellerApplication(order).then((e) => {
-      setIsLoading(false);
-      return e;
-    });
+    const dataApplication = await getListSellerApplication(order)
+      .then((e) => {
+        setIsLoading(false);
+        return e;
+      })
+      .catch((e) => {});
+    if (!dataApplication) return;
     setPagetotal(Math.ceil(dataApplication.length / rowsPages));
     setDataCustomer({
       dataSellers: dataApplication,
