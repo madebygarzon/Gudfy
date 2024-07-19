@@ -11,6 +11,8 @@ import { Avatar } from "@nextui-org/react"
 import { Divider } from "@nextui-org/react"
 import InputSelectStock from "../components/input-stock"
 
+import { Alert } from "@medusajs/ui"
+
 interface lineItem
   extends Omit<
     LineItem,
@@ -22,13 +24,14 @@ interface lineItem
 }
 type ItemsTemplateProps = {
   items?: lineItem[]
+  modifyProduct?: string[]
 }
 type IdStoreVariantAndStock = {
   store_variant_id: string
   stock: number
 }[]
 
-const ItemsTemplate = ({ items }: ItemsTemplateProps) => {
+const ItemsTemplate = ({ items, modifyProduct }: ItemsTemplateProps) => {
   const { deleteLineItem, updateLineItem } = useCartGudfy()
   const [selectProducts, setSelectProducts] = useState<IdStoreVariantAndStock>()
 
@@ -46,7 +49,7 @@ const ItemsTemplate = ({ items }: ItemsTemplateProps) => {
 
   useEffect(() => {
     handlerVariantStock()
-  }, [items])
+  }, [items, modifyProduct])
 
   return (
     <div>
@@ -93,10 +96,15 @@ const ItemsTemplate = ({ items }: ItemsTemplateProps) => {
                                     <div className="text-xs">
                                       <p> Precio: {item.unit_price} </p>
                                       <p>
-                                        Stock:{" "}
+                                        Stock:
                                         {handlerSelectStock(
                                           item.store_variant_id
-                                        ) || 0}
+                                        ) || (
+                                          <div className="text-center text-red-600 border border-red-600 rounded-[5px] w-auto py-1 px-2">
+                                            {" "}
+                                            Sin stock
+                                          </div>
+                                        )}
                                       </p>
                                     </div>
                                   </div>
@@ -113,19 +121,42 @@ const ItemsTemplate = ({ items }: ItemsTemplateProps) => {
                           </div>
                         </div>
                       </div>
-                      <div className="mx-5 flex items-center justify-center text-base w-[50%]">
-                        <InputSelectStock
-                          currentStock={
-                            handlerSelectStock(item.store_variant_id) || 0
-                          }
-                          itemId={item.id}
-                          currentQuantity={item.quantity}
-                          key={item.id}
-                          unitPrice={item.unit_price}
-                          updateLineItem={updateLineItem}
-                        />
+                      <div className="w-[50%]">
+                        <div className="mx-5  h-full flex items-center justify-start text-base ">
+                          {handlerSelectStock(item.store_variant_id) ? (
+                            <InputSelectStock
+                              currentStock={
+                                handlerSelectStock(item.store_variant_id) || 0
+                              }
+                              itemId={item.id}
+                              currentQuantity={item.quantity}
+                              key={item.id}
+                              unitPrice={item.unit_price}
+                              updateLineItem={updateLineItem}
+                            />
+                          ) : (
+                            <p className="text-rose-600">
+                              No hay cantidad suficiente
+                            </p>
+                          )}
+                        </div>
                       </div>
-
+                      <div className="absolute  top-0 right-0  py-1 px-">
+                        {modifyProduct?.length ? (
+                          modifyProduct.map((itemId) => {
+                            if (itemId === item.store_variant_id)
+                              return (
+                                <>
+                                  <Alert variant="warning">
+                                    Cantidad Insuficiente
+                                  </Alert>
+                                </>
+                              )
+                          })
+                        ) : (
+                          <></>
+                        )}
+                      </div>
                       <div className="absolute  bottom-0 right-6 gap-2  py-1 px-">
                         <button
                           className="flex items-center gap-x-1 text-gray-500"

@@ -12,8 +12,6 @@ class CartMarketService extends TransactionBaseService {
   protected readonly lineItemRepository_: typeof LineItemRepository;
   protected readonly productVariantRepository_: typeof ProductVariantRepository;
   protected readonly cartRepository_: typeof CartRepository;
-
-
   protected readonly storeXVariantRepository_: typeof StoreXVariantRepository;
   protected readonly storeOrderRepository_: typeof StoreOrderRepository;
   protected readonly storeVariantOrderRepository_: typeof StoreVariantOrderRepository;
@@ -22,8 +20,6 @@ class CartMarketService extends TransactionBaseService {
     lineItemRepository,
     productVariantRepository,
     cartRepository,
-
-
     storeXVariantRepository,
     storeOrderRepository,
     storeVariantOrderRepository,
@@ -55,7 +51,6 @@ class CartMarketService extends TransactionBaseService {
       const storeVariantIds = itemsCart.map((item) => item.store_variant_id);
       const uniqueStoreIds = [...new Set(storeVariantIds)];
 
-
       const storesWithCustomers = await storexVariantRepo
         .createQueryBuilder("sxv")
         .innerJoinAndSelect("sxv.store", "s")
@@ -71,7 +66,7 @@ class CartMarketService extends TransactionBaseService {
         .getRawMany();
 
       const storeMap = new Map();
-      console.log("ACA ESTAN LOS DATOS BUSCADOS", storesWithCustomers);
+
       storesWithCustomers.forEach((store) => {
         storeMap.set(store.id, {
           store_name: store.store_name,
@@ -109,7 +104,6 @@ class CartMarketService extends TransactionBaseService {
         store_variant_id: store_variant_id,
       });
       addItem = await lineItemRepo.save(addItem);
-      console.log("DATOS GUARDADOS", addItem);
 
       return addItem;
     } catch (error) {
@@ -206,7 +200,7 @@ class CartMarketService extends TransactionBaseService {
     });
     await storeVariantRepo.update(store_variant_id, {
       quantity_store: storeVaraint.quantity_store - quantity,
-      quantity_reserved: quantity,
+      quantity_reserved: storeVaraint.quantity_store + quantity,
     });
   }
 
@@ -241,19 +235,20 @@ interface Item {
   stock: number;
 }
 
-function compararStock(arrayEnviado, arrayRecuperado: Item[]): string[] {
+function compararStock(arraySent, arrayRecovered: Item[]): string[] {
   // Crear un mapa de arrayRecuperado para acceso rápido
   const mapRecuperado = new Map(
-    arrayRecuperado.map((item) => [item.store_variant_id, item])
+    arrayRecovered.map((item) => [item.store_variant_id, item])
   );
 
   // Iterar sobre arrayEnviado y comparar los valores
-  return arrayEnviado
+  const compareArrays = arraySent
     .filter((enviado) => {
       const recuperado = mapRecuperado.get(enviado.store_variant_id);
-      return recuperado !== undefined && enviado.stock > recuperado.stock;
+      return recuperado !== undefined && enviado.quantity > recuperado.stock;
     })
     .map((item) => item.store_variant_id);
+  return compareArrays;
 }
 
 export default CartMarketService;

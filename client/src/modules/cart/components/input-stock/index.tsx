@@ -36,19 +36,22 @@ const InputSelectStock: React.FC<InputSelectStock> = ({
   }
 
   return (
-    <div className="flex w-full justify-between">
-      <div className="felx">
+    <div className="flex flex-col items-center justify-between ">
+      <span className="flex items-center gap-x-2">
         <span>Cantidad: </span>
+
         <Input
-          className="max-w-[50px] "
+          className="max-w-[70px] "
           color="primary"
           value={`${quantity}`}
           type="number"
           labelPlacement="outside"
           onChange={(e) => handlerAmount(e.target.value)}
         />
-      </div>
-      <span className="text-lg font-bold">Total: ${price}</span>
+      </span>
+      <span className="text-lg mt-5  text-center font-bold">
+        Total: ${price.toFixed(2)}
+      </span>
     </div>
   )
 }
