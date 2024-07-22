@@ -11,6 +11,8 @@ import { attachStoreRoutes } from "./routes/store";
 import { attachAdminRoutes } from "./routes/admin";
 import { attachSellerRoutes } from "./routes/seller";
 import { registerLoggedInCustomer } from "./middlewares/customerLogged";
+import { wrapHandler } from "@medusajs/utils";
+import binancepay_webhook from "./binancepay_webhook";
 
 export default (rootDirectory: string): Router | Router[] => {
   // Read currently-loaded medusa config
@@ -33,6 +35,9 @@ export default (rootDirectory: string): Router | Router[] => {
 
   // Set up express router
   const router = Router();
+
+  // binance pay webhook
+  router.post("/binance_pay/webhook", wrapHandler(binancepay_webhook));
 
   // Set up root routes for store and admin endpoints, with appropriate CORS settings
   router.use("/store", cors(storeCorsOptions), bodyParser.json());

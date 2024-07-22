@@ -11,7 +11,7 @@ import { Tooltip } from "@nextui-org/react"
 interface CodesResult {
   variantID: string
   codes: string[]
-  amount: number
+  quantity: number
   duplicates: { [key: string]: number } | number
 }
 type InputProps = {

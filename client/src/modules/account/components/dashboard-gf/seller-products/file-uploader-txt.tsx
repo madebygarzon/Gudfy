@@ -7,7 +7,7 @@ interface CodesResult {
   storeID?: string
   variantID: string
   codes: string[]
-  amount: number
+  quantity: number
   duplicates: { [key: string]: number } | number
 }
 interface CodesArray {
@@ -54,7 +54,7 @@ const FileUploader: React.FC<CodesArray> = ({ variantID, setAddResult }) => {
       setResult({
         variantID,
         codes: codesArray,
-        amount: codesArray.length,
+        quantity: codesArray.length,
 
         duplicates,
       })
@@ -64,7 +64,7 @@ const FileUploader: React.FC<CodesArray> = ({ variantID, setAddResult }) => {
         {
           variantID,
           codes: codesArray,
-          amount: codesArray.length,
+          quantity: codesArray.length,
 
           duplicates: Object.keys(duplicates).length,
         },
@@ -117,7 +117,7 @@ const FileUploader: React.FC<CodesArray> = ({ variantID, setAddResult }) => {
         {result && (
           <div className=" text-xs ">
             <div>
-              <span>{`Codigos: ${result.amount} `}</span>
+              <span>{`Codigos: ${result.quantity} `}</span>
               {Object.keys(result.duplicates).length > 0 && (
                 <>
                   <span>{`Duplicados: ${

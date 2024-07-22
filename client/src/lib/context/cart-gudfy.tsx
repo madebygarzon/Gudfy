@@ -15,8 +15,11 @@ interface variant {
   price: number
 }
 
-interface lineItem extends LineItem {
-
+interface lineItem
+  extends Omit<
+    LineItem,
+    "beforeInsert" | "beforeUpdate" | "afterUpdateOrLoad"
+  > {
   store_variant_id: string
 
   store: { store_name: string; customer_email: string }
@@ -26,6 +29,7 @@ interface CartContext {
   existingVariant: string
   listItem: () => void
   items: lineItem[]
+  cart: Cart | undefined
   addItem: (
     variant: variant,
     quantity: number,
@@ -45,7 +49,6 @@ export const CartContext = createContext<CartContext | null>(null)
 
 let auxCreateCart = false
 
-
 export const CartGudfyProvider = ({
   children,
 }: {
@@ -56,16 +59,13 @@ export const CartGudfyProvider = ({
   const [existingVariant, setExistingVariant] = useState<string>("")
 
   const [cart, setCart] = useState<Cart>()
-  const [isCartRetrive, setIsCartRetrive] = useState<boolean>(false)
 
   useEffect(() => {
     if (!auxCreateCart) {
       auxCreateCart = true
       retriveCart()
-      setIsCartRetrive(true)
-
     }
-  }, [isCartRetrive])
+  }, [cart])
 
   const retriveCart = async () => {
     const id = localStorage.getItem("cart_id")
@@ -75,6 +75,7 @@ export const CartGudfyProvider = ({
       })
       .then((response) => {
         const { cart } = response.data
+
         setCart(cart)
       })
       .catch(async (error) => {
@@ -101,7 +102,6 @@ export const CartGudfyProvider = ({
   }
 
   const listItem = async () => {
-
     const dataCartId = cart?.id || localStorage.getItem("cart_id")
     if (dataCartId) {
       await axios
@@ -143,33 +143,37 @@ export const CartGudfyProvider = ({
     }
   }
   const updateLineItem = (lineItemId: string, quantity: number) => {
-    if (cart && cart.id)
-      axios
-        .post(
-          `<BACKEND_URL>/store/carts/${cart.id}/line-items/${lineItemId}`,
-          {
-            quantity: 3,
+    axios
+      .post(
+        `${process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL}/store/cart/update-item`,
+        {
+          itemId: lineItemId,
+          quantity: quantity,
+        },
+        {
+          withCredentials: true,
+          headers: {
+            "Content-Type": "application/json",
           },
-          {
-            withCredentials: true,
-            headers: {
-              "Content-Type": "application/json",
-            },
+        }
+      )
+      .then(() => {
+        const newItem: lineItem[] = items.map((item) => {
+          if (item.id === lineItemId) {
+            return { ...item, quantity: quantity }
           }
-        )
-        .then((response) => {
-          const { cart } = response.data
-          setCart(cart)
+          return item
         })
-        .catch((error) => {
-          console.error("Error updating line item:", error)
-        })
+        setItems(newItem)
+      })
+      .catch((error) => {
+        console.error("Error updating line item:", error)
+      })
   }
 
   const validateItemExistence = (storeVariantId: string) => {
     const existence = items?.find(
       (item) => item.store_variant_id === storeVariantId
-
     )
 
     if (existence) {
@@ -185,8 +189,6 @@ export const CartGudfyProvider = ({
     storeVariantId: string
   ) => {
     if (!cart) throw new Error("No hay un carro al cual relacionar el producto")
-
-
 
     if (validateItemExistence(storeVariantId)) return
     const response = await axios
@@ -212,6 +214,7 @@ export const CartGudfyProvider = ({
   return (
     <CartContext.Provider
       value={{
+        cart,
         existingVariant,
         items,
         listItem,

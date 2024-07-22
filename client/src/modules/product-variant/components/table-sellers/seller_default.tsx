@@ -10,7 +10,7 @@ interface Seller {
   store_id: string
   store_name: string
   email: string
-  amount: number
+  quantity: number
   price: number
 }
 
@@ -80,10 +80,9 @@ const TableSellerDefault: React.FC<TableProps> = ({
           </div>
         </div>
         <div className="ml-[-13px] mb-4 ">
-          {sellerWithLowestPrice.amount ? (
+          {sellerWithLowestPrice.quantity ? (
             <Badge className="bg-white border-2 border-white" color="green">
-              En stock: {sellerWithLowestPrice.amount}
-
+              Con Stock: {sellerWithLowestPrice.quantity}
             </Badge>
           ) : (
             <Badge className="bg-white" color="red">

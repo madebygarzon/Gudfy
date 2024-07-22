@@ -1,6 +1,5 @@
 ```
 └── 📁client
-    └── .env.local
     └── .eslintrc.js
     └── .gitignore
     └── .prettierrc
@@ -70,6 +69,8 @@
             └── tether-coin.webp
             └── tether_icon.svg
             └── trust_pilot_icon.webp
+        └── 📁pay
+            └── BinancePayId.webp
         └── 📁product
             └── image_default.svg
             └── stars.svg
@@ -108,6 +109,8 @@
                             └── page.tsx
                             └── 📁products
                                 └── page.tsx
+                                └── 📁[handle]
+                                    └── page.tsx
                 └── 📁blog
                     └── page.tsx
                 └── 📁cart
@@ -133,6 +136,9 @@
                     └── 📁[handle]
                         └── loading.tsx
                         └── page.tsx
+                        └── 📁[productvariant]
+                            └── loading.tsx
+                            └── page.tsx
                 └── 📁store
                     └── page.tsx
                 └── 📁terms-and-conditions
@@ -144,6 +150,7 @@
             └── 📁context
                 └── account-context.tsx
                 └── cart-dropdown-context.tsx
+                └── cart-gudfy.tsx
                 └── category-context.tsx
                 └── checkout-context.tsx
                 └── mobile-menu-context.tsx
@@ -167,6 +174,7 @@
             └── search-client.ts
             └── 📁util
                 └── can-buy.ts
+                └── current-year.tsx
                 └── get-collection-ids.ts
                 └── get-number-of-skeletons.ts
                 └── get-precentage-diff.ts
@@ -191,8 +199,11 @@
                     └── delete-seller-variant.ts
                     └── get-data-categories.ts
                     └── get-data-contryes.ts
+                    └── get-list-product-variants.ts
                     └── get-seller-product.ts
                     └── get-seller-store.ts
+                    └── index.ts
+                    └── post-add-product-variant.ts
                     └── post-seller-product.ts
                     └── updata-seller-product.ts
                 └── 📁components
@@ -209,15 +220,21 @@
                         └── index.tsx
                         └── 📁seller
                             └── apply-for-seller.tsx
+                            └── correction-request.tsx
+                            └── pending-request.tsx
+                            └── rejected-request.tsx
                             └── seller-store.tsx
                         └── 📁seller-products
-                            └── create-product.tsx
+                            └── add-product.tsx
                             └── edit-product.tsx
+                            └── file-uploader-txt.tsx
                             └── index.tsx
                             └── modal-delete-variant.tsx
                             └── product-option-variant.tsx
                             └── product-variatn.tsx
                             └── products-table.tsx
+                            └── request-product.tsx
+                            └── store-product-variant.tsx
                     └── 📁detail-container
                         └── index.tsx
                     └── 📁edit-button
@@ -249,6 +266,8 @@
                         └── index.tsx
                         └── reset-password.tsx
                     └── 📁register
+                        └── index.tsx
+                    └── 📁seller-update-request
                         └── index.tsx
                     └── 📁seller_request_company
                         └── index.tsx
@@ -288,7 +307,11 @@
                         └── index.tsx
                     └── 📁billing_address
                         └── index.tsx
+                    └── 📁checkout-form
+                        └── index.tsx
                     └── 📁checkout-loader
+                        └── index.tsx
+                    └── 📁checkout-virtual-form
                         └── index.tsx
                     └── 📁country-select
                         └── index.tsx
@@ -315,6 +338,8 @@
                     └── 📁step-container
                         └── index.tsx
                 └── 📁templates
+                    └── 📁checkot-form-gudfy
+                        └── index.tsx
                     └── 📁checkout-form
                         └── index.tsx
                     └── 📁checkout-summary
@@ -355,6 +380,8 @@
                         └── index.tsx
                     └── 📁radio
                         └── index.tsx
+                    └── 📁select-input
+                        └── index.tsx
                     └── 📁select_country
                         └── selectNumberCountry.tsx
                     └── 📁textarea
@@ -392,6 +419,10 @@
                     └── wallet.tsx
                     └── x.tsx
             └── 📁home
+                └── 📁actions
+                    └── get-list-product-variant-with-sellers.ts
+                    └── get-product-variant.ts
+                    └── index.ts
                 └── 📁components
                     └── 📁banner
                         └── index.tsx
@@ -465,6 +496,29 @@
                 └── 📁templates
                     └── order-completed-template.tsx
                     └── order-details-template.tsx
+            └── 📁product-variant
+                └── 📁actions
+                    └── index.ts
+                    └── post-product-variant-review.ts
+                └── 📁components
+                    └── 📁product-review
+                        └── card-review.tsx
+                        └── dropdown-card.tsx
+                        └── 📁icons
+                            └── delete-icon.tsx
+                            └── edit-icon.tsx
+                            └── options.svg
+                        └── index.tsx
+                        └── modal-review.tsx
+                        └── progress-stars.tsx
+                        └── stars-review.tsx
+                    └── 📁product-variant-preview
+                        └── index.tsx
+                    └── 📁table-sellers
+                        └── index.tsx
+                        └── seller_default.tsx
+                └── 📁templates
+                    └── index.tsx
             └── 📁products
                 └── 📁components
                     └── 📁image-gallary
@@ -479,17 +533,6 @@
                         └── index.tsx
                     └── 📁product-preview
                         └── index.tsx
-                    └── 📁product-review
-                        └── card-review.tsx
-                        └── dropdown-card.tsx
-                        └── 📁icons
-                            └── delete-icon.tsx
-                            └── edit-icon.tsx
-                            └── options.svg
-                        └── index.tsx
-                        └── modal-review.tsx
-                        └── progress-stars.tsx
-                        └── stars-review.tsx
                     └── 📁product-tabs
                         └── index.tsx
                     └── 📁products-home-gf
@@ -502,6 +545,8 @@
                     └── index.tsx
                     └── 📁product-info
                         └── index.tsx
+            └── 📁progress
+                └── index.tsx
             └── 📁providers
                 └── index.tsx
             └── 📁search
@@ -578,5 +623,4 @@
     └── store.config.json
     └── tailwind.config.js
     └── tsconfig.json
-    ├── uploads
 ```
