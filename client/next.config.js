@@ -1,6 +1,6 @@
-const { withStoreConfig } = require("./store-config");
-const store = require("./store.config.json");
-const path = require("path");
+const { withStoreConfig } = require("./store-config")
+const store = require("./store.config.json")
+const path = require("path")
 
 module.exports = withStoreConfig({
   experimental: {
@@ -14,6 +14,7 @@ module.exports = withStoreConfig({
       "localhost",
       "medusa-server-testing.s3.amazonaws.com",
       "179.61.219.62",
+      "public.bnbstatic.com", //para la QR de Binance
     ],
   },
   webpack: (config, { isServer }) => {
@@ -23,25 +24,25 @@ module.exports = withStoreConfig({
       fallback: {
         ...config.resolve.fallback,
         // assert: require.resolve('assert'),
-        crypto: require.resolve('crypto-browserify'),
+        crypto: require.resolve("crypto-browserify"),
         // http: require.resolve('stream-http'),
         // https: require.resolve('https-browserify'),
         // os: require.resolve('os-browserify/browser'),
-        stream: require.resolve('stream-browserify'),
+        stream: require.resolve("stream-browserify"),
       },
       alias: {
         ...config.resolve.alias,
-        'process': 'process/browser',
+        process: "process/browser",
       },
-    };
+    }
 
     // Configuración adicional para el servidor si es necesario
     if (isServer) {
       // Aquí puedes agregar configuración específica del servidor si es necesario
     }
 
-    return config;
+    return config
   },
-});
+})
 
-console.log("next.config.js", JSON.stringify(module.exports, null, 2));
+console.log("next.config.js", JSON.stringify(module.exports, null, 2))

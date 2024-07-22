@@ -8,7 +8,8 @@ export class StoreXVariant1715088808355 implements MigrationInterface {
           "store_id" character varying NOT NULL,
           "variant_id" character varying NOT NULL,
           "price" float NOT NULL,
-          "ammount_store"  character varying NOT NULL,
+          "quantity_store" integer NOT NULL,
+          "quantity_reserved" integer  NULL,
           "created_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), 
           "updated_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now())`);
     await queryRunner.createPrimaryKey("store_x_variant", ["id"]);

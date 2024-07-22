@@ -17,9 +17,10 @@ type paramsProduct = {
   amount: number
 }
 interface CodesResult {
+  storeID?: string
   variantID: string
   codes: string[]
-  amount: number
+  quantity: number
   duplicates: { [key: string]: number } | number
 }
 

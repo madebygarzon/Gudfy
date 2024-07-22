@@ -36,7 +36,10 @@ export class StoreXVariant extends BaseEntity {
   price?: number;
 
   @Column({ nullable: false })
-  ammount_store?: string;
+  quantity_store?: number;
+
+  @Column({ nullable: true })
+  quantity_reserved?: number;
 
   @OneToMany(() => StoreVariantOrder, (spo) => spo?.store_variant)
   storeVariantOrder?: StoreVariantOrder[];

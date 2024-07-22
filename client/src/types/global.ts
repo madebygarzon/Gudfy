@@ -58,7 +58,7 @@ export type storeProductVariant = {
     store_id: string
     store_name: string
     email: string
-    amount: number
+    quantity: number
     price: number
   }[]
 }

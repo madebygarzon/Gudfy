@@ -29,10 +29,10 @@ const Nav = () => {
     name: "Name user",
     href: "/account/orders",
     items: [
+      { label: "Panel de control", href: "/account"},
       { label: "Mis pedidos", href: "/account/orders" },
       { label: "Editar perfil", href: "/account/profile" },
       { label: "Mi carrito", href: "/cart" },
-      { label: "wallet", href: "/" },
       { label: "Cerrar sesión", href: "/" },
     ],
   }
