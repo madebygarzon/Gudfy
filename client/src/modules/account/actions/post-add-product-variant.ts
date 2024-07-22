@@ -5,7 +5,7 @@ type data = {
   variantID: string
   price?: number | undefined
   codes: string[]
-  amount: number
+  quantity: number
   duplicates: { [key: string]: number } | number
 }[]
 

@@ -1,10 +1,16 @@
 import { LineItem } from "@medusajs/medusa"
 import Button from "@modules/common/components/button"
 import CartTotals from "@modules/common/components/cart-totals"
+import { postAddOrder } from "../actions/post-addOrder"
 import Link from "next/link"
+import React, { useState } from "react"
+import { useRouter } from "next/navigation"
 
-interface lineItem extends LineItem {
-
+interface lineItem
+  extends Omit<
+    LineItem,
+    "beforeInsert" | "beforeUpdate" | "afterUpdateOrLoad"
+  > {
   store_variant_id: string
 
   store: { store_name: string; customer_email: string }
@@ -12,9 +18,12 @@ interface lineItem extends LineItem {
 
 type ItemsTemplateProps = {
   items?: lineItem[]
+  setModifyProduct: React.Dispatch<React.SetStateAction<string[]>>
 }
 
-const Summary = ({ items }: ItemsTemplateProps) => {
+const Summary = ({ items, setModifyProduct }: ItemsTemplateProps) => {
+  const [success, setSuccess] = useState<{ success: false; data: string[] }>()
+  const router = useRouter()
   const handlerTotalPrice = () => {
     let total = 0
     if (items?.length) {
@@ -22,7 +31,23 @@ const Summary = ({ items }: ItemsTemplateProps) => {
         total = total + item.unit_price * item.quantity
       })
     }
-    return total
+    return parseFloat(total.toFixed(2))
+  }
+
+  const handlerAddOrder = async () => {
+    if (items?.length) {
+      postAddOrder(items).then((e) => {
+        if (!e.success) {
+          setSuccess({
+            success: e.success,
+            data: e.data,
+          })
+          setModifyProduct(e.data)
+        } else {
+          router.push("/checkout")
+        }
+      })
+    }
   }
   return (
     <div className="grid grid-cols-1 gap-y-6">
@@ -39,9 +64,17 @@ const Summary = ({ items }: ItemsTemplateProps) => {
           </div>
         </div>
         {/* <CartTotals cart={cart} /> */}
-        <Link href="/checkout">
-          <Button className="rounded-3xl">Ir a pagar</Button>
-        </Link>
+        <Button className="rounded-3xl" onClick={handlerAddOrder}>
+          Ir a pagar
+        </Button>
+
+        {success && !success.success && success.data.length ? (
+          <div className="text-center text-sm text-slate-400 mt-5">
+            Algunos productos no tienen stock suficiente
+          </div>
+        ) : (
+          <></>
+        )}
       </div>
     </div>
   )

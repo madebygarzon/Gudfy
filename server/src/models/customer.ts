@@ -33,9 +33,6 @@ export class Customer extends MedusaCustomer {
   @OneToOne(() => SellerApplication, (seller) => seller?.customer)
   sellerapplications?: SellerApplication[];
 
-  @OneToOne(() => StoreOrder, (seller) => seller?.seller)
-  sellerorder?: SellerApplication[];
-
   @OneToOne(() => StoreOrder, (custo) => custo?.customer)
   customerorder?: SellerApplication[];
 }

@@ -12,14 +12,14 @@ import Link from "next/link"
 import ChevronDown from "@modules/common/icons/chevron-down"
 import { TaskProgressIndicatorCart } from "../../progress/index"
 import { useCartGudfy } from "@lib/context/cart-gudfy"
+import { useState } from "react"
 
 const CartTemplate = () => {
   const { customer, isLoading } = useMeCustomer()
   const { items } = useCartGudfy()
-
+  const [modifyProduct, setModifyProduct] = useState<string[]>([])
 
   if (isLoading) {
-
     return <SkeletonCartPage />
   }
 
@@ -43,18 +43,16 @@ const CartTemplate = () => {
 
       <div className="content-container pt-12">
         {items?.length ? (
-          <div className="grid grid-cols-1 small:grid-cols-[1fr_360px] gap-x-8">
-            <div className="flex flex-col bg-white p-6 gap-y-6">
+          <div className="grid grid-cols-1 small:grid-cols-[1fr_360px] gap-x-8 ">
+            <div className="flex flex-col bg-white p-6 gap-y-6 max-w-[80%]">
               {!customer && <SignInPrompt />}
-              <ItemsTemplate items={items} />
+              <ItemsTemplate items={items} modifyProduct={modifyProduct} />
             </div>
             <div className="relative">
               <div className="flex flex-col gap-y-8 sticky top-12">
-
                 <div className="bg-white p-6">
-                  <Summary items={items} />
+                  <Summary items={items} setModifyProduct={setModifyProduct} />
                 </div>
-
               </div>
             </div>
           </div>

@@ -7,7 +7,7 @@ export class StoreVariantOrder1715125201483 implements MigrationInterface {
           "id" character varying NOT NULL,
           "store_variant_id" character varying NOT NULL,
           "store_order_id" character varying,
-          "amount" integer NOT NULL,
+          "quantity" integer NOT NULL,
           "total_price" numeric,
           "created_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
           "updated_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),

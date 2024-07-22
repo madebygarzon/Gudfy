@@ -33,12 +33,11 @@ export default (rootDirectory: string): Router | Router[] => {
     credentials: true,
   };
 
-  
   // Set up express router
   const router = Router();
 
   // binance pay webhook
-  router.post('/binance_pay/webhook', wrapHandler(binancepay_webhook));
+  router.post("/binance_pay/webhook", wrapHandler(binancepay_webhook));
 
   // Set up root routes for store and admin endpoints, with appropriate CORS settings
   router.use("/store", cors(storeCorsOptions), bodyParser.json());
