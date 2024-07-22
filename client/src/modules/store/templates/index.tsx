@@ -12,6 +12,7 @@ const StoreTemplate = () => {
     <div className="flex flex-col small:flex-row small:items-start py-6">
       <RefinementList refinementList={params} setRefinementList={setParams} />
       <InfiniteProducts params={params} />
+      
     </div>
   )
 }

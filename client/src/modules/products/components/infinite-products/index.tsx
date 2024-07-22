@@ -6,9 +6,11 @@ import { StoreGetProductsParams } from "@medusajs/medusa"
 import ProductPreview from "@modules/products/components/product-preview"
 import SkeletonProductPreview from "@modules/skeletons/components/skeleton-product-preview"
 import { useCart } from "medusa-react"
-import { useEffect, useMemo } from "react"
+import React, { useState, useMemo, useEffect } from "react"
 import { useInView } from "react-intersection-observer"
 import { useInfiniteQuery } from "@tanstack/react-query"
+import { productVariant } from "types/global"
+import ProductVariantPreview from "@modules/product-variant/components/product-variant-preview"
 
 type InfiniteProductsType = {
   params: StoreGetProductsParams
@@ -43,9 +45,9 @@ const InfiniteProducts = ({ params }: InfiniteProductsType) => {
       }
     )
 
-  const previews = usePreviews({ 
-    //pages: data?.pages, 
-    region: cart?.region 
+  const previews = usePreviews({
+    //pages: data?.pages,
+    region: cart?.region,
   })
 
   useEffect(() => {
@@ -54,7 +56,7 @@ const InfiniteProducts = ({ params }: InfiniteProductsType) => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [inView, hasNextPage])
-
+  const [products, setProducts] = useState<productVariant[]>([])
   return (
     <div className="flex-1 content-container">
       <ul className="grid grid-cols-2 small:grid-cols-3 medium:grid-cols-6 gap-x-4 gap-y-8 flex-1">
@@ -81,7 +83,7 @@ const InfiniteProducts = ({ params }: InfiniteProductsType) => {
         className="py-16 flex justify-center items-center text-small-regular text-gray-700"
         ref={ref}
       >
-        <span ref={ref}></span>
+        <span ref={ref}>Test from visual testing</span>
       </div>
     </div>
   )
