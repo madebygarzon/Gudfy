@@ -43,7 +43,7 @@ class StoreXVariantService extends TransactionBaseService {
         })
         .select([
           "sxv.id AS id",
-          "sxv.ammount_store AS amount",
+          "sxv.quantity_store AS quantity",
           "sxv.price AS price",
           "pv.id AS variantid",
           "pv.title AS titlevariant",
@@ -72,7 +72,7 @@ class StoreXVariantService extends TransactionBaseService {
                 store_id: variant.store_id,
                 store_name: variant.store_name,
                 email: variant.customer_email,
-                amount: variant.amount,
+                quantity: variant.quantity,
                 price: variant.price,
               },
             ],
@@ -83,7 +83,7 @@ class StoreXVariantService extends TransactionBaseService {
             store_id: variant.store_id,
             store_name: variant.store_name,
             email: variant.customer_email,
-            amount: variant.amount,
+            quantity: variant.quantity,
             price: variant.price,
           });
       });
@@ -113,7 +113,7 @@ class StoreXVariantService extends TransactionBaseService {
       .leftJoinAndSelect("s.members", "c") // Left join Store con Customer
       .select([
         "sxv.id AS id",
-        "sxv.ammount_store AS amount",
+        "sxv.quantity_store AS quantity",
         "sxv.price AS price",
         "pv.id AS variantID",
         "pv.title AS titleVariant",
@@ -145,7 +145,7 @@ class StoreXVariantService extends TransactionBaseService {
       })
       .select([
         "sxv.id AS id",
-        "sxv.ammount_store AS amount",
+        "sxv.quantity_store AS quantity",
         "sxv.price AS price",
         "pv.id AS variantID",
         "pv.title AS titleVariant",
@@ -169,7 +169,7 @@ class StoreXVariantService extends TransactionBaseService {
       })
       .select([
         "sxv.id AS storeXVariantId",
-        "sxv.ammount_store AS amount",
+        "sxv.quantity_store AS quantity",
         "sxv.price AS price",
         "sxv.store_id AS storeId",
         "sxv.variant_id AS variantId",
@@ -199,7 +199,7 @@ class StoreXVariantService extends TransactionBaseService {
           store_id: this.loggedInCustomer_.store_id,
           variant_id: data.variantID,
           price: data.price,
-          ammount_store: data.amount,
+          quantity_store: data.quantity,
         });
         const productSave = await storeXVaraintRepository.save(productCreate);
 

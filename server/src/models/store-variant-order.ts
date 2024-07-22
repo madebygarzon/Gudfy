@@ -32,7 +32,7 @@ export class StoreVariantOrder extends BaseEntity {
   store_order?: StoreOrder[];
 
   @Column({ nullable: false })
-  amount?: number;
+  quantity?: number;
 
   @Column({ nullable: true })
   total_price?: number;
