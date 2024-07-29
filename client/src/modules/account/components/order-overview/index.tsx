@@ -1,20 +1,52 @@
 import React from "react"
+import type { order } from "../../templates/orders-template"
+import handlerformatDate from "@lib/util/formatDate"
+import clsx from "clsx"
+import Link from "next/link"
+import Timer from "@lib/util/timer-order"
+import { useMeCustomer } from "medusa-react"
 
 type props = {
+  orderData: order
   onClose: () => void
   handlerReset: () => void
 }
-const OrderDetails = ({ onClose, handlerReset }: props) => {
+const OrderDetails = ({ orderData, onClose, handlerReset }: props) => {
+  const { customer } = useMeCustomer()
   return (
     <div className="container mx-auto p-4">
       <div className="mb-8">
-        <p className="text-lg">
-          El pedido <span className="font-bold">#298969</span> se realizó el{" "}
-          <span className="font-bold">2024-07-10 17:34</span> y está actualmente{" "}
-          <span className="font-bold text-red-500">Cancelado</span>.
+        <p className="text-base">
+          El pedido{" "}
+          <span className="font-bold">
+            #{orderData.id.replace("store_order_id_", "")}
+          </span>{" "}
+          se realizó el{" "}
+          <span className="font-bold">
+            {handlerformatDate(orderData.created_at)}
+          </span>{" "}
+          y está actualmente{" "}
+          <span
+            className={clsx("font-bold", {
+              " text-red-500": orderData.state_order === "Cancelado",
+              " text-green-500": orderData.state_order === "Completado",
+              " text-yellow-500": orderData.state_order === "Pendiente de pago",
+              " text-blue-500": orderData.state_order === "Finalizado",
+              " text-orange-500": orderData.state_order === "En discusión",
+            })}
+          >
+            {orderData.state_order}
+          </span>
+          .
+          <span className="flex text-sm gap-1">
+            Cancelacion automatica:
+            <Timer creationTime={orderData.created_at} />
+          </span>
         </p>
       </div>
-
+      <p className="font-bold text-sm">
+        {`Orden por: ${customer?.first_name} ${customer?.last_name} correo: ${customer?.email}`}
+      </p>
       <div className="mb-8">
         <h2 className="text-xl font-semibold mb-4">Detalles del pedido</h2>
         <table className="min-w-full border border-gray-200">
@@ -25,50 +57,57 @@ const OrderDetails = ({ onClose, handlerReset }: props) => {
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td className="py-2 px-4 border-b">
-                Netflix Colombia – 30.000 COP x 3
-                <br />
-                Price: 30.000 COP
+            {orderData.store_variant.map((p) => (
+              <tr className="border-b">
+                <td className="py-2 px-4 border-r  flex justify-between">
+                  <div>
+                    {p.produc_title} – ${p.price} USD x {p.quantity}
+                    <br />
+                  </div>
+                  <div className="text-sm font-light">
+                    <p>por: {p.store_name}</p>
+                    {orderData.state_order === "Completado"}{" "}
+                    <Link className="text-indigo-600 text-xs" href={"/"}>
+                      califica esta tienda
+                    </Link>
+                  </div>
+                </td>
+                <td className="py-2 px-4 border-b ">
+                  ${p.total_price_for_product} USD
+                </td>
+              </tr>
+            ))}
+            <tr className="border-b">
+              <td className="py-2 px-4 border-r">Subtotal:</td>
+              <td className="py-2 px-4 border-r">
+                $
+                {orderData.store_variant.reduce((sum, p) => {
+                  return sum + parseFloat(p.total_price_for_product)
+                }, 0)}{" "}
+                USD
               </td>
-              <td className="py-2 px-4 border-b">$23.02</td>
             </tr>
-            <tr>
-              <td className="py-2 px-4 border-b">Subtotal:</td>
-              <td className="py-2 px-4 border-b">$23.02</td>
-            </tr>
-            <tr>
-              <td className="py-2 px-4 border-b">
+            <tr className="border-b">
+              <td className="py-2 px-4 border-r ">
                 Comisión de la pasarela de pago:
               </td>
-              <td className="py-2 px-4 border-b">$0.23</td>
+              <td className="py-2 px-4 ">$0.23</td>
             </tr>
-            <tr>
-              <td className="py-2 px-4 border-b">Método de pago:</td>
+            <tr className="border-b">
+              <td className="py-2 px-4 border-r">Método de pago:</td>
+              <td className="py-2 px-4 ">Binance Pay Entrega Automática</td>
+            </tr>
+            <tr className="border-b">
+              <td className="py-2 px-4 border-r">Total:</td>
               <td className="py-2 px-4 border-b">
-                Binance Pay Entrega Automática
+                $
+                {orderData.store_variant.reduce((sum, p) => {
+                  return sum + parseFloat(p.total_price_for_product)
+                }, 0.23)}
               </td>
-            </tr>
-            <tr>
-              <td className="py-2 px-4 border-b">Total:</td>
-              <td className="py-2 px-4 border-b">$23.25</td>
             </tr>
           </tbody>
         </table>
-      </div>
-
-      <div>
-        <h2 className="text-xl font-semibold mb-4">Dirección de facturación</h2>
-        <div className="p-4 border border-gray-200">
-          <p className="font-bold">Carlos Garzon</p>
-          <p>Manizales</p>
-          <p className="mt-4">
-            <span className="font-bold">Tel:</span> 3217979089
-          </p>
-          <p>
-            <span className="font-bold">Email:</span> madebygarzon@gmail.com
-          </p>
-        </div>
       </div>
       <div className="w-full"></div>
     </div>
