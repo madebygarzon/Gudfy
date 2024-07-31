@@ -3,7 +3,6 @@ import { LessThan } from "typeorm";
 import {
   AdminPostCollectionsCollectionReq,
   TransactionBaseService,
-  Customer,
 } from "@medusajs/medusa";
 import StoreOrderRepository from "../repositories/store-order";
 import StoreVariantOrderRepository from "../repositories/store-variant-order";
@@ -14,29 +13,74 @@ class StoreOrderService extends TransactionBaseService {
   protected readonly storeOrderRepository_: typeof StoreOrderRepository;
   protected readonly storeVariantOrderRepository_: typeof StoreVariantOrderRepository;
   protected readonly storeXVariantRepository_: typeof StoreXVariantRepository;
-  protected readonly loggedInCustomer_: Customer | null;
-  constructor({
-    storeOrderRepository,
-    storeVariantOrderRepository,
-    storeXVariantRepository,
-    loggedInCustomer,
-  }) {
-    super(arguments[0]);
-    this.loggedInCustomer_ = loggedInCustomer || "";
-    this.storeOrderRepository_ = storeOrderRepository;
-    this.storeVariantOrderRepository_ = storeVariantOrderRepository;
-    this.storeXVariantRepository_ = storeXVariantRepository;
+
+  constructor(container) {
+    // @ts-expect-error prefer-rest-params
+    super(...arguments);
+    this.storeOrderRepository_ = container.storeOrderRepository;
+    this.storeVariantOrderRepository_ = container.storeVariantOrderRepository;
+    this.storeXVariantRepository_ = container.storeXVariantRepository;
   }
 
-  async listCustomerOrders() {
+  async listCustomerOrders(customerId) {
     const repoStoreOrder = this.activeManager_.withRepository(
       this.storeOrderRepository_
     );
-    const listOrder = await repoStoreOrder.find({
-      where: { customer_id: this.loggedInCustomer_.id },
+    const listOrder = await repoStoreOrder
+      .createQueryBuilder("so")
+      .innerJoinAndSelect("so.order_status", "sso")
+      .leftJoinAndSelect("so.storeVariantOrder", "svo")
+      .leftJoinAndSelect("svo.store_variant", "sxv")
+      .innerJoinAndSelect("sxv.variant", "pv")
+      .leftJoinAndSelect("sxv.store", "s")
+      .where("so.customer_id = :customer_id ", { customer_id: customerId })
+      .select([
+        "so.id AS id",
+        "so.pay_method_id AS pay_method_id ",
+        "so.SellerApproved AS SellerApproved",
+        "so.CustomerApproved AS CustomerApproved",
+        "so.quantity_products AS quantity_products ",
+        "so.total_price AS total_price",
+        "so.name AS person_name",
+        "so.last_name AS person_last_name",
+        "so.email AS email",
+        "so.conty AS conty",
+        "so.city AS city",
+        "so.phone AS phone",
+        "so.created_at AS created_at",
+        "svo.quantity AS quantity",
+        "svo.total_price AS total_price_for_product",
+        "sso.state AS state_order",
+        "pv.title AS produc_title",
+        "sxv.price AS price",
+        "s.name AS store_name",
+      ])
+      .getRawMany();
+
+    const orderMap = new Map();
+
+    listOrder.forEach((order) => {
+      const {
+        produc_title,
+        store_name,
+        price,
+        quantity,
+        total_price_for_product,
+        ...rest
+      } = order;
+      if (!orderMap.has(order.id)) {
+        orderMap.set(order.id, { ...rest, store_variant: [] });
+      }
+      orderMap.get(order.id).store_variant.push({
+        produc_title,
+        quantity,
+        total_price_for_product,
+        price,
+        store_name,
+      });
     });
 
-    return listOrder;
+    return Array.from(orderMap.values());
   }
 
   async deleteOrder(idStoreOrder) {
@@ -59,6 +103,8 @@ class StoreOrderService extends TransactionBaseService {
       repoStoreVariantOrder,
       idStoreOrder
     );
+    if (order.customer_id)
+      return repoStoreOrder.update(order.id, { order_status_id: "Cancel_ID" });
     return await repoStoreOrder.remove(order);
   }
 
@@ -100,6 +146,15 @@ class StoreOrderService extends TransactionBaseService {
           storexVariant.quantity_reserved - storeVariants[index].quantity,
       });
     }
+  }
+
+  async updateCancelStoreOrder(orderId) {
+    const repoStoreOrder = this.activeManager_.withRepository(
+      this.storeOrderRepository_
+    );
+    const cancelOrder = await repoStoreOrder.update(orderId, {
+      order_status_id: "Cancel_ID",
+    });
   }
 }
 
