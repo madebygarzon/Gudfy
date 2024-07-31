@@ -1,14 +1,8 @@
 "use client"
 
-import { useState } from "react"
-import { FaEdit } from "react-icons/fa"
+import { useState, useEffect } from "react"
 import React from "react"
-import {
-  Dropdown,
-  DropdownTrigger,
-  DropdownMenu,
-  DropdownItem,
-} from "@nextui-org/react"
+
 import {
   Modal,
   ModalContent,
@@ -23,72 +17,76 @@ import OrderRevie from "../order-overview"
 import { PlusMini } from "@medusajs/icons"
 import { Button as ButtonMedusa } from "@medusajs/ui"
 import Link from "next/link"
+import { getListOrders } from "@modules/account/actions/get-list-orders"
+import { useMeCustomer } from "medusa-react"
+import type { order } from "../../templates/orders-template"
+import handlerformatDate from "@lib/util/formatDate"
+import Timer from "@lib/util/timer-order"
+import { CheckMini, XMarkMini } from "@medusajs/icons"
+import { updateCancelStoreOrder } from "@modules/account/actions/update-cancel-store-order"
+
+type orders = {
+  orders: order[]
+}
 
 interface Ticket {
   id: number
-  status: "Cancelado" | "Por pagar" | "Completado"
+  status: "" | "Por pagar" | "Completado"
   orderNumber: string
   createdAt: string
 }
 
-const fakeData: Ticket[] = [
-  {
-    id: 1,
-    status: "Cancelado",
-    orderNumber: "#298969",
-    createdAt: "2024-07-10 17:34",
-  },
-  {
-    id: 2,
-    status: "Por pagar",
-    orderNumber: "#298968",
-    createdAt: "2024-07-11 10:40",
-  },
-  {
-    id: 3,
-    status: "Completado",
-    orderNumber: "#298958",
-    createdAt: "2024-07-12 16:02",
-  },
-  {
-    id: 4,
-    status: "Completado",
-    orderNumber: "#298952",
-    createdAt: "2024-07-10 10:23",
-  },
-]
-
-const TicketTable: React.FC = () => {
+const TicketTable: React.FC<orders> = ({ orders }) => {
   const handleClose = () => {}
-
+  console.log(orders)
   const handleReset = () => {}
   const [filterStatus, setFilterStatus] = useState<
-    "Cancelado" | "Por pagar" | "Completado" | "all"
+    | "Completado"
+    | "Cancelado"
+    | "Pendiente de pago"
+    | "Finalizado"
+    | "En discusión"
+    | "all"
   >("all")
+  const [selectOrderData, setTelectOrderData] = useState<order>()
 
-  const filteredTickets =
+  const filteredOrder =
     filterStatus === "all"
-      ? fakeData
-      : fakeData.filter((ticket) => ticket.status === filterStatus)
+      ? orders
+      : orders.filter((order) => order.state_order === filterStatus)
 
   const getStatusColor = (
-    status: "Cancelado" | "Por pagar" | "Completado"
+    status:
+      | "Completado"
+      | "Cancelado"
+      | "Pendiente de pago"
+      | "Finalizado"
+      | "En discusión"
   ): string => {
     switch (status) {
+      case "Completado":
+        return "bg-blue-200"
       case "Cancelado":
         return "bg-red-200"
-      case "Por pagar":
+      case "Pendiente de pago":
         return "bg-yellow-200"
-      case "Completado":
+      case "Finalizado":
         return "bg-green-200"
+      case "En discusión":
+        return "bg-orange-300"
       default:
         return ""
     }
   }
   const { isOpen, onOpen, onOpenChange } = useDisclosure()
+
+  function handlerOrderNumber(numberOrder: string) {
+    return numberOrder.replace("store_order_id_", "")
+  }
+
   return (
     <div className="w-full">
-      <div className="mb-8 flex flex-col gap-y-4">
+      <div className="mb-8 flex flex-col gap-y-4 ">
         <h1 className="text-2xl-semi">Mis Ordenes</h1>
       </div>
       <div className="flex flex-col gap-y-8 w-full">
@@ -105,8 +103,9 @@ const TicketTable: React.FC = () => {
                 setFilterStatus(
                   e.target.value as
                     | "Cancelado"
-                    | "Por pagar"
-                    | "Completado"
+                    | "Pendiente de pago"
+                    | "Finalizado"
+                    | "En discusión"
                     | "all"
                 )
               }
@@ -143,28 +142,47 @@ const TicketTable: React.FC = () => {
                 <th className="px-4 py-2  bg-gray-100 text-left">
                   Fecha y hora de Creación
                 </th>
+                <th className="px-4 py-2  bg-gray-100 text-left">
+                  Tiempo a Pagar
+                </th>
                 <th className="px-4 py-2  bg-gray-100 text-left"></th>
               </tr>
             </thead>
             <tbody>
-              {filteredTickets.map((ticket) => (
-                <tr key={ticket.id} className="hover:bg-gray-50">
+              {filteredOrder.map((order) => (
+                <tr key={order.id} className="hover:bg-gray-50">
                   <td className=" py-2">
                     <p
                       className={`${getStatusColor(
-                        ticket.status
+                        order.state_order
                       )} px-4 py-2 rounded-lg `}
                     >
-                      {ticket.status}
+                      {order.state_order}
                     </p>
                   </td>
 
-                  <td className="px-4 py-2 ">{ticket.orderNumber}</td>
-                  <td className="px-4 py-2 ">{ticket.createdAt}</td>
+                  <td className="px-4 py-2 ">{handlerOrderNumber(order.id)}</td>
+                  <td className="px-4 py-2 ">
+                    {handlerformatDate(order.created_at)}
+                  </td>
+                  <td>
+                    {order.state_order === "Pendiente de pago" ? (
+                      <Timer creationTime={order.created_at} />
+                    ) : order.state_order === "Cancelado" ? (
+                      <XMarkMini className="text-red-600" />
+                    ) : order.state_order === "Completado" ? (
+                      <CheckMini className="text-green-600" />
+                    ) : (
+                      <></>
+                    )}
+                  </td>
                   <td className="px-4 py-2  text-center">
                     <ButtonMedusa
                       className=" bg-ui-button-neutral border-ui-button-neutral hover:bg-ui-button-neutral-hover rounded-[5px] text-[#402e72]"
-                      onClick={onOpen}
+                      onClick={() => {
+                        setTelectOrderData(order)
+                        onOpen()
+                      }}
                     >
                       <FaEye />
                       Ver detalle de la orden
@@ -177,6 +195,7 @@ const TicketTable: React.FC = () => {
         </div>
       </div>
       <ModalOrder
+        orderData={selectOrderData}
         handleClose={handleClose}
         handleReset={handleReset}
         isOpen={isOpen}
@@ -187,6 +206,7 @@ const TicketTable: React.FC = () => {
 }
 
 interface ModalOrder {
+  orderData?: order
   isOpen: boolean
   onOpenChange: () => void
   handleClose: () => void
@@ -194,11 +214,15 @@ interface ModalOrder {
 }
 
 const ModalOrder = ({
+  orderData,
   isOpen,
   onOpenChange,
   handleClose,
   handleReset,
 }: ModalOrder) => {
+  async function handlerOrderCancel(orderId: string) {
+    updateCancelStoreOrder(orderId).then(() => {})
+  }
   return (
     <Modal isOpen={isOpen} onOpenChange={onOpenChange} size="5xl">
       <ModalContent>
@@ -206,7 +230,15 @@ const ModalOrder = ({
           <>
             <ModalHeader className="flex flex-col gap-1"></ModalHeader>
             <ModalBody>
-              <OrderRevie onClose={handleClose} handlerReset={handleReset} />
+              {orderData ? (
+                <OrderRevie
+                  orderData={orderData}
+                  onClose={handleClose}
+                  handlerReset={handleReset}
+                />
+              ) : (
+                <>CARGANDO</>
+              )}
             </ModalBody>
             <ModalFooter>
               <p>
@@ -221,6 +253,23 @@ const ModalOrder = ({
                 Si no recibimos ningún reclamo dentro de este período,
                 consideraremos que ha recibido su compra con éxito.
               </p>
+              {orderData?.state_order === "Pendiente de pago" ? (
+                <div className="w-full flex gap-2 justify-end">
+                  <Button className="text-blue-600 bg-transparent border border-blue-600 ">
+                    {" "}
+                    ir a pagar
+                  </Button>{" "}
+                  <Button
+                    className="text-red-600 bg-transparent border border-red-600 "
+                    onClick={() => handlerOrderCancel(orderData.id)}
+                  >
+                    {" "}
+                    Cancelar Orden{" "}
+                  </Button>{" "}
+                </div>
+              ) : (
+                <></>
+              )}
             </ModalFooter>
           </>
         )}

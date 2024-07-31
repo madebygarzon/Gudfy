@@ -23,6 +23,7 @@ import postAddOrder from "./post-add-order";
 import postCheckout from "./post-checkout";
 import deleteStoreOrder from "./delete-store-order";
 import { getListCustomerOrders } from "./get-list-customer-orders";
+import updateCancelStoreOrder from "./update-cancel-store-order";
 
 // Initialize a custom router
 const router = Router();
@@ -60,7 +61,7 @@ export function attachStoreRoutes(storeRouter: Router) {
   // ---------------------------------Test Endpoins-------------------------------
   //create a store for customer -- admin
   router.post("/account/seller", wrapHandler(postAccountSeller));
-  router.get("/account/orders", wrapHandler(getListCustomerOrders));
+  router.get("/account/:id/orders", wrapHandler(getListCustomerOrders));
   router.post(
     "/account/seller-application",
     documents,
@@ -95,6 +96,6 @@ export function attachStoreRoutes(storeRouter: Router) {
   router.post("/cart/add-order", wrapHandler(postAddOrder));
 
   //-----------------------------------Endpoins for Store Order ------------------------------------------
-
+  router.post("/order/:id/cancel-order", wrapHandler(updateCancelStoreOrder));
   router.delete("/order/:id/order", wrapHandler(deleteStoreOrder));
 }
