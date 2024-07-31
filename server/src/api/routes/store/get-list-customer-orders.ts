@@ -5,9 +5,11 @@ export async function getListCustomerOrders(
   res: Response
 ): Promise<void> {
   try {
+    const { id } = req.params;
+
     const productService = req.scope.resolve("storeOrderService");
 
-    const list = await productService.listCustomerOrders();
+    const list = await productService.listCustomerOrders(id);
 
     if (list) {
       res.status(200).send(list);
