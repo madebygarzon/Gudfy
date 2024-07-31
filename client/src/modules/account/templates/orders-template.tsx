@@ -1,3 +1,4 @@
+"use client"
 import React, { useEffect, useState } from "react"
 import TableOrder from "../components/orders-table"
 import { getListOrders } from "../actions/get-list-orders"
