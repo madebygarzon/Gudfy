@@ -24,6 +24,7 @@ import handlerformatDate from "@lib/util/formatDate"
 import Timer from "@lib/util/timer-order"
 import { CheckMini, XMarkMini } from "@medusajs/icons"
 import { updateCancelStoreOrder } from "@modules/account/actions/update-cancel-store-order"
+import { useOrderGudfy } from "@lib/context/order-context"
 
 type orders = {
   orders: order[]
@@ -36,10 +37,11 @@ interface Ticket {
   createdAt: string
 }
 
-const TicketTable: React.FC<orders> = ({ orders }) => {
-  const handleClose = () => {}
-  console.log(orders)
-  const handleReset = () => {}
+const TicketTable: React.FC = () => {
+  const { listOrder, handlerListOrder, isLoading } = useOrderGudfy()
+  const handleReset = () => {
+    //  handlerListOrder()
+  }
   const [filterStatus, setFilterStatus] = useState<
     | "Completado"
     | "Cancelado"
@@ -52,8 +54,8 @@ const TicketTable: React.FC<orders> = ({ orders }) => {
 
   const filteredOrder =
     filterStatus === "all"
-      ? orders
-      : orders.filter((order) => order.state_order === filterStatus)
+      ? listOrder
+      : listOrder?.filter((order) => order.state_order === filterStatus)
 
   const getStatusColor = (
     status:
@@ -83,6 +85,10 @@ const TicketTable: React.FC<orders> = ({ orders }) => {
   function handlerOrderNumber(numberOrder: string) {
     return numberOrder.replace("store_order_id_", "")
   }
+
+  useEffect(() => {
+    handlerListOrder()
+  }, [])
 
   return (
     <div className="w-full">
@@ -119,13 +125,13 @@ const TicketTable: React.FC<orders> = ({ orders }) => {
           <div className="">
             ¿Necesitas ayuda? Crea un ticket:
             <div className="flex justify-center mt-5">
-              <Button
+              <ButtonMedusa
                 className="text-white bg-[#402e72]  hover:bg-[#2c1f57] rounded-[5px]"
-                onPress={onOpen}
+                onClick={onOpen}
               >
                 <FaPlus />
                 Nuevo ticket
-              </Button>
+              </ButtonMedusa>
             </div>
           </div>
         </div>
@@ -149,54 +155,64 @@ const TicketTable: React.FC<orders> = ({ orders }) => {
               </tr>
             </thead>
             <tbody>
-              {filteredOrder.map((order) => (
-                <tr key={order.id} className="hover:bg-gray-50">
-                  <td className=" py-2">
-                    <p
-                      className={`${getStatusColor(
-                        order.state_order
-                      )} px-4 py-2 rounded-lg `}
-                    >
-                      {order.state_order}
-                    </p>
-                  </td>
+              {!isLoading ? (
+                filteredOrder?.map((order) => (
+                  <tr key={order.id} className="hover:bg-gray-50">
+                    <td className=" py-2">
+                      <p
+                        className={`${getStatusColor(
+                          order.state_order
+                        )} px-4 py-2 rounded-lg `}
+                      >
+                        {order.state_order}
+                      </p>
+                    </td>
 
-                  <td className="px-4 py-2 ">{handlerOrderNumber(order.id)}</td>
-                  <td className="px-4 py-2 ">
-                    {handlerformatDate(order.created_at)}
-                  </td>
-                  <td>
-                    {order.state_order === "Pendiente de pago" ? (
-                      <Timer creationTime={order.created_at} />
-                    ) : order.state_order === "Cancelado" ? (
-                      <XMarkMini className="text-red-600" />
-                    ) : order.state_order === "Completado" ? (
-                      <CheckMini className="text-green-600" />
-                    ) : (
-                      <></>
-                    )}
-                  </td>
-                  <td className="px-4 py-2  text-center">
-                    <ButtonMedusa
-                      className=" bg-ui-button-neutral border-ui-button-neutral hover:bg-ui-button-neutral-hover rounded-[5px] text-[#402e72]"
-                      onClick={() => {
-                        setTelectOrderData(order)
-                        onOpen()
-                      }}
-                    >
-                      <FaEye />
-                      Ver detalle de la orden
-                    </ButtonMedusa>
-                  </td>
-                </tr>
-              ))}
+                    <td className="px-4 py-2 ">
+                      {handlerOrderNumber(order.id)}
+                    </td>
+                    <td className="px-4 py-2 ">
+                      {handlerformatDate(order.created_at)}
+                    </td>
+                    <td>
+                      {order.state_order === "Pendiente de pago" ? (
+                        <Timer creationTime={order.created_at} />
+                      ) : order.state_order === "Cancelado" ? (
+                        // <XMarkMini className="text-red-600" />
+                        <p className="text-red-600">Expirado</p>
+                      ) : order.state_order === "Completado" ? (
+                        <CheckMini className="text-green-600" />
+                      ) : order.state_order === "Finalizado" ? (
+                        <CheckMini className="text-green-600" />
+                      ) : order.state_order === "En discusión" ? (
+                        <CheckMini className="text-green-600" />
+                      ) : (
+                        <></>
+                      )}
+                    </td>
+                    <td className="px-4 py-2  text-center">
+                      <ButtonMedusa
+                        className=" bg-ui-button-neutral border-ui-button-neutral hover:bg-ui-button-neutral-hover rounded-[5px] text-[#402e72]"
+                        onClick={() => {
+                          setTelectOrderData(order)
+                          onOpen()
+                        }}
+                      >
+                        <FaEye />
+                        Ver detalle de la orden
+                      </ButtonMedusa>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <>Cargando...</>
+              )}
             </tbody>
           </table>
         </div>
       </div>
       <ModalOrder
         orderData={selectOrderData}
-        handleClose={handleClose}
         handleReset={handleReset}
         isOpen={isOpen}
         onOpenChange={onOpenChange}
@@ -209,7 +225,6 @@ interface ModalOrder {
   orderData?: order
   isOpen: boolean
   onOpenChange: () => void
-  handleClose: () => void
   handleReset: () => void
 }
 
@@ -217,11 +232,13 @@ const ModalOrder = ({
   orderData,
   isOpen,
   onOpenChange,
-  handleClose,
   handleReset,
 }: ModalOrder) => {
   async function handlerOrderCancel(orderId: string) {
-    updateCancelStoreOrder(orderId).then(() => {})
+    updateCancelStoreOrder(orderId).then(() => {
+      onOpenChange()
+      handleReset()
+    })
   }
   return (
     <Modal isOpen={isOpen} onOpenChange={onOpenChange} size="5xl">
@@ -233,7 +250,7 @@ const ModalOrder = ({
               {orderData ? (
                 <OrderRevie
                   orderData={orderData}
-                  onClose={handleClose}
+                  onClose={onOpenChange}
                   handlerReset={handleReset}
                 />
               ) : (
@@ -255,10 +272,12 @@ const ModalOrder = ({
               </p>
               {orderData?.state_order === "Pendiente de pago" ? (
                 <div className="w-full flex gap-2 justify-end">
-                  <Button className="text-blue-600 bg-transparent border border-blue-600 ">
-                    {" "}
-                    ir a pagar
-                  </Button>{" "}
+                  <Link href={"/checkout"}>
+                    <Button className="text-blue-600 bg-transparent border border-blue-600 ">
+                      {" "}
+                      ir a pagar
+                    </Button>{" "}
+                  </Link>
                   <Button
                     className="text-red-600 bg-transparent border border-red-600 "
                     onClick={() => handlerOrderCancel(orderData.id)}
