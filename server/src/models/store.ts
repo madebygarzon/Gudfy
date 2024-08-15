@@ -2,7 +2,7 @@ import { Entity, OneToMany } from "typeorm";
 import { Store as MedusaStore } from "@medusajs/medusa";
 import { Customer } from "./customer";
 import { StoreXVariant } from "./store_x_variant";
-import { ProductReview } from "./product-review";
+import { StoreReview } from "./store-review";
 
 @Entity()
 export class Store extends MedusaStore {
@@ -12,6 +12,6 @@ export class Store extends MedusaStore {
   @OneToMany(() => StoreXVariant, (store) => store?.store)
   store_x_variant?: StoreXVariant[];
 
-  @OneToMany(() => ProductReview, (customer) => customer?.store)
-  reviews?: ProductReview[];
+  @OneToMany(() => StoreReview, (sr) => sr?.store)
+  reviews?: StoreReview[];
 }

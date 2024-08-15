@@ -22,7 +22,7 @@ class StoreOrderService extends TransactionBaseService {
     this.storeXVariantRepository_ = container.storeXVariantRepository;
   }
 
-  async listCustomerOrders(customerId) {
+  async currnetOrder(customerId) {
     const repoStoreOrder = this.activeManager_.withRepository(
       this.storeOrderRepository_
     );
@@ -57,10 +57,85 @@ class StoreOrderService extends TransactionBaseService {
       ])
       .getRawMany();
 
+    const now = new Date();
+    const tenMinutesInMillis = 10 * 60 * 1000;
+    const validOrder = listOrder.find((order) => {
+      if (order.state_order === "Pendiente de pago") {
+        const createdAt = new Date(order.created_at);
+        return now.getTime() - createdAt.getTime() < tenMinutesInMillis;
+      }
+    });
+
+    if (!validOrder) {
+      return null; // No hay pedidos que cumplan con la condición
+    }
+
+    const {
+      produc_title,
+      store_name,
+      price,
+      quantity,
+      total_price_for_product,
+      ...rest
+    } = validOrder;
+
+    const result = {
+      ...rest,
+      store_variant: [
+        {
+          produc_title,
+          quantity,
+          total_price_for_product,
+          price,
+          store_name,
+        },
+      ],
+    };
+
+    return result;
+  }
+
+  async listCustomerOrders(customerId) {
+    const repoStoreOrder = this.activeManager_.withRepository(
+      this.storeOrderRepository_
+    );
+    const listOrder = await repoStoreOrder
+      .createQueryBuilder("so")
+      .innerJoinAndSelect("so.order_status", "sso")
+      .leftJoinAndSelect("so.storeVariantOrder", "svo")
+      .leftJoinAndSelect("svo.store_variant", "sxv")
+      .innerJoinAndSelect("sxv.variant", "pv")
+      .leftJoinAndSelect("sxv.store", "s")
+      .where("so.customer_id = :customer_id ", { customer_id: customerId })
+      .select([
+        "so.id AS id",
+        "so.pay_method_id AS pay_method_id ",
+        "so.SellerApproved AS SellerApproved",
+        "so.CustomerApproved AS CustomerApproved",
+        "so.quantity_products AS quantity_products ",
+        "so.total_price AS total_price",
+        "so.name AS person_name",
+        "so.last_name AS person_last_name",
+        "so.email AS email",
+        "so.conty AS conty",
+        "so.city AS city",
+        "so.phone AS phone",
+        "so.created_at AS created_at",
+        "svo.quantity AS quantity",
+        "svo.total_price AS total_price_for_product",
+        "sso.state AS state_order",
+        "pv.title AS produc_title",
+        "sxv.price AS price",
+        "s.name AS store_name",
+        "s.id AS store_id",
+      ])
+      .getRawMany();
+
     const orderMap = new Map();
 
     listOrder.forEach((order) => {
       const {
+        store_id,
         produc_title,
         store_name,
         price,
@@ -77,6 +152,7 @@ class StoreOrderService extends TransactionBaseService {
         total_price_for_product,
         price,
         store_name,
+        store_id,
       });
     });
 
@@ -126,25 +202,29 @@ class StoreOrderService extends TransactionBaseService {
     repoStoreVariantOrder,
     idStoreOrder
   ) {
-    const storeVariants = await repoStoreVariantOrder.find({
+    const storeVariantsOrder = await repoStoreVariantOrder.find({
       where: {
         store_order_id: idStoreOrder,
       },
     });
 
-    for (let index = 0; index < storeVariants.length; index++) {
+    for (let index = 0; index < storeVariantsOrder.length; index++) {
       const storexVariant = await repoStoreXVariant.findOne({
         where: {
-          id: storeVariants[index].store_variant_id,
+          id: storeVariantsOrder[index].store_variant_id,
         },
       });
 
-      await repoStoreXVariant.update(storeVariants[index].store_variant_id, {
-        quantity_store:
-          storexVariant.quantity_store + storeVariants[index].quantity,
-        quantity_reserved:
-          storexVariant.quantity_reserved - storeVariants[index].quantity,
-      });
+      await repoStoreXVariant.update(
+        storeVariantsOrder[index].store_variant_id,
+        {
+          quantity_store:
+            storexVariant.quantity_store + storeVariantsOrder[index].quantity,
+          quantity_reserved:
+            storexVariant.quantity_reserved -
+            storeVariantsOrder[index].quantity,
+        }
+      );
     }
   }
 
@@ -152,6 +232,14 @@ class StoreOrderService extends TransactionBaseService {
     const repoStoreOrder = this.activeManager_.withRepository(
       this.storeOrderRepository_
     );
+    const repoStoreVariantOrder = this.activeManager_.withRepository(
+      this.storeVariantOrderRepository_
+    );
+    const repoStoreXVariant = this.activeManager_.withRepository(
+      this.storeXVariantRepository_
+    );
+
+    await this.restaureStock(repoStoreXVariant, repoStoreVariantOrder, orderId);
     const cancelOrder = await repoStoreOrder.update(orderId, {
       order_status_id: "Cancel_ID",
     });

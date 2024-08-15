@@ -6,6 +6,7 @@ import CartRepository from "@medusajs/medusa/dist/repositories/cart";
 import StoreXVariantRepository from "../repositories/store-x-variant";
 import StoreOrderRepository from "../repositories/store-order";
 import StoreVariantOrderRepository from "../repositories/store-variant-order";
+import { error } from "console";
 
 class CartMarketService extends TransactionBaseService {
   static LIFE_TIME = Lifetime.SCOPED;
@@ -74,7 +75,6 @@ class CartMarketService extends TransactionBaseService {
         });
       });
 
-      // Mapear los items para incluir el campo store con datos de la tienda y el cliente
       const itemsCartWithStore = itemsCart.map((item) => {
         return {
           ...item,
@@ -189,6 +189,28 @@ class CartMarketService extends TransactionBaseService {
     }
   }
 
+  async deleteItem(idCart, idItem) {
+    const lineItemsRepo = this.activeManager_.withRepository(
+      this.lineItemRepository_
+    );
+    try {
+      if (!idCart || !idItem) throw "Error no proporcionaste idCart o idItem";
+
+      const lineItem = await lineItemsRepo.findOne({
+        where: { cart_id: idCart, id: idItem },
+      });
+      if (!lineItem) {
+        throw new Error("No se encontró el artículo en el carrito");
+      }
+      await lineItemsRepo.remove(lineItem);
+
+      console.log("Artículo eliminado con éxito");
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  //Functions assistant --------------------------------------------
   private async reserverStock(store_variant_id, quantity) {
     const storeVariantRepo = this.activeManager_.withRepository(
       this.storeXVariantRepository_
@@ -236,12 +258,9 @@ interface Item {
 }
 
 function compararStock(arraySent, arrayRecovered: Item[]): string[] {
-  // Crear un mapa de arrayRecuperado para acceso rápido
   const mapRecuperado = new Map(
     arrayRecovered.map((item) => [item.store_variant_id, item])
   );
-
-  // Iterar sobre arrayEnviado y comparar los valores
   const compareArrays = arraySent
     .filter((enviado) => {
       const recuperado = mapRecuperado.get(enviado.store_variant_id);
