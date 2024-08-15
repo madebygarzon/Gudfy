@@ -123,15 +123,12 @@ export const CartGudfyProvider = ({
     if (cart && cart.id) {
       await axios
         .delete(
-          `${process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL}/store/carts/${cart.id}/line-items/${lineItemId}`,
+          `${process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL}/store/cart/${cart.id}/delete-item/${lineItemId}`,
           {
             withCredentials: true,
           }
         )
         .then((response) => {
-          const { cart } = response.data
-
-          setCart(cart)
           setItems((old) => {
             const dataFilter = old.filter((i) => i.id !== lineItemId)
             return dataFilter

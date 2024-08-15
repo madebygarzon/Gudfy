@@ -42,7 +42,8 @@ const FacebookClientSecret = process.env.FACEBOOK_CLIENT_SECRET || "";
 const Auth0ClientId = process.env.AUTH0_CLIENT_ID || "";
 const Auth0ClientSecret = process.env.AUTH0_CLIENT_SECRET || "";
 const Auth0Domain = process.env.AUTH0_DOMAIN || "";
-//const STRIPE_API_KEY = "sk_test_51OsAMNGWkBQgiWFQNpZyue3oVGv3BlBOZVq7T3KQFAv01PM9q4UP9i657uT9smAF5viB010XJ2RApVxfxYf8EcAx005FvWWPsy";
+const STRIPE_API_KEY =
+  "sk_test_51OsAMNGWkBQgiWFQNpZyue3oVGv3BlBOZVq7T3KQFAv01PM9q4UP9i657uT9smAF5viB010XJ2RApVxfxYf8EcAx005FvWWPsy";
 
 const plugins = [
   `medusa-fulfillment-manual`,
