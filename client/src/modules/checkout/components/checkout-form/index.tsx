@@ -2,23 +2,9 @@ import { useEffect, useState } from "react"
 import axios from "axios"
 import type { Selection } from "@nextui-org/react"
 import { useCartGudfy } from "@lib/context/cart-gudfy"
+import { useOrderGudfy } from "@lib/context/order-context"
 import CheckoutSelectPayment from "../checkout-select-payment"
 import BinanceAutomaticPayment from "../binance-automatic-payment"
-
-type dataPay = {
-  currency: string
-  totalFee: string
-  fiatCurrency: string
-  fiatAmount: string
-  prepayId: string
-  terminalType: string
-  expireTime: number
-  qrcodeLink: string
-  qrContent: string
-  checkoutUrl: string
-  deeplink: string
-  universalUrl: string
-}
 
 const methodPayment = [
   "automatic_binance_pay",
@@ -38,9 +24,16 @@ type CompleteForm = {
 }
 const CheckoutForm = () => {
   const { cart } = useCartGudfy()
+  const {
+    isLoadingCurrentOrder,
+    dataPay,
+    currentOrder,
+    handlersubmitPaymentMethod,
+    handlerCurrentOrder,
+  } = useOrderGudfy()
 
   const [checkbox, selectedCheckbox] = useState<string>("automatic_binance_pay")
-  const [dataPay, setDataPay] = useState<dataPay>()
+
   const [selectedKeys, setSelectedKeys] = useState<Selection>(
     new Set([checkbox])
   )
@@ -51,41 +44,26 @@ const CheckoutForm = () => {
   })
 
   useEffect(() => {
+    handlerCurrentOrder()
     setSelectedKeys(new Set([checkbox]))
     if (checkbox) setCompleteForm((com) => ({ ...com, payment: true }))
     else setCompleteForm((com) => ({ ...com, payment: false }))
   }, [checkbox])
 
   const handlersubmit = async () => {
-    const response = await axios
-      .post(
-        `${process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL}/store/carts/${cart?.id}/checkout`,
-        {
-          payment_method: checkbox,
-        },
-        {
-          withCredentials: true,
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      )
-      .then((res) => {
-        const result = res.data.result
-        setDataPay(result.data)
-        // location.href = result.data.checkoutUrl //redirect user to pay link
-      })
-      .catch((e) => {
-        console.log("error binance", e)
-        alert(e.error.message)
-      })
+    await handlersubmitPaymentMethod(checkbox, cart)
   }
 
   return (
     <div>
-      {dataPay ? (
-        <div className="flex justify-center items-center">
-          <BinanceAutomaticPayment data={dataPay} />
+      {isLoadingCurrentOrder ? (
+        <>Cargando...</>
+      ) : dataPay ? (
+        <div
+          className="flex justify-center items-center"
+          key={dataPay.prepayId}
+        >
+          <BinanceAutomaticPayment data={dataPay} currentOrder={currentOrder} />
         </div>
       ) : (
         <CheckoutSelectPayment
