@@ -4,26 +4,25 @@ import { z } from "zod";
 
 export default async (req: Request, res: Response): Promise<void> => {
   const schema = z.object({
-    product_store_variant_id: z.string().min(1),
+    store_id: z.string().min(1),
+    store_order_id: z.string().min(1),
     customer_id: z.string().min(1),
     customer_name: z.string().min(1),
-    display_name: z.string().min(1),
     content: z.string().min(1),
     rating: z.coerce.number().min(0).max(5),
   });
   /* @ts-ignore */
   const { success, error, data } = schema.safeParse(req.body);
-
   if (!success) {
-    //throw new MedusaError(MedusaError.Types.INVALID_DATA, error);
+    throw new MedusaError(MedusaError.Types.INVALID_DATA, error);
   } else {
-    const productReviewService = req.scope.resolve("productReviewService");
+    const productReviewService = req.scope.resolve("storeReviewService");
     productReviewService
       .create(
-        data.product_store_variant_id,
+        data.store_id,
+        data.store_order_id,
         data.customer_id,
         data.customer_name,
-        data.display_name,
         data.content,
         data.rating
       )

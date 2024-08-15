@@ -1,6 +1,6 @@
 import { Router, json } from "express";
 import customRouteHandler from "./custom-route-handler";
-import postProductReviews from "./post-product-reviews";
+import postProductReviews from "./post-store-reviews";
 import postAccountSeller from "./post-account-seller";
 import updateReview from "./update-review";
 import getProductAllReviews from "./get-product-allReviews";
@@ -24,6 +24,9 @@ import postCheckout from "./post-checkout";
 import deleteStoreOrder from "./delete-store-order";
 import { getListCustomerOrders } from "./get-list-customer-orders";
 import updateCancelStoreOrder from "./update-cancel-store-order";
+import { getCurrentOrder } from "./get-current-order";
+import deleteCartItem from "./delete-cart-item";
+import getValidateReview from "./get-validate-review";
 
 // Initialize a custom router
 const router = Router();
@@ -34,11 +37,16 @@ export function attachStoreRoutes(storeRouter: Router) {
   // Define a GET endpoint on the root route of our custom path
 
   // ----------------------EndPoinst for product reviws and stars------------------------
-  router.get("/products/:id/reviews", wrapHandler(getProductAllReviews));
-  router.get("/products/:id/stars", wrapHandler(getStarsProduct));
+  // router.get("/products/:id/reviews", wrapHandler(getProductAllReviews));
+  // router.get("/products/:id/stars", wrapHandler(getStarsProduct));
+
+  router.get(
+    "/store-order/:store_order_id/reviews",
+    wrapHandler(getValidateReview)
+  );
   //create new review
   router.post(
-    "/products/:id/reviews",
+    "/reviews/store-order",
     authenticateCustomer(),
     wrapHandler(postProductReviews)
   );
@@ -62,6 +70,7 @@ export function attachStoreRoutes(storeRouter: Router) {
   //create a store for customer -- admin
   router.post("/account/seller", wrapHandler(postAccountSeller));
   router.get("/account/:id/orders", wrapHandler(getListCustomerOrders));
+  router.get("/account/:id/current-order", wrapHandler(getCurrentOrder));
   router.post(
     "/account/seller-application",
     documents,
@@ -87,7 +96,10 @@ export function attachStoreRoutes(storeRouter: Router) {
   //----------------------------------------------------------------------------------------------------
 
   // -----------------------------------Endpoins for cart --------------------------------
-
+  router.delete(
+    "/cart/:id_cart/delete-item/:id_item",
+    wrapHandler(deleteCartItem)
+  );
   router.post("/carts/:id/add-item", wrapHandler(postAddItem));
   router.get("/cart/variant-stock", wrapHandler(getCartVariantStock));
   router.post("/carts/:id/checkout", wrapHandler(postCheckout));

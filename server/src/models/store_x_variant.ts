@@ -13,7 +13,6 @@ import { ProductVariant } from "./product-variant";
 import { Store } from "./store";
 import { StoreVariantOrder } from "./store-variant-order";
 import { SerialCode } from "./serial-code";
-import { ProductReview } from "./product-review";
 import { LineItem } from "./line-item";
 
 @Entity()
