@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react"
 import { Card, CardHeader, CardBody, CardFooter } from "@nextui-org/react"
 import Link from "next/link"
 import Image from "next/image"
+import { order } from "@lib/context/order-context"
+import Timer from "@lib/util/timer-order"
 type TransactionDetailsProps = {
   data?: {
     currency: string
@@ -17,10 +19,12 @@ type TransactionDetailsProps = {
     deeplink: string
     universalUrl: string
   }
+  currentOrder?: order | null
 }
 
 const BinanceAutomaticPayment: React.FC<TransactionDetailsProps> = ({
   data,
+  currentOrder,
 }) => {
   if (!data) return <></>
   const {
@@ -40,27 +44,27 @@ const BinanceAutomaticPayment: React.FC<TransactionDetailsProps> = ({
 
   const expirationDate = new Date(expireTime).toLocaleString()
 
-  const calculateTimeLeft = () => {
-    const now = Date.now()
-    const timeLeft = expireTime - now
-    const minutes = Math.floor((timeLeft / 1000 / 60) % 60)
-    const seconds = Math.floor((timeLeft / 1000) % 60)
-    return {
-      minutes: minutes > 0 ? minutes : 0,
-      seconds: seconds > 0 ? seconds : 0,
-      timeLeft: timeLeft > 0 ? timeLeft : 0,
-    }
-  }
+  // const calculateTimeLeft = () => {
+  //   const now = Date.now()
+  //   const timeLeft = expireTime - now
+  //   const minutes = Math.floor((timeLeft / 1000 / 60) % 60)
+  //   const seconds = Math.floor((timeLeft / 1000) % 60)
+  //   return {
+  //     minutes: minutes > 0 ? minutes : 0,
+  //     seconds: seconds > 0 ? seconds : 0,
+  //     timeLeft: timeLeft > 0 ? timeLeft : 0,
+  //   }
+  // }
 
-  const [time, setTime] = useState(calculateTimeLeft())
+  // const [time, setTime] = useState(calculateTimeLeft())
 
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setTime(calculateTimeLeft())
-    }, 1000)
+  // useEffect(() => {
+  //   const timer = setInterval(() => {
+  //     setTime(calculateTimeLeft())
+  //   }, 1000)
 
-    return () => clearInterval(timer)
-  }, [])
+  //   return () => clearInterval(timer)
+  // }, [])
 
   return (
     <Card className="p-6 max-w-4xl mx-auto mt-5 mb-10">
@@ -147,9 +151,12 @@ const BinanceAutomaticPayment: React.FC<TransactionDetailsProps> = ({
             Tiempo restante para completar el pago
           </div>
           <div className="text-4xl font-semibold mb-2">
-            {time.minutes < 10 ? "0" : ""}
+            {/* {time.minutes < 10 ? "0" : ""}
             {time.minutes} : {time.seconds < 10 ? "0" : ""}
-            {time.seconds}
+            {time.seconds} */}
+            {currentOrder?.created_at && (
+              <Timer creationTime={currentOrder.created_at} />
+            )}
           </div>
           <div className="text-gray-500 mb-4">
             <span>Minutos</span> : <span>Segundos</span>

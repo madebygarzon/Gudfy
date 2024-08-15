@@ -15,6 +15,7 @@ import { Customer } from "./customer";
 import { PayMethodGudfy } from "./pay-method-gudfy";
 import { OrderStatus } from "./order-state";
 import { OrderDiscussion } from "./order-discussion";
+import { StoreReview } from "./store-review";
 
 @Entity()
 export class StoreOrder extends BaseEntity {
@@ -74,6 +75,9 @@ export class StoreOrder extends BaseEntity {
 
   @OneToMany(() => OrderDiscussion, (spo) => spo?.store_order)
   discussion?: OrderDiscussion[];
+
+  @OneToMany(() => StoreReview, (sr) => sr?.store_order_id)
+  storeReviws?: StoreReview[];
 
   @BeforeInsert()
   private beforeInsert(): void {

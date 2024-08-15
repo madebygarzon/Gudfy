@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react"
+import { useOrderGudfy } from "@lib/context/order-context"
 
 interface TimerProps {
   creationTime: string
@@ -7,6 +8,7 @@ interface TimerProps {
 const Timer: React.FC<TimerProps> = ({ creationTime }) => {
   const [timeLeft, setTimeLeft] = useState<number>(600) // 10 minutos en segundos
   const [isCancelled, setIsCancelled] = useState<boolean>(false)
+  const { handlerListOrder } = useOrderGudfy()
 
   useEffect(() => {
     const calculateTimeLeft = () => {
@@ -18,6 +20,7 @@ const Timer: React.FC<TimerProps> = ({ creationTime }) => {
 
       if (timeDifference >= 600) {
         setIsCancelled(true)
+        //handlerListOrder()
       } else {
         setTimeLeft(600 - timeDifference)
       }
@@ -47,4 +50,3 @@ const Timer: React.FC<TimerProps> = ({ creationTime }) => {
 }
 
 export default Timer
-
