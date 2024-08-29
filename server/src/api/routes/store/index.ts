@@ -27,6 +27,12 @@ import updateCancelStoreOrder from "./update-cancel-store-order";
 import { getCurrentOrder } from "./get-current-order";
 import deleteCartItem from "./delete-cart-item";
 import getValidateReview from "./get-validate-review";
+import postClaim from "./post-claim";
+import updateFinishedOrder from "./update-finished-order";
+import { getListClaim } from "./get-list-claim";
+import { getListClaimComments } from "./get-list-claim-comments";
+import postAddComment from "./post-add-comment";
+import { getListSellerClaim } from "./get-list-seller-claim";
 
 // Initialize a custom router
 const router = Router();
@@ -110,4 +116,12 @@ export function attachStoreRoutes(storeRouter: Router) {
   //-----------------------------------Endpoins for Store Order ------------------------------------------
   router.post("/order/:id/cancel-order", wrapHandler(updateCancelStoreOrder));
   router.delete("/order/:id/order", wrapHandler(deleteStoreOrder));
+  router.post("/order/:id/finished-order", wrapHandler(updateFinishedOrder));
+
+  //-----------------------------------Endpoins for Order Claim ------------------------------------------
+  router.get("/claim/:id/orders", wrapHandler(getListClaim));
+  router.get("/claim/:id/seller/orders", wrapHandler(getListSellerClaim));
+  router.post("/claim", wrapHandler(postClaim));
+  router.get("/claim/:id/comment", wrapHandler(getListClaimComments));
+  router.post("/claim/customer/add-comment", wrapHandler(postAddComment));
 }

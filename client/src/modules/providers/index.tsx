@@ -10,6 +10,7 @@ import { MedusaProvider, CartProvider } from "medusa-react"
 import { NextUIProvider } from "@nextui-org/react"
 import { CategoryProvider } from "@lib/context/category-context"
 import { OrderGudfyProvider } from "@lib/context/order-context"
+import { SellerStoreProvider } from "@lib/context/seller-store"
 
 export default function Providers({ children }: { children: React.ReactNode }) {
   return (
@@ -27,7 +28,9 @@ export default function Providers({ children }: { children: React.ReactNode }) {
                 <AccountProvider>
                   <OrderGudfyProvider>
                     <NextUIProvider>
-                      <CategoryProvider>{children}</CategoryProvider>
+                      <SellerStoreProvider>
+                        <CategoryProvider>{children}</CategoryProvider>
+                      </SellerStoreProvider>
                     </NextUIProvider>
                   </OrderGudfyProvider>
                 </AccountProvider>
