@@ -76,9 +76,9 @@ const OrderDetails = ({ orderData, onClose }: props) => {
           <span
             className={clsx("font-bold", {
               " text-red-500": orderData.state_order === "Cancelado",
-              " text-green-500": orderData.state_order === "Completado",
+              " text-blue-500": orderData.state_order === "Completado",
               " text-yellow-500": orderData.state_order === "Pendiente de pago",
-              " text-blue-500": orderData.state_order === "Finalizado",
+              " text-green-500": orderData.state_order === "Finalizado",
               " text-orange-500": orderData.state_order === "En discusión",
             })}
           >
@@ -119,7 +119,7 @@ const OrderDetails = ({ orderData, onClose }: props) => {
                     </div>
                     <div className="text-sm font-light">
                       <p>Vendido por: {p.store_name}</p>
-                      {orderData.state_order === "Completado" ? (
+                      {orderData.state_order === "Finalizado" ? (
                         <>
                           {!loading ? (
                             stores.includes(p.store_id) ? (

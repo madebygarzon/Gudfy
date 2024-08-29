@@ -14,7 +14,7 @@ import { StoreVariantOrder } from "./store-variant-order";
 import { Customer } from "./customer";
 import { PayMethodGudfy } from "./pay-method-gudfy";
 import { OrderStatus } from "./order-state";
-import { OrderDiscussion } from "./order-discussion";
+import { OrderClaim } from "./order-claim";
 import { StoreReview } from "./store-review";
 
 @Entity()
@@ -72,9 +72,6 @@ export class StoreOrder extends BaseEntity {
 
   @OneToMany(() => StoreVariantOrder, (spo) => spo?.store_order)
   storeVariantOrder?: StoreVariantOrder[];
-
-  @OneToMany(() => OrderDiscussion, (spo) => spo?.store_order)
-  discussion?: OrderDiscussion[];
 
   @OneToMany(() => StoreReview, (sr) => sr?.store_order_id)
   storeReviws?: StoreReview[];

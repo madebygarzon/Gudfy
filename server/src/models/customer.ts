@@ -12,6 +12,8 @@ import { Store } from "./store";
 import { SellerApplication } from "./seller-application";
 import { CustomerRole } from "./customer-role";
 import { StoreOrder } from "./store-order";
+import { OrderClaim } from "./order-claim";
+import { ClaimComment } from "./claim-comment";
 
 @Entity()
 export class Customer extends MedusaCustomer {
@@ -35,4 +37,10 @@ export class Customer extends MedusaCustomer {
 
   @OneToOne(() => StoreOrder, (custo) => custo?.customer)
   customerorder?: SellerApplication[];
+
+  @OneToMany(() => OrderClaim, (claim) => claim?.store_variant_order)
+  claim?: OrderClaim[];
+
+  @OneToMany(() => ClaimComment, (claim) => claim?.customer)
+  comments?: ClaimComment[];
 }
