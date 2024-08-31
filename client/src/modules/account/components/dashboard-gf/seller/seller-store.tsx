@@ -9,8 +9,12 @@ import Image from "next/image"
 import { useCustomerOrders, useMeCustomer } from "medusa-react"
 import { Progress } from "@nextui-org/react"
 
-const CustomerStore = (store: any) => {
-  const { orders } = useCustomerOrders()
+type store = {
+  id: string
+  name: string
+}
+
+const CustomerStore: React.FC<store> = (store) => {
   const { customer } = useMeCustomer()
   return (
     <div className="w-full pb-5">
@@ -38,13 +42,15 @@ const CustomerStore = (store: any) => {
           title="Productos"
           description=" Crea, edita y gestiona tus productos"
           href="/account/seller/products"
+          store={store}
         />
 
         <CardItemsDashboard
           image="/account/metricas.svg"
           title="Ordenes"
           description=" Mira el proseso de tus ordenes"
-          href="/account/profile"
+          href="/account/seller/orders"
+          store={store}
         />
 
         <CardItemsDashboard
@@ -52,6 +58,7 @@ const CustomerStore = (store: any) => {
           title="Ventas"
           description="Gestiona y analisa tus ventas"
           href="/account/profile"
+          store={store}
         />
 
         <CardItemsDashboard
@@ -59,6 +66,7 @@ const CustomerStore = (store: any) => {
           title="Ayuda"
           description="Contactanos"
           href="/account/profile"
+          store={store}
         />
       </div>
     </div>
@@ -71,6 +79,7 @@ interface CardDasboard {
   title: string
   description: string
   href: string
+  store: store
 }
 
 const CardItemsDashboard: React.FC<CardDasboard> = ({

@@ -1,8 +1,10 @@
 "use client"
 import React, { useEffect, useState } from "react"
-import TableOrder from "../components/orders-table"
+//import TableOrder from "../components/seller-orders-table"
 import { Tabs, Tab, Card, CardBody } from "@nextui-org/react"
-import ClaimTable from "../components/order-claim-table.ts"
+import ClaimSellerTable from "../components/order-claim-seller-table"
+import { getStore } from "../actions/get-seller-store"
+import type { SellerCredentials } from "types/global"
 
 export type order = {
   id: string
@@ -37,24 +39,31 @@ export type order = {
   ]
 }
 
-const OrdersTemplate = () => {
+interface SellerRole {
+  application: boolean
+  state: string
+  comment: string
+  application_data: SellerCredentials & { id: string }
+}
+
+const SellerOrdersTemplate = () => {
   return (
     <div className="w-full">
       <div className="mb-8 flex flex-col gap-y-4">
-        <h1 className="text-2xl-semi">Compras , ordenes, reclamos</h1>
+        <h1 className="text-2xl-semi"> Gestiona tus ventas y reclamos</h1>
         <p className="text-base-regular">
-          Vea sus pedidos anteriores y su estado. También puedes crear
-          devoluciones o cambios para sus pedidos si es necesario.
+          Vea sus pedidos mas recientes y sus estados. También puedes
+          interactuar con las ordenes o reclamos
         </p>
       </div>
       <div>
         <div className="flex w-full flex-col">
           <Tabs aria-label="Options">
-            <Tab key="Orders" title="Mis Ordenes">
+            <Tab key="Orders" title="Ordenes">
               <Card>
                 <CardBody>
                   <div className="flex w-full flex-col">
-                    <TableOrder />
+                    {/* //  <TableOrder /> */}
                   </div>
                 </CardBody>
               </Card>
@@ -62,7 +71,7 @@ const OrdersTemplate = () => {
             <Tab key="Reclamos" title="Reclamos">
               <Card>
                 <CardBody>
-                  <ClaimTable />
+                  <ClaimSellerTable />
                 </CardBody>
               </Card>
             </Tab>
@@ -78,4 +87,4 @@ const OrdersTemplate = () => {
   )
 }
 
-export default OrdersTemplate
+export default SellerOrdersTemplate

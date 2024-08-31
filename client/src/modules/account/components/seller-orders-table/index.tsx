@@ -41,7 +41,7 @@ interface Ticket {
   createdAt: string
 }
 
-const TicketTable: React.FC = () => {
+const SellerOrderTable: React.FC = () => {
   const { listOrder, handlerListOrder, isLoading } = useOrderGudfy()
   const handleReset = () => {
     handlerListOrder()
@@ -140,7 +140,7 @@ const TicketTable: React.FC = () => {
           </div>
         </div>
         <div className="overflow-x-auto">
-          <table className="min-w-full bg-white  rounded-lg shadow-md">
+          {/* <table className="min-w-full bg-white  rounded-lg shadow-md">
             <thead>
               <tr>
                 <th className="px-4 py-2  bg-gray-100 text-left">
@@ -212,7 +212,7 @@ const TicketTable: React.FC = () => {
                 <>Cargando...</>
               )}
             </tbody>
-          </table>
+          </table> */}
         </div>
       </div>
       <ModalOrder
@@ -283,4 +283,4 @@ const ModalOrder = ({
   )
 }
 
-export default TicketTable
+export default SellerOrderTable
