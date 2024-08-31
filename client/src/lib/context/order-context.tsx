@@ -36,12 +36,13 @@ export type order = {
     | "En discusión"
   store_variant: [
     {
-      produc_title: string
-      total_price_for_product: string
-      quantity: string
-      price: string
-      store_name: string
       store_id: string
+      store_name: string
+      store_variant_order_id: string
+      produc_title: string
+      price: string
+      quantity: string
+      total_price_for_product: string
     }
   ]
 }
@@ -59,6 +60,16 @@ type dataPay = {
   deeplink: string
   universalUrl: string
 }
+export type orderClaim = {
+  id: string
+  status_claim: boolean
+  created_at: string
+  quantity: number
+  price_unit: number
+  number_order: string
+  store_name: string
+  product_name: string
+}
 
 interface orderContext {
   isLoading: boolean
@@ -70,6 +81,10 @@ interface orderContext {
   setDataPay: react.Dispatch<SetStateAction<dataPay | undefined>>
   listOrder: order[] | null
   currentOrder: order | null
+  handlerListOrderClaim: () => void
+  handlerListSellerOrderClaim: (id: string) => void
+  isLoadingClaim: boolean
+  listOrderClaim: orderClaim[] | null
 }
 
 export const OrderContext = createContext<orderContext | null>(null)
@@ -82,9 +97,13 @@ export const OrderGudfyProvider = ({
   const { customer } = useMeCustomer()
   const [dataPay, setDataPay] = useState<dataPay>() // determina si hay algun pago pendiente
   const [isLoading, setIsLoading] = useState<boolean>(true)
+  const [isLoadingClaim, setIsLoadingClaim] = useState<boolean>(true)
   const [isLoadingCurrentOrder, setIsLoadingCurrentOrder] =
     useState<boolean>(true)
   const [listOrder, setLisOrder] = useState<order[] | null>(null)
+  const [listOrderClaim, setListOrderClaim] = useState<orderClaim[] | null>(
+    null
+  )
   const [currentOrder, setCurrentOrderr] = useState<order | null>(null)
 
   const handlerListOrder = () => {
@@ -131,6 +150,50 @@ export const OrderGudfyProvider = ({
       })
   }
 
+  const handlerListOrderClaim = async () => {
+    try {
+      setIsLoadingClaim(true)
+      const orders = await axios
+        .get(
+          `${process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL}/store/claim/${customer?.id}/orders`,
+          {
+            withCredentials: true,
+          }
+        )
+        .then((order) => {
+          console.log(order.data)
+          setListOrderClaim(order.data)
+          setIsLoadingClaim(false)
+        })
+    } catch (error) {
+      console.error("Error al obtener los reclamos:", error)
+      throw error
+    }
+  }
+
+  const handlerListSellerOrderClaim = async (idStore?: string) => {
+    setIsLoadingClaim(true)
+    try {
+      const orders = await axios
+        .get(
+          `${process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL}/store/claim/${idStore}/seller/orders`,
+          {
+            withCredentials: true,
+          }
+        )
+        .then((order) => {
+          setListOrderClaim(order.data)
+          setIsLoadingClaim(false)
+        })
+    } catch (error) {
+      console.error(
+        "Error al obtener los reclamos por parte del vendedor:",
+        error
+      )
+      throw error
+    }
+  }
+
   return (
     <OrderContext.Provider
       value={{
@@ -143,6 +206,10 @@ export const OrderGudfyProvider = ({
         listOrder,
         dataPay,
         setDataPay,
+        handlerListOrderClaim,
+        handlerListSellerOrderClaim,
+        listOrderClaim,
+        isLoadingClaim,
       }}
     >
       {children}

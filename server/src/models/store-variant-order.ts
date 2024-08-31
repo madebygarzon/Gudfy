@@ -11,6 +11,7 @@ import {
 } from "typeorm";
 import { StoreXVariant } from "./store_x_variant";
 import { StoreOrder } from "./store-order";
+import { OrderClaim } from "./order-claim";
 
 @Entity()
 export class StoreVariantOrder extends BaseEntity {
@@ -36,6 +37,9 @@ export class StoreVariantOrder extends BaseEntity {
 
   @Column({ nullable: true })
   total_price?: number;
+
+  @OneToMany(() => OrderClaim, (claim) => claim?.store_variant_order)
+  claim?: OrderClaim[];
 
   @BeforeInsert()
   private beforeInsert(): void {

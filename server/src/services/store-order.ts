@@ -121,6 +121,7 @@ class StoreOrderService extends TransactionBaseService {
         "so.city AS city",
         "so.phone AS phone",
         "so.created_at AS created_at",
+        "svo.id AS store_variant_order_id",
         "svo.quantity AS quantity",
         "svo.total_price AS total_price_for_product",
         "sso.state AS state_order",
@@ -136,8 +137,9 @@ class StoreOrderService extends TransactionBaseService {
     listOrder.forEach((order) => {
       const {
         store_id,
-        produc_title,
         store_name,
+        store_variant_order_id,
+        produc_title,
         price,
         quantity,
         total_price_for_product,
@@ -147,12 +149,13 @@ class StoreOrderService extends TransactionBaseService {
         orderMap.set(order.id, { ...rest, store_variant: [] });
       }
       orderMap.get(order.id).store_variant.push({
+        store_id,
+        store_name,
+        store_variant_order_id,
         produc_title,
+        price,
         quantity,
         total_price_for_product,
-        price,
-        store_name,
-        store_id,
       });
     });
 
@@ -227,7 +230,15 @@ class StoreOrderService extends TransactionBaseService {
       );
     }
   }
-
+  async updateStatus(orderId, order_status) {
+    const repoStoreOrder = this.activeManager_.withRepository(
+      this.storeOrderRepository_
+    );
+    const cancelOrder = await repoStoreOrder.update(orderId, {
+      order_status_id: order_status,
+    });
+    return cancelOrder;
+  }
   async updateCancelStoreOrder(orderId) {
     const repoStoreOrder = this.activeManager_.withRepository(
       this.storeOrderRepository_
