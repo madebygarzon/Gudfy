@@ -13,6 +13,8 @@ import { StoreOrder } from "./store-order";
 import { StoreVariantOrder } from "./store-variant-order";
 import { Customer } from "./customer";
 import { ClaimComment } from "./claim-comment";
+import { StatusOrderClaim } from "./status-order-claim";
+import { NotificationGudfy } from "./notification-gudfy";
 
 @Entity()
 export class OrderClaim extends BaseEntity {
@@ -30,11 +32,18 @@ export class OrderClaim extends BaseEntity {
   @JoinColumn({ name: "customer_id", referencedColumnName: "id" })
   customer?: Customer;
 
-  @Column({ type: "boolean", nullable: false })
-  status_claim: boolean;
+  @Column({ nullable: false })
+  status_order_claim_id: string;
+
+  @ManyToOne(() => StatusOrderClaim, (soc) => soc?.order_claim)
+  @JoinColumn({ name: "status_order_claim_id", referencedColumnName: "id" })
+  status_order_claim?: StatusOrderClaim;
 
   @OneToMany(() => ClaimComment, (comment) => comment?.order_claim)
-  comments?: OrderClaim[];
+  comments?: ClaimComment[];
+
+  @OneToMany(() => NotificationGudfy, (noti) => noti?.order_claim)
+  notifications?: NotificationGudfy[];
 
   @BeforeInsert()
   private beforeInsert(): void {
