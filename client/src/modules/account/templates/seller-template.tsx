@@ -10,6 +10,8 @@ import Spinner from "@modules/common/icons/spinner"
 import CorrectionApplication from "../components/dashboard-gf/seller/correction-request"
 import RejectedApplication from "../components/dashboard-gf/seller/rejected-request"
 import type { SellerCredentials } from "types/global"
+import { Store } from "@medusajs/medusa"
+import { useSellerStoreGudfy } from "@lib/context/seller-store"
 
 interface SellerRole {
   application: boolean
@@ -17,11 +19,17 @@ interface SellerRole {
   comment: string
   application_data: SellerCredentials & { id: string }
 }
+
+type store = {
+  id: string
+  name: string
+}
 const SupplierTemplate: React.FC = () => {
   const [isloading, setIsloading] = useState<boolean>(true)
   const [isSeller, setIsSeller] = useState<SellerRole>()
-  const [store, setStore] = useState()
+
   const [reset, useReset] = useState(false)
+  const { storeSeller, handlerGetSellerStore } = useSellerStoreGudfy()
 
   const functiongetData = async () => {
     const dataSellerApplication = await actionGetSellerApplication().then(
@@ -32,8 +40,7 @@ const SupplierTemplate: React.FC = () => {
     )
 
     if (dataSellerApplication?.state === "aprobada") {
-      const dataStore = await getStore()
-      setStore(dataStore)
+      await handlerGetSellerStore()
     }
     setIsloading(false)
   }
@@ -55,7 +62,11 @@ const SupplierTemplate: React.FC = () => {
     <>
       {!isSeller?.application && <ApplyForSeller handlerReset={handlerReset} />}
       {isSeller?.state === "aprobada" &&
-        (store ? <SellerStore store={store} /> : <Spinner size="32" />)}
+        (storeSeller ? (
+          <SellerStore id={storeSeller.id} name={storeSeller.name} />
+        ) : (
+          <Spinner size="32" />
+        ))}
       {(isSeller?.state === "pendiente" || isSeller?.state === "corregido") && (
         <PendingRequest />
       )}
