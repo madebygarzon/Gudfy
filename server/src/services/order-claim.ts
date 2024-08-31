@@ -6,11 +6,16 @@ import {
 } from "@medusajs/medusa";
 import { OrderClaimRepository } from "../repositories/order-claim";
 import { ClaimCommentRepository } from "../repositories/claim-comment";
+import { NotificationGudfyRepository } from "../repositories/notification-gudfy";
+import StoreVariantOrderRepository from "src/repositories/store-variant-order";
 
 class OrderClaimService extends TransactionBaseService {
   static LIFE_TIME = Lifetime.SCOPED;
   protected readonly orderClaimRepository_: typeof OrderClaimRepository;
   protected readonly claimCommentRepository_: typeof ClaimCommentRepository;
+  protected readonly notificationGudfyRepository_: typeof NotificationGudfyRepository;
+  protected readonly storeVariantOrderRepository_: typeof StoreVariantOrderRepository;
+
   // protected readonly commentOwnerRepository_: typeof ClaimCommentRepository;
 
   constructor(container) {
@@ -18,16 +23,25 @@ class OrderClaimService extends TransactionBaseService {
     super(...arguments);
     this.orderClaimRepository_ = container.orderClaimRepository;
     this.claimCommentRepository_ = container.claimCommentRepository;
+    this.notificationGudfyRepository_ = container.notificationGudfyRepository;
+    this.storeVariantOrderRepository_ = container.storeVariantOrderRepository;
   }
 
   async addClaim(claim, idCustoemr) {
     const repoOrderClaim = this.activeManager_.withRepository(
       this.orderClaimRepository_
     );
+    const repoStoreVariantOrder = this.activeManager_.withRepository(
+      this.storeVariantOrderRepository_
+    );
+    const repoNotification = this.activeManager_.withRepository(
+      this.notificationGudfyRepository_
+    );
+
     const add = await repoOrderClaim.create({
       store_variant_order_id: claim.store_variant_order_id,
       customer_id: idCustoemr,
-      status_claim: true,
+      status_order_claim_id: "OPEN_ID",
     });
     const claimSave = await repoOrderClaim.save(add);
 
@@ -39,6 +53,19 @@ class OrderClaimService extends TransactionBaseService {
     });
 
     console.log("SE LOGRO LA INSERCION DE LA RECLAMACION", claimSave);
+
+    const selecSeller = await repoStoreVariantOrder
+      .createQueryBuilder("svo")
+      .leftJoinAndSelect("svo.store_variant", "sxv")
+      .leftJoinAndSelect("sxv.store", "s")
+      .leftJoinAndSelect("s.members", "c")
+      .where("svo.id = :store_variant_order_id", {
+        store_variant_order_id: claim.store_variant_order_id,
+      })
+      .select(["c.id AS seller_id"])
+      .getRawMany();
+
+    const addNotification = repoNotification.create({});
   }
 
   async retriveListClaimCustomer(idCustomer) {
@@ -59,7 +86,7 @@ class OrderClaimService extends TransactionBaseService {
       .where("oc.customer_id = :customer_id", { customer_id: idCustomer })
       .select([
         "oc.id AS id",
-        "oc.status_claim AS status_claim",
+        "oc.status_order_claim_id AS status_order_claim_id",
         "oc.created_at AS created_at",
         "svo.quantity AS quantity",
         "svo.store_order_id AS number_order",
@@ -87,13 +114,16 @@ class OrderClaimService extends TransactionBaseService {
       .where("s.id = :store_id", { store_id: idStore })
       .select([
         "oc.id AS id",
-        "oc.status_claim AS status_claim",
+        "oc.status_order_claim_id AS status_order_claim_id",
         "oc.created_at AS created_at",
         "svo.quantity AS quantity",
         "svo.store_order_id AS number_order",
         "sxv.price AS price_unit",
         "s.name AS store_name",
         "v.title AS product_name",
+        "c.first_name AS customer_name",
+        "c.last_name AS customer_last_name",
+        "c.email AS customer_email",
       ])
       .getRawMany();
     return listClaim;
@@ -124,6 +154,16 @@ class OrderClaimService extends TransactionBaseService {
     });
 
     return listClaimCommnets;
+  }
+
+  async updateClaimStatus(idClaim, status) {
+    const repoOrderClaim = this.activeManager_.withRepository(
+      this.orderClaimRepository_
+    );
+
+    const update = await repoOrderClaim.update(idClaim, {
+      status_order_claim_id: status,
+    });
   }
 }
 

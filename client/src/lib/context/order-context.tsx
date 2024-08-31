@@ -62,13 +62,16 @@ type dataPay = {
 }
 export type orderClaim = {
   id: string
-  status_claim: boolean
+  status_order_claim_id: string
   created_at: string
   quantity: number
   price_unit: number
   number_order: string
   store_name: string
   product_name: string
+  customer_last_name?: string
+  customer_name?: string
+  customer_email?: string
 }
 
 interface orderContext {
@@ -161,7 +164,6 @@ export const OrderGudfyProvider = ({
           }
         )
         .then((order) => {
-          console.log(order.data)
           setListOrderClaim(order.data)
           setIsLoadingClaim(false)
         })

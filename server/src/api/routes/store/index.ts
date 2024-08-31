@@ -33,6 +33,7 @@ import { getListClaim } from "./get-list-claim";
 import { getListClaimComments } from "./get-list-claim-comments";
 import postAddComment from "./post-add-comment";
 import { getListSellerClaim } from "./get-list-seller-claim";
+import updateClaimStatus from "./update-claim-status";
 
 // Initialize a custom router
 const router = Router();
@@ -124,4 +125,5 @@ export function attachStoreRoutes(storeRouter: Router) {
   router.post("/claim", wrapHandler(postClaim));
   router.get("/claim/:id/comment", wrapHandler(getListClaimComments));
   router.post("/claim/customer/add-comment", wrapHandler(postAddComment));
+  router.post("/claim/update-status", wrapHandler(updateClaimStatus));
 }
