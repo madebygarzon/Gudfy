@@ -314,7 +314,7 @@ const ModalClaimComment = ({
                   <div className="flex gap-2  mt-2">
                     <Button
                       className="bg-orange-600 text-white"
-                      onClick={() => handlerStatusClaim("SOLVED")}
+                      onClick={() => handlerStatusClaim("UNSOLVED")}
                       isLoading={isLoadingStatus}
                     >
                       Solicitar Administrador
