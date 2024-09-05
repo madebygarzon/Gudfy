@@ -18,5 +18,7 @@ export class CommentOwner1724424894173 implements MigrationInterface {
     );
   }
 
-  public async down(queryRunner: QueryRunner): Promise<void> {}
+  public async down(queryRunner: QueryRunner): Promise<void> {
+    await queryRunner.query(`DROP TABLE "comment_owner"`);
+  }
 }
