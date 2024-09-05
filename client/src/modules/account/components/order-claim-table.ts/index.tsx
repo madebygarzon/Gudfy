@@ -33,16 +33,11 @@ import ModalOrderCancel from "../order-status/cancel"
 import ModalOrderFinished from "../order-status/finished"
 import { getListClaimComments } from "@modules/account/actions/get-list-claim-comments"
 import { postAddComment } from "@modules/account/actions/post-add-comment"
+import { updateStatusClaim } from "@modules/account/actions/update-status-claim"
+import clsx from "clsx"
 
 type orders = {
   orders: order[]
-}
-
-interface Ticket {
-  id: number
-  status: "" | "Por pagar" | "Completado"
-  orderNumber: string
-  createdAt: string
 }
 
 const ClaimTable: React.FC = () => {
@@ -50,9 +45,10 @@ const ClaimTable: React.FC = () => {
     useOrderGudfy()
   const [selectOrderClaim, setSelectOrderClaim] = useState<orderClaim>()
   const handleReset = () => {
-    //  handlerListOrder()
+    handlerListOrderClaim()
   }
   const [comments, setComments] = useState<ClaimComments[]>()
+  const [storeName, setStoreName] = useState<string>()
   const { isOpen, onOpen, onOpenChange } = useDisclosure()
 
   function handlerOrderNumber(numberOrder: string) {
@@ -60,6 +56,7 @@ const ClaimTable: React.FC = () => {
   }
 
   const handlerSelectClaimOrder = (claim: orderClaim) => {
+    setStoreName(claim.store_name)
     getListClaimComments(claim?.id).then((e) => {
       setComments(e)
       onOpen()
@@ -114,11 +111,25 @@ const ClaimTable: React.FC = () => {
               {!isLoadingClaim ? (
                 listOrderClaim?.map((claim) => (
                   <tr key={claim.id} className="hover:bg-gray-50">
-                    <td className=" py-2">
-                      {claim.status_claim ? (
-                        <p>En proceso</p>
+                    <td>
+                      {claim.status_order_claim_id === "OPEN_ID" ? (
+                        <div className="mx-1 p-3 bg-blue-200 rounded-md">
+                          En proceso
+                        </div>
+                      ) : claim.status_order_claim_id === "CANCEL_ID" ? (
+                        <div className="mx-1 p-3 bg-green-200 rounded-md">
+                          Cerrada
+                        </div>
+                      ) : claim.status_order_claim_id === "UNSOLVED_ID" ? (
+                        <div className="mx-1 p-3 bg-orange-200 rounded-md">
+                          Escalada al Administrador
+                        </div>
                       ) : (
-                        <p> Terminado</p>
+                        claim.status_order_claim_id === "SOLVED_ID" && (
+                          <div className="mx-1 p-2 bg-green-200 rounded-md">
+                            Cerrada
+                          </div>
+                        )
                       )}
                     </td>
                     <td className=" py-2">
@@ -159,6 +170,7 @@ const ClaimTable: React.FC = () => {
         handleReset={handleReset}
         isOpen={isOpen}
         onOpenChange={onOpenChange}
+        storeName={storeName}
       />
     </div>
   )
@@ -178,6 +190,7 @@ interface ModalClaimComment {
   isOpen: boolean
   onOpenChange: () => void
   handleReset: () => void
+  storeName?: string
 }
 
 const ModalClaimComment = ({
@@ -186,15 +199,21 @@ const ModalClaimComment = ({
   isOpen,
   onOpenChange,
   handleReset,
+  storeName,
 }: ModalClaimComment) => {
   const [newComment, setNewComment] = useState<string>()
+  const [isLoadingStatus, setIsLoadingStatus] = useState<{
+    solved: boolean
+    cancel: boolean
+    unsolved: boolean
+  }>({ solved: false, cancel: false, unsolved: false })
   const { customer } = useMeCustomer()
   const handlerSubmitComment = () => {
     const dataComment = {
       comment: newComment,
       order_claim_id: comments?.[0].order_claim_id,
       customer_id: customer?.id,
-      comment_owner_id: "COMMENT_STORE_ID",
+      comment_owner_id: "COMMENT_CUSTOMER_ID",
     }
 
     postAddComment(dataComment).then((e) => {
@@ -219,19 +238,44 @@ const ModalClaimComment = ({
     })
   }
 
+  const handlerStatusClaim = (status: string) => {
+    setIsLoadingStatus((old) => {
+      let selectStatus
+      switch (status) {
+        case "CANCEL":
+          selectStatus = { ...old, cancel: true }
+          break
+        case "SOLVED":
+          selectStatus = { ...old, solved: true }
+          break
+        case "UNSOLVED":
+          selectStatus = { ...old, unsolved: true }
+          break
+        default:
+          selectStatus = old
+      }
+      return selectStatus
+    })
+    updateStatusClaim(comments?.[0].order_claim_id || " ", status).then(() => {
+      handleReset()
+      onOpenChange()
+    })
+  }
+
   return (
     <Modal
       isOpen={isOpen}
       onOpenChange={onOpenChange}
       scrollBehavior={"inside"}
+      size="3xl"
     >
       <ModalContent>
         {(onClose) => (
           <>
             <ModalHeader className="flex flex-col gap-1">
-              Conversación
+              Conversación con la tienda de {storeName}
             </ModalHeader>
-            <ModalBody className=" justify-end  ">
+            <ModalBody className=" justify-end  min-h-[400px] ">
               {comments?.map((comment) => (
                 <div
                   className={`flex w-full   ${
@@ -241,6 +285,11 @@ const ModalClaimComment = ({
                   }`}
                 >
                   <div className="my-1 px-3 py-1 bg-slate-200 border rounded-[10px]">
+                    <p className="text-xs">
+                      {comment.comment_owner_id === "COMMENT_CUSTOMER_ID"
+                        ? ""
+                        : "Tienda"}
+                    </p>
                     {comment.comment}
                   </div>
                 </div>
@@ -253,6 +302,8 @@ const ModalClaimComment = ({
                   <Input
                     value={newComment}
                     size="sm"
+                    className="border rounded-[10px]"
+                    radius="sm"
                     endContent={
                       <ButtonMedusa
                         onClick={handlerSubmitComment}
@@ -265,10 +316,36 @@ const ModalClaimComment = ({
                     onValueChange={setNewComment}
                   />{" "}
                 </div>
-                <div>
-                  Esta comversacion mollit dolor eiusmod sunt ex incididunt
-                  cillum quis. Velit duis sit officia eiusmod Lorem aliqua enim
-                  laboris do dolor eiusmod.
+                <div className="my-4 mx-2">
+                  <p className="text-sm">
+                    {" "}
+                    Estimado cliente, tiene varias opciones disponibles para
+                    proceder con su reclamación. Por favor, actúe según su
+                    preferencia para avanzar en el proceso.
+                  </p>
+                  <div className="flex gap-2  mt-2">
+                    {/* <Button
+                      className="bg-green-600 text-white"
+                      onClick={() => handlerStatusClaim("SOLVED")}
+                      isLoading={isLoadingStatus.solved}
+                    >
+                      Resolver
+                    </Button> */}
+                    <Button
+                      className="bg-green-600 text-white"
+                      onClick={() => handlerStatusClaim("CANCEL")}
+                      isLoading={isLoadingStatus.cancel}
+                    >
+                      Cerrar Reclamo
+                    </Button>
+                    <Button
+                      className="bg-orange-600 text-white"
+                      onClick={() => handlerStatusClaim("UNSOLVED")}
+                      isLoading={isLoadingStatus.unsolved}
+                    >
+                      Escalar a administrador
+                    </Button>
+                  </div>
                 </div>
               </div>
               {/* <Button color="danger" variant="light" onPress={onClose}>
