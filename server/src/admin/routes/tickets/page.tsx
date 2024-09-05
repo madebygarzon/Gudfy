@@ -84,7 +84,7 @@ const fakeData = [
   },
 ];
 
-const SellerApplication = () => {
+const TicketsListado = () => {
   const [dataCustomer, setDataCustomer] = useState({
     dataSellers: fakeData,
     dataFilter: [],
@@ -366,4 +366,4 @@ export const config: RouteConfig = {
     // icon: CustomIcon,
   },
 };
-export default SellerApplication;
+export default TicketsListado;
