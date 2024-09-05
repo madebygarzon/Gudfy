@@ -3,6 +3,7 @@ import React, { useState } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { useAccount } from "@lib/context/account-context"
+import NotificationGudfy from "../notification-gudfy"
 
 type DropdownProps = {
   name: string
@@ -27,6 +28,7 @@ const DropdownGudFy: React.FC<DropdownProps> = ({ name, items }) => {
           height={32}
         />
         {name}
+        <NotificationGudfy />
         <svg
           className="-mr-1 h-5 w-5"
           xmlns="http://www.w3.org/2000/svg"
