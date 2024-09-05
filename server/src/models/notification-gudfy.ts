@@ -36,6 +36,9 @@ export class NotificationGudfy extends BaseEntity {
   @JoinColumn({ name: "customer_id", referencedColumnName: "id" })
   customer?: Customer;
 
+  @Column({ nullable: false })
+  seen_status: boolean;
+
   @BeforeInsert()
   private beforeInsert(): void {
     this.id = generateEntityId(this.id, "notification_gudfy_");

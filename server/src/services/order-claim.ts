@@ -65,7 +65,14 @@ class OrderClaimService extends TransactionBaseService {
       .select(["c.id AS seller_id"])
       .getRawMany();
 
-    const addNotification = repoNotification.create({});
+    const newNotification = await repoNotification.create({
+      order_claim_id: claimSave.id,
+      customer_id: selecSeller[0].seller_id,
+      notification_type_id: "NOTI_CLAIM_ID",
+      seen_status: true,
+    });
+
+    const saveNotificaction = await repoNotification.save(newNotification);
   }
 
   async retriveListClaimCustomer(idCustomer) {
@@ -126,6 +133,7 @@ class OrderClaimService extends TransactionBaseService {
         "c.email AS customer_email",
       ])
       .getRawMany();
+
     return listClaim;
   }
 
