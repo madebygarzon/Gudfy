@@ -5,6 +5,7 @@ import { Tabs, Tab, Card, CardBody } from "@nextui-org/react"
 import ClaimSellerTable from "../components/order-claim-seller-table"
 import { getStore } from "../actions/get-seller-store"
 import type { SellerCredentials } from "types/global"
+import SellerOrderTable from "../components/seller-orders-table"
 
 export type order = {
   id: string
@@ -63,7 +64,7 @@ const SellerOrdersTemplate = () => {
               <Card>
                 <CardBody>
                   <div className="flex w-full flex-col">
-                    {/* //  <TableOrder /> */}
+                    <SellerOrderTable />
                   </div>
                 </CardBody>
               </Card>

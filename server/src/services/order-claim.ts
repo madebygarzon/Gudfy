@@ -52,8 +52,6 @@ class OrderClaimService extends TransactionBaseService {
       customer_id: idCustoemr,
     });
 
-    console.log("SE LOGRO LA INSERCION DE LA RECLAMACION", claimSave);
-
     const selecSeller = await repoStoreVariantOrder
       .createQueryBuilder("svo")
       .leftJoinAndSelect("svo.store_variant", "sxv")
@@ -172,6 +170,22 @@ class OrderClaimService extends TransactionBaseService {
     const update = await repoOrderClaim.update(idClaim, {
       status_order_claim_id: status,
     });
+  }
+  async listProductsInClaim(idStore) {
+    const repoOrderClaim = this.activeManager_.withRepository(
+      this.orderClaimRepository_
+    );
+
+    const listProductInClame = await repoOrderClaim
+      .createQueryBuilder("oc")
+      .leftJoinAndSelect("oc.store_variant_order", "svo")
+      .where("svo.store_order_id = :store_order_id", {
+        store_order_id: idStore,
+      })
+      .select(["svo.id "])
+      .getRawMany();
+
+    return listProductInClame.map((e) => e.id);
   }
 }
 
