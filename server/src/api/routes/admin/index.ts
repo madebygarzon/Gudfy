@@ -7,6 +7,10 @@ import getCommentSellerApplication from "./seller/get-comment-seller-application
 import UpdateSellerAplication from "./seller/update-seller-application";
 import updateCommentSellerApplication from "./seller/update-comment-seller-application";
 import { registerLoggedInCustomer } from "../../middlewares/customerLogged";
+import getListClaimAdmin from "./get-list-claim-admin";
+import { getClaimComments } from "./get-claim-comments";
+import postAddComments from "./post-add-comments";
+import updateClaimStatus from "../store/update-claim-status";
 
 // Initialize a custom router
 const router = Router();
@@ -38,6 +42,13 @@ export function attachAdminRoutes(adminRouter: Router) {
     "/commentsellerapplication",
     wrapHandler(updateCommentSellerApplication)
   );
+
+  //reclamaciones
+
+  router.get("/list-claim-orders", wrapHandler(getListClaimAdmin));
+  router.get("/claim/:id/comment", wrapHandler(getClaimComments));
+  router.post("/claim/admin/add-comment", wrapHandler(postAddComments));
+  router.post("/claim/update-status", wrapHandler(updateClaimStatus));
 
   // Attach routes for onboarding experience, defined separately
   onboardingRoutes(adminRouter);
