@@ -19,7 +19,6 @@ import { Button as ButtonMedusa } from "@medusajs/ui"
 import Link from "next/link"
 import { getListOrders } from "@modules/account/actions/get-list-orders"
 import { useMeCustomer } from "medusa-react"
-import type { order } from "../../templates/orders-template"
 import handlerformatDate from "@lib/util/formatDate"
 import Timer from "@lib/util/timer-order"
 import { CheckMini, XMarkMini } from "@medusajs/icons"
@@ -29,10 +28,7 @@ import ModalOrderComplete from "../order-status/complete"
 import ModalOrderPending from "../order-status/pay-pending"
 import ModalOrderCancel from "../order-status/cancel"
 import ModalOrderFinished from "../order-status/finished"
-
-type orders = {
-  orders: order[]
-}
+import { SellerOrder, useSellerStoreGudfy } from "@lib/context/seller-store"
 
 interface Ticket {
   id: number
@@ -42,9 +38,10 @@ interface Ticket {
 }
 
 const SellerOrderTable: React.FC = () => {
-  const { listOrder, handlerListOrder, isLoading } = useOrderGudfy()
+  const { listSellerOrders, handlerGetListSellerOrder, isLoadingOrders } =
+    useSellerStoreGudfy()
   const handleReset = () => {
-    handlerListOrder()
+    handlerGetListSellerOrder()
   }
   const [filterStatus, setFilterStatus] = useState<
     | "Completado"
@@ -54,12 +51,12 @@ const SellerOrderTable: React.FC = () => {
     | "En discusión"
     | "all"
   >("all")
-  const [selectOrderData, setTelectOrderData] = useState<order>()
+  const [selectOrderData, setSelectOrderData] = useState<SellerOrder>()
 
   const filteredOrder =
     filterStatus === "all"
-      ? listOrder
-      : listOrder?.filter((order) => order.state_order === filterStatus)
+      ? listSellerOrders
+      : listSellerOrders?.filter((order) => order.state_order === filterStatus)
 
   const getStatusColor = (
     status:
@@ -91,7 +88,7 @@ const SellerOrderTable: React.FC = () => {
   }
 
   useEffect(() => {
-    handlerListOrder()
+    handlerGetListSellerOrder()
   }, [])
 
   return (
@@ -140,7 +137,7 @@ const SellerOrderTable: React.FC = () => {
           </div>
         </div>
         <div className="overflow-x-auto">
-          {/* <table className="min-w-full bg-white  rounded-lg shadow-md">
+          <table className="min-w-full bg-white  rounded-lg shadow-md">
             <thead>
               <tr>
                 <th className="px-4 py-2  bg-gray-100 text-left">
@@ -159,7 +156,7 @@ const SellerOrderTable: React.FC = () => {
               </tr>
             </thead>
             <tbody>
-              {!isLoading ? (
+              {!isLoadingOrders ? (
                 filteredOrder?.map((order) => (
                   <tr key={order.id} className="hover:bg-gray-50">
                     <td className=" py-2">
@@ -198,7 +195,7 @@ const SellerOrderTable: React.FC = () => {
                       <ButtonMedusa
                         className=" bg-ui-button-neutral border-ui-button-neutral hover:bg-ui-button-neutral-hover rounded-[5px] text-[#402e72]"
                         onClick={() => {
-                          setTelectOrderData(order)
+                          setSelectOrderData(order)
                           onOpen()
                         }}
                       >
@@ -212,7 +209,7 @@ const SellerOrderTable: React.FC = () => {
                 <>Cargando...</>
               )}
             </tbody>
-          </table> */}
+          </table>
         </div>
       </div>
       <ModalOrder
@@ -226,7 +223,7 @@ const SellerOrderTable: React.FC = () => {
 }
 
 interface ModalOrder {
-  orderData?: order
+  orderData?: SellerOrder
   isOpen: boolean
   onOpenChange: () => void
   handleReset: () => void
@@ -248,7 +245,8 @@ const ModalOrder = ({
   return (
     <Modal isOpen={isOpen} onOpenChange={onOpenChange} size="5xl">
       <ModalContent>
-        {(onClose) =>
+        <>
+          {/* {(onClose) =>
           orderData?.state_order === "Pendiente de pago" ? (
             <ModalOrderPending
               handleReset={handleReset}
@@ -277,7 +275,8 @@ const ModalOrder = ({
           ) : (
             <></>
           )
-        }
+        } */}
+        </>
       </ModalContent>
     </Modal>
   )

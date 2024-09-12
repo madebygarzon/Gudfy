@@ -1,12 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Table,
   DropdownMenu,
   IconButton,
   Select,
-  Button,
   FocusModal,
-  Heading,
   Input,
   Label,
   Text,
@@ -23,61 +21,54 @@ import {
 } from "@medusajs/icons";
 import Spinner from "../../components/shared/spinner";
 import { RouteConfig } from "@medusajs/admin";
+import axios from "axios";
+import { getListClaim } from "../../actions/claim/get-list-claim";
+import { formatDate } from "../../utils/format-date";
+import { getClaimComments } from "../../actions/claim/get-claim-comments";
+import { useAdminGetSession } from "medusa-react";
+import { postAddComment } from "../../actions/claim/post-add-comment";
+import { updateStatusClaim } from "../../actions/claim/update-status-claim";
 
-const fakeData = [
-  {
-    id: 1,
-    status: "Abierto",
-    orderNumber: "HH4DSAD5A4DADSAD5S6D",
-    productName: "Producto A - Tienda 1",
-    createdAt: "2024-07-10 14:23",
-    client: "Elsy Yuliana",
-  },
-  {
-    id: 2,
-    status: "En proceso",
-    orderNumber: "HH4DSAD5A4DADSAD5SDSFS",
-    productName: "Producto B - Tienda 2",
-    createdAt: "2024-07-11 10:15",
-    client: "Carlos Garzón",
-  },
-  {
-    id: 3,
-    status: "Cerrado",
-    orderNumber: "HH4DSAD5A4DADSAD5SSAD7",
-    productName: "Producto C - Tienda 3",
-    createdAt: "2024-07-12 09:40",
-    client: "Luis David Arias",
-  },
-  {
-    id: 4,
-    status: "Abierto",
-    orderNumber: "HH4DSAD5A4DADSAD5478",
-    productName: "Producto D - Tienda 4",
-    createdAt: "2024-07-10 08:00",
-    client: "Luis Fernando Rivera",
-  },
-  {
-    id: 5,
-    status: "Cerrado",
-    orderNumber: "HH4DSAD5545AS88S45AS",
-    productName: "Producto E - Tienda 5",
-    createdAt: "2024-07-11 15:30",
-    client: "Alejandra Perez",
-  },
-];
+type Data = {
+  id: string;
+  status_order_claim: string;
+  number_order: string;
+  price_unit: number;
+  store_name: string;
+  product_name: string;
+  storeName: string;
+  customer_name: string;
+  customer_last_name: string;
+  customer_email: string;
+  created_at: string;
+};
+type ClaimComments = {
+  id?: string;
+  comment: string;
+  comment_owner_id: string;
+  order_claim_id?: string;
+  customer_id?: string;
+  created_at?: string;
+};
 
 const ReclamosListado = () => {
-  const [dataCustomer, setDataCustomer] = useState({
-    dataSellers: fakeData,
+  const [dataCustomer, setDataCustomer] = useState<{
+    dataClaim: Data[];
+    dataFilter: Data[];
+    dataPreview: Data[];
+    count: number;
+  }>({
+    dataClaim: [],
     dataFilter: [],
-    dataPreview: fakeData,
-    count: fakeData.length,
+    dataPreview: [],
+    count: 0,
   });
-  const [pageTotal, setPagetotal] = useState(Math.ceil(fakeData.length / 5));
+  const [pageTotal, setPagetotal] = useState(
+    Math.ceil(dataCustomer?.dataClaim.length / 5 || 0)
+  );
   const [page, setPage] = useState(1);
   const [rowsPages, setRowsPages] = useState(5);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   const handlerNextPage = (action) => {
     if (action === "NEXT")
@@ -85,7 +76,9 @@ const ReclamosListado = () => {
         setDataCustomer({
           ...dataCustomer,
           dataPreview: handlerPreviewSellerAplication(
-            dataCustomer.dataFilter.length ? dataCustomer.dataFilter : fakeData,
+            dataCustomer.dataFilter.length
+              ? dataCustomer.dataFilter
+              : dataCustomer.dataClaim,
             page + 1
           ),
         });
@@ -97,7 +90,9 @@ const ReclamosListado = () => {
         setDataCustomer({
           ...dataCustomer,
           dataPreview: handlerPreviewSellerAplication(
-            dataCustomer.dataFilter.length ? dataCustomer.dataFilter : fakeData,
+            dataCustomer.dataFilter.length
+              ? dataCustomer.dataFilter
+              : dataCustomer.dataClaim,
             page - 1
           ),
         });
@@ -116,9 +111,11 @@ const ReclamosListado = () => {
 
   const handlerFilter = (value) => {
     setPage(1);
-    let dataFilter = fakeData;
+    let dataFilter = dataCustomer.dataClaim;
     if (value !== "All") {
-      dataFilter = fakeData.filter((data) => data.status === value);
+      dataFilter = dataCustomer.dataClaim.filter(
+        (data) => data.status_order_claim === value
+      );
     }
     setDataCustomer({
       ...dataCustomer,
@@ -133,7 +130,9 @@ const ReclamosListado = () => {
     setDataCustomer({
       ...dataCustomer,
       dataPreview: handlerPreviewSellerAplication(
-        dataCustomer.dataFilter.length ? dataCustomer.dataFilter : fakeData,
+        dataCustomer.dataFilter.length
+          ? dataCustomer.dataFilter
+          : dataCustomer.dataClaim,
         1,
         valueInt
       ),
@@ -141,8 +140,8 @@ const ReclamosListado = () => {
   };
 
   const handlerSearcherbar = (e) => {
-    const dataFilter = fakeData.filter((data) => {
-      return data.orderNumber.toLowerCase().includes(e.toLowerCase());
+    const dataFilter = dataCustomer.dataClaim.filter((data) => {
+      return data.number_order.toLowerCase().includes(e.toLowerCase());
     });
     setDataCustomer({
       ...dataCustomer,
@@ -153,16 +152,83 @@ const ReclamosListado = () => {
 
   const getStatusColor = (status) => {
     switch (status) {
-      case "Cerrado":
+      case "CERRADA":
         return "bg-red-200";
-      case "En proceso":
+      case "SIN RESOLVER":
         return "bg-yellow-200";
-      case "Abierto":
+      case "ABIERTA":
+        return "bg-green-200";
+      case "RESUELTA":
         return "bg-green-200";
       default:
         return "";
     }
   };
+
+  const handlerGetListClaim = () => {
+    setIsLoading(true);
+    getListClaim().then((data) => {
+      setDataCustomer({
+        dataClaim: data,
+        dataFilter: [],
+        dataPreview: data,
+        count: data.length,
+      });
+
+      setIsLoading(false);
+    });
+  };
+
+  const handlerDate = (date: string) => {
+    return;
+  };
+
+  // COMENTARIOS DE LA RECLAMACION ----------------
+
+  const [comments, setComments] = useState<ClaimComments[]>();
+  const [open, setOpen] = useState(false);
+  const [isLoadingComment, setIsLoadingComment] = useState<boolean>(true);
+
+  const handleReset = () => {
+    handlerGetListClaim();
+  };
+
+  const handlerCommentsFromClaimOrder = (claim) => {
+    setIsLoadingComment(true);
+    getClaimComments(claim).then((e) => {
+      setIsLoadingComment(false);
+      setComments(e);
+      setOpen(true);
+    });
+  };
+
+  const handlerStatusClaim = () => {
+    // setIsLoadingStatus((old) => {
+    //   let selectStatus
+    //   switch (status) {
+    //     case "CANCEL":
+    //       selectStatus = { ...old, cancel: true }
+    //       break
+    //     case "SOLVED":
+    //       selectStatus = { ...old, solved: true }
+    //       break
+    //     case "UNSOLVED":
+    //       selectStatus = { ...old, unsolved: true }
+    //       break
+    //     default:
+    //       selectStatus = old
+    //   }
+    //   return selectStatus
+    // })
+    updateStatusClaim(comments?.[0].order_claim_id || " ", "").then(() => {
+      handleReset();
+      setOpen((old) => !old);
+    });
+  };
+
+  useEffect(() => {
+    handlerGetListClaim();
+  }, []);
 
   return (
     <div className="bg-white p-8 border border-gray-200 rounded-lg">
@@ -207,6 +273,7 @@ const ReclamosListado = () => {
                     <Table.HeaderCell>Número de orden</Table.HeaderCell>
                     <Table.HeaderCell>Producto y Tienda</Table.HeaderCell>
                     <Table.HeaderCell>Fecha y hora</Table.HeaderCell>
+                    <Table.HeaderCell>Tienda</Table.HeaderCell>
                     <Table.HeaderCell>Cliente</Table.HeaderCell>
                     <Table.HeaderCell>{""}</Table.HeaderCell>
                   </Table.Row>
@@ -217,87 +284,34 @@ const ReclamosListado = () => {
                       <Table.Cell>
                         <p
                           className={`${getStatusColor(
-                            data.status
+                            data.status_order_claim
                           )} px-4 py-2 rounded-lg`}
                         >
-                          {data.status}
+                          {data.status_order_claim}
                         </p>
                       </Table.Cell>
-                      <Table.Cell>{data.orderNumber}</Table.Cell>
-                      <Table.Cell>{data.productName}</Table.Cell>
-                      <Table.Cell>{data.createdAt}</Table.Cell>
-                      <Table.Cell>{data.client}</Table.Cell>
+                      <Table.Cell>
+                        {data.number_order.replace("store_order_id_", "CANCEL")}
+                      </Table.Cell>
+                      <Table.Cell>{data.product_name}</Table.Cell>
+                      <Table.Cell>{formatDate(data.created_at)}</Table.Cell>
+                      <Table.Cell>{data.store_name}</Table.Cell>
+                      <Table.Cell>
+                        {data.customer_name + " " + data.customer_last_name}
+                      </Table.Cell>
                       <Table.Cell className="flex gap-x-2 items-center">
                         <DropdownMenu>
-                          <FocusModal>
-                            <FocusModal.Trigger asChild>
-                              <IconButton>
-                                <Eye className="text-ui-fg-subtle" />
-                              </IconButton>
-                              {/* <Button>Edit Variant</Button> */}
-                            </FocusModal.Trigger>
-                            <FocusModal.Content>
-                              <FocusModal.Header>
-                                {/* <Button>Save</Button> */}
-                              </FocusModal.Header>
-                              <FocusModal.Body className="flex flex-col items-center py-16">
-                                <div className="flex w-full max-w-lg flex-col gap-y-8">
-                                  <div className="p-4 bg-white rounded shadow-md">
-                                    <div className="mb-4">
-                                      <p className="text-gray-600 font-bold mb-2">
-                                        Conversación
-                                      </p>
-                                      <div className="bg-gray-100 p-3 rounded mb-4">
-                                        <span className="block text-gray-900 font-medium">
-                                          Cliente
-                                        </span>
-                                        <p className="text-gray-700">
-                                          no me sirve el código
-                                        </p>
-                                      </div>
-                                    </div>
-
-                                    <div className="relative mb-4">
-                                      <input
-                                        type="text"
-                                        placeholder="Escribe tu respuesta..."
-                                        className="w-full p-3 border border-gray-300 rounded focus:outline-none"
-                                      />
-                                      <button className="absolute right-3 top-1/2 transform -translate-y-1/2">
-                                        <svg
-                                          xmlns="http://www.w3.org/2000/svg"
-                                          fill="none"
-                                          viewBox="0 0 24 24"
-                                          stroke="currentColor"
-                                          className="w-6 h-6 text-gray-500"
-                                        >
-                                          <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            strokeWidth="2"
-                                            d="M8 12h.01M12 12h.01M16 12h.01M9 16h6m-6-8h6m-8 4h.01m-2-4h.01M16 4h2a2 2 0 012 2v12a2 2 0 01-2 2h-4l-4 4v-4H8a2 2 0 01-2-2V6a2 2 0 012-2h2z"
-                                          />
-                                        </svg>
-                                      </button>
-                                    </div>
-
-                                    <p className="text-gray-500 mb-4">
-                                      Como vendedor, tiene la opción de escalar
-                                      esta discusión al administrador para una
-                                      resolución más detallada.
-                                    </p>
-
-                                    <button className="w-full bg-orange-500 text-white p-3 rounded hover:bg-orange-600 transition-colors">
-                                      Cerrar ticket
-                                    </button>
-                                    <button className="w-full bg-orange-500 text-white p-3 rounded hover:bg-orange-600 transition-colors">
-                                      Cerrar ticket
-                                    </button>
-                                  </div>
-                                </div>
-                              </FocusModal.Body>
-                            </FocusModal.Content>
-                          </FocusModal>
+                          <ModalComment
+                            claimId={data.id}
+                            open={open}
+                            setOpen={setOpen}
+                            comments={comments}
+                            handlerCommentsFromClaimOrder={
+                              handlerCommentsFromClaimOrder
+                            }
+                            handlerStatusClaim={handlerStatusClaim}
+                            setComments={setComments}
+                          />
                         </DropdownMenu>
 
                         {/* <IconButton>
@@ -352,6 +366,150 @@ const ReclamosListado = () => {
         </div>
       </div>
     </div>
+  );
+};
+
+interface ModalClaimComment {
+  claimId: string;
+  open: boolean;
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  comments: ClaimComments[];
+  handlerCommentsFromClaimOrder: (claim: any) => void;
+  setComments: React.Dispatch<React.SetStateAction<ClaimComments[]>>;
+  handlerStatusClaim: () => void;
+}
+
+const ModalComment = ({
+  claimId,
+  open,
+  setOpen,
+  handlerCommentsFromClaimOrder,
+  comments,
+  setComments,
+  handlerStatusClaim,
+}: ModalClaimComment) => {
+  const [newComment, setNewComment] = useState<string>();
+  const [isLoadingStatus, setIsLoadingStatus] = useState<{
+    solved: boolean;
+    cancel: boolean;
+    unsolved: boolean;
+  }>({ solved: false, cancel: false, unsolved: false });
+  const { user, isLoading } = useAdminGetSession();
+  const handlerSubmitComment = () => {
+    const dataComment = {
+      comment: newComment,
+      order_claim_id: comments?.[0].order_claim_id,
+      customer_id: "",
+      comment_owner_id: "COMMENT_ADMIN_ID",
+    };
+    postAddComment(dataComment).then((e) => {
+      setNewComment("");
+      setComments((old) => {
+        return old?.length
+          ? [
+              ...old,
+              {
+                comment: newComment || " ",
+                comment_owner_id: "COMMENT_ADMIN_ID",
+              },
+            ]
+          : [
+              {
+                comment: newComment || " ",
+                comment_owner_id: "COMMENT_ADMIN_ID",
+              },
+            ];
+      });
+    });
+  };
+  return (
+    <FocusModal open={open} onOpenChange={setOpen}>
+      <FocusModal.Trigger
+        onClick={() => handlerCommentsFromClaimOrder(claimId)}
+      >
+        <IconButton>
+          <Eye className="text-ui-fg-subtle" />
+        </IconButton>
+        {/* <Button>Edit Variant</Button> */}
+      </FocusModal.Trigger>
+      <FocusModal.Content className="w-[50%] flex flex-col items-center">
+        <FocusModal.Header>{/* <Button>Save</Button> */}</FocusModal.Header>
+        <FocusModal.Body className="flex flex-col items-center  py-16">
+          <div className="flex w-full max-w-lg flex-col gap-y-8">
+            <div className="p-4 bg-white rounded shadow-md">
+              <div className="mb-4">
+                <p className="text-gray-600 font-bold mb-2">Conversación</p>
+                <div className="bg-gray-100 p-3 rounded mb-4">
+                  {comments?.map((comment) => (
+                    <div
+                      className={`flex w-full   ${
+                        comment.comment_owner_id === "COMMENT_ADMIN_ID"
+                          ? "justify-end"
+                          : "justify-start"
+                      }`}
+                    >
+                      <div className="my-1 px-3 py-1 bg-slate-200 border rounded-[10px]">
+                        <p className="text-xs">
+                          {comment.comment_owner_id === "COMMENT_ADMIN_ID"
+                            ? "Admin Gudfy"
+                            : comment.comment_owner_id === "COMMENT_CUSTOMER_ID"
+                            ? "Cliente"
+                            : "Tienda"}
+                        </p>
+                        {comment.comment}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="relative mb-4">
+                <input
+                  value={newComment}
+                  onChange={(e) => {
+                    setNewComment(e.target.value);
+                  }}
+                  type="text"
+                  placeholder="Escribe tu respuesta..."
+                  className="w-full p-3 border border-gray-300 rounded focus:outline-none"
+                />
+                <button
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2"
+                  onClick={handlerSubmitComment}
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    className="w-6 h-6 text-gray-500"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M8 12h.01M12 12h.01M16 12h.01M9 16h6m-6-8h6m-8 4h.01m-2-4h.01M16 4h2a2 2 0 012 2v12a2 2 0 01-2 2h-4l-4 4v-4H8a2 2 0 01-2-2V6a2 2 0 012-2h2z"
+                    />
+                  </svg>
+                </button>
+              </div>
+
+              <p className="text-gray-500 mb-4">
+                Como vendedor, tiene la opción de escalar esta discusión al
+                administrador para una resolución más detallada.
+              </p>
+
+              <button
+                className="w-full bg-red-500 text-white p-3 rounded hover:bg-red-600 transition-colors"
+                onClick={handlerStatusClaim}
+              >
+                Cerrar Reclamación
+              </button>
+            </div>
+          </div>
+        </FocusModal.Body>
+      </FocusModal.Content>
+    </FocusModal>
   );
 };
 

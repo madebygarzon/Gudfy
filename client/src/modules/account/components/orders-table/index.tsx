@@ -29,6 +29,7 @@ import ModalOrderComplete from "../order-status/complete"
 import ModalOrderPending from "../order-status/pay-pending"
 import ModalOrderCancel from "../order-status/cancel"
 import ModalOrderFinished from "../order-status/finished"
+import ModalOrderClaim from "../order-status/claim"
 
 type orders = {
   orders: order[]
@@ -272,6 +273,13 @@ const ModalOrder = ({
             <ModalOrderFinished
               handleReset={handleReset}
               onOpenChange={onOpenChange}
+              orderData={orderData}
+            />
+          ) : orderData?.state_order === "En discusión" ? (
+            <ModalOrderClaim
+              customer={customer}
+              handleReset={handleReset}
+              onOpenChangeMain={onOpenChange}
               orderData={orderData}
             />
           ) : (
