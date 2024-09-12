@@ -10,6 +10,7 @@ import { updateProduct } from "./update-seller-product";
 import { postAddProductVariant } from "./post-add-product-variant";
 import { getListStoreProductVariant } from "./get-list-store-products-variants";
 import { getStoreProductVarian } from "./get-store-product-variant";
+import { getListSellerOrders } from "./get-list-seller-orders";
 
 const router = Router();
 
@@ -23,6 +24,7 @@ export function attachSellerRoutes(customerRouter: Router) {
     "/store-products-variants",
     wrapHandler(getListStoreProductVariant)
   );
+  router.get("/account/:id/orders", wrapHandler(getListSellerOrders));
 
   // obtener un producto en el dashboard del vendedor
   //router.get("/store-product-variant", wrapHandler(getStoreProductVarian));
