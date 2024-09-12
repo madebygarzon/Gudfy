@@ -34,6 +34,7 @@ import { getListClaimComments } from "./get-list-claim-comments";
 import postAddComment from "./post-add-comment";
 import { getListSellerClaim } from "./get-list-seller-claim";
 import updateClaimStatus from "./update-claim-status";
+import getListProductsInClaim from "./get-list-products-in-claim";
 
 // Initialize a custom router
 const router = Router();
@@ -122,8 +123,12 @@ export function attachStoreRoutes(storeRouter: Router) {
   //-----------------------------------Endpoins for Order Claim ------------------------------------------
   router.get("/claim/:id/orders", wrapHandler(getListClaim));
   router.get("/claim/:id/seller/orders", wrapHandler(getListSellerClaim));
-  router.post("/claim", wrapHandler(postClaim));
+  router.get(
+    "/claim/:id/order/list-products-in-claim",
+    wrapHandler(getListProductsInClaim)
+  );
   router.get("/claim/:id/comment", wrapHandler(getListClaimComments));
+  router.post("/claim", wrapHandler(postClaim));
   router.post("/claim/customer/add-comment", wrapHandler(postAddComment));
   router.post("/claim/update-status", wrapHandler(updateClaimStatus));
 }
