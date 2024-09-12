@@ -162,6 +162,45 @@ class StoreOrderService extends TransactionBaseService {
     return Array.from(orderMap.values());
   }
 
+  async listSellerOrders(storeId) {
+    const repoStoreOrder = this.activeManager_.withRepository(
+      this.storeOrderRepository_
+    );
+    const listOrder = await repoStoreOrder
+      .createQueryBuilder("so")
+      .innerJoinAndSelect("so.order_status", "sso")
+      .leftJoinAndSelect("so.storeVariantOrder", "svo")
+      .leftJoinAndSelect("so.customer", "c")
+      .leftJoinAndSelect("svo.store_variant", "sxv")
+      .innerJoinAndSelect("sxv.variant", "pv")
+      .where("sxv.store_id = :store_id", { store_id: storeId })
+      .select([
+        "so.id AS id",
+        "so.pay_method_id AS pay_method_id ",
+        "so.SellerApproved AS SellerApproved",
+        "so.CustomerApproved AS CustomerApproved",
+        "so.quantity_products AS quantity_products ",
+        "so.total_price AS total_price",
+        "so.name AS person_name",
+        "so.last_name AS person_last_name",
+        "so.email AS email",
+        "so.conty AS conty",
+        "so.city AS city",
+        "so.phone AS phone",
+        "so.created_at AS created_at",
+        "svo.id AS store_variant_order_id",
+        "svo.quantity AS quantity",
+        "svo.total_price AS total_price_for_product",
+        "sso.state AS state_order",
+        "pv.title AS produc_title",
+        "sxv.price AS price",
+        "c.first_name AS customer_name",
+        "c.last_name AS customer_last_name",
+      ])
+      .getRawMany();
+    return listOrder;
+  }
+
   async deleteOrder(idStoreOrder) {
     const repoStoreOrder = this.activeManager_.withRepository(
       this.storeOrderRepository_

@@ -52,8 +52,6 @@ class OrderClaimService extends TransactionBaseService {
       customer_id: idCustoemr,
     });
 
-    console.log("SE LOGRO LA INSERCION DE LA RECLAMACION", claimSave);
-
     const selecSeller = await repoStoreVariantOrder
       .createQueryBuilder("svo")
       .leftJoinAndSelect("svo.store_variant", "sxv")
@@ -73,6 +71,36 @@ class OrderClaimService extends TransactionBaseService {
     });
 
     const saveNotificaction = await repoNotification.save(newNotification);
+  }
+
+  async retriverListClaimAdmin() {
+    const repoOrderClaim = this.activeManager_.withRepository(
+      this.orderClaimRepository_
+    );
+
+    const listClaim = await repoOrderClaim
+      .createQueryBuilder("oc")
+      .leftJoinAndSelect("oc.store_variant_order", "svo")
+      .leftJoinAndSelect("oc.status_order_claim", "soc")
+      .leftJoinAndSelect("oc.customer", "c")
+      .leftJoinAndSelect("svo.store_variant", "sxv")
+      .leftJoinAndSelect("sxv.store", "s")
+      .leftJoinAndSelect("sxv.variant", "v")
+      .select([
+        "oc.id AS id",
+        "soc.status AS status_order_claim",
+        "oc.created_at AS created_at",
+        "svo.quantity AS quantity",
+        "svo.store_order_id AS number_order",
+        "sxv.price AS price_unit",
+        "s.name AS store_name",
+        "v.title AS product_name",
+        "c.first_name AS customer_name",
+        "c.last_name AS customer_last_name",
+        "c.email AS customer_email",
+      ])
+      .getRawMany();
+    return listClaim;
   }
 
   async retriveListClaimCustomer(idCustomer) {
@@ -172,6 +200,22 @@ class OrderClaimService extends TransactionBaseService {
     const update = await repoOrderClaim.update(idClaim, {
       status_order_claim_id: status,
     });
+  }
+  async listProductsInClaim(idStore) {
+    const repoOrderClaim = this.activeManager_.withRepository(
+      this.orderClaimRepository_
+    );
+
+    const listProductInClame = await repoOrderClaim
+      .createQueryBuilder("oc")
+      .leftJoinAndSelect("oc.store_variant_order", "svo")
+      .where("svo.store_order_id = :store_order_id", {
+        store_order_id: idStore,
+      })
+      .select(["svo.id "])
+      .getRawMany();
+
+    return listProductInClame.map((e) => e.id);
   }
 }
 

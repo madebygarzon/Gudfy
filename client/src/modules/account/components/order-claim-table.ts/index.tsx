@@ -280,14 +280,14 @@ const ModalClaimComment = ({
                 <div
                   className={`flex w-full   ${
                     comment.comment_owner_id === "COMMENT_CUSTOMER_ID"
-                      ? "justify-end"
+                      ? "justify-end" 
                       : "justify-start"
                   }`}
                 >
                   <div className="my-1 px-3 py-1 bg-slate-200 border rounded-[10px]">
                     <p className="text-xs">
                       {comment.comment_owner_id === "COMMENT_CUSTOMER_ID"
-                        ? ""
+                        ? "Yo" : comment.comment_owner_id === "COMMENT_ADMIN_ID"? "Admin Gudfy"
                         : "Tienda"}
                     </p>
                     {comment.comment}
