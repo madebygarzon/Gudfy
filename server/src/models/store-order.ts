@@ -19,14 +19,14 @@ import { StoreReview } from "./store-review";
 
 @Entity()
 export class StoreOrder extends BaseEntity {
-  @Column({ nullable: false })
+  @Column({ nullable: true })
   customer_id?: string;
 
   @ManyToOne(() => Customer, (os) => os?.customerorder)
   @JoinColumn({ name: "customer_id", referencedColumnName: "id" })
   customer?: Customer[];
 
-  @Column({ nullable: false })
+  @Column({ nullable: true })
   pay_method_id?: string;
 
   @ManyToOne(() => PayMethodGudfy, (pay) => pay?.store_order)
@@ -40,16 +40,10 @@ export class StoreOrder extends BaseEntity {
   @JoinColumn({ name: "order_status_id", referencedColumnName: "id" })
   order_status?: OrderStatus[];
 
-  @Column({ nullable: true })
-  SellerApproved?: boolean;
-
-  @Column({ nullable: true })
-  CustomerApproved?: boolean;
-
-  @Column({ nullable: true })
+  @Column({ nullable: false })
   quantity_products?: number;
 
-  @Column({ nullable: true })
+  @Column({ nullable: false })
   total_price?: number;
 
   @Column({ nullable: true })
@@ -62,7 +56,7 @@ export class StoreOrder extends BaseEntity {
   email?: string;
 
   @Column({ nullable: true })
-  conty?: string;
+  contry?: string;
 
   @Column({ nullable: true })
   city?: string;
