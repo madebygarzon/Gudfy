@@ -74,6 +74,16 @@ export type orderClaim = {
   customer_email?: string
 }
 
+export type orderDataForm = {
+  pay_method_id?: string
+  name?: string
+  last_name?: string
+  email?: string
+  contry?: string
+  city?: string
+  phone?: string
+}
+
 interface orderContext {
   isLoading: boolean
   isLoadingCurrentOrder: boolean
@@ -88,6 +98,7 @@ interface orderContext {
   handlerListSellerOrderClaim: (id: string) => void
   isLoadingClaim: boolean
   listOrderClaim: orderClaim[] | null
+  handlerUpdateDataLastOrder: (dataForm: orderDataForm) => Promise<void>
 }
 
 export const OrderContext = createContext<orderContext | null>(null)
@@ -107,6 +118,7 @@ export const OrderGudfyProvider = ({
   const [listOrderClaim, setListOrderClaim] = useState<orderClaim[] | null>(
     null
   )
+
   const [currentOrder, setCurrentOrderr] = useState<order | null>(null)
 
   const handlerListOrder = () => {
@@ -118,11 +130,35 @@ export const OrderGudfyProvider = ({
   }
   const handlerCurrentOrder = () => {
     setIsLoadingCurrentOrder(true)
-    getCurrentOrder(customer?.id || "").then((e) => {
-      setCurrentOrderr(e)
-      setIsLoadingCurrentOrder(false)
-    })
+    getCurrentOrder(customer?.id || "")
+      .then((e) => {
+        setCurrentOrderr(e)
+        setIsLoadingCurrentOrder(false)
+      })
+      .catch()
   }
+
+  const handlerUpdateDataLastOrder = async (dataForm: orderDataForm) => {
+    if (!currentOrder?.id)
+      return alert(
+        "No se encontro una orden disponible, por favor cree otra orden"
+      )
+
+    await axios.post(
+      `${process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL}/store/order-uptade/`,
+      {
+        store_order_id: currentOrder?.id,
+        dataForm: dataForm,
+      },
+      {
+        withCredentials: true,
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    )
+  }
+
   const handlersubmitPaymentMethod = async (
     checkbox: string,
     cart: Cart | undefined
@@ -212,6 +248,7 @@ export const OrderGudfyProvider = ({
         handlerListSellerOrderClaim,
         listOrderClaim,
         isLoadingClaim,
+        handlerUpdateDataLastOrder,
       }}
     >
       {children}
