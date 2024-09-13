@@ -16,6 +16,7 @@ import Link from "next/link"
 import type { Selection } from "@nextui-org/react"
 import Button from "@modules/common/components/button"
 import { useCartGudfy } from "@lib/context/cart-gudfy"
+import { orderDataForm } from "@lib/context/order-context"
 
 type CompleteForm = {
   form: boolean
@@ -31,7 +32,7 @@ type CheckoutDetailsProps = {
   selectedCheckbox: React.Dispatch<React.SetStateAction<string>>
   selectedKeys: Selection
   setSelectedKeys: React.Dispatch<React.SetStateAction<Selection>>
-  handlersubmit: () => Promise<void>
+  handlersubmit: (dataForm?: orderDataForm) => Promise<void>
 }
 
 const methodPayment = [
@@ -57,15 +58,28 @@ const CheckoutSelectPayment: React.FC<CheckoutDetailsProps> = ({
   setSelectedKeys,
   handlersubmit,
 }) => {
+  const [dataForm, setDataForm] = useState<orderDataForm>({
+    pay_method_id: "",
+    name: "",
+    last_name: "",
+    email: "",
+    contry: "",
+    city: "",
+    phone: "",
+  })
   return (
     <div>
-      <form onSubmit={handlersubmit}>
+      <form onSubmit={() => handlersubmit(dataForm)}>
         <div className="w-full grid grid-cols-1 gap-y-8">
           <div className="bg-white p-10">
             <h2 className="font-bold text-2xl text-center my-3">
               Fromulario de compra
             </h2>
-            <CheckautVirtualForm setCompleteForm={setCompleteForm} />
+            <CheckautVirtualForm
+              setCompleteForm={setCompleteForm}
+              dataForm={dataForm}
+              setDataForm={setDataForm}
+            />
           </div>
           <div className="bg-white p-5">
             <h2 className="text-2xl font-bold text-center my-3">
@@ -211,7 +225,7 @@ const CheckoutSelectPayment: React.FC<CheckoutDetailsProps> = ({
         </div>
       </form>
       <Button
-        onClick={handlersubmit}
+        onClick={() => handlersubmit(dataForm)}
         type="submit"
         disabled={
           !(

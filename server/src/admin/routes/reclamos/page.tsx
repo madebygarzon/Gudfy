@@ -432,23 +432,23 @@ const ModalComment = ({
         </IconButton>
         {/* <Button>Edit Variant</Button> */}
       </FocusModal.Trigger>
-      <FocusModal.Content className="w-[50%] flex flex-col items-center">
+      <FocusModal.Content className="w-[50%] h-[80%] mx-auto my-auto">
         <FocusModal.Header>{/* <Button>Save</Button> */}</FocusModal.Header>
-        <FocusModal.Body className="flex flex-col items-center  py-16">
-          <div className="flex w-full max-w-lg flex-col gap-y-8">
-            <div className="p-4 bg-white rounded shadow-md">
+        <FocusModal.Body className="flex flex-col items-center py-8 ">
+          <div className="flex w-full  flex-col gap-y-8">
+            <div className="p-4 bg-white rounded ">
               <div className="mb-4">
-                <p className="text-gray-600 font-bold mb-2">Conversación</p>
-                <div className="bg-gray-100 p-3 rounded mb-4">
+                <p className="text-gray-600  font-bold mb-2">Conversación</p>
+                <div className="bg-gray-100 p-3 rounded max-h-[400px] mb-4 overflow-y-scroll">
                   {comments?.map((comment) => (
                     <div
-                      className={`flex w-full   ${
+                      className={`flex w-full  ${
                         comment.comment_owner_id === "COMMENT_ADMIN_ID"
                           ? "justify-end"
                           : "justify-start"
                       }`}
                     >
-                      <div className="my-1 px-3 py-1 bg-slate-200 border rounded-[10px]">
+                      <div className="my-1 px-3 py-1 max-w-[500px] bg-slate-200 border rounded-[10px]">
                         <p className="text-xs">
                           {comment.comment_owner_id === "COMMENT_ADMIN_ID"
                             ? "Admin Gudfy"
@@ -500,7 +500,7 @@ const ModalComment = ({
               </p>
 
               <button
-                className="w-full bg-red-500 text-white p-3 rounded hover:bg-red-600 transition-colors"
+                className=" bg-red-500 text-white p-3 rounded hover:bg-red-600 transition-colors"
                 onClick={handlerStatusClaim}
               >
                 Cerrar Reclamación

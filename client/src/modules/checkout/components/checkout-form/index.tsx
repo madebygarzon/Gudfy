@@ -2,7 +2,7 @@ import { useEffect, useState } from "react"
 import axios from "axios"
 import type { Selection } from "@nextui-org/react"
 import { useCartGudfy } from "@lib/context/cart-gudfy"
-import { useOrderGudfy } from "@lib/context/order-context"
+import { orderDataForm, useOrderGudfy } from "@lib/context/order-context"
 import CheckoutSelectPayment from "../checkout-select-payment"
 import BinanceAutomaticPayment from "../binance-automatic-payment"
 
@@ -30,6 +30,7 @@ const CheckoutForm = () => {
     currentOrder,
     handlersubmitPaymentMethod,
     handlerCurrentOrder,
+    handlerUpdateDataLastOrder,
   } = useOrderGudfy()
 
   const [checkbox, selectedCheckbox] = useState<string>("automatic_binance_pay")
@@ -50,8 +51,10 @@ const CheckoutForm = () => {
     else setCompleteForm((com) => ({ ...com, payment: false }))
   }, [checkbox])
 
-  const handlersubmit = async () => {
+  const handlersubmit = async (dataForm?: orderDataForm) => {
+    if (!dataForm) return
     await handlersubmitPaymentMethod(checkbox, cart)
+    await handlerUpdateDataLastOrder(dataForm)
   }
 
   return (

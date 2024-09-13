@@ -6,7 +6,6 @@ import CartRepository from "@medusajs/medusa/dist/repositories/cart";
 import StoreXVariantRepository from "../repositories/store-x-variant";
 import StoreOrderRepository from "../repositories/store-order";
 import StoreVariantOrderRepository from "../repositories/store-variant-order";
-import { error } from "console";
 
 class CartMarketService extends TransactionBaseService {
   static LIFE_TIME = Lifetime.SCOPED;
@@ -142,7 +141,7 @@ class CartMarketService extends TransactionBaseService {
     return;
   }
 
-  async compareSuccessfulStocks(items) {
+  async compareSuccessfulStocks(items, customer_id) {
     try {
       const dataVarianStock = await this.variantAndStock(items);
 
@@ -162,7 +161,8 @@ class CartMarketService extends TransactionBaseService {
 
       const newOrder = await this.createStore_order(
         auxTotalProce,
-        auxTotalProducts
+        auxTotalProducts,
+        customer_id
       );
 
       const storeVariantOrderRepo = this.activeManager_.withRepository(
@@ -203,8 +203,6 @@ class CartMarketService extends TransactionBaseService {
         throw new Error("No se encontró el artículo en el carrito");
       }
       await lineItemsRepo.remove(lineItem);
-
-      console.log("Artículo eliminado con éxito");
     } catch (error) {
       console.log(error);
     }
@@ -226,25 +224,23 @@ class CartMarketService extends TransactionBaseService {
     });
   }
 
-  private async createStore_order(total_price, quantity) {
+  private async createStore_order(total_price, quantity, customer_id) {
     const storeOrderRepo = this.activeManager_.withRepository(
       this.storeOrderRepository_
     );
 
     const createOrder = await storeOrderRepo.create({
-      customer_id: "cus_01HZM9Q40SDRBS3W7XYMEDD609",
-      pay_method_id: "Secondary_Method_BINANCE_ID",
+      customer_id: customer_id,
+      // pay_method_id: "",
       order_status_id: "Payment_Pending_ID",
-      SellerApproved: true,
-      CustomerApproved: false,
       quantity_products: quantity,
       total_price: total_price,
-      name: "Jane",
-      last_name: "Smith",
-      email: "jane.smith@example.com",
-      conty: "USA",
-      city: "New York",
-      phone: "123-456-7890",
+      // name: "",
+      // last_name: "",
+      // email: "",
+      // conty: "",
+      // city: "",
+      // phone: "",
     });
 
     const saveOrder = await storeOrderRepo.save(createOrder);
