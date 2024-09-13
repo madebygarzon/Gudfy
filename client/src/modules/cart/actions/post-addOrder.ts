@@ -11,11 +11,11 @@ interface lineItem
   store: { store_name: string; customer_email: string }
 }
 
-export async function postAddOrder(items: lineItem[]) {
+export async function postAddOrder(items: lineItem[], customer_id: string) {
   try {
     const products = await axios.post(
       `${BACKEND_URL}/store/cart/add-order`,
-      { items },
+      { items, customer_id },
       {
         withCredentials: true,
         headers: {
