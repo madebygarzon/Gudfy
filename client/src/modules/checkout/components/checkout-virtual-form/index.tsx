@@ -7,15 +7,8 @@ import { useForm, FieldValues } from "react-hook-form"
 import { useMeCustomer } from "medusa-react"
 import StepContainer from "../step-container"
 import React, { Dispatch, SetStateAction, useEffect, useState } from "react"
+import { orderDataForm } from "@lib/context/order-context"
 
-interface CheckoutForm extends FieldValues {
-  first_name: string
-  last_name: string
-  email: string
-  country: string
-  city: string
-  phone: string
-}
 type CompleteForm = {
   form: boolean
   payment: boolean
@@ -23,31 +16,29 @@ type CompleteForm = {
 }
 type props = {
   setCompleteForm: Dispatch<SetStateAction<CompleteForm>>
+  dataForm: orderDataForm
+  setDataForm: (value: React.SetStateAction<orderDataForm>) => void
 }
 
-const CheckautVirtualForm: React.FC<props> = ({ setCompleteForm }) => {
+const CheckautVirtualForm: React.FC<props> = ({
+  setCompleteForm,
+  dataForm,
+  setDataForm,
+}) => {
   const { customer } = useMeCustomer()
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
     setError,
-  } = useForm<CheckoutForm>()
+  } = useForm<orderDataForm>()
 
-  const [checkoutData, setCheckoutData] = useState<CheckoutForm>({
-    first_name: "",
-    last_name: "",
-    email: "",
-    country: "",
-    city: "",
-    phone: "",
-  })
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { name } = e.target
     const value = e.target.value
-    setCheckoutData((prevData) => {
+    setDataForm((prevData) => {
       const newData = { ...prevData, [name]: value }
       const completed = handlerCompletedForm(newData)
       if (completed) setCompleteForm((com) => ({ ...com, form: true }))
@@ -56,18 +47,18 @@ const CheckautVirtualForm: React.FC<props> = ({ setCompleteForm }) => {
     })
   }
 
-  const handlerCompletedForm = (object: CheckoutForm) => {
+  const handlerCompletedForm = (object: orderDataForm) => {
     for (let clave in object) {
-      if (object[clave].trim() === "") {
+      if ((object as { [key: string]: string })[clave].trim() === "") {
         return false
       }
     }
     return true
   }
   useEffect(() => {
-    setCheckoutData((prevData) => ({
+    setDataForm((prevData) => ({
       ...prevData,
-      first_name: customer?.first_name || "",
+      name: customer?.first_name || "",
       last_name: customer?.last_name || "",
       email: customer?.email || "",
     }))
@@ -77,9 +68,9 @@ const CheckautVirtualForm: React.FC<props> = ({ setCompleteForm }) => {
     <div className="grid grid-cols-1 gap-y-2">
       <div className="grid grid-cols-2 gap-x-2">
         <Input
-          value={checkoutData.first_name}
+          value={dataForm.name}
           label="Nombre"
-          {...register("first_name", {
+          {...register("name", {
             required: "First name is required",
           })}
           errors={errors}
@@ -87,7 +78,7 @@ const CheckautVirtualForm: React.FC<props> = ({ setCompleteForm }) => {
         />
 
         <Input
-          value={checkoutData.last_name}
+          value={dataForm.last_name}
           label="Apellido"
           {...register("last_name", {
             required: "Last name is required",
@@ -97,7 +88,7 @@ const CheckautVirtualForm: React.FC<props> = ({ setCompleteForm }) => {
         />
       </div>
       <Input
-        value={checkoutData.email}
+        value={dataForm.email}
         label="Correo"
         {...register("email", {
           required: "email  is required",
@@ -107,9 +98,10 @@ const CheckautVirtualForm: React.FC<props> = ({ setCompleteForm }) => {
       />
       <div className="grid grid-cols-2 gap-x-2">
         <Input
+          value={dataForm.contry}
           label="Pais"
-          {...register("country", {
-            required: "Country is required",
+          {...register("contry", {
+            required: "contry is required",
           })}
           autoComplete="country"
           errors={errors}
@@ -117,6 +109,7 @@ const CheckautVirtualForm: React.FC<props> = ({ setCompleteForm }) => {
         />
 
         <Input
+          value={dataForm.city}
           label="Ciudad"
           {...register("city", {
             required: "City is required",

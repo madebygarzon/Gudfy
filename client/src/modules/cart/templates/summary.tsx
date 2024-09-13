@@ -5,6 +5,7 @@ import { postAddOrder } from "../actions/post-addOrder"
 import Link from "next/link"
 import React, { useState } from "react"
 import { useRouter } from "next/navigation"
+import { useMeCustomer } from "medusa-react"
 
 interface lineItem
   extends Omit<
@@ -22,6 +23,7 @@ type ItemsTemplateProps = {
 }
 
 const Summary = ({ items, setModifyProduct }: ItemsTemplateProps) => {
+  const { customer } = useMeCustomer()
   const [success, setSuccess] = useState<{ success: false; data: string[] }>()
   const router = useRouter()
   const handlerTotalPrice = () => {
@@ -36,7 +38,7 @@ const Summary = ({ items, setModifyProduct }: ItemsTemplateProps) => {
 
   const handlerAddOrder = async () => {
     if (items?.length) {
-      postAddOrder(items).then((e) => {
+      postAddOrder(items, customer?.id || "").then((e) => {
         if (!e.success) {
           setSuccess({
             success: e.success,
