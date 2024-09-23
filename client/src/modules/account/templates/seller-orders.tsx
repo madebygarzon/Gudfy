@@ -6,6 +6,8 @@ import ClaimSellerTable from "../components/order-claim-seller-table"
 import { getStore } from "../actions/get-seller-store"
 import type { SellerCredentials } from "types/global"
 import SellerOrderTable from "../components/seller-orders-table"
+import { useNotificationContext } from "@lib/context/notification-context"
+import Notification from "@modules/common/components/notification"
 
 export type order = {
   id: string
@@ -48,6 +50,7 @@ interface SellerRole {
 }
 
 const SellerOrdersTemplate = () => {
+  const { notifications } = useNotificationContext()
   return (
     <div className="w-full">
       <div className="mb-8 flex flex-col gap-y-4">
@@ -69,7 +72,20 @@ const SellerOrdersTemplate = () => {
                 </CardBody>
               </Card>
             </Tab>
-            <Tab key="Reclamos" title="Reclamos">
+            <Tab
+              key="Reclamos"
+              title={
+                <div className="relative -m-1">
+                  Reclamos
+                  {notifications.map((n) => {
+                    if (n.notification_type_id === "NOTI_CLAIM_SELLER_ID") {
+                      return <Notification />
+                    }
+                  })}
+                </div>
+              }
+              className="relative"
+            >
               <Card>
                 <CardBody>
                   <ClaimSellerTable />

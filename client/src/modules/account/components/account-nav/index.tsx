@@ -6,9 +6,12 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import Cart from "@modules/common/icons/cart"
 import axios from "axios"
+import Notification from "@modules/common/components/notification"
+import { useNotificationContext } from "@lib/context/notification-context"
 
 const AccountNav = () => {
   const route = usePathname()
+  const { notifications } = useNotificationContext()
 
   return (
     <div>
@@ -28,18 +31,29 @@ const AccountNav = () => {
         <div>
           <div className="text-base h-full flex flex-col justify-start items-center">
             <ul className="mb-auto flex flex-col gap-y-4">
-              <li>
+              <li className="relative">
+                {notifications.map((n) => {
+                  if (n.notification_type_id === "NOTI_CLAIM_CUSTOMER_ID") {
+                    return <Notification />
+                  }
+                })}
                 <Button variant="selected" href="/account" route={route!}>
                   <Cart size={30} />
                   Comprador
                 </Button>
               </li>
-              <li>
+              <li className="relative">
                 <Button
                   variant="selected"
                   href="/account/seller"
                   route={route!}
+                  className=" "
                 >
+                  {notifications.map((n) => {
+                    if (n.notification_type_id === "NOTI_CLAIM_SELLER_ID") {
+                      return <Notification />
+                    }
+                  })}
                   <Icon size={30} />
                   Vendedor
                 </Button>
