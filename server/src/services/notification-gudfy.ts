@@ -49,11 +49,23 @@ export default class NotificationGudfyService extends TransactionBaseService {
       },
     });
 
-    this.eventBusService_.emit("notification.retrieved", {
-      idCustomer,
-      listNotification,
-    });
+    // this.eventBusService_.emit("notification.retrieved", {
+    //   idCustomer,
+    //   listNotification,
+    // });
 
     return listNotification;
+  }
+
+  async updateStateNotification(id, state) {
+    console.log(
+      "esto es lo que llega al servicio de actualizacion de la notificacion"
+    );
+    const repoNotification = this.activeManager_.withRepository(
+      this.notificationGudfyRepository_
+    );
+    await repoNotification.update(id, {
+      seen_status: state,
+    });
   }
 }

@@ -35,6 +35,9 @@ import { getListClaimComments } from "@modules/account/actions/get-list-claim-co
 import { postAddComment } from "@modules/account/actions/post-add-comment"
 import { updateStatusClaim } from "@modules/account/actions/update-status-claim"
 import clsx from "clsx"
+import { useNotificationContext } from "@lib/context/notification-context"
+import Notification from "@modules/common/components/notification"
+import { updateStateNotification } from "@modules/account/actions/update-state-notification"
 
 type orders = {
   orders: order[]
@@ -47,6 +50,7 @@ const ClaimTable: React.FC = () => {
   const handleReset = () => {
     handlerListOrderClaim()
   }
+  const { notifications, setNotifications } = useNotificationContext()
   const [comments, setComments] = useState<ClaimComments[]>()
   const [storeName, setStoreName] = useState<string>()
   const { isOpen, onOpen, onOpenChange } = useDisclosure()
@@ -56,6 +60,14 @@ const ClaimTable: React.FC = () => {
   }
 
   const handlerSelectClaimOrder = (claim: orderClaim) => {
+    if (notifications.length) {
+      let isNotifi = notifications.find((n) => n.order_claim_id === claim.id)
+
+      if (isNotifi)
+        updateStateNotification(isNotifi.id, false).then(() => {
+          setNotifications((old) => old.filter((n) => n.id !== isNotifi.id))
+        })
+    }
     setStoreName(claim.store_name)
     getListClaimComments(claim?.id).then((e) => {
       setComments(e)
@@ -145,7 +157,18 @@ const ClaimTable: React.FC = () => {
                     <td className=" py-2">
                       {handlerformatDate(claim.created_at)}
                     </td>
-                    <td className=" py-2">
+                    <td className=" p4-2">
+                      <div className="relative">
+                        {notifications.map((n) => {
+                          if (
+                            n.notification_type_id ===
+                              "NOTI_CLAIM_CUSTOMER_ID" &&
+                            n.order_claim_id === claim.id
+                          ) {
+                            return <Notification />
+                          }
+                        })}
+                      </div>
                       <ButtonMedusa
                         className=" bg-ui-button-neutral border-ui-button-neutral hover:bg-ui-button-neutral-hover rounded-[5px] text-[#402e72]"
                         onClick={() => {
@@ -261,6 +284,9 @@ const ModalClaimComment = ({
       onOpenChange()
     })
   }
+  useEffect(() => {
+    setIsLoadingStatus({ solved: false, cancel: false, unsolved: false })
+  })
 
   return (
     <Modal
@@ -280,14 +306,16 @@ const ModalClaimComment = ({
                 <div
                   className={`flex w-full   ${
                     comment.comment_owner_id === "COMMENT_CUSTOMER_ID"
-                      ? "justify-end" 
+                      ? "justify-end"
                       : "justify-start"
                   }`}
                 >
                   <div className="my-1 px-3 py-1 bg-slate-200 border rounded-[10px]">
                     <p className="text-xs">
                       {comment.comment_owner_id === "COMMENT_CUSTOMER_ID"
-                        ? "Yo" : comment.comment_owner_id === "COMMENT_ADMIN_ID"? "Admin Gudfy"
+                        ? "Yo"
+                        : comment.comment_owner_id === "COMMENT_ADMIN_ID"
+                        ? "Admin Gudfy"
                         : "Tienda"}
                     </p>
                     {comment.comment}
@@ -297,7 +325,6 @@ const ModalClaimComment = ({
             </ModalBody>
             <ModalFooter>
               <div className="w-full">
-                {" "}
                 <div className=" flex w-full">
                   <Input
                     value={newComment}

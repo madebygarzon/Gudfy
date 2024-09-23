@@ -66,7 +66,7 @@ class OrderClaimService extends TransactionBaseService {
     const newNotification = await repoNotification.create({
       order_claim_id: claimSave.id,
       customer_id: selecSeller[0].seller_id,
-      notification_type_id: "NOTI_CLAIM_ID",
+      notification_type_id: "NOTI_CLAIM_SELLER_ID",
       seen_status: true,
     });
 
@@ -178,6 +178,10 @@ class OrderClaimService extends TransactionBaseService {
     });
 
     const saveClaimComment = await repoClaimComment.save(createComment);
+    await this.addNotification(
+      dataComment.order_claim_id,
+      dataComment.comment_owner_id
+    );
   }
 
   async retriverClaimComments(idOrderClaim) {
@@ -216,6 +220,65 @@ class OrderClaimService extends TransactionBaseService {
       .getRawMany();
 
     return listProductInClame.map((e) => e.id);
+  }
+
+  private async addNotification(idOrderClaim, CommentOwner) {
+    console.log(
+      "ENTRA ACA Y EVALUA L[A NOTIFICACION",
+      idOrderClaim,
+      CommentOwner
+    );
+    const repoOrderClaim = this.activeManager_.withRepository(
+      this.orderClaimRepository_
+    );
+    const repoNotification = this.activeManager_.withRepository(
+      this.notificationGudfyRepository_
+    );
+
+    // Obtener la lista de reclamaciones
+    const listClaim = await repoOrderClaim
+      .createQueryBuilder("oc")
+      .leftJoinAndSelect("oc.store_variant_order", "svo")
+      .leftJoinAndSelect("svo.store_variant", "sxv")
+      .leftJoinAndSelect("sxv.store", "s")
+      .leftJoinAndSelect("sxv.variant", "v")
+      .leftJoinAndSelect("oc.customer", "c")
+      .where("oc.id = :order_claim_id", { order_claim_id: idOrderClaim })
+      .select(["c.id AS customer_id", "s.id AS store_id"])
+      .getRawMany();
+
+    console.log(
+      "Esto es lo que encuentra listClaim que a su ves de be de mostar a los vendedores y a los customers:",
+      listClaim
+    );
+
+    const notificationType =
+      CommentOwner === "COMMENT_STORE_ID"
+        ? "NOTI_CLAIM_CUSTOMER_ID"
+        : "NOTI_CLAIM_SELLER_ID";
+
+    const retriever = await repoNotification.findOne({
+      where: {
+        order_claim_id: idOrderClaim,
+        notification_type_id: notificationType,
+      },
+    });
+    console.log("lo que encontro si es que lo encontro:", retriever);
+
+    if (retriever) {
+      // Actualizar notificación existente
+      await repoNotification.update(retriever.id, { seen_status: true });
+    } else if (CommentOwner === "COMMENT_STORE_ID") {
+      // Crear nueva notificación solo si el dueño del comentario es la tienda
+      const createNotifica = await repoNotification.create({
+        order_claim_id: idOrderClaim,
+        customer_id: listClaim[0].customer_id,
+        notification_type_id: "NOTI_CLAIM_CUSTOMER_ID",
+        seen_status: true,
+      });
+      await repoNotification.save(createNotifica);
+    }
+    console.log("se termina la centencia:");
   }
 }
 
