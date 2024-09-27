@@ -3,11 +3,13 @@ import { LessThan } from "typeorm";
 import {
   AdminPostCollectionsCollectionReq,
   TransactionBaseService,
+  EventBusService,
 } from "@medusajs/medusa";
 import { OrderClaimRepository } from "../repositories/order-claim";
 import { ClaimCommentRepository } from "../repositories/claim-comment";
 import { NotificationGudfyRepository } from "../repositories/notification-gudfy";
 import StoreVariantOrderRepository from "src/repositories/store-variant-order";
+import { io } from "../websocket";
 
 class OrderClaimService extends TransactionBaseService {
   static LIFE_TIME = Lifetime.SCOPED;
@@ -15,6 +17,7 @@ class OrderClaimService extends TransactionBaseService {
   protected readonly claimCommentRepository_: typeof ClaimCommentRepository;
   protected readonly notificationGudfyRepository_: typeof NotificationGudfyRepository;
   protected readonly storeVariantOrderRepository_: typeof StoreVariantOrderRepository;
+  protected readonly eventBusService_: EventBusService;
 
   // protected readonly commentOwnerRepository_: typeof ClaimCommentRepository;
 
@@ -25,6 +28,7 @@ class OrderClaimService extends TransactionBaseService {
     this.claimCommentRepository_ = container.claimCommentRepository;
     this.notificationGudfyRepository_ = container.notificationGudfyRepository;
     this.storeVariantOrderRepository_ = container.storeVariantOrderRepository;
+    this.eventBusService_ = container.eventBusService;
   }
 
   async addClaim(claim, idCustoemr) {
@@ -69,8 +73,12 @@ class OrderClaimService extends TransactionBaseService {
       notification_type_id: "NOTI_CLAIM_SELLER_ID",
       seen_status: true,
     });
+    await repoNotification.save(newNotification);
 
-    const saveNotificaction = await repoNotification.save(newNotification);
+    io.emit("new_notification", {
+      customer_id: selecSeller[0].seller_id,
+      notification: repoNotification,
+    });
   }
 
   async retriverListClaimAdmin() {
@@ -107,11 +115,6 @@ class OrderClaimService extends TransactionBaseService {
     const repoOrderClaim = this.activeManager_.withRepository(
       this.orderClaimRepository_
     );
-
-    // const listClaim = await repoOrderClaim.find({
-    //   where: { customer_id: idCustomer },
-    // });
-
     const listClaim = await repoOrderClaim
       .createQueryBuilder("oc")
       .leftJoinAndSelect("oc.store_variant_order", "svo")
@@ -182,6 +185,9 @@ class OrderClaimService extends TransactionBaseService {
       dataComment.order_claim_id,
       dataComment.comment_owner_id
     );
+    io.emit("new_comment", {
+      order_claim_id: dataComment.order_claim_id,
+    });
   }
 
   async retriverClaimComments(idOrderClaim) {
@@ -223,11 +229,6 @@ class OrderClaimService extends TransactionBaseService {
   }
 
   private async addNotification(idOrderClaim, CommentOwner) {
-    console.log(
-      "ENTRA ACA Y EVALUA L[A NOTIFICACION",
-      idOrderClaim,
-      CommentOwner
-    );
     const repoOrderClaim = this.activeManager_.withRepository(
       this.orderClaimRepository_
     );
@@ -247,11 +248,6 @@ class OrderClaimService extends TransactionBaseService {
       .select(["c.id AS customer_id", "s.id AS store_id"])
       .getRawMany();
 
-    console.log(
-      "Esto es lo que encuentra listClaim que a su ves de be de mostar a los vendedores y a los customers:",
-      listClaim
-    );
-
     const notificationType =
       CommentOwner === "COMMENT_STORE_ID"
         ? "NOTI_CLAIM_CUSTOMER_ID"
@@ -263,7 +259,6 @@ class OrderClaimService extends TransactionBaseService {
         notification_type_id: notificationType,
       },
     });
-    console.log("lo que encontro si es que lo encontro:", retriever);
 
     if (retriever) {
       // Actualizar notificación existente
@@ -278,7 +273,7 @@ class OrderClaimService extends TransactionBaseService {
       });
       await repoNotification.save(createNotifica);
     }
-    console.log("se termina la centencia:");
+    io.emit("new_notification");
   }
 }
 

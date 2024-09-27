@@ -38,6 +38,7 @@ import { updateStatusClaim } from "@modules/account/actions/update-status-claim"
 import { useNotificationContext } from "@lib/context/notification-context"
 import Notification from "@modules/common/components/notification"
 import { updateStateNotification } from "@modules/account/actions/update-state-notification"
+import io, { Socket } from "socket.io-client"
 
 type orders = {
   orders: order[]
@@ -235,6 +236,7 @@ const ModalClaimComment = ({
   handleReset,
 }: ModalClaimComment) => {
   const [newComment, setNewComment] = useState<string>()
+  const [socket, setSocket] = useState<Socket | null>(null)
   const [isLoadingStatus, setIsLoadingStatus] = useState<boolean>(false)
   const { customer } = useMeCustomer()
   const handlerSubmitComment = () => {
@@ -273,6 +275,25 @@ const ModalClaimComment = ({
       onOpenChange()
     })
   }
+
+  useEffect(() => {
+    const socketIo = io(process.env.PORT_SOKET || "http://localhost:3001")
+
+    socketIo.on("new_comment", (data: { order_claim_id: string }) => {
+      // Si la notificación es para el cliente correcto, agregarla a la lista
+
+      if (data.order_claim_id === comments?.[0].order_claim_id)
+        getListClaimComments(comments?.[0].order_claim_id).then((e) => {
+          setComments(e)
+        })
+    })
+
+    setSocket(socketIo)
+
+    return () => {
+      socketIo.disconnect() // Desconectar el socket cuando el componente se desmonta
+    }
+  }, [comments?.[0].order_claim_id])
 
   return (
     <Modal
