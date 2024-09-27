@@ -14,12 +14,8 @@ type DashboardProps = {
 }
 
 const Dashboard = ({ orders, customer }: DashboardProps) => {
-  const { handlerRetriverNotification, notifications } =
-    useNotificationContext()
+  const { notifications } = useNotificationContext()
 
-  useEffect(() => {
-    handlerRetriverNotification()
-  }, [])
   return (
     <div className="w-full ">
       <div className="text-xl-semi capitalize flex justify-between items-start ">

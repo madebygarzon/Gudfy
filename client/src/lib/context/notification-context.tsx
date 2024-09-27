@@ -1,15 +1,9 @@
 "use client"
 
-import useToggleState from "@lib/hooks/use-toggle-state"
-import react, {
-  createContext,
-  SetStateAction,
-  useContext,
-  useEffect,
-  useState,
-} from "react"
+import react, { createContext, useContext, useEffect, useState } from "react"
 import axios from "axios"
-import { useMeCustomer } from "medusa-react"
+
+import { useAccount } from "./account-context"
 
 type notification = {
   id: string
@@ -21,7 +15,7 @@ type notification = {
 interface NotificationContext {
   notifications: notification[]
   setNotifications: (value: react.SetStateAction<notification[]>) => void
-  handlerRetriverNotification: () => void
+  handlerRetriverNotification: (customer_id?: string) => void
 }
 
 export const NotificationContext = createContext<NotificationContext | null>(
@@ -32,13 +26,15 @@ export const NotificationProvider = ({
 }: {
   children: React.ReactNode
 }) => {
-  const { customer } = useMeCustomer()
+  const { customer } = useAccount()
   const [notifications, setNotifications] = useState<notification[]>([])
-  const handlerRetriverNotification = async () => {
-    if (!customer?.id) return
+  const handlerRetriverNotification = async (customer_id?: string) => {
+    if (!customer?.id && !customer_id) return
     await axios
       .get(
-        `${process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL}/store/notification/${customer?.id}`,
+        `${process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL}/store/notification/${
+          customer?.id || customer_id
+        }`,
         {
           withCredentials: true,
           headers: {
@@ -55,10 +51,7 @@ export const NotificationProvider = ({
       })
   }
 
-  useEffect(() => {
-  
-    handlerRetriverNotification()
-  }, [])
+  useEffect(() => {}, [])
 
   return (
     <NotificationContext.Provider
