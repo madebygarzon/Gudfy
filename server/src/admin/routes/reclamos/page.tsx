@@ -28,6 +28,7 @@ import { getClaimComments } from "../../actions/claim/get-claim-comments";
 import { useAdminGetSession } from "medusa-react";
 import { postAddComment } from "../../actions/claim/post-add-comment";
 import { updateStatusClaim } from "../../actions/claim/update-status-claim";
+import io, { Socket } from "socket.io-client";
 
 type Data = {
   id: string;
@@ -389,6 +390,7 @@ const ModalComment = ({
   handlerStatusClaim,
 }: ModalClaimComment) => {
   const [newComment, setNewComment] = useState<string>();
+  const [socket, setSocket] = useState<Socket | null>(null);
   const [isLoadingStatus, setIsLoadingStatus] = useState<{
     solved: boolean;
     cancel: boolean;
@@ -422,6 +424,22 @@ const ModalComment = ({
       });
     });
   };
+
+  useEffect(() => {
+    const socketIo = io(process.env.PORT_SOKET || "http://localhost:3001");
+    socketIo.on("new_comment", (data: { order_claim_id: string }) => {
+      // Si la notificación es para el cliente correcto, agregarla a la lista
+      if (data.order_claim_id === claimId)
+        getClaimComments(claimId).then((e) => {
+          setComments(e);
+        });
+    });
+    setSocket(socketIo);
+    return () => {
+      socketIo.disconnect();
+    };
+  }, [claimId]);
+
   return (
     <FocusModal open={open} onOpenChange={setOpen}>
       <FocusModal.Trigger

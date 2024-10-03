@@ -11,6 +11,7 @@ import { NextUIProvider } from "@nextui-org/react"
 import { CategoryProvider } from "@lib/context/category-context"
 import { OrderGudfyProvider } from "@lib/context/order-context"
 import { SellerStoreProvider } from "@lib/context/seller-store"
+import { NotificationProvider } from "@lib/context/notification-context"
 
 export default function Providers({ children }: { children: React.ReactNode }) {
   return (
@@ -29,7 +30,9 @@ export default function Providers({ children }: { children: React.ReactNode }) {
                   <OrderGudfyProvider>
                     <NextUIProvider>
                       <SellerStoreProvider>
-                        <CategoryProvider>{children}</CategoryProvider>
+                        <NotificationProvider>
+                          <CategoryProvider>{children}</CategoryProvider>
+                        </NotificationProvider>
                       </SellerStoreProvider>
                     </NextUIProvider>
                   </OrderGudfyProvider>
