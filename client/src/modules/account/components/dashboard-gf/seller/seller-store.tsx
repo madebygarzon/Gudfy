@@ -8,6 +8,8 @@ import Product from "@modules/common/icons/package"
 import Image from "next/image"
 import { useCustomerOrders, useMeCustomer } from "medusa-react"
 import { Progress } from "@nextui-org/react"
+import { useNotificationContext } from "@lib/context/notification-context"
+import Notification from "@modules/common/components/notification"
 
 type store = {
   id: string
@@ -88,11 +90,20 @@ const CardItemsDashboard: React.FC<CardDasboard> = ({
   description,
   href,
 }) => {
+  const { notifications } = useNotificationContext()
   return (
     <div className="min-h-[230px] ">
       <Link href={href}>
-        <div className=" flex flex-col py-5 px-2  h-full shadow-card rounded-[10px] items-center  justify-center">
+        <div className=" relative flex flex-col py-5 px-2  h-full shadow-card rounded-[10px] items-center  justify-center">
           <Image alt="user_gudfy" src={image} width={80} height={80} />
+          {notifications.map((n) => {
+            if (
+              n.notification_type_id === "NOTI_CLAIM_SELLER_ID" &&
+              title == "Ordenes"
+            ) {
+              return <Notification />
+            }
+          })}
           <h3 className="text-2xl font-bold ">{title}</h3>
           <p className="text-sm text-center">{description}</p>
         </div>

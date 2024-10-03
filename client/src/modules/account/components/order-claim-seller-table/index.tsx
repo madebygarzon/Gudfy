@@ -35,6 +35,10 @@ import { getListClaimComments } from "@modules/account/actions/get-list-claim-co
 import { postAddComment } from "@modules/account/actions/post-add-comment"
 import { useSellerStoreGudfy } from "@lib/context/seller-store"
 import { updateStatusClaim } from "@modules/account/actions/update-status-claim"
+import { useNotificationContext } from "@lib/context/notification-context"
+import Notification from "@modules/common/components/notification"
+import { updateStateNotification } from "@modules/account/actions/update-state-notification"
+import io, { Socket } from "socket.io-client"
 
 type orders = {
   orders: order[]
@@ -52,6 +56,8 @@ const ClaimSellerTable: React.FC = () => {
     useOrderGudfy()
   const { storeSeller } = useSellerStoreGudfy()
   const [selectOrderClaim, setSelectOrderClaim] = useState<orderClaim>()
+  const { notifications, handlerRetriverNotification, setNotifications } =
+    useNotificationContext()
   const handleReset = () => {
     handlerListSellerOrderClaim(storeSeller?.id || " ")
   }
@@ -63,6 +69,14 @@ const ClaimSellerTable: React.FC = () => {
   }
 
   const handlerSelectClaimOrder = (claim: orderClaim) => {
+    if (notifications.length) {
+      let isNotifi = notifications.find((n) => n.order_claim_id === claim.id)
+
+      if (isNotifi)
+        updateStateNotification(isNotifi.id, false).then(() => {
+          setNotifications((old) => old.filter((n) => n.id !== isNotifi.id))
+        })
+    }
     getListClaimComments(claim?.id).then((e) => {
       setComments(e)
       onOpen()
@@ -158,7 +172,17 @@ const ClaimSellerTable: React.FC = () => {
                     <td className=" py-2">
                       {handlerformatDate(claim.created_at)}
                     </td>
-                    <td className=" py-2">
+                    <td className="  p-4 ">
+                      <div className="relative">
+                        {notifications.map((n) => {
+                          if (
+                            n.notification_type_id === "NOTI_CLAIM_SELLER_ID" &&
+                            n.order_claim_id === claim.id
+                          ) {
+                            return <Notification />
+                          }
+                        })}
+                      </div>
                       <ButtonMedusa
                         className=" bg-ui-button-neutral border-ui-button-neutral hover:bg-ui-button-neutral-hover rounded-[5px] text-[#402e72]"
                         onClick={() => {
@@ -212,6 +236,7 @@ const ModalClaimComment = ({
   handleReset,
 }: ModalClaimComment) => {
   const [newComment, setNewComment] = useState<string>()
+  const [socket, setSocket] = useState<Socket | null>(null)
   const [isLoadingStatus, setIsLoadingStatus] = useState<boolean>(false)
   const { customer } = useMeCustomer()
   const handlerSubmitComment = () => {
@@ -251,6 +276,25 @@ const ModalClaimComment = ({
     })
   }
 
+  useEffect(() => {
+    const socketIo = io(process.env.PORT_SOKET || "http://localhost:3001")
+
+    socketIo.on("new_comment", (data: { order_claim_id: string }) => {
+      // Si la notificación es para el cliente correcto, agregarla a la lista
+
+      if (data.order_claim_id === comments?.[0].order_claim_id)
+        getListClaimComments(comments?.[0].order_claim_id).then((e) => {
+          setComments(e)
+        })
+    })
+
+    setSocket(socketIo)
+
+    return () => {
+      socketIo.disconnect() // Desconectar el socket cuando el componente se desmonta
+    }
+  }, [comments?.[0].order_claim_id])
+
   return (
     <Modal
       isOpen={isOpen}
@@ -277,7 +321,9 @@ const ModalClaimComment = ({
                     <p className="text-xs">
                       {comment.comment_owner_id === "COMMENT_CUSTOMER_ID"
                         ? "Cliente"
-                        : ""}
+                        : comment.comment_owner_id === "COMMENT_ADMIN_ID"
+                        ? "Admin Gudfy"
+                        : "Tienda"}
                     </p>
                     {comment.comment}
                   </div>

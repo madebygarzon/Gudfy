@@ -4,6 +4,9 @@ import { Avatar } from "@nextui-org/react"
 import ButtonLigth from "@modules/common/components/button_light"
 import Cart from "@modules/common/icons/cart"
 import Image from "next/image"
+import { useEffect } from "react"
+import { useNotificationContext } from "@lib/context/notification-context"
+import Notification from "@modules/common/components/notification"
 
 type DashboardProps = {
   orders?: Order[]
@@ -11,6 +14,8 @@ type DashboardProps = {
 }
 
 const Dashboard = ({ orders, customer }: DashboardProps) => {
+  const { notifications } = useNotificationContext()
+
   return (
     <div className="w-full ">
       <div className="text-xl-semi capitalize flex justify-between items-start ">
@@ -20,8 +25,6 @@ const Dashboard = ({ orders, customer }: DashboardProps) => {
         <span className="text-small-regular text-gray-700"></span>
       </div>
 
-
-      
       <div className=" w-full grid grid-cols-3 gap-2 py-1  justify-center">
         <div className="  row-span-2 ">
           <div className=" flex flex-col relative p-5 h-full shadow-card items-center justify-center rounded-[10px] ">
@@ -90,8 +93,13 @@ const Dashboard = ({ orders, customer }: DashboardProps) => {
                 <ButtonLigth
                   name="compras"
                   variant="tertiary"
-                  className="text-[#9B48ED] mt-3"
+                  className=" relative text-[#9B48ED] mt-3"
                 >
+                  {notifications.map((n) => {
+                    if (n.notification_type_id === "NOTI_CLAIM_CUSTOMER_ID") {
+                      return <Notification />
+                    }
+                  })}
                   Lista de compras
                 </ButtonLigth>
               </Link>
@@ -126,7 +134,6 @@ const Dashboard = ({ orders, customer }: DashboardProps) => {
           </div>
         </div>
 
-      
         <div className="min-h-[200px] p-1">
           <div className=" py-5 px-1  h-full shadow-card rounded-[10px] items-center  justify-center">
             <div className="flex justify-center">
@@ -152,8 +159,6 @@ const Dashboard = ({ orders, customer }: DashboardProps) => {
             </div>
           </div>
         </div>
-
-        
       </div>
     </div>
   )

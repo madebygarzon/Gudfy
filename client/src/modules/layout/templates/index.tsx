@@ -3,6 +3,10 @@ import Footer from "@modules/layout/templates/footer"
 import Nav from "@modules/layout/templates/nav"
 import React, { useEffect, useState } from "react"
 import { usePathname } from "next/navigation"
+import io, { Socket } from "socket.io-client"
+import { useNotificationContext } from "@lib/context/notification-context"
+import { useMeCustomer } from "medusa-react"
+import { useAccount } from "@lib/context/account-context"
 
 const restrictHeader = [
   // Podemos agregar las urls en las que no querramos mostar footer o Header
@@ -13,12 +17,30 @@ const restrictHeader = [
 
 const Layout: React.FC = ({ children }) => {
   const pathname = usePathname()
-
   const [isLogin, setIsLogin] = useState(false)
-
+  const { customer } = useAccount()
+  const [socket, setSocket] = useState<Socket | null>(null)
+  const { handlerRetriverNotification } = useNotificationContext()
   function isRestric(path: String): boolean {
     return restrictHeader.some((restric) => path.includes(restric.url))
   }
+
+  useEffect(() => {
+    if (customer) handlerRetriverNotification()
+  }, [customer])
+
+  useEffect(() => {
+    const socketIo = io(process.env.PORT_SOKET || "http://localhost:3001")
+    socketIo.on("new_notification", () => {
+      handlerRetriverNotification(customer?.id)
+    })
+
+    setSocket(socketIo)
+
+    return () => {
+      socketIo.disconnect()
+    }
+  }, [customer])
 
   useEffect(() => {
     const restricPathname = isRestric(pathname)
