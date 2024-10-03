@@ -1,37 +1,29 @@
-import React, { useState, useEffect } from "react";
+import { useState } from "react";
 import {
   Drawer,
-  Text,
   Input,
-  Select,
   DatePicker,
   Table,
-  DropdownMenu,
   IconButton,
   Button,
   Alert,
   Tooltip,
-  Tabs,
   Badge,
   Copy,
   Container,
   Prompt,
-  Checkbox, 
+  Checkbox,
   Label,
   Textarea,
 } from "@medusajs/ui";
 import {
-  PencilSquare,
-  XMark,
-  Check,
-  ArrowPathMini,
   Eye,
   InformationCircleSolid,
   PlusMini,
 } from "@medusajs/icons";
 import Spinner from "../../components/shared/spinner";
-import clsx from "clsx";
 import { RouteConfig } from "@medusajs/admin";
+import { ListPayStore } from "./list_pay_store";
 
 const fakeData = [
   {
@@ -138,6 +130,16 @@ const fakeData = [
         cliente: "Luis ",
       },
     ],
+    details_2: [
+      {
+        id: 2,
+        fecha: "2024-11-01",
+        id_de_pago: "897845451212",
+        monto: "150.20",
+        description:
+          "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ac quisque eu fusce penatibus nisl primis blandit fermentum justo nisi sociosqu velit. Hac eros lacinia sollicitudin himenaeos risus et nec varius est ad potenti quam. Scelerisque rhoncus eros euismod dui mollis purus sagittis nisl quisque porta vivamus sagittis.",
+      },
+    ],
   },
   {
     id: 3,
@@ -159,6 +161,16 @@ const fakeData = [
         estado: "Pendiente",
         neto_pagar: "59.00",
         cliente: "Juan Perez",
+      },
+    ],
+    details_2: [
+      {
+        id: 3,
+        fecha: "2024-11-01",
+        id_de_pago: "897845451212",
+        monto: "150.20",
+        description:
+          "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ac quisque eu fusce penatibus nisl primis blandit fermentum justo nisi sociosqu velit. Hac eros lacinia sollicitudin himenaeos risus et nec varius est ad potenti quam. Scelerisque rhoncus eros euismod dui mollis purus sagittis nisl quisque porta vivamus sagittis.",
       },
     ],
   },
@@ -246,6 +258,12 @@ type detailsVendor = {
   cliente: string;
 };
 
+type detailsPays = {
+  id: number;
+  fecha: string;
+  monto: string;
+  description: string;
+};
 const WalletListado = () => {
   const [dataCustomer, setDataCustomer] = useState({
     dataSellers: fakeData,
@@ -444,14 +462,11 @@ const WalletListado = () => {
                           <Drawer.Content className="w-9/12 right-0">
                             <Drawer.Header>
                               <div className="flex justify-center items-center gap-x-2">
-                                <Drawer.Title>Historial de ventas</Drawer.Title>
+                                <Drawer.Title>Historial de ventas de {data.storeName}</Drawer.Title>
                               </div>
                             </Drawer.Header>
-                            <Drawer.Body>
-                              <h1 className="text-center text-2xl font-bold mb-4">
-                                {data.storeName}
-                              </h1>
-
+                            <Drawer.Body className="overflow-y-auto p-4">
+                              <Container>
                               <Table>
                                 <Table.Header>
                                   <Table.Row>
@@ -479,53 +494,54 @@ const WalletListado = () => {
                                     <Table.HeaderCell>Cliente</Table.HeaderCell>
                                   </Table.Row>
                                 </Table.Header>
-                                <Table.Body>
-                                  {data.details.map((order) => {
-                                    return (
-                                      <Table.Row
-                                        key={order.id}
-                                        className="[&_td:last-child]:w-[1%] [&_td:last-child]:whitespace-nowrap"
-                                      >
-                                        <Table.Cell>
-                                          {order.producto}
-                                        </Table.Cell>
-                                        <Table.Cell>
-                                          {order.cantidad}
-                                        </Table.Cell>
-                                        <Table.Cell>
-                                          {order.ped_numero}
-                                        </Table.Cell>
-                                        <Table.Cell>{order.valor}</Table.Cell>
-                                        <Table.Cell>
-                                          {order.fecha_pago}
-                                        </Table.Cell>
-                                        <Table.Cell>
-                                          {order.comision}
-                                        </Table.Cell>
-                                        <Table.Cell>
-                                          {order.estado === "Disponible" ? (
-                                            <div className="bg-green-500 text-white rounded-md px-2 py-1">
-                                              {order.estado}
-                                            </div>
-                                          ) : order.estado === "Pendiente" ? (
-                                            <div className="bg-[#46679da3] text-white rounded-md px-2 py-1">
-                                              {order.estado}
-                                            </div>
-                                          ) : (
-                                            <div className="">
-                                              {order.estado}
-                                            </div>
-                                          )}
-                                        </Table.Cell>
-                                        <Table.Cell>
-                                          {order.neto_pagar}
-                                        </Table.Cell>
-                                        <Table.Cell>{order.cliente}</Table.Cell>
-                                      </Table.Row>
-                                    );
-                                  })}
-                                </Table.Body>
-                              </Table>
+                                  <Table.Body>
+                                    {data.details.map((order) => {
+                                      return (
+                                        <Table.Row
+                                          key={order.id}
+                                          className="[&_td:last-child]:w-[1%] [&_td:last-child]:whitespace-nowrap"
+                                        >
+                                          <Table.Cell>
+                                            {order.producto}
+                                          </Table.Cell>
+                                          <Table.Cell>
+                                            {order.cantidad}
+                                          </Table.Cell>
+                                          <Table.Cell>
+                                            {order.ped_numero}
+                                          </Table.Cell>
+                                          <Table.Cell>{order.valor}</Table.Cell>
+                                          <Table.Cell>
+                                            {order.fecha_pago}
+                                          </Table.Cell>
+                                          <Table.Cell>
+                                            {order.comision}
+                                          </Table.Cell>
+                                          <Table.Cell>
+                                            {order.estado === "Disponible" ? (
+                                              <div className="bg-green-500 text-white rounded-md px-2 py-1">
+                                                {order.estado}
+                                              </div>
+                                            ) : order.estado === "Pendiente" ? (
+                                              <div className="bg-[#46679da3] text-white rounded-md px-2 py-1">
+                                                {order.estado}
+                                              </div>
+                                            ) : (
+                                              <div className="">
+                                                {order.estado}
+                                              </div>
+                                            )}
+                                          </Table.Cell>
+                                          <Table.Cell>
+                                            {order.neto_pagar}
+                                          </Table.Cell>
+                                          <Table.Cell>{order.cliente}</Table.Cell>
+                                        </Table.Row>
+                                      );
+                                    })}
+                                  </Table.Body>
+                                </Table>
+                              </Container>                              
                             </Drawer.Body>
                             <Drawer.Footer>
                               <div className="flex justify-end items-center gap-x-2 py-4">
@@ -545,28 +561,6 @@ const WalletListado = () => {
                             </Drawer.Footer>
                           </Drawer.Content>
                         </Drawer>
-
-                        {/* <DropdownMenu>
-                          <DropdownMenu.Trigger asChild>
-                            <IconButton>
-                              <Eye className="text-ui-fg-subtle" />
-                            </IconButton>
-                          </DropdownMenu.Trigger>
-                          <DropdownMenu.Content>
-                            <DropdownMenu.Item className="gap-x-2">
-                              <Check className="text-ui-fg-subtle" />
-                              Ver
-                            </DropdownMenu.Item>
-                            <DropdownMenu.Item className="gap-x-2">
-                              <XMark className="text-ui-fg-subtle" />
-                              Eliminar
-                            </DropdownMenu.Item>
-                            <DropdownMenu.Item className="gap-x-2">
-                              <ArrowPathMini className="text-ui-fg-subtle" />
-                              Actualizar
-                            </DropdownMenu.Item>
-                          </DropdownMenu.Content>
-                        </DropdownMenu> */}
                       </Table.Cell>
 
                       <Table.Cell>
@@ -576,162 +570,128 @@ const WalletListado = () => {
                               Pagos
                             </Button>
                           </Drawer.Trigger>
-                          <Drawer.Content className="">
+                          <Drawer.Content className="w-6/12 right-0">
                             <Drawer.Header>
-                              <Drawer.Title>Zona de pagos</Drawer.Title>
+                              <Drawer.Title>Zona de pagos tienda: {data.storeName}</Drawer.Title>
                             </Drawer.Header>
-                            
-                            <Drawer.Body>
+                            <Drawer.Body className="overflow-y-auto">
+                              <div className="w-full px-4">
+                                
+                                <h3 className="my-4">Realizar pago de <span className="font-extrabold">{data.saldo_disponible}</span> a la tienda <span className="font-extrabold">{data.storeName}</span></h3>         
+                                <Container className="mt-4">
 
-
-                            <div className="w-full px-4">
-                                <Tabs defaultValue="pagar">
-                                  <Tabs.List>
-                                    <Tabs.Trigger value="pagar">Pagar</Tabs.Trigger>
-                                    <Tabs.Trigger value="historial">Histórico de pagos</Tabs.Trigger>
-                                  </Tabs.List>
-                                  <div className="mt-2">
-                                    <Tabs.Content value="pagar">
-                                      <Text size="small">
-                                        
-                                        <div className="mt-4 flex justify-start items-center gap-x-4">
-                                          <div className="flex justify-start items-center gap-x-2 text-base">
-                                            Tienda: <span className="font-extrabold">{data.storeName}</span>
-                                          </div>
-                                          <div className="flex justify-start items-center gap-x-2">
-                                    
-                                              <Alert className="flex items-center">
-                                              Saldo a pagar: {data.saldo_pendiente}.
-                                              </Alert>
-                                              <Copy content={data.saldo_pendiente.toString()} />
-                                          </div>
-                                          <div className="flex justify-start items-center gap-x-2">
-                                            
-                                              <Alert className="flex items-center">
-                                              Binance ID: {data.binance_id}.
-                                              </Alert>
-                                              <Copy content={data.binance_id} />
-                                          </div>
-                                        </div>
-
-                                        <Container className="mt-4">
-                                          <div className="flex justify-start items-center gap-x-2 py-4">
-                                            
-                                              <div  className="flex items-center gap-x-2" onClick={()=>document.getElementById("upload-file").click()}>
-                                                Subir comprobante: 
-                                                  <IconButton>
-                                                    <PlusMini />
-                                                  </IconButton>
-                                                  <Input type="file" id="upload-file" className="hidden"/>
-                                              </div>
-                                              <div className="flex items-center space-x-2">
-                                                <Checkbox 
-                                                  className="flex items-center gap-x-2"
-                                                  id="billing-shipping" 
-                                                  checked={isConfirmed}
-                                                  onCheckedChange={(checked) => setIsConfirmed(checked === true)}
-                                                  />
-                                                <Label 
-                                                  htmlFor="billing-shipping"
-                                                  className="flex items-center"
-                                                  >                                                  
-                                                    Estoy seguro de esta operación                                       
-                                                </Label>
-                                              </div>
-
-                                              <div>                                                
-                                              
-
-                                              <Prompt>
-                                                <Prompt.Trigger asChild>
-                                                  <Button 
-                                                  className="bg-green-500 border-green-500 shadow-md text-white rounded-md px-4 py-2 "
-                                                  disabled={!isConfirmed}
-                                                  >
-                                                  Confirmar pago
-                                                </Button>
-                                                </Prompt.Trigger>
-                                                <Prompt.Content>
-                                                  <Prompt.Header>
-                                                  <Prompt.Title className="text-xl font-extrabold">¡Por favor confirma esta transacción!</Prompt.Title>
-                                                    <Container className="bg-ui-bg-component mt-4">
-                                                      
-                                                        <Prompt.Description>                                                     
-                                                          <Alert className="text-l">Vas a pagar $: <span className="font-extrabold">{data.saldo_disponible}</span> a la tienda: <span className="font-extrabold">{data.storeName}</span></Alert>
-                                                        </Prompt.Description>
-                                                        
-                                                      </Container>
-                                                      
-                                                          <Textarea placeholder="Agregar notas de esta transacción ..." />
-                                                        
-                                                  </Prompt.Header>
-                                                  <Prompt.Footer>
-                                                    <Prompt.Cancel className="bg-[#a697f7] border-none hover:bg-[#6659ac] text-white">Cancelar</Prompt.Cancel>
-                                                    <Button className="bg-green-500 border-green-500 shadow-md text-white rounded-md px-4 py-2">Confirmar</Button>
-                                                  </Prompt.Footer>
-                                                </Prompt.Content>
-                                                </Prompt>
-
-                                              </div>
-
-                                              
-
-
-                                           
-                                          </div>
-                                        </Container>
-
-                                        
-                                      
-                                      </Text>
-                                    </Tabs.Content>
-                                    <Tabs.Content value="historial">
-                                      <Text size="small">
-                                      <Container>
-
-
-                                      {/* <Table>
-                                        <Table.Header>
-                                          <Table.Row>
-                                            <Table.HeaderCell>Fecha de pago</Table.HeaderCell>
-                                            <Table.HeaderCell>id de transacción</Table.HeaderCell>
-                                            <Table.HeaderCell>Valor</Table.HeaderCell>
-                                            <Table.HeaderCell>Detalle</Table.HeaderCell>
-                                            
-                                          </Table.Row>
-                                        </Table.Header>
-                                        <Table.Body>
-                                          {fakeData.map((order) => {
-                                            return (
-                                              <Table.Row
-                                                key={order.id}
-                                                className="[&_td:last-child]:w-[1%] [&_td:last-child]:whitespace-nowrap"
-                                              >
-                                                <Table.Cell>{order.displayId}</Table.Cell>
-                                                <Table.Cell>{order.customer}</Table.Cell>
-                                                <Table.Cell>{order.email}</Table.Cell>
-                                                <Table.Cell>{order.email}</Table.Cell>
-
-                                                
-                                              </Table.Row>
-                                            )
-                                          })}
-                                        </Table.Body>
-                                      </Table> */}
-
-
-
-                                      </Container>
-                                      </Text>
-                                    </Tabs.Content>
+                                <div className="mt-4 flex justify-start items-center gap-x-4">
+                                  
+                                  <div className="flex justify-start items-center gap-x-2">
+                                    <Alert className="flex items-center">
+                                      Saldo a pagar: {data.saldo_disponible}.
+                                    </Alert>
+                                    <Copy
+                                      content={data.saldo_disponible.toString()}
+                                    />
                                   </div>
-                                </Tabs>
+                                  <div className="flex justify-start items-center gap-x-2">
+                                    <Alert className="flex items-center">
+                                      Binance ID: {data.binance_id}.
+                                    </Alert>
+                                    <Copy content={data.binance_id} />
+                                  </div>
+                                </div>
+
+                                  <div className="flex justify-start items-center gap-x-2 py-4">
+                                    <div
+                                      className="flex items-center gap-x-2"
+                                      onClick={() =>
+                                        document
+                                          .getElementById("upload-file")
+                                          .click()
+                                      }
+                                    >
+                                      <p className="text-sm">Subir comprobante:</p>
+                                      <IconButton>
+                                        <PlusMini />
+                                      </IconButton>
+                                      <Input
+                                        type="file"
+                                        id="upload-file"
+                                        className="hidden"
+                                      />
+                                    </div>
+                                    <div className="flex items-center space-x-2">
+                                      <Checkbox
+                                        className="flex items-center gap-x-2"
+                                        id="billing-shipping"
+                                        checked={isConfirmed}
+                                        onCheckedChange={(checked) =>
+                                          setIsConfirmed(checked === true)
+                                        }
+                                      />
+                                      <Label
+                                        htmlFor="billing-shipping"
+                                        className="flex items-center"
+                                      >
+                                        Estoy seguro de esta operación
+                                      </Label>
+                                    </div>
+
+                                    <div>
+                                      <Prompt>
+                                        <Prompt.Trigger asChild>
+                                          <Button
+                                            className="bg-green-500 border-green-500 shadow-md text-white rounded-md px-4 py-2 "
+                                            disabled={!isConfirmed}
+                                          >
+                                            Confirmar pago
+                                          </Button>
+                                        </Prompt.Trigger>
+                                        <Prompt.Content>
+                                          <Prompt.Header>
+                                            <Prompt.Title className="text-xl font-extrabold">
+                                              ¡Por favor confirma esta
+                                              transacción!
+                                            </Prompt.Title>
+                                            <Container className="bg-ui-bg-component mt-4">
+                                              <Prompt.Description>
+                                                <Alert className="text-l">
+                                                  Vas a pagar $:{" "}
+                                                  <span className="font-extrabold">
+                                                    {data.saldo_disponible}
+                                                  </span>{" "}
+                                                  a la tienda:{" "}
+                                                  <span className="font-extrabold">
+                                                    {data.storeName}
+                                                  </span>
+                                                </Alert>
+                                              </Prompt.Description>
+                                            </Container>
+
+                                            <Textarea placeholder="Agregar notas de esta transacción ..." />
+                                          </Prompt.Header>
+                                          <Prompt.Footer>
+                                            <Prompt.Cancel className="bg-[#a697f7] border-none hover:bg-[#6659ac] text-white">
+                                              Cancelar
+                                            </Prompt.Cancel>
+                                            <Button className="bg-green-500 border-green-500 shadow-md text-white rounded-md px-4 py-2">
+                                              Confirmar
+                                            </Button>
+                                          </Prompt.Footer>
+                                        </Prompt.Content>
+                                      </Prompt>
+                                    </div>
+                                  </div>
+                                </Container>
+                                
+                                
+                                <Container className=" mt-4">
+                                  <h3 className="my-4">Histórico de pagos</h3>
+                                 <ListPayStore />
+
+
+                                </Container>
                               </div>
-
-
-
                             </Drawer.Body>
-                            <Drawer.Footer>{data.storeName}</Drawer.Footer>
+
+                            <Drawer.Footer><p>Tienda: <span className="font-extrabold">{data.storeName}</span></p></Drawer.Footer>
                           </Drawer.Content>
                         </Drawer>
                       </Table.Cell>
