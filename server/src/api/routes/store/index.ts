@@ -35,6 +35,9 @@ import postAddComment from "./post-add-comment";
 import { getListSellerClaim } from "./get-list-seller-claim";
 import updateClaimStatus from "./update-claim-status";
 import getListProductsInClaim from "./get-list-products-in-claim";
+import updateOrderData from "./update-order-data";
+import getNotificationRetriver from "./get-notification-retriver";
+import updateStateNotification from "./update-state-notification";
 
 // Initialize a custom router
 const router = Router();
@@ -119,6 +122,7 @@ export function attachStoreRoutes(storeRouter: Router) {
   router.post("/order/:id/cancel-order", wrapHandler(updateCancelStoreOrder));
   router.delete("/order/:id/order", wrapHandler(deleteStoreOrder));
   router.post("/order/:id/finished-order", wrapHandler(updateFinishedOrder));
+  router.post("/order/uptade-data", wrapHandler(updateOrderData));
 
   //-----------------------------------Endpoins for Order Claim ------------------------------------------
   router.get("/claim/:id/orders", wrapHandler(getListClaim));
@@ -131,4 +135,12 @@ export function attachStoreRoutes(storeRouter: Router) {
   router.post("/claim", wrapHandler(postClaim));
   router.post("/claim/customer/add-comment", wrapHandler(postAddComment));
   router.post("/claim/update-status", wrapHandler(updateClaimStatus));
+
+  //----------------------------------Notifications-----------------------------------------------------
+
+  router.get("/notification/:id", wrapHandler(getNotificationRetriver));
+  router.post(
+    "/notification/:id/update/:status",
+    wrapHandler(updateStateNotification)
+  );
 }

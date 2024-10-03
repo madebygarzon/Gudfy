@@ -1,8 +1,6 @@
 "use client"
-
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect } from "react"
 import React from "react"
-
 import {
   Modal,
   ModalContent,
@@ -11,30 +9,22 @@ import {
   ModalFooter,
   Button,
   useDisclosure,
-  ModalProps,
   Input,
 } from "@nextui-org/react"
-import { FaPlus, FaEye } from "react-icons/fa6"
-import OrderRevie from "../order-overview"
 import { ChatBubble, PlayMiniSolid } from "@medusajs/icons"
 import { Button as ButtonMedusa } from "@medusajs/ui"
-import Link from "next/link"
-import { getListOrders } from "@modules/account/actions/get-list-orders"
 import { useMeCustomer } from "medusa-react"
 import type { order } from "../../templates/orders-template"
 import handlerformatDate from "@lib/util/formatDate"
-import Timer from "@lib/util/timer-order"
-import { CheckMini, XMarkMini } from "@medusajs/icons"
-import { updateCancelStoreOrder } from "@modules/account/actions/update-cancel-store-order"
 import { orderClaim, useOrderGudfy } from "@lib/context/order-context"
-import ModalOrderComplete from "../order-status/complete"
-import ModalOrderPending from "../order-status/pay-pending"
-import ModalOrderCancel from "../order-status/cancel"
-import ModalOrderFinished from "../order-status/finished"
 import { getListClaimComments } from "@modules/account/actions/get-list-claim-comments"
 import { postAddComment } from "@modules/account/actions/post-add-comment"
 import { updateStatusClaim } from "@modules/account/actions/update-status-claim"
-import clsx from "clsx"
+import { useNotificationContext } from "@lib/context/notification-context"
+import Notification from "@modules/common/components/notification"
+import { updateStateNotification } from "@modules/account/actions/update-state-notification"
+import { hasPassed48Hours } from "@lib/util/date-for-escalation-admin"
+import io, { Socket } from "socket.io-client"
 
 type orders = {
   orders: order[]
@@ -47,8 +37,8 @@ const ClaimTable: React.FC = () => {
   const handleReset = () => {
     handlerListOrderClaim()
   }
+  const { notifications, setNotifications } = useNotificationContext()
   const [comments, setComments] = useState<ClaimComments[]>()
-  const [storeName, setStoreName] = useState<string>()
   const { isOpen, onOpen, onOpenChange } = useDisclosure()
 
   function handlerOrderNumber(numberOrder: string) {
@@ -56,7 +46,15 @@ const ClaimTable: React.FC = () => {
   }
 
   const handlerSelectClaimOrder = (claim: orderClaim) => {
-    setStoreName(claim.store_name)
+    if (notifications.length) {
+      let isNotifi = notifications.find((n) => n.order_claim_id === claim.id)
+
+      if (isNotifi)
+        updateStateNotification(isNotifi.id, false).then(() => {
+          setNotifications((old) => old.filter((n) => n.id !== isNotifi.id))
+        })
+    }
+    setSelectOrderClaim(claim)
     getListClaimComments(claim?.id).then((e) => {
       setComments(e)
       onOpen()
@@ -145,7 +143,18 @@ const ClaimTable: React.FC = () => {
                     <td className=" py-2">
                       {handlerformatDate(claim.created_at)}
                     </td>
-                    <td className=" py-2">
+                    <td className=" p4-2">
+                      <div className="relative">
+                        {notifications.map((n) => {
+                          if (
+                            n.notification_type_id ===
+                              "NOTI_CLAIM_CUSTOMER_ID" &&
+                            n.order_claim_id === claim.id
+                          ) {
+                            return <Notification />
+                          }
+                        })}
+                      </div>
                       <ButtonMedusa
                         className=" bg-ui-button-neutral border-ui-button-neutral hover:bg-ui-button-neutral-hover rounded-[5px] text-[#402e72]"
                         onClick={() => {
@@ -170,7 +179,7 @@ const ClaimTable: React.FC = () => {
         handleReset={handleReset}
         isOpen={isOpen}
         onOpenChange={onOpenChange}
-        storeName={storeName}
+        claim={selectOrderClaim}
       />
     </div>
   )
@@ -190,7 +199,7 @@ interface ModalClaimComment {
   isOpen: boolean
   onOpenChange: () => void
   handleReset: () => void
-  storeName?: string
+  claim?: orderClaim
 }
 
 const ModalClaimComment = ({
@@ -199,9 +208,10 @@ const ModalClaimComment = ({
   isOpen,
   onOpenChange,
   handleReset,
-  storeName,
+  claim,
 }: ModalClaimComment) => {
   const [newComment, setNewComment] = useState<string>()
+  const [socket, setSocket] = useState<Socket | null>(null)
   const [isLoadingStatus, setIsLoadingStatus] = useState<{
     solved: boolean
     cancel: boolean
@@ -262,6 +272,29 @@ const ModalClaimComment = ({
     })
   }
 
+  useEffect(() => {
+    setIsLoadingStatus({ solved: false, cancel: false, unsolved: false })
+  }, [])
+
+  useEffect(() => {
+    const socketIo = io(process.env.PORT_SOKET || "http://localhost:3001")
+
+    socketIo.on("new_comment", (data: { order_claim_id: string }) => {
+      // Si la notificación es para el cliente correcto, agregarla a la lista
+
+      if (data.order_claim_id === claim?.id)
+        getListClaimComments(claim?.id).then((e) => {
+          setComments(e)
+        })
+    })
+
+    setSocket(socketIo)
+
+    return () => {
+      socketIo.disconnect() // Desconectar el socket cuando el componente se desmonta
+    }
+  }, [claim])
+
   return (
     <Modal
       isOpen={isOpen}
@@ -273,21 +306,23 @@ const ModalClaimComment = ({
         {(onClose) => (
           <>
             <ModalHeader className="flex flex-col gap-1">
-              Conversación con la tienda de {storeName}
+              Conversación con la tienda de {claim?.store_name}
             </ModalHeader>
             <ModalBody className=" justify-end  min-h-[400px] ">
               {comments?.map((comment) => (
                 <div
                   className={`flex w-full   ${
                     comment.comment_owner_id === "COMMENT_CUSTOMER_ID"
-                      ? "justify-end" 
+                      ? "justify-end"
                       : "justify-start"
                   }`}
                 >
                   <div className="my-1 px-3 py-1 bg-slate-200 border rounded-[10px]">
                     <p className="text-xs">
                       {comment.comment_owner_id === "COMMENT_CUSTOMER_ID"
-                        ? "Yo" : comment.comment_owner_id === "COMMENT_ADMIN_ID"? "Admin Gudfy"
+                        ? "Yo"
+                        : comment.comment_owner_id === "COMMENT_ADMIN_ID"
+                        ? "Admin Gudfy"
                         : "Tienda"}
                     </p>
                     {comment.comment}
@@ -297,7 +332,6 @@ const ModalClaimComment = ({
             </ModalBody>
             <ModalFooter>
               <div className="w-full">
-                {" "}
                 <div className=" flex w-full">
                   <Input
                     value={newComment}
@@ -342,6 +376,7 @@ const ModalClaimComment = ({
                       className="bg-orange-600 text-white"
                       onClick={() => handlerStatusClaim("UNSOLVED")}
                       isLoading={isLoadingStatus.unsolved}
+                      disabled={!hasPassed48Hours(claim?.created_at)}
                     >
                       Escalar a administrador
                     </Button>

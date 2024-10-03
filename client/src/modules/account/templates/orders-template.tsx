@@ -3,6 +3,8 @@ import React, { useEffect, useState } from "react"
 import TableOrder from "../components/orders-table"
 import { Tabs, Tab, Card, CardBody } from "@nextui-org/react"
 import ClaimTable from "../components/order-claim-table.ts"
+import Notification from "@modules/common/components/notification"
+import { useNotificationContext } from "@lib/context/notification-context"
 
 export type order = {
   id: string
@@ -38,6 +40,7 @@ export type order = {
 }
 
 const OrdersTemplate = () => {
+  const { notifications } = useNotificationContext()
   return (
     <div className="w-full">
       <div className="mb-8 flex flex-col gap-y-4">
@@ -59,7 +62,19 @@ const OrdersTemplate = () => {
                 </CardBody>
               </Card>
             </Tab>
-            <Tab key="Reclamos" title="Reclamos">
+            <Tab
+              key="Reclamos"
+              title={
+                <div className="relative -m-1">
+                  Reclamos
+                  {notifications.map((n) => {
+                    if (n.notification_type_id === "NOTI_CLAIM_CUSTOMER_ID") {
+                      return <Notification />
+                    }
+                  })}
+                </div>
+              }
+            >
               <Card>
                 <CardBody>
                   <ClaimTable />
