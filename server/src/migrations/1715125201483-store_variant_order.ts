@@ -6,14 +6,16 @@ export class StoreVariantOrder1715125201483 implements MigrationInterface {
         CREATE TABLE IF NOT EXISTS "store_variant_order" (
           "id" character varying NOT NULL,
           "store_variant_id" character varying NOT NULL,
-          "store_order_id" character varying,
+          "store_order_id" character varying NOT NULL,
           "quantity" integer NOT NULL,
           "total_price" numeric,
+          "variant_order_status_id" character varying NOT NULL,
           "created_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
           "updated_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
           CONSTRAINT "PK_store_variant_order" PRIMARY KEY ("id"),
           CONSTRAINT "FK_store_variant_order_store_variant_id" FOREIGN KEY ("store_variant_id") REFERENCES "store_x_variant"("id") ON DELETE CASCADE ON UPDATE CASCADE,
-          CONSTRAINT "FK_store_variant_order_store_order_id" FOREIGN KEY ("store_order_id") REFERENCES "store_order"("id") ON DELETE CASCADE ON UPDATE CASCADE
+          CONSTRAINT "FK_store_variant_order_store_order_id" FOREIGN KEY ("store_order_id") REFERENCES "store_order"("id") ON DELETE CASCADE ON UPDATE CASCADE,
+          CONSTRAINT "FK_store_variant_order_status_id" FOREIGN KEY ("variant_order_status_id") REFERENCES "order_state"("id") ON DELETE CASCADE ON UPDATE CASCADE
         )
       `);
   }

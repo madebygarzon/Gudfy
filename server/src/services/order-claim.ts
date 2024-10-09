@@ -206,10 +206,22 @@ class OrderClaimService extends TransactionBaseService {
     const repoOrderClaim = this.activeManager_.withRepository(
       this.orderClaimRepository_
     );
+    const repoNotification = this.activeManager_.withRepository(
+      this.notificationGudfyRepository_
+    );
 
     const update = await repoOrderClaim.update(idClaim, {
       status_order_claim_id: status,
     });
+
+    if (status == "UNSOLVED_ID") {
+      const newNotification = await repoNotification.create({
+        order_claim_id: idClaim,
+        notification_type_id: "NOTI_CLAIM_ADMIN_ID",
+        seen_status: true,
+      });
+      await repoNotification.save(newNotification);
+    }
   }
   async listProductsInClaim(idStore) {
     const repoOrderClaim = this.activeManager_.withRepository(
