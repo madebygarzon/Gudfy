@@ -11,6 +11,7 @@ import getListClaimAdmin from "./get-list-claim-admin";
 import { getClaimComments } from "./get-claim-comments";
 import postAddComments from "./post-add-comments";
 import updateClaimStatus from "../store/update-claim-status";
+import getClaimNotification from "./get-claim-notification";
 
 // Initialize a custom router
 const router = Router();
@@ -49,6 +50,10 @@ export function attachAdminRoutes(adminRouter: Router) {
   router.get("/claim/:id/comment", wrapHandler(getClaimComments));
   router.post("/claim/admin/add-comment", wrapHandler(postAddComments));
   router.post("/claim/update-status", wrapHandler(updateClaimStatus));
+
+  //----------notifications-----------
+
+  router.get("/notification/claim/", wrapHandler(getClaimNotification));
 
   // Attach routes for onboarding experience, defined separately
   onboardingRoutes(adminRouter);

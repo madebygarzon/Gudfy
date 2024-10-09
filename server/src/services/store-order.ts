@@ -1,9 +1,6 @@
 import { Lifetime } from "awilix";
 import { LessThan } from "typeorm";
-import {
-  AdminPostCollectionsCollectionReq,
-  TransactionBaseService,
-} from "@medusajs/medusa";
+import { TransactionBaseService, Customer } from "@medusajs/medusa";
 import StoreOrderRepository from "../repositories/store-order";
 import StoreVariantOrderRepository from "../repositories/store-variant-order";
 import StoreXVariantRepository from "../repositories/store-x-variant";
@@ -13,6 +10,7 @@ class StoreOrderService extends TransactionBaseService {
   protected readonly storeOrderRepository_: typeof StoreOrderRepository;
   protected readonly storeVariantOrderRepository_: typeof StoreVariantOrderRepository;
   protected readonly storeXVariantRepository_: typeof StoreXVariantRepository;
+  protected readonly loggedInCustomer_: Customer | null;
 
   constructor(container) {
     // @ts-expect-error prefer-rest-params
@@ -20,6 +18,7 @@ class StoreOrderService extends TransactionBaseService {
     this.storeOrderRepository_ = container.storeOrderRepository;
     this.storeVariantOrderRepository_ = container.storeVariantOrderRepository;
     this.storeXVariantRepository_ = container.storeXVariantRepository;
+    this.loggedInCustomer_ = container.loggedInCustomer || "";
   }
 
   async currnetOrder(customerId) {
@@ -193,8 +192,47 @@ class StoreOrderService extends TransactionBaseService {
       ])
       .getRawMany();
     return listOrder;
-  }
 
+    //   {produc_title: "",
+    //   quantity: "",
+    //   price: "",
+    //   comision : "",
+    //   NumberOrder: "",
+    //   TotalPrice: "",
+    //   Customer: "",
+    //   date: "",
+    //   status: "",
+    //  }
+  }
+  async listSellerPayOrders() {
+    const repoStoreOrder = this.activeManager_.withRepository(
+      this.storeOrderRepository_
+    );
+    const listOrder = await repoStoreOrder
+      .createQueryBuilder("so")
+      .leftJoinAndSelect("so.storeVariantOrder", "svo")
+      .leftJoinAndSelect("svo.variant_order_status", "vos")
+      .leftJoinAndSelect("so.customer", "c")
+      .leftJoinAndSelect("svo.store_variant", "sxv")
+      .innerJoinAndSelect("sxv.variant", "pv")
+      .where("sxv.store_id = :store_id", {
+        store_id: this.loggedInCustomer_.store_id,
+      })
+      .select([
+        "so.id AS number_order",
+        "so.created_at AS created_date",
+        "svo.id AS store_variant_order_id",
+        "svo.total_price AS total_price_for_product",
+        "svo.quantity AS quantity",
+        "vos.state AS state",
+        "pv.title AS produc_title",
+        "sxv.price AS unit_price",
+        "c.first_name AS customer_name",
+        "c.last_name AS customer_last_name",
+      ])
+      .getRawMany();
+    return listOrder;
+  }
   async deleteOrder(idStoreOrder) {
     const repoStoreOrder = this.activeManager_.withRepository(
       this.storeOrderRepository_
@@ -265,11 +303,6 @@ class StoreOrderService extends TransactionBaseService {
   }
 
   async updateOrderData(store_order_id, dataForm) {
-    console.log(
-      "LO QUE LLEGA DE INFORMACIUON A LA ORDEN",
-      store_order_id,
-      dataForm
-    );
     if (dataForm.pay_method_id === "automatic_binance_pay") {
       dataForm = {
         ...dataForm,
@@ -284,16 +317,29 @@ class StoreOrderService extends TransactionBaseService {
     const updateData = await repoStoreOrder.update(store_order_id, {
       ...dataForm,
     });
-    console.log("se actualizaron los datos", updateData);
   }
 
   async updateStatus(orderId, order_status) {
     const repoStoreOrder = this.activeManager_.withRepository(
       this.storeOrderRepository_
     );
+    const storeVariantOrder = this.activeManager_.withRepository(
+      this.storeVariantOrderRepository_
+    );
     const cancelOrder = await repoStoreOrder.update(orderId, {
       order_status_id: order_status,
     });
+    if (order_status === "Finished_ID") {
+      const updateVariantOrder = await storeVariantOrder.update(
+        {
+          store_order_id: orderId,
+        },
+        {
+          variant_order_status_id: "Finished_ID",
+        }
+      );
+    }
+
     return cancelOrder;
   }
 
