@@ -1,22 +1,28 @@
+"use client"
 import Button from "@modules/common/components/button"
 import Image from "next/image"
+import { useTranslation } from 'react-i18next';
 
 const Banner = () => {
+
+  const { t } = useTranslation('common');
+ 
+
   return (
     <div className=" flex relative h-[400px] w-full items-center 2xl:my-12  ">
       <div className="text-white  w-full flex flex-col ml-[8%] ">
-        <h1 className="text-[60px] w-[542px] drop-shadow-md shadow-black leading-[65px] font-[900] ">
-          Explora, Conecta y Crea en Gudfy:
+        <h1 className="text-[60px] w-[700px] drop-shadow-md shadow-black leading-[65px] font-[900] ">
+          {t('firts_banner_text')}:
         </h1>
         <p className="text-[40px] text-[#9B48ED] w-auto drop-shadow-md shadow-black my-2 font-black">
-          Tu Marketplace de productos digitales.
+          {t('second_banner_text')}.
         </p>
         <div className="flex items-center gap-4">
           <Button className="w-[181.5px] bg-[#9B48ED] rounded-[5px] tracking-tight text-[18px] font-bold px-2 ">
-            ¡COMPRA YA!
+            ¡{t('text_button_banner')}!
           </Button>
           <p className="text-[16px] text-white font-bold">
-            Paga con Criptomonedas.
+            {t('text_buy_banner')}.
           </p>
           <div className="flex justify-start gap-2">
             <Image

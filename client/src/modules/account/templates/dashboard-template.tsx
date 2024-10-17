@@ -7,7 +7,9 @@ const DashboardTemplate = () => {
   const { orders } = useCustomerOrders()
   const { customer } = useMeCustomer()
 
-  return <Dashboard orders={orders} customer={customer} />
+  return <div className="sectionAnalisis">
+            <Dashboard orders={orders} customer={customer} />
+          </div>
 }
 
 export default DashboardTemplate

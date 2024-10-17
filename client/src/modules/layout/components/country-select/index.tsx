@@ -5,6 +5,7 @@ import useToggleState from "@lib/hooks/use-toggle-state"
 import { useRegions } from "medusa-react"
 import { Fragment, useEffect, useMemo, useState } from "react"
 import ReactCountryFlag from "react-country-flag"
+import i18n from "../../../../lib/i18n"
 
 type CountryOption = {
   country: string
@@ -17,7 +18,7 @@ const CountrySelect = () => {
   const { regions } = useRegions()
   const [current, setCurrent] = useState<CountryOption | undefined>(undefined)
   const { state, open, close } = useToggleState()
-  const [selectedLanguage, setSelectedLanguage] = useState<string>("en") 
+  const [selectedLanguage, setSelectedLanguage] = useState<string>("en")
 
   const options: CountryOption[] | undefined = useMemo(() => {
     return regions
@@ -34,13 +35,14 @@ const CountrySelect = () => {
 
   useEffect(() => {
     if (countryCode) {
-      const option = options?.find((o) => o.country === countryCode )
-        if(!option) {setCurrent(options?.find((o) => o.country === "es"))
-          setSelectedLanguage("es") 
-        } else {
-          setCurrent(option)
-          setSelectedLanguage("en") 
-        }
+      const option = options?.find((o) => o.country === countryCode)
+      if (!option) {
+        setCurrent(options?.find((o) => o.country === "es"))
+        setSelectedLanguage("es")
+      } else {
+        setCurrent(option)
+        setSelectedLanguage("en")
+      }
     }
   }, [countryCode, options])
 
@@ -52,6 +54,10 @@ const CountrySelect = () => {
   useEffect(() => {
     document.documentElement.lang = selectedLanguage
   }, [selectedLanguage])
+
+  const changeLanguage = (lng: string) => {
+    i18n.changeLanguage(lng) // Cambia el idioma con i18next
+  }
 
   return (
     <div onMouseEnter={open} onMouseLeave={close}>
@@ -113,7 +119,11 @@ const CountrySelect = () => {
                         }}
                         countryCode={o.country}
                       />{" "}
-                      {o.label == "Spain" ? <p>Español</p> : <p>English</p>}
+                      {o.label == "Spain" ? (
+                        <p onClick={() => changeLanguage("es")}>Español</p>
+                      ) : (
+                        <p onClick={() => changeLanguage("en")}>English</p>
+                      )}
                     </Listbox.Option>
                   )
                 })}
