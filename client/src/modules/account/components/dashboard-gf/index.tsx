@@ -8,6 +8,7 @@ import { useTranslation } from 'react-i18next';
 import { driver } from "driver.js";
 import "driver.js/dist/driver.css";
 
+
 type DashboardProps = {
   orders?: Order[]
   customer?: Omit<Customer, "password_hash">
@@ -54,6 +55,7 @@ const Dashboard = ({ orders, customer }: DashboardProps) => {
       <div className="panel_admin w-full grid grid-cols-3 gap-2 py-1  justify-center">
         <div id="sct_per_info" className="bg-[#1F0054] row-span-2 rounded-[10px] text-white">
         
+
           <div className=" flex flex-col relative p-5 h-full shadow-card items-center justify-center rounded-[10px] ">
             
             <div className="flex  absolute top-2 right-2 items-end gap-x-2 ">
@@ -132,6 +134,7 @@ const Dashboard = ({ orders, customer }: DashboardProps) => {
                   className="bg-[#9B48ED] hover:bg-[#7b39c4] text-white mt-3"
                 >
                   {t('acc_btn_subtitle')}
+
                 </ButtonLigth>
               </Link>
             </div>
@@ -166,6 +169,7 @@ const Dashboard = ({ orders, customer }: DashboardProps) => {
         </div>
 
         <div id="sct_wal" className="min-h-[200px] p-1">
+
           <div className=" py-5 px-1  h-full shadow-card rounded-[10px] items-center  justify-center">
             <div className="flex justify-center">
               <Image

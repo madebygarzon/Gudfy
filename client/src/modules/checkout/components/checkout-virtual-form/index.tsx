@@ -48,13 +48,15 @@ const CheckautVirtualForm: React.FC<props> = ({
   }
 
   const handlerCompletedForm = (object: orderDataForm) => {
-    for (let clave in object) {
-      if ((object as { [key: string]: string })[clave].trim() === "") {
+    Object.values(object).forEach((valor) => {
+      if (valor === "") {
         return false
       }
-    }
+    })
+
     return true
   }
+
   useEffect(() => {
     setDataForm((prevData) => ({
       ...prevData,

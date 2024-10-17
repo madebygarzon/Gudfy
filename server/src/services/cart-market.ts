@@ -228,7 +228,6 @@ class CartMarketService extends TransactionBaseService {
     const storeOrderRepo = this.activeManager_.withRepository(
       this.storeOrderRepository_
     );
-
     const createOrder = await storeOrderRepo.create({
       customer_id: customer_id,
       // pay_method_id: "",
@@ -242,9 +241,7 @@ class CartMarketService extends TransactionBaseService {
       // city: "",
       // phone: "",
     });
-
     const saveOrder = await storeOrderRepo.save(createOrder);
-
     return saveOrder;
   }
 }

@@ -49,12 +49,14 @@ const CheckoutForm = () => {
     setSelectedKeys(new Set([checkbox]))
     if (checkbox) setCompleteForm((com) => ({ ...com, payment: true }))
     else setCompleteForm((com) => ({ ...com, payment: false }))
-  }, [checkbox])
+  }, [])
 
   const handlersubmit = async (dataForm?: orderDataForm) => {
-    if (!dataForm) return
+    if (!dataForm) {
+      return
+    }
     await handlersubmitPaymentMethod(checkbox, cart)
-    await handlerUpdateDataLastOrder(dataForm)
+    await handlerUpdateDataLastOrder({...dataForm, pay_method_id: checkbox})
   }
 
   return (

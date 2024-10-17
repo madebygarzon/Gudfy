@@ -145,7 +145,7 @@ export const OrderGudfyProvider = ({
       )
 
     await axios.post(
-      `${process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL}/store/order-uptade/`,
+      `${process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL}/store/order/uptade-data/`,
       {
         store_order_id: currentOrder?.id,
         dataForm: dataForm,

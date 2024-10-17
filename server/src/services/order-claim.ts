@@ -3,11 +3,13 @@ import { LessThan } from "typeorm";
 import {
   AdminPostCollectionsCollectionReq,
   TransactionBaseService,
+  EventBusService,
 } from "@medusajs/medusa";
 import { OrderClaimRepository } from "../repositories/order-claim";
 import { ClaimCommentRepository } from "../repositories/claim-comment";
 import { NotificationGudfyRepository } from "../repositories/notification-gudfy";
 import StoreVariantOrderRepository from "src/repositories/store-variant-order";
+import { io } from "../websocket";
 
 class OrderClaimService extends TransactionBaseService {
   static LIFE_TIME = Lifetime.SCOPED;
@@ -15,6 +17,7 @@ class OrderClaimService extends TransactionBaseService {
   protected readonly claimCommentRepository_: typeof ClaimCommentRepository;
   protected readonly notificationGudfyRepository_: typeof NotificationGudfyRepository;
   protected readonly storeVariantOrderRepository_: typeof StoreVariantOrderRepository;
+  protected readonly eventBusService_: EventBusService;
 
   // protected readonly commentOwnerRepository_: typeof ClaimCommentRepository;
 
@@ -25,6 +28,7 @@ class OrderClaimService extends TransactionBaseService {
     this.claimCommentRepository_ = container.claimCommentRepository;
     this.notificationGudfyRepository_ = container.notificationGudfyRepository;
     this.storeVariantOrderRepository_ = container.storeVariantOrderRepository;
+    this.eventBusService_ = container.eventBusService;
   }
 
   async addClaim(claim, idCustoemr) {
@@ -66,11 +70,15 @@ class OrderClaimService extends TransactionBaseService {
     const newNotification = await repoNotification.create({
       order_claim_id: claimSave.id,
       customer_id: selecSeller[0].seller_id,
-      notification_type_id: "NOTI_CLAIM_ID",
+      notification_type_id: "NOTI_CLAIM_SELLER_ID",
       seen_status: true,
     });
+    await repoNotification.save(newNotification);
 
-    const saveNotificaction = await repoNotification.save(newNotification);
+    io.emit("new_notification", {
+      customer_id: selecSeller[0].seller_id,
+      notification: repoNotification,
+    });
   }
 
   async retriverListClaimAdmin() {
@@ -107,11 +115,6 @@ class OrderClaimService extends TransactionBaseService {
     const repoOrderClaim = this.activeManager_.withRepository(
       this.orderClaimRepository_
     );
-
-    // const listClaim = await repoOrderClaim.find({
-    //   where: { customer_id: idCustomer },
-    // });
-
     const listClaim = await repoOrderClaim
       .createQueryBuilder("oc")
       .leftJoinAndSelect("oc.store_variant_order", "svo")
@@ -178,6 +181,13 @@ class OrderClaimService extends TransactionBaseService {
     });
 
     const saveClaimComment = await repoClaimComment.save(createComment);
+    await this.addNotification(
+      dataComment.order_claim_id,
+      dataComment.comment_owner_id
+    );
+    io.emit("new_comment", {
+      order_claim_id: dataComment.order_claim_id,
+    });
   }
 
   async retriverClaimComments(idOrderClaim) {
@@ -216,6 +226,54 @@ class OrderClaimService extends TransactionBaseService {
       .getRawMany();
 
     return listProductInClame.map((e) => e.id);
+  }
+
+  private async addNotification(idOrderClaim, CommentOwner) {
+    const repoOrderClaim = this.activeManager_.withRepository(
+      this.orderClaimRepository_
+    );
+    const repoNotification = this.activeManager_.withRepository(
+      this.notificationGudfyRepository_
+    );
+
+    // Obtener la lista de reclamaciones
+    const listClaim = await repoOrderClaim
+      .createQueryBuilder("oc")
+      .leftJoinAndSelect("oc.store_variant_order", "svo")
+      .leftJoinAndSelect("svo.store_variant", "sxv")
+      .leftJoinAndSelect("sxv.store", "s")
+      .leftJoinAndSelect("sxv.variant", "v")
+      .leftJoinAndSelect("oc.customer", "c")
+      .where("oc.id = :order_claim_id", { order_claim_id: idOrderClaim })
+      .select(["c.id AS customer_id", "s.id AS store_id"])
+      .getRawMany();
+
+    const notificationType =
+      CommentOwner === "COMMENT_STORE_ID"
+        ? "NOTI_CLAIM_CUSTOMER_ID"
+        : "NOTI_CLAIM_SELLER_ID";
+
+    const retriever = await repoNotification.findOne({
+      where: {
+        order_claim_id: idOrderClaim,
+        notification_type_id: notificationType,
+      },
+    });
+
+    if (retriever) {
+      // Actualizar notificación existente
+      await repoNotification.update(retriever.id, { seen_status: true });
+    } else if (CommentOwner === "COMMENT_STORE_ID") {
+      // Crear nueva notificación solo si el dueño del comentario es la tienda
+      const createNotifica = await repoNotification.create({
+        order_claim_id: idOrderClaim,
+        customer_id: listClaim[0].customer_id,
+        notification_type_id: "NOTI_CLAIM_CUSTOMER_ID",
+        seen_status: true,
+      });
+      await repoNotification.save(createNotifica);
+    }
+    io.emit("new_notification");
   }
 }
 
