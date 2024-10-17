@@ -6,10 +6,11 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import Cart from "@modules/common/icons/cart"
 import axios from "axios"
+import { useTranslation } from "react-i18next"
 
 const AccountNav = () => {
   const route = usePathname()
-
+  const { t } = useTranslation('common');
   return (
     <div>
       <div className="small:hidden">
@@ -28,20 +29,24 @@ const AccountNav = () => {
         <div>
           <div className="text-base h-full flex flex-col justify-start items-center">
             <ul className="mb-auto flex flex-col gap-y-4">
-              <li>
-                <Button variant="selected" href="/account" route={route!}>
-                  <Cart size={30} />
-                  Comprador
-                </Button>
+              <li id="btn_left_dhb">
+                  <Button 
+                    variant="selected" 
+                    href="/account" 
+                    route={route!}
+                  >
+                    <Cart size={30} />
+                    {t('acc_btn_buyer')}
+                  </Button>
               </li>
-              <li>
+              <li id="btn_left_str">
                 <Button
                   variant="selected"
                   href="/account/seller"
                   route={route!}
                 >
                   <Icon size={30} />
-                  Vendedor
+                  {t('acc_btn_seller')}
                 </Button>
               </li>
             </ul>
