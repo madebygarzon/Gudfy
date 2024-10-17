@@ -7,7 +7,7 @@ export class NotificationGudfy1725069185981 implements MigrationInterface {
             "order_claim_id" character varying,
             "notification_type_id" character varying NOT NULL,
             "customer_id" character varying,
-            "senn_status" boolean NOT NULL,
+            "seen_status" boolean NOT NULL,
             "created_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), 
             "updated_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now()
         )`);

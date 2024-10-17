@@ -91,7 +91,7 @@ const CheckoutSelectPayment: React.FC<CheckoutDetailsProps> = ({
                 const checkbox = methodPayment.find(
                   (e) => e === Array.from(key)[0]
                 )
-                selectedCheckbox(checkbox || "")
+                selectedCheckbox(checkbox || "automatic_binance_pay")
               }}
             >
               <AccordionItem

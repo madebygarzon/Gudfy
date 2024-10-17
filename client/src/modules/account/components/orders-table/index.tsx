@@ -44,9 +44,14 @@ interface Ticket {
 
 const TicketTable: React.FC = () => {
   const { listOrder, handlerListOrder, isLoading } = useOrderGudfy()
-  const handleReset = () => {
+  const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure()
+  const handleReset = (idResetOrder?: string) => {
     handlerListOrder()
+    onClose()
+    onOpen()
+    onOpenChange()
   }
+
   const [filterStatus, setFilterStatus] = useState<
     | "Completado"
     | "Cancelado"
@@ -85,7 +90,6 @@ const TicketTable: React.FC = () => {
         return ""
     }
   }
-  const { isOpen, onOpen, onOpenChange } = useDisclosure()
 
   function handlerOrderNumber(numberOrder: string) {
     return numberOrder.replace("store_order_id_", "")
@@ -221,6 +225,7 @@ const TicketTable: React.FC = () => {
         handleReset={handleReset}
         isOpen={isOpen}
         onOpenChange={onOpenChange}
+        onClose={onClose}
       />
     </div>
   )
@@ -231,6 +236,7 @@ interface ModalOrder {
   isOpen: boolean
   onOpenChange: () => void
   handleReset: () => void
+  onClose: () => void
 }
 
 const ModalOrder = ({
@@ -238,6 +244,7 @@ const ModalOrder = ({
   isOpen,
   onOpenChange,
   handleReset,
+  onClose,
 }: ModalOrder) => {
   const { customer } = useMeCustomer()
   async function handlerOrderCancel(orderId: string) {
@@ -246,36 +253,46 @@ const ModalOrder = ({
       handleReset()
     })
   }
+  const [orderState, setOrderState] = useState<order | undefined>(orderData)
+
+  useEffect(() => {
+    setOrderState(orderData)
+  }, [orderData])
   return (
-    <Modal isOpen={isOpen} onOpenChange={onOpenChange} size="5xl">
+    <Modal
+      isOpen={isOpen}
+      onOpenChange={onOpenChange}
+      onClose={onClose}
+      size="5xl"
+    >
       <ModalContent>
         {(onClose) =>
-          orderData?.state_order === "Pendiente de pago" ? (
+          orderState?.state_order === "Pendiente de pago" ? (
             <ModalOrderPending
               handleReset={handleReset}
               onOpenChange={onOpenChange}
               orderData={orderData}
             />
-          ) : orderData?.state_order === "Cancelado" ? (
+          ) : orderState?.state_order === "Cancelado" ? (
             <ModalOrderCancel
               handleReset={handleReset}
               onOpenChange={onOpenChange}
               orderData={orderData}
             />
-          ) : orderData?.state_order === "Completado" ? (
+          ) : orderState?.state_order === "Completado" ? (
             <ModalOrderComplete
               customer={customer}
               handleReset={handleReset}
               onOpenChangeMain={onOpenChange}
               orderData={orderData}
             />
-          ) : orderData?.state_order === "Finalizado" ? (
+          ) : orderState?.state_order === "Finalizado" ? (
             <ModalOrderFinished
               handleReset={handleReset}
               onOpenChange={onOpenChange}
               orderData={orderData}
             />
-          ) : orderData?.state_order === "En discusión" ? (
+          ) : orderState?.state_order === "En discusión" ? (
             <ModalOrderClaim
               customer={customer}
               handleReset={handleReset}

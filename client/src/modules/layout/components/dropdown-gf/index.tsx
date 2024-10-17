@@ -6,6 +6,7 @@ import { useAccount } from "@lib/context/account-context"
 import NotificationGudfy from "../notification-gudfy"
 import { useTranslation } from "react-i18next"
 
+
 type DropdownProps = {
   name: string
   items: { label: string; href: string }[]
@@ -14,21 +15,31 @@ type DropdownProps = {
 const DropdownGudFy: React.FC<DropdownProps> = ({ name, items }) => {
   const { handleLogout } = useAccount()
   const [isOpen, setIsOpen] = useState(false)
+
   const { t } = useTranslation('common');
+
   return (
     <div
       className="relative flex items-center gap-x-1 "
       onMouseEnter={() => setIsOpen(!isOpen)}
       onMouseLeave={() => setIsOpen(!isOpen)}
     >
-      <div className="flex items-center text-[#FFFFFF] font-[500] text-[14px]  ">
-        <Image
-          className="mr-1"
-          alt="user_gudfy"
-          src="/header/user-icon.svg"
-          width={32}
-          height={32}
-        />
+      <div className=" flex items-center text-[#FFFFFF] font-[500] text-[14px]  ">
+        <div className="relative">
+          <Image
+            className="mr-1"
+            alt="user_gudfy"
+            src="/header/user-icon.svg"
+            width={32}
+            height={32}
+          />
+          {notifications?.length ? (
+            <Notification count={notifications.length} />
+          ) : (
+            <></>
+          )}
+        </div>
+
         {name}
         {/* <NotificationGudfy /> */}
         <svg
@@ -58,6 +69,15 @@ const DropdownGudFy: React.FC<DropdownProps> = ({ name, items }) => {
                     item.label === "Cerrar sesión" ? handleLogout : () => {}
                   }
                 >
+                  {notifications.map((n) => {
+                    if (
+                      n.notification_type_id === "NOTI_CLAIM_CUSTOMER_ID" ||
+                      (n.notification_type_id === "NOTI_CLAIM_SELLER_ID" &&
+                        item.label == "Panel de control")
+                    ) {
+                      return <Notification />
+                    }
+                  })}
                   {item.label}
                 </Link>
               )

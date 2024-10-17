@@ -6,6 +6,7 @@ import {
 import { NotificationGudfyRepository } from "../repositories/notification-gudfy";
 import { EmitData, EventBusTypes } from "@medusajs/types";
 import { AbstractEventBusModuleService } from "@medusajs/utils";
+import { io } from "../websocket";
 
 export default class NotificationGudfyService extends TransactionBaseService {
   protected readonly notificationGudfyRepository_: typeof NotificationGudfyRepository;
@@ -49,11 +50,16 @@ export default class NotificationGudfyService extends TransactionBaseService {
       },
     });
 
-    this.eventBusService_.emit("notification.retrieved", {
-      idCustomer,
-      listNotification,
-    });
-
     return listNotification;
+  }
+
+  async updateStateNotification(id, state) {
+    const repoNotification = this.activeManager_.withRepository(
+      this.notificationGudfyRepository_
+    );
+    await repoNotification.update(id, {
+      seen_status: state,
+    });
+    io.emit("new_notification", {});
   }
 }

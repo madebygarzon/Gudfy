@@ -26,6 +26,7 @@ class StoreOrderService extends TransactionBaseService {
     const repoStoreOrder = this.activeManager_.withRepository(
       this.storeOrderRepository_
     );
+
     const listOrder = await repoStoreOrder
       .createQueryBuilder("so")
       .innerJoinAndSelect("so.order_status", "sso")
@@ -154,7 +155,6 @@ class StoreOrderService extends TransactionBaseService {
         total_price_for_product,
       });
     });
-
     return Array.from(orderMap.values());
   }
 
@@ -263,6 +263,30 @@ class StoreOrderService extends TransactionBaseService {
       );
     }
   }
+
+  async updateOrderData(store_order_id, dataForm) {
+    console.log(
+      "LO QUE LLEGA DE INFORMACIUON A LA ORDEN",
+      store_order_id,
+      dataForm
+    );
+    if (dataForm.pay_method_id === "automatic_binance_pay") {
+      dataForm = {
+        ...dataForm,
+        pay_method_id: "Secondary_Method_BINANCE_ID",
+      };
+    }
+
+    const repoStoreOrder = this.activeManager_.withRepository(
+      this.storeOrderRepository_
+    );
+
+    const updateData = await repoStoreOrder.update(store_order_id, {
+      ...dataForm,
+    });
+    console.log("se actualizaron los datos", updateData);
+  }
+
   async updateStatus(orderId, order_status) {
     const repoStoreOrder = this.activeManager_.withRepository(
       this.storeOrderRepository_
@@ -272,6 +296,7 @@ class StoreOrderService extends TransactionBaseService {
     });
     return cancelOrder;
   }
+
   async updateCancelStoreOrder(orderId) {
     const repoStoreOrder = this.activeManager_.withRepository(
       this.storeOrderRepository_
@@ -284,6 +309,7 @@ class StoreOrderService extends TransactionBaseService {
     );
 
     await this.restaureStock(repoStoreXVariant, repoStoreVariantOrder, orderId);
+
     const cancelOrder = await repoStoreOrder.update(orderId, {
       order_status_id: "Cancel_ID",
     });
