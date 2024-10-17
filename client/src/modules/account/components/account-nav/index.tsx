@@ -6,12 +6,12 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import Cart from "@modules/common/icons/cart"
 import axios from "axios"
-import Notification from "@modules/common/components/notification"
-import { useNotificationContext } from "@lib/context/notification-context"
+
+import { useTranslation } from "react-i18next"
 
 const AccountNav = () => {
   const route = usePathname()
-  const { notifications } = useNotificationContext()
+  const { t } = useTranslation('common');
 
   return (
     <div>
@@ -31,18 +31,19 @@ const AccountNav = () => {
         <div>
           <div className="text-base h-full flex flex-col justify-start items-center">
             <ul className="mb-auto flex flex-col gap-y-4">
-              <li className="relative">
-                {notifications.map((n) => {
-                  if (n.notification_type_id === "NOTI_CLAIM_CUSTOMER_ID") {
-                    return <Notification />
-                  }
-                })}
-                <Button variant="selected" href="/account" route={route!}>
-                  <Cart size={30} />
-                  Comprador
-                </Button>
+
+              <li id="btn_left_dhb">
+                  <Button 
+                    variant="selected" 
+                    href="/account" 
+                    route={route!}
+                  >
+                    <Cart size={30} />
+                    {t('acc_btn_buyer')}
+                  </Button>
               </li>
-              <li className="relative">
+              <li id="btn_left_str">
+
                 <Button
                   variant="selected"
                   href="/account/seller"
@@ -55,7 +56,7 @@ const AccountNav = () => {
                     }
                   })}
                   <Icon size={30} />
-                  Vendedor
+                  {t('acc_btn_seller')}
                 </Button>
               </li>
             </ul>

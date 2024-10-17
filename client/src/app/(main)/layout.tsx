@@ -3,6 +3,7 @@
 import Layout from "@modules/layout/templates"
 
 export default function PageLayout({
+  
   children,
 }: {
   children: React.ReactNode
@@ -14,7 +15,8 @@ export default function PageLayout({
     //   <Footer />
     // </>
     <>
-      <Layout>{children}</Layout>
+      <Layout>{children}
+      </Layout>
     </>
   )
 }
