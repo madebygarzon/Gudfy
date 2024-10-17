@@ -4,10 +4,11 @@ import { useAccount } from "@lib/context/account-context"
 import Spinner from "@modules/common/icons/spinner"
 import React, { useEffect } from "react"
 import AccountNav from "../components/account-nav"
-
+import { useTranslation } from "react-i18next"
 import Logout from "@modules/common/icons/logout"
 
 const AccountLayout: React.FC = ({ children }) => {
+  const { t } = useTranslation('common');
   const { customer, retrievingCustomer, checkSession, handleLogout } =
     useAccount()
 
@@ -22,7 +23,7 @@ const AccountLayout: React.FC = ({ children }) => {
       </div>
     )
   }
-
+  
   return (
     <div className="flex-1  small:bg-gray-50 ">
       <div className="flex-1 h-full w-full  bg-white flex flex-col ">
@@ -31,12 +32,13 @@ const AccountLayout: React.FC = ({ children }) => {
             <AccountNav />
             <div className="flex justify-center">
               <button
+                id="btn_clse"
                 className="flex bg-white text-[#1F0054] rounded-[5px] py-2 px-3 min-w-[165px] gap-x-2 items-center justify-center font-bold"
                 type="button"
                 onClick={handleLogout}
               >
                 <Logout size={30} />
-                Cerrar sesión
+                {t('account_menu_lg')}
               </button>
             </div>
           </div>

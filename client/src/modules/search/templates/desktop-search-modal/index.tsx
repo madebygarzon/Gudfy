@@ -7,15 +7,16 @@ import DesktopHits from "@modules/search/components/desktop-hits"
 import SearchBox from "@modules/search/components/search-box"
 import { InstantSearch } from "react-instantsearch-hooks-web"
 import Image from "next/image"
+import { useTranslation } from "react-i18next"
 
 const DesktopSearchModal = () => {
   const { state, close, open } = useToggleState()
-
+  const { t } = useTranslation('common');
   return (
     <>
       <div className="flex max-w-[100%] h-[48px] border rounded-[5px] items-center px-5 gap-x-3">
         <Image alt="icon-search" src="/header/icon-search.svg" width={16.69} height={16.69}/>
-        <input type="text" className=" w-full bg-transparent border-none text-white focus:outline-none " placeholder="Buscar..."/>
+        <input type="text" className=" w-full bg-transparent border-none text-white focus:outline-none " placeholder={t('search_placeholder')}/>
       </div>
       {/* 
         Original
