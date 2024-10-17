@@ -13,15 +13,17 @@ import DropdownGudFy from "@modules/layout/components/dropdown-gf"
 import Link from "next/link"
 import Wallet from "@modules/layout/components/wallet-nav"
 import NavList from "@modules/layout/components/nav-list"
+import { useTranslation } from 'react-i18next';
 
 const Nav = () => {
+  const { t } = useTranslation('common');
   const { customer } = useAccount()
   const [isScrolled, setIsScrolled] = useState<boolean>(true)
   const propsDropDown = {
-    name: "Ingresar",
+    name: t('log_in'),
     items: [
-      { label: "Ingresar", href: "/account/login" },
-      { label: "Registrarse", href: "/account/register" },
+      { label: t('log_in'), href: "/account/login" },
+      { label: t('sign_up'), href: "/account/register" },
     ],
   }
 
@@ -29,11 +31,12 @@ const Nav = () => {
     name: "Name user",
     href: "/account/orders",
     items: [
-      { label: "Panel de control", href: "/account"},
-      { label: "Mis pedidos", href: "/account/orders" },
-      { label: "Editar perfil", href: "/account/profile" },
-      { label: "Mi carrito", href: "/cart" },
-      { label: "Cerrar sesión", href: "/" },
+      { label: t('account_menu_cp'), href: "/account"},
+      { label: t('account_menu_mo'), href: "/account/orders" },
+      { label: t('account_menu_ep'), href: "/account/profile" },
+      { label: t('account_menu_mc'), href: "/cart" },
+      { label: t('account_menu_lg'), href: "/" },
+
     ],
   }
 
@@ -80,8 +83,8 @@ const Nav = () => {
               <DesktopSearchModal />
               {/* {process.env.FEATURE_SEARCH_ENABLED && <DesktopSearchModal />} */}
             </div>
-            <div>
-              <CountrySelect />
+            <div className="min-w-[350px]">
+              <CountrySelect /> 
             </div>
           </div>
           <div className="flex items-center gap-x-4 sm:gap-x-8 ">
