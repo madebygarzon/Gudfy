@@ -6,6 +6,7 @@ export default async function () {
     ...imports.defaultRelationsExtended,
     "members",
     "store_x_variant",
+    "wallet",
   ];
 
   const importsAdmin = (await import(
@@ -15,5 +16,6 @@ export default async function () {
     ...importsAdmin.defaultRelationsExtended,
     "members",
     "store_x_variant",
+    "wallet",
   ];
 }
