@@ -64,10 +64,10 @@ const CustomerStore: React.FC<store> = (store) => {
         />
 
         <CardItemsDashboard
-          image="/account/support.svg"
-          title="Ayuda"
-          description="Contactanos"
-          href="/account/profile"
+          image="/account/wallet.svg"
+          title="Tu Billetera"
+          description="¡Ten el control de tus ingresos!"
+          href="/account/seller/wallet"
           store={store}
         />
       </div>

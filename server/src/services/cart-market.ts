@@ -159,7 +159,7 @@ class CartMarketService extends TransactionBaseService {
         auxTotalProducts += item.quantity;
       });
 
-      const newOrder = await this.createStore_order(
+      const newOrder = await this.createStoreOrder(
         auxTotalProce,
         auxTotalProducts,
         customer_id
@@ -174,6 +174,7 @@ class CartMarketService extends TransactionBaseService {
           store_variant_id: items[index].store_variant_id,
           store_order_id: newOrder.id,
           quantity: items[index].quantity,
+          variant_order_status_id: "Payment_Pending_ID",
           total_price: items[index].unit_price * items[index].quantity,
         });
         const saveSVO = await storeVariantOrderRepo.save(newSVO);
@@ -224,7 +225,7 @@ class CartMarketService extends TransactionBaseService {
     });
   }
 
-  private async createStore_order(total_price, quantity, customer_id) {
+  private async createStoreOrder(total_price, quantity, customer_id) {
     const storeOrderRepo = this.activeManager_.withRepository(
       this.storeOrderRepository_
     );

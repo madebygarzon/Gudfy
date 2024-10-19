@@ -29,6 +29,8 @@ import { useAdminGetSession } from "medusa-react";
 import { postAddComment } from "../../actions/claim/post-add-comment";
 import { updateStatusClaim } from "../../actions/claim/update-status-claim";
 import io, { Socket } from "socket.io-client";
+import { getClaimNotification } from "../../actions/claim/get-admin-claim-notification";
+import Notification from "../components/notification";
 
 type Data = {
   id: string;
@@ -50,6 +52,13 @@ type ClaimComments = {
   order_claim_id?: string;
   customer_id?: string;
   created_at?: string;
+};
+
+type notification = {
+  id: string;
+  order_claim_id: string;
+  notification_type_id: string;
+  customer_id: string;
 };
 
 const ReclamosListado = () => {
@@ -227,8 +236,20 @@ const ReclamosListado = () => {
     });
   };
 
+  //--------------Notificaciones para los reclamos-------------------------
+
+  const [notification, setNotification] = useState<notification[]>();
+  const handlerRetriveNotificationsAdmin = () => {
+    getClaimNotification().then((dataNotifi) => {
+      setNotification(dataNotifi);
+    });
+  };
+
+  //-----------------------------------------------------------------------
+
   useEffect(() => {
     handlerGetListClaim();
+    handlerRetriveNotificationsAdmin();
   }, []);
 
   return (
@@ -300,19 +321,26 @@ const ReclamosListado = () => {
                       <Table.Cell>
                         {data.customer_name + " " + data.customer_last_name}
                       </Table.Cell>
-                      <Table.Cell className="flex gap-x-2 items-center">
+                      <Table.Cell className=" relativeflex gap-x-2 items-center">
                         <DropdownMenu>
-                          <ModalComment
-                            claimId={data.id}
-                            open={open}
-                            setOpen={setOpen}
-                            comments={comments}
-                            handlerCommentsFromClaimOrder={
-                              handlerCommentsFromClaimOrder
-                            }
-                            handlerStatusClaim={handlerStatusClaim}
-                            setComments={setComments}
-                          />
+                          <div className="relative">
+                            {notification.map((n) => {
+                              if (n.order_claim_id === data.id) {
+                                return <Notification />;
+                              }
+                            })}
+                            <ModalComment
+                              claimId={data.id}
+                              open={open}
+                              setOpen={setOpen}
+                              comments={comments}
+                              handlerCommentsFromClaimOrder={
+                                handlerCommentsFromClaimOrder
+                              }
+                              handlerStatusClaim={handlerStatusClaim}
+                              setComments={setComments}
+                            />
+                          </div>
                         </DropdownMenu>
 
                         {/* <IconButton>

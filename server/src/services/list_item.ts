@@ -18,8 +18,8 @@ export default class SellerApplicationService extends TransactionBaseService {
     // @ts-expect-error prefer-rest-params
     super(...arguments);
     try {
-      this.lineItemRepository_ = container.lineItemRepository_;
-      this.productVariantRepository_ = container.productVariantRepository_;
+      this.lineItemRepository_ = container.lineItemRepository;
+      this.productVariantRepository_ = container.productVariantRepository;
     } catch (e) {
       // avoid errors when backend first runs
     }
@@ -39,10 +39,9 @@ export default class SellerApplicationService extends TransactionBaseService {
         unit_price: variant.price,
         variant_id: variant.id,
         quantity: quantity,
-
-
       });
-      return addItem;
+
+      return await lineItemRepo.save(addItem);
     } catch (error) {
       console.log("Error al agregar el itemen el servicio", error);
     }
