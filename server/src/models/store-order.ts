@@ -38,7 +38,7 @@ export class StoreOrder extends BaseEntity {
 
   @ManyToOne(() => OrderStatus, (os) => os?.store_order)
   @JoinColumn({ name: "order_status_id", referencedColumnName: "id" })
-  order_status?: OrderStatus[];
+  order_status?: OrderStatus;
 
   @Column({ nullable: false })
   quantity_products?: number;

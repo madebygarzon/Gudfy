@@ -12,6 +12,7 @@ import {
 import { StoreXVariant } from "./store_x_variant";
 import { StoreOrder } from "./store-order";
 import { OrderClaim } from "./order-claim";
+import { OrderStatus } from "./order-state";
 
 @Entity()
 export class StoreVariantOrder extends BaseEntity {
@@ -23,14 +24,21 @@ export class StoreVariantOrder extends BaseEntity {
     (store_variant) => store_variant?.storeVariantOrder
   )
   @JoinColumn({ name: "store_variant_id", referencedColumnName: "id" })
-  store_variant?: StoreXVariant[];
+  store_variant?: StoreXVariant;
 
   @Column({ nullable: true })
   store_order_id?: string;
 
   @ManyToOne(() => StoreOrder, (so) => so?.storeVariantOrder)
   @JoinColumn({ name: "store_order_id", referencedColumnName: "id" })
-  store_order?: StoreOrder[];
+  store_order?: StoreOrder;
+
+  @Column({ nullable: false })
+  variant_order_status_id?: string;
+
+  @ManyToOne(() => OrderStatus, (os) => os?.store_variant_order)
+  @JoinColumn({ name: "variant_order_status_id", referencedColumnName: "id" })
+  variant_order_status?: OrderStatus;
 
   @Column({ nullable: false })
   quantity?: number;

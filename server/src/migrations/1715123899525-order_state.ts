@@ -13,6 +13,7 @@ export class OrderState1715123899525 implements MigrationInterface {
         )
       `);
     await queryRunner.query(`INSERT INTO "order_status" ("id","state","description") VALUES 
+      ('Paid_ID','Pagado','Cuando un producto a sido pagado'),
       ('Payment_Pending_ID','Pendiente de pago','Cuando la orden ya esta diligenciada'),
       ('Completed_ID','Completado', 'Cuando ya esta pagada pero aun no se libera el dinero al vendedor'),
       ('Finished_ID','Finalizado','Cuando ambas partes aprobaron el producto o  se cumplio el tiempo de revisión'),

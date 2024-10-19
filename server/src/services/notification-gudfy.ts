@@ -53,6 +53,21 @@ export default class NotificationGudfyService extends TransactionBaseService {
     return listNotification;
   }
 
+  async retriverNotificationAdmin() {
+    const repoNotification = this.activeManager_.withRepository(
+      this.notificationGudfyRepository_
+    );
+
+    const listNotification = await repoNotification.find({
+      where: {
+        notification_type_id: "NOTI_CLAIM_ADMIN_ID",
+        seen_status: true,
+      },
+    });
+
+    return listNotification;
+  }
+
   async updateStateNotification(id, state) {
     const repoNotification = this.activeManager_.withRepository(
       this.notificationGudfyRepository_

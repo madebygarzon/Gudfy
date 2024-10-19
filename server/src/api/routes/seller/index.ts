@@ -11,13 +11,15 @@ import { postAddProductVariant } from "./post-add-product-variant";
 import { getListStoreProductVariant } from "./get-list-store-products-variants";
 import { getStoreProductVarian } from "./get-store-product-variant";
 import { getListSellerOrders } from "./get-list-seller-orders";
+import { waitForDebugger } from "inspector";
+import { getWallet } from "./get-wallet";
+import { getListSellerPayOrders } from "./get-list-seller-pay-orders";
 
 const router = Router();
 
 export function attachSellerRoutes(customerRouter: Router) {
   customerRouter.use("/store", router);
   router.get("/", wrapHandler(GetSeller));
-
   router.get("/products-variants", wrapHandler(getListSellerProduct));
   router.post("/add-product-variant", wrapHandler(postAddProductVariant));
   router.get(
@@ -25,7 +27,8 @@ export function attachSellerRoutes(customerRouter: Router) {
     wrapHandler(getListStoreProductVariant)
   );
   router.get("/account/:id/orders", wrapHandler(getListSellerOrders));
-
+  router.get("/wallet", wrapHandler(getWallet));
+  router.get("/wallet/orders", wrapHandler(getListSellerPayOrders));
   // obtener un producto en el dashboard del vendedor
   //router.get("/store-product-variant", wrapHandler(getStoreProductVarian));
 
@@ -36,7 +39,6 @@ export function attachSellerRoutes(customerRouter: Router) {
   //   wrapHandler(CreateSellerProduct)
   // );
   // router.delete("/variant", wrapHandler(deleteVariant));
-
   // router.post(
   //   "/edit-product",
   //   upload.single("image"),
