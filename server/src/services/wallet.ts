@@ -1,8 +1,4 @@
-import {
-  EventBusService,
-  TransactionBaseService,
-  Customer,
-} from "@medusajs/medusa";
+import { TransactionBaseService, Customer } from "@medusajs/medusa";
 import WalletRepository from "../repositories/wallet";
 import PayMethodSellerRepository from "src/repositories/pay-method-seller";
 import StoreVariantOrderRepository from "src/repositories/store-variant-order";
@@ -62,17 +58,10 @@ export default class WalletService extends TransactionBaseService {
     const walletRepository = this.activeManager_.withRepository(
       this.walletRepository_
     );
-    console.log("esta es ls tienda:", this.loggedInCustomer_.store_id);
     const store_wallet_id = await walletRepository.findOne({
       where: { store_id: this.loggedInCustomer_.store_id },
     });
-    console.log(
-      "lo que encontro en la busqueda de la wallet: ",
-      store_wallet_id
-    );
-
     const dataUpdate = await this.updateBalance();
-    console.log("valores de los productos", dataUpdate);
     const update = await walletRepository.update(store_wallet_id.id, {
       ...dataUpdate,
     });
@@ -80,7 +69,6 @@ export default class WalletService extends TransactionBaseService {
     const updatedWallet = await walletRepository.findOne({
       where: { id: store_wallet_id.id },
     });
-    console.log("estos son los datos actualizados: ", updatedWallet);
     return updatedWallet;
   }
 
@@ -125,7 +113,6 @@ export default class WalletService extends TransactionBaseService {
 
     listSVO.forEach((item) => {
       const totalProductPrice = item.price * item.quantity;
-
       if (item.status_id === "Finished_ID") {
         // Si el pedido está en estado "Finished_ID"
         prices.available_balance += totalProductPrice;

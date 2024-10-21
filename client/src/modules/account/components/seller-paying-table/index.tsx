@@ -18,49 +18,41 @@ import { Button as ButtonMedusa } from "@medusajs/ui"
 
 import { updateCancelStoreOrder } from "@modules/account/actions/update-cancel-store-order"
 import handlerformatDate from "@lib/util/formatDate"
+import { getListOrderPayments } from "@modules/account/actions/get-list-order-payments"
+import { useStore } from "@lib/context/store-context"
+import { useSellerStoreGudfy } from "@lib/context/seller-store"
 
-export type fakeData = {
-  id: string
-  fecha: string
-  Monto: number
+export type OrderPaymentData = {
+  payment_id: string
+  amoun_paid: number
+  payment_note: string
+  voucher: string
+  commission: number
+  subtotal: number
+  payment_date: string
+  products: [
+    {
+      name: string
+      price: number
+      quantity: number
+      total_price: number
+      store_order_id: string
+      customer_name: string
+    }
+  ]
 }
-const fakeDataArray: fakeData[] = [
-  {
-    id: "PA19184701",
-    fecha: "2023-09-21T14:48:00.000Z",
-    Monto: parseFloat((Math.random() * 1000).toFixed(2)),
-  },
-  {
-    id: "PA19184699",
-    fecha: "2023-09-22T11:25:00.000Z",
-    Monto: parseFloat((Math.random() * 1000).toFixed(2)),
-  },
-  {
-    id: "PA19984612",
-    fecha: "2023-09-23T09:15:00.000Z",
-    Monto: parseFloat((Math.random() * 1000).toFixed(2)),
-  },
-  {
-    id: "PA19184601",
-    fecha: "2023-09-24T16:30:00.000Z",
-    Monto: parseFloat((Math.random() * 1000).toFixed(2)),
-  },
-  {
-    id: "PA19184506",
-    fecha: "2023-09-25T08:45:00.000Z",
-    Monto: parseFloat((Math.random() * 1000).toFixed(2)),
-  },
-]
-
 const WalletTable: React.FC = () => {
-  const [listSellerOrders, setList] = useState(fakeDataArray)
+  const [listOrdersPayment, setListOrdersPayment] =
+    useState<OrderPaymentData[]>()
+  const { storeSeller } = useSellerStoreGudfy()
   const handleReset = () => {
     // handlerGetListSellerOrder()
   }
   const [filterStatus, setFilterStatus] = useState<
     "Pendiente" | "Pagado" | "Cancelado" | "all"
   >("all")
-  const [selectOrderData, setSelectOrderData] = useState<fakeData>()
+  const [selectOrderPaymentData, setSelectOrderData] =
+    useState<OrderPaymentData>()
 
   // const filteredOrder =
   //   filterStatus === "all"
@@ -87,7 +79,15 @@ const WalletTable: React.FC = () => {
     return numberOrder.replace("store_order_id_", "")
   }
 
-  useEffect(() => {}, [])
+  const handlerGetListOrdersPayments = () => {
+    getListOrderPayments(storeSeller?.id || " ").then((e) => {
+      setListOrdersPayment(e)
+    })
+  }
+
+  useEffect(() => {
+    handlerGetListOrdersPayments()
+  }, [storeSeller])
 
   return (
     <div className="w-full">
@@ -124,16 +124,16 @@ const WalletTable: React.FC = () => {
               </tr>
             </thead>
             <tbody>
-              {true ? (
-                fakeDataArray?.map((order) => (
-                  <tr key={order.fecha} className="hover:bg-gray-50">
+              {listOrdersPayment?.length ? (
+                listOrdersPayment?.map((order, i) => (
+                  <tr key={i} className="hover:bg-gray-50">
                     <td className="px-4 py-2 ">
-                      {handlerformatDate(order.fecha)}
+                      {handlerformatDate(order.payment_date)}
                     </td>
-                    <td className="px-4 py-2 ">{order.id}</td>
+                    <td className="px-4 py-2 ">{order.payment_id}</td>
                     <td className="px-4 py-2 text-green-600 ">
                       {" "}
-                      $ {order.Monto}
+                      $ {order.amoun_paid}
                     </td>
                     <td className="px-4 py-2  ">
                       <ButtonMedusa
@@ -157,7 +157,7 @@ const WalletTable: React.FC = () => {
         </div>
       </div>
       <ModalOrder
-        orderData={selectOrderData}
+        ordePaymenmtData={selectOrderPaymentData}
         handleReset={handleReset}
         isOpen={isOpen}
         onOpenChange={onOpenChange}
@@ -175,42 +175,16 @@ type Product = {
   valor: number
 }
 interface ModalOrder {
-  orderData?: fakeData
+  ordePaymenmtData?: OrderPaymentData
   isOpen: boolean
   onOpenChange: () => void
   handleReset: () => void
 }
 
 // Información falsa para el modal
-const fakeProducts: Product[] = [
-  {
-    id: "p12343753",
-    nombre: "Netflix",
-    pedido: "ORD1001",
-    cliente: "Ana García",
-    cantidad: 1,
-    valor: 12.99,
-  },
-  {
-    id: "p2345321",
-    nombre: "Spotify",
-    pedido: "ORD1002",
-    cliente: "Juan Pérez",
-    cantidad: 2,
-    valor: 24.99,
-  },
-  {
-    id: "p13424103",
-    nombre: "Free Fire",
-    pedido: "ORD1003",
-    cliente: "Luis Martínez",
-    cantidad: 1,
-    valor: 9.99,
-  },
-]
 
 const ModalOrder = ({
-  orderData,
+  ordePaymenmtData,
   isOpen,
   onOpenChange,
   handleReset,
@@ -222,14 +196,16 @@ const ModalOrder = ({
     })
   }
 
-  const subtotal = fakeProducts.reduce(
-    (acc, product) => acc + product.valor * product.cantidad,
-    0
-  )
-  const totalComision = fakeProducts.reduce(
-    (acc, product) => acc + product.valor * product.cantidad * 0.1,
-    0
-  )
+  const subtotal =
+    ordePaymenmtData?.products.reduce(
+      (acc, product) => acc + product.price * product.quantity,
+      0
+    ) || 0
+  const totalComision =
+    ordePaymenmtData?.products.reduce(
+      (acc, product) => acc + product.price * product.quantity * 0.1,
+      0
+    ) || 0
   const totalFinal = subtotal - totalComision
 
   return (
@@ -254,25 +230,23 @@ const ModalOrder = ({
               </tr>
             </thead>
             <tbody>
-              {fakeProducts.map((product) => {
-                const totalProducto = product.valor * product.cantidad
+              {ordePaymenmtData?.products?.map((product, i) => {
+                const totalProducto = product.price * product.quantity
                 const comision = totalProducto * 0.1
                 return (
-                  <tr key={product.id}>
-                    <td className="p-2 border-b">{product.nombre}</td>
-                    <td className="p-2 border-b">{product.pedido}</td>
-                    <td className="p-2 border-b">{product.cliente}</td>
+                  <tr key={i}>
+                    <td className="p-2 border-b">{product.name}</td>
+                    <td className="p-2 border-b">{product.store_order_id}</td>
+                    <td className="p-2 border-b">{product.customer_name}</td>
                     <td className="p-2 border-b text-right">
-                      {product.cantidad}
+                      {product.quantity}
                     </td>
                     <td className="p-2 border-b text-right">
-                      ${product.valor.toFixed(2)}
+                      ${product.price}
                     </td>
+                    <td className="p-2 border-b text-right">${comision}</td>
                     <td className="p-2 border-b text-right">
-                      ${comision.toFixed(2)}
-                    </td>
-                    <td className="p-2 border-b text-right">
-                      ${totalProducto.toFixed(2)}
+                      ${totalProducto}
                     </td>
                   </tr>
                 )

@@ -14,6 +14,7 @@ import { getListSellerOrders } from "./get-list-seller-orders";
 import { waitForDebugger } from "inspector";
 import { getWallet } from "./get-wallet";
 import { getListSellerPayOrders } from "./get-list-seller-pay-orders";
+import { getListOrderPayments } from "./get-list-order-payments";
 
 const router = Router();
 
@@ -26,23 +27,13 @@ export function attachSellerRoutes(customerRouter: Router) {
     "/store-products-variants",
     wrapHandler(getListStoreProductVariant)
   );
+
+  //-------Endpoints seller dashboard-------------------------------
+  //------Orders---------
   router.get("/account/:id/orders", wrapHandler(getListSellerOrders));
+  router.get("/:id/orders/payments", wrapHandler(getListOrderPayments));
+
+  //----wallet----
   router.get("/wallet", wrapHandler(getWallet));
   router.get("/wallet/orders", wrapHandler(getListSellerPayOrders));
-  // obtener un producto en el dashboard del vendedor
-  //router.get("/store-product-variant", wrapHandler(getStoreProductVarian));
-
-  // router.post(
-  //   "/create-product",
-  //   upload.single("image"),
-  //   authenticateCustomer(),
-  //   wrapHandler(CreateSellerProduct)
-  // );
-  // router.delete("/variant", wrapHandler(deleteVariant));
-  // router.post(
-  //   "/edit-product",
-  //   upload.single("image"),
-  //   authenticateCustomer(),
-  //   wrapHandler(updateProduct)
-  // );
 }

@@ -182,8 +182,8 @@ const WalletTable: React.FC = () => {
                         {order.state === "Pendiente de pago"
                           ? "Pendiente"
                           : order.state === "Finalizado"
-                          ? ""
-                          : ""}
+                          ? "Finalizado"
+                          : "Pagado"}
                       </p>
                     </td>
                   </tr>
