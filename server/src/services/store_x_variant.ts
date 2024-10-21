@@ -109,8 +109,8 @@ class StoreXVariantService extends TransactionBaseService {
       .createQueryBuilder("sxv")
       .innerJoinAndSelect("sxv.variant", "pv")
       .innerJoinAndSelect("pv.product", "p")
-      .innerJoinAndSelect("sxv.store", "s") // Relacionar StoreXVariant con Store
-      .leftJoinAndSelect("s.members", "c") // Left join Store con Customer
+      .innerJoinAndSelect("sxv.store", "s")
+      .leftJoinAndSelect("s.members", "c")
       .select([
         "sxv.id AS id",
         "sxv.quantity_store AS quantity",
