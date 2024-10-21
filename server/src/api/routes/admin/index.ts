@@ -12,6 +12,10 @@ import { getClaimComments } from "./get-claim-comments";
 import postAddComments from "./post-add-comments";
 import updateClaimStatus from "../store/update-claim-status";
 import getClaimNotification from "./get-claim-notification";
+import getListStoresToPay from "./get-list-store-to-pay";
+import postAddOrderPay from "./post-add-order-pay";
+import voucher from "../../middlewares/voucher-order-pay";
+import getListOrderPayments from "./seller/get-list-order-payments";
 
 // Initialize a custom router
 const router = Router();
@@ -55,6 +59,17 @@ export function attachAdminRoutes(adminRouter: Router) {
 
   router.get("/notification/claim/", wrapHandler(getClaimNotification));
 
+  //----------- payments ----------------
+  router.get("/wallet/payments/list-store", wrapHandler(getListStoresToPay));
+  router.get(
+    "/payments/:id/list-payments-order",
+    wrapHandler(getListOrderPayments)
+  );
+  router.post(
+    "/wallet/payments/order-pay",
+    voucher.single("voucher"),
+    wrapHandler(postAddOrderPay)
+  );
   // Attach routes for onboarding experience, defined separately
   onboardingRoutes(adminRouter);
 }

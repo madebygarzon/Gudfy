@@ -13,6 +13,7 @@ import { StoreXVariant } from "./store_x_variant";
 import { StoreOrder } from "./store-order";
 import { OrderClaim } from "./order-claim";
 import { OrderStatus } from "./order-state";
+import { PaymentDetail } from "./payment-detail";
 
 @Entity()
 export class StoreVariantOrder extends BaseEntity {
@@ -48,6 +49,9 @@ export class StoreVariantOrder extends BaseEntity {
 
   @OneToMany(() => OrderClaim, (claim) => claim?.store_variant_order)
   claim?: OrderClaim[];
+
+  @OneToMany(() => PaymentDetail, (pd) => pd?.store_variant_order)
+  payment_detail: PaymentDetail[];
 
   @BeforeInsert()
   private beforeInsert(): void {
