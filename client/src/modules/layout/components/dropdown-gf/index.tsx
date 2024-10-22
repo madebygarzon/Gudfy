@@ -5,7 +5,9 @@ import Image from "next/image"
 import { useAccount } from "@lib/context/account-context"
 import NotificationGudfy from "../notification-gudfy"
 import { useTranslation } from "react-i18next"
-
+import { Badge, Avatar } from "@nextui-org/react"
+import { useNotificationContext } from "@lib/context/notification-context"
+import Notification from "@modules/common/components/notification"
 
 type DropdownProps = {
   name: string
@@ -16,7 +18,9 @@ const DropdownGudFy: React.FC<DropdownProps> = ({ name, items }) => {
   const { handleLogout } = useAccount()
   const [isOpen, setIsOpen] = useState(false)
 
-  const { t } = useTranslation('common');
+  const { t } = useTranslation("common")
+
+  const { notifications } = useNotificationContext()
 
   return (
     <div
