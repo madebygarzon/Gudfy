@@ -6,12 +6,15 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import Cart from "@modules/common/icons/cart"
 import axios from "axios"
+import Notification from "@modules/common/components/notification"
+import { useNotificationContext } from "@lib/context/notification-context"
 
 import { useTranslation } from "react-i18next"
 
 const AccountNav = () => {
   const route = usePathname()
-  const { t } = useTranslation('common');
+  const { notifications } = useNotificationContext()
+  const { t } = useTranslation("common")
 
   return (
     <div>
@@ -31,19 +34,13 @@ const AccountNav = () => {
         <div>
           <div className="text-base h-full flex flex-col justify-start items-center">
             <ul className="mb-auto flex flex-col gap-y-4">
-
               <li id="btn_left_dhb">
-                  <Button 
-                    variant="selected" 
-                    href="/account" 
-                    route={route!}
-                  >
-                    <Cart size={30} />
-                    {t('acc_btn_buyer')}
-                  </Button>
+                <Button variant="selected" href="/account" route={route!}>
+                  <Cart size={30} />
+                  {t("acc_btn_buyer")}
+                </Button>
               </li>
               <li id="btn_left_str">
-
                 <Button
                   variant="selected"
                   href="/account/seller"
@@ -56,7 +53,7 @@ const AccountNav = () => {
                     }
                   })}
                   <Icon size={30} />
-                  {t('acc_btn_seller')}
+                  {t("acc_btn_seller")}
                 </Button>
               </li>
             </ul>
