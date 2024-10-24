@@ -137,12 +137,13 @@ class OrderPaymentService extends TransactionBaseService {
     const SVORepo = this.activeManager_.withRepository(
       this.storeVariantOrderRepository_
     );
-
     const createOrderPay = await OrderPaymentRepo.create({
       amount_paid: dataOrderP.amount_paid,
       payment_note: dataOrderP.payment_note,
       store_id: dataOrderP.store_id,
-      voucher: voucher.paht,
+      voucher: `${
+        process.env.BACKEND_URL ?? "http://localhost:9000"
+      }/${voucher}`,
       commission: dataOrderP.commission,
       subtotal: dataOrderP.subtotal,
       customer_name: dataOrderP.customer_name,
