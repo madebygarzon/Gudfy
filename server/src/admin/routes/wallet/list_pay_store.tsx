@@ -1,8 +1,10 @@
 import { Table, Button, Drawer, Text, Container } from "@medusajs/ui";
-import { Eye, ArrowDown } from "@medusajs/icons";
+import { Eye, ArrowDown, ArrowLeft } from "@medusajs/icons";
 import { StorePaymentDetails } from "./store_payment_details";
 import { useState, useEffect } from "react";
 import { getListOrderPayments } from "../../actions/payments/get-list-order-payments";
+import { Image } from "@medusajs/medusa";
+import { formatDate } from "../../utils/format-date";
 
 type Order = {
   payment_id: string;
@@ -19,7 +21,7 @@ type DetailsPay = {
   name: string;
   price: number;
   quantity: number;
-  total_price: number;
+  total_price: string;
   store_order_id: string;
   customer_name: string;
 };
@@ -30,6 +32,10 @@ type props = {
 
 const ListPayStore = ({ idStore }: props) => {
   const [dataOrderPay, setDataOrderPay] = useState<Order[]>();
+
+  const handlerOrderId = (orderId: string) => {
+    return orderId.replace("oreder_payments_id__", "");
+  };
 
   useEffect(() => {
     getListOrderPayments(idStore).then((data) => {
@@ -61,8 +67,8 @@ const ListPayStore = ({ idStore }: props) => {
                 key={order.payment_id}
                 className="[&_td:last-child]:w-[1%] [&_td:last-child]:whitespace-nowrap"
               >
-                <Table.Cell>{order.payment_id}</Table.Cell>
-                <Table.Cell>{order.payment_date}</Table.Cell>
+                <Table.Cell>{handlerOrderId(order.payment_id)}</Table.Cell>
+                <Table.Cell>{formatDate(order.payment_date)}</Table.Cell>
                 <Table.Cell>{order.amoun_paid}</Table.Cell>
                 <Table.Cell>
                   <Drawer>
@@ -72,7 +78,8 @@ const ListPayStore = ({ idStore }: props) => {
                     <Drawer.Content className="w-6/12 right-0">
                       <Drawer.Header>
                         <Drawer.Title>
-                          Detalles de pago con ID: {order.payment_id}
+                          Detalles de pago con ID:{" "}
+                          {handlerOrderId(order.payment_id)}
                         </Drawer.Title>
                       </Drawer.Header>
                       <Drawer.Body className="overflow-y-auto p-4">
@@ -91,19 +98,36 @@ const ListPayStore = ({ idStore }: props) => {
                         </Container>
                         <Container className="bg-ui-bg-subtle-pressed">
                           <Text>
-                            Id de pago: {order.payment_id} | Fecha de pago:{" "}
-                            {order.payment_date}
+                            Id de pago: {handlerOrderId(order.payment_id)} |
+                            Fecha de pago: {formatDate(order.payment_date)}
                           </Text>
                         </Container>
                       </Drawer.Body>
                       <Drawer.Footer>
-                        <Drawer.Close asChild>
-                          <Button variant="secondary">
-                            {" "}
-                            <Eye />
-                            Ver comprobante
-                          </Button>
-                        </Drawer.Close>
+                        <Drawer>
+                          <Drawer.Trigger asChild>
+                            <Button variant="secondary">
+                              {" "}
+                              <Eye />
+                              Ver comprobante
+                            </Button>
+                          </Drawer.Trigger>
+                          <Drawer.Content className="w-6/12 right-0">
+                            <Drawer.Header>
+                              <Drawer.Close>
+                                <ArrowLeft /> Volver.
+                              </Drawer.Close>
+                            </Drawer.Header>
+                            <Drawer.Body className="flex justify-center items-center p-4">
+                              <img
+                                alt="voucher"
+                                src={order.voucher}
+                                height={300}
+                                width={300}
+                              />
+                            </Drawer.Body>
+                          </Drawer.Content>
+                        </Drawer>
                         <Button>
                           <ArrowDown />
                           Descargar comprobante
