@@ -1,6 +1,10 @@
 import { StoreGetProductsParams } from "@medusajs/medusa"
 import { useCollections } from "medusa-react"
-import { ChangeEvent } from "react"
+import { ChangeEvent, useState, useContext } from "react"
+import ProductVariantPreview from "@modules/product-variant/components/product-variant-preview"
+import { categoryContext } from "@lib/context/category-context"
+import SelectedProducts from "@modules/home/components/slector-products"
+import { ProductCategory } from "@medusajs/medusa"
 
 type RefinementListProps = {
   refinementList: StoreGetProductsParams
@@ -12,6 +16,8 @@ const RefinementList = ({
   setRefinementList,
 }: RefinementListProps) => {
   const { collections, isLoading } = useCollections()
+
+  const [price, setPrice] = useState<number>(refinementList.price || 0)
 
   const handleCollectionChange = (
     e: ChangeEvent<HTMLInputElement>,
@@ -43,12 +49,21 @@ const RefinementList = ({
 
     return
   }
+  const categories = useContext(categoryContext)
 
+  const handlePriceChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const newPrice = Number(event.target.value)
+    setPrice(newPrice)
+    setRefinementList({
+      ...refinementList,
+      price: newPrice,
+    })
+  }
   return (
-    <div>
-      <div className="px-8 py-4  small:pr-0 small:pl-8 small:min-w-[250px]">
+    <div className="p-4">
+      <div className="content-filter border border-solid border-gray-200 p-5 rounded-[5px] shadow-lg  small:pr-0  small:min-w-[250px]">
         <div className="flex gap-x-3 small:flex-col small:gap-y-3">
-          <span className="text-base-semi">Tieda</span>
+          <span className="text-2xl font-bold">Tienda</span>
           <ul className="text-base-regular flex items-center gap-x-4 small:grid small:grid-cols-1 small:gap-y-2">
             {collections?.map((c) => (
               <li key={c.id}>
@@ -66,6 +81,56 @@ const RefinementList = ({
               </li>
             ))}
           </ul>
+
+          {/* Filtro de Precio  no*/}
+          <div className="border border-solid border-gray-200 p-5 rounded-[5px] shadow-lg mt-4 mr-4">
+            <label htmlFor="price-slider" className="">
+              Filtrar por precio: <span className="font-bold">${price}</span>
+            </label>
+
+            <input
+              id="price-slider"
+              type="range"
+              min="0"
+              max="1000"
+              value={price}
+              onChange={handlePriceChange}
+              className="w-full accent-[#1F0046] cursor-pointer mt-2"
+            />
+
+            <div className="flex justify-between">
+              <span className="text-sm text-gray-600">$0</span>
+              <span className="text-sm text-gray-600">$1000</span>
+            </div>
+          </div>
+          <div className="border border-solid border-gray-200 p-5 rounded-[5px] shadow-lg mt-4 mr-4">
+            <label htmlFor="price-slider" className="">
+              Filtrar por categoría:
+            </label>
+            {categories ? (
+              <div className="mt-2">
+                {categories.product_categories &&
+                categories.product_categories.length > 0
+                  ? categories.product_categories.map(
+                      (category: ProductCategory) =>
+                        !category.parent_category_id && (
+                          <li
+                            key={category.id}
+                            onClick={() =>
+                              categories.setSelectedCategory(category.id)
+                            }
+                            className="font-bold cursor-pointer"
+                          >
+                            {category.name}
+                          </li>
+                        )
+                    )
+                  : "loading.."}
+              </div>
+            ) : (
+              <>loading...</>
+            )}
+          </div>
         </div>
       </div>
     </div>
