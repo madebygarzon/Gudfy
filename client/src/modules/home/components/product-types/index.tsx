@@ -41,48 +41,12 @@ const FeaturedProductsTest = () => {
           width={317}
           height={317}
         />
-
-        <ButtonLigth className="block ml-auto mr-auto mt-6 " onClick={onOpen}>
-          Ver gift cards
-        </ButtonLigth>
-        <Modal
-          size="5xl"
-          isOpen={isOpen}
-          onOpenChange={onOpenChange}
-          scrollBehavior={scrollBehavior}
-        >
-          <ModalContent>
-            {(onClose) => (
-              <>
-                <ModalHeader className="w-fullflex flex-col gap-1">
-                  <p className="text-[#1F0054] text-[24px] font-black pb-5 w-[90%] ml-8">
-                    Giftcards
-                  </p>
-                </ModalHeader>
-                <ModalBody>
-                  <ul className="grid grid-cols-2 small:grid-cols-5 gap-x-6 gap-y-8">
-                    {products.length
-                      ? products.map((product) => (
-                          <li key={product.id}>
-                            <ProductVariantPreview {...product} />
-                          </li>
-                        ))
-                      : Array.from(Array(4).keys()).map((i) => (
-                          <li key={i}>
-                            <SkeletonProductPreview />
-                          </li>
-                        ))}
-                  </ul>
-                </ModalBody>
-                <ModalFooter>
-                  <ButtonLigth color="secundary" onClick={onClose}>
-                    Cerrar
-                  </ButtonLigth>
-                </ModalFooter>
-              </>
-            )}
-          </ModalContent>
-        </Modal>
+        <Link href={"/products/gifcardsection"}>
+          <ButtonLigth  className="block ml-auto mr-auto mt-6 " >
+            Ver gift cards
+          </ButtonLigth>
+        </Link>
+      
       </div>
 
       <div className="block ml-auto mr-auto py-12 ">
@@ -92,47 +56,11 @@ const FeaturedProductsTest = () => {
           width={317}
           height={317}
         />
-         <ButtonLigth className="block ml-auto mr-auto mt-6 " onClick={onOpen}>
-          Ver juegos
-        </ButtonLigth>
-        <Modal
-          size="5xl"
-          isOpen={isOpen}
-          onOpenChange={onOpenChange}
-          scrollBehavior={scrollBehavior}
-        >
-          <ModalContent>
-            {(onClose) => (
-              <>
-                <ModalHeader className="w-fullflex flex-col gap-1">
-                  <p className="text-[#1F0054] text-[24px] font-black pb-5 w-[90%] ml-8">
-                    Juegos
-                  </p>
-                </ModalHeader>
-                <ModalBody>
-                  <ul className="grid grid-cols-2 small:grid-cols-5 gap-x-6 gap-y-8">
-                    {products.length
-                      ? products.map((product) => (
-                          <li key={product.id}>
-                            <ProductVariantPreview {...product} />
-                          </li>
-                        ))
-                      : Array.from(Array(4).keys()).map((i) => (
-                          <li key={i}>
-                            <SkeletonProductPreview />
-                          </li>
-                        ))}
-                  </ul>
-                </ModalBody>
-                <ModalFooter>
-                  <ButtonLigth color="secundary" onClick={onClose}>
-                    Cerrar
-                  </ButtonLigth>
-                </ModalFooter>
-              </>
-            )}
-          </ModalContent>
-        </Modal>
+        <Link href={"/products/juegos"}>
+          <ButtonLigth className="block ml-auto mr-auto mt-6 " onClick={onOpen}>
+            Ver juegos
+          </ButtonLigth>
+        </Link>
       </div>
       <div className="block ml-auto mr-auto py-12 ">
         <Image
@@ -141,47 +69,11 @@ const FeaturedProductsTest = () => {
           width={317}
           height={317}
         />
-         <ButtonLigth className="block ml-auto mr-auto mt-6 " onClick={onOpen}>
-          Ver productos digitales
-        </ButtonLigth>
-        <Modal
-          size="5xl"
-          isOpen={isOpen}
-          onOpenChange={onOpenChange}
-          scrollBehavior={scrollBehavior}
-        >
-          <ModalContent>
-            {(onClose) => (
-              <>
-                <ModalHeader className="w-fullflex flex-col gap-1">
-                  <p className="text-[#1F0054] text-[24px] font-black pb-5 w-[90%] ml-8">
-                    Productos digitales
-                  </p>
-                </ModalHeader>
-                <ModalBody>
-                  <ul className="grid grid-cols-2 small:grid-cols-5 gap-x-6 gap-y-8">
-                    {products.length
-                      ? products.map((product) => (
-                          <li key={product.id}>
-                            <ProductVariantPreview {...product} />
-                          </li>
-                        ))
-                      : Array.from(Array(4).keys()).map((i) => (
-                          <li key={i}>
-                            <SkeletonProductPreview />
-                          </li>
-                        ))}
-                  </ul>
-                </ModalBody>
-                <ModalFooter>
-                  <ButtonLigth color="secundary" onClick={onClose}>
-                    Cerrar
-                  </ButtonLigth>
-                </ModalFooter>
-              </>
-            )}
-          </ModalContent>
-        </Modal>
+         <Link href={"/products/productos_digitales"}>
+          <ButtonLigth className="block ml-auto mr-auto mt-6 " onClick={onOpen}>
+            Ver productos digitales
+          </ButtonLigth>
+         </Link>
       </div>
     </div>
   )
