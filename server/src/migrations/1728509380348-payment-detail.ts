@@ -50,14 +50,12 @@ export class PaymentDetail1728509380348 implements MigrationInterface {
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    // Eliminar las llaves foráneas
     await queryRunner.dropForeignKey("payment_detail", "FK_order_payments_id");
     await queryRunner.dropForeignKey(
       "payment_detail",
       "FK_store_variant_order_id"
     );
 
-    // Eliminar la tabla payment_detail
     await queryRunner.dropTable("payment_detail", true);
   }
 }

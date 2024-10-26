@@ -15,7 +15,7 @@ export class StoreVariantOrder1715125201483 implements MigrationInterface {
           CONSTRAINT "PK_store_variant_order" PRIMARY KEY ("id"),
           CONSTRAINT "FK_store_variant_order_store_variant_id" FOREIGN KEY ("store_variant_id") REFERENCES "store_x_variant"("id") ON DELETE CASCADE ON UPDATE CASCADE,
           CONSTRAINT "FK_store_variant_order_store_order_id" FOREIGN KEY ("store_order_id") REFERENCES "store_order"("id") ON DELETE CASCADE ON UPDATE CASCADE,
-          CONSTRAINT "FK_store_variant_order_status_id" FOREIGN KEY ("variant_order_status_id") REFERENCES "order_state"("id") ON DELETE CASCADE ON UPDATE CASCADE
+          CONSTRAINT "FK_store_variant_order_status_id" FOREIGN KEY ("variant_order_status_id") REFERENCES "order_status"("id") ON DELETE CASCADE ON UPDATE CASCADE
         )
       `);
   }

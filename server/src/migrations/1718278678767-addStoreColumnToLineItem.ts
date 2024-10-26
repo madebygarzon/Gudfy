@@ -19,13 +19,11 @@ export class AddStoreColumnToLineItem1718278678767
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    // Eliminar la restricción de llave foránea
     await queryRunner.query(`
             ALTER TABLE "line_item"
             DROP CONSTRAINT "FK_store_x_variant"
         `);
 
-    // Eliminar la columna store_variant_id
     await queryRunner.query(`
             ALTER TABLE "line_item"
             DROP COLUMN "store_variant_id"
