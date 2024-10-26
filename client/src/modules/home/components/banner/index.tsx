@@ -18,7 +18,7 @@ const Banner = () => {
           {t('second_banner_text')}.
         </p>
         <div className="flex items-center gap-4">
-          <Button className="w-[181.5px] bg-[#9B48ED] rounded-[5px] tracking-tight text-[18px] font-bold px-2 ">
+          <Button href="/" className="w-[181.5px] bg-[#9B48ED] rounded-[5px] tracking-tight text-[18px] font-bold px-2 ">
             ¡{t('text_button_banner')}!
           </Button>
           <p className="text-[16px] text-white font-bold">
