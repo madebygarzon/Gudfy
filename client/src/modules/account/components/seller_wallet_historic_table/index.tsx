@@ -5,6 +5,7 @@ import React from "react"
 import { useDisclosure } from "@nextui-org/react"
 import { getWallet } from "@modules/account/actions/get-wallet"
 import { getListPayOrders } from "@modules/account/actions/get-list-seller-pay-orders"
+import handlerformatDate from "@lib/util/formatDate"
 
 export type orderData = {
   produc_title: string
@@ -26,16 +27,14 @@ type dataWallet = {
   outstanding_balance: number
   balance_paid: number
 }
+interface props {
+  wallet: dataWallet
+  setWallet: React.Dispatch<React.SetStateAction<dataWallet>>
+}
 
-const WalletTable: React.FC = () => {
+const WalletTable = ({ wallet, setWallet }: props) => {
   const [listOrders, setList] = useState<orderData[]>()
-  const [wallet, setWallet] = useState<dataWallet>({
-    id: "",
-    store_id: "",
-    aviable_balance: 0,
-    outstanding_balance: 0,
-    balance_paid: 0,
-  })
+
   const handleReset = () => {
     // handlerGetListSellerOrder()
   }
@@ -130,9 +129,9 @@ const WalletTable: React.FC = () => {
               </span>
             </div>
             <div>
-              Saldo Disponible:{" "}
-              <span className="text-green-600 text-lg">
-                $ {wallet.aviable_balance}{" "}
+              Saldo Pagado:{" "}
+              <span className="text-gray-400-600 text-lg">
+                $ {wallet.balance_paid}{" "}
               </span>
             </div>
           </div>
@@ -164,7 +163,9 @@ const WalletTable: React.FC = () => {
                     <td className="px-4 py-2 ">
                       $ {(order.total_price_for_product * 0.1).toFixed(2)}
                     </td>
-                    <td className="px-4 py-2 ">{order.number_order}</td>
+                    <td className="px-4 py-2 ">
+                      {handlerOrderNumber(order.number_order)}
+                    </td>
                     <td className="px-4 py-2 ">
                       {order.unit_price * order.quantity -
                         order.total_price_for_product * 0.1}
@@ -172,7 +173,9 @@ const WalletTable: React.FC = () => {
                     <td className="px-4 py-2 ">
                       {order.customer_name + " " + order.customer_last_name}
                     </td>
-                    <td className="px-4 py-2 ">{order.created_date}</td>
+                    <td className="px-4 py-2 ">
+                      {handlerformatDate(order.created_date)}
+                    </td>
                     <td className=" py-2">
                       <p
                         className={`${getStatusColor(

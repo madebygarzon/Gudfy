@@ -22,6 +22,7 @@ import { RouteConfig } from "@medusajs/admin";
 import ListPayStore from "./list_pay_store";
 import { getListStoresToPay } from "../../actions/payments/get-list-store-to-pay";
 import { postDataOrderPay } from "../../actions/payments/post-data-order-pay";
+import { formatDate } from "../../utils/format-date";
 
 type daraSotores = {
   store_id: string;
@@ -202,6 +203,10 @@ const WalletListado = () => {
     });
   };
 
+  const handlerOrderId = (orderId: string) => {
+    return orderId.replace("reder_payments_id__", "");
+  };
+
   useEffect(() => {
     getListStoresToPay().then((data) => {
       setDataCustomer((oldData) => ({ ...oldData, dataStore: data }));
@@ -343,10 +348,10 @@ const WalletListado = () => {
                                         Producto
                                       </Table.HeaderCell>
                                       <Table.HeaderCell>
-                                        Cantidad
+                                        Pedido
                                       </Table.HeaderCell>
                                       <Table.HeaderCell>
-                                        Pedido
+                                        Cantidad
                                       </Table.HeaderCell>
                                       <Table.HeaderCell>Valor</Table.HeaderCell>
                                       <Table.HeaderCell>
@@ -380,10 +385,10 @@ const WalletListado = () => {
                                             {product.product_name}
                                           </Table.Cell>
                                           <Table.Cell>
-                                            {product.quantity}
+                                            {handlerOrderId(product.order_id)}
                                           </Table.Cell>
                                           <Table.Cell>
-                                            {product.order_id}
+                                            {product.quantity}
                                           </Table.Cell>
                                           <Table.Cell>
                                             {product.price}
