@@ -360,6 +360,19 @@ class StoreOrderService extends TransactionBaseService {
       order_status_id: "Cancel_ID",
     });
   }
+
+  async getListSerialCodeforCustomer() {
+    const repoStoreOrder = this.activeManager_.withRepository(
+      this.storeOrderRepository_
+    );
+
+    const listOrders = repoStoreOrder.find({
+      where: {
+        customer_id: this.loggedInCustomer_.id,
+        order_status_id: "Completed_ID",
+      },
+    });
+  }
 }
 
 export default StoreOrderService;
