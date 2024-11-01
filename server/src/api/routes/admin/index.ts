@@ -16,6 +16,8 @@ import getListStoresToPay from "./get-list-store-to-pay";
 import postAddOrderPay from "./post-add-order-pay";
 import voucher from "../../middlewares/voucher-order-pay";
 import getListOrderPayments from "./seller/get-list-order-payments";
+import getListTickets from "./tickets/get-list-tickets";
+import { getMessagesTickets } from "./tickets/get-data-message-ticket";
 
 // Initialize a custom router
 const router = Router();
@@ -70,6 +72,11 @@ export function attachAdminRoutes(adminRouter: Router) {
     voucher.single("voucher"),
     wrapHandler(postAddOrderPay)
   );
+
+  //--------------tickets-------------------
+  router.get("/tickets/list-tickets", wrapHandler(getListTickets));
+  router.get("/tickets/:id/messages-ticket", wrapHandler(getMessagesTickets));
+
   // Attach routes for onboarding experience, defined separately
   onboardingRoutes(adminRouter);
 }

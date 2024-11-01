@@ -38,6 +38,11 @@ import getListProductsInClaim from "./get-list-products-in-claim";
 import updateOrderData from "./update-order-data";
 import getNotificationRetriver from "./get-notification-retriver";
 import updateStateNotification from "./update-state-notification";
+import { getListTickets } from "./tickets/get-list-tickets";
+import { postAddTickets } from "./tickets/post-add-ticket";
+import Image from "../../middlewares/images-tickests";
+import { getMessagesTickets } from "./tickets/get-data-messages-ticket";
+import binancepay_webhook from "src/api/binancepay_webhook";
 
 // Initialize a custom router
 const router = Router();
@@ -136,11 +141,32 @@ export function attachStoreRoutes(storeRouter: Router) {
   router.post("/claim/customer/add-comment", wrapHandler(postAddComment));
   router.post("/claim/update-status", wrapHandler(updateClaimStatus));
 
-  //----------------------------------Notifications-----------------------------------------------------
+  //----------------------------------Notifications------------------------------
 
   router.get("/notification/:id", wrapHandler(getNotificationRetriver));
   router.post(
     "/notification/:id/update/:status",
     wrapHandler(updateStateNotification)
+  );
+
+  //--------------------------------Tickets--------------------------------------
+  router.get("/account/list-tickets", wrapHandler(getListTickets));
+  router.get("/account/:id/messages-ticket", wrapHandler(getMessagesTickets));
+  router.post(
+    "/account/add-ticket",
+    Image.single("image"),
+    wrapHandler(postAddTickets)
+  );
+  router.post(
+    "/account/add-ticket-message",
+    Image.single("image"),
+    wrapHandler(postAddTickets)
+  );
+
+  //-------------------------------webhoock-----------------------------
+
+  router.post(
+    "/binance_pay/webhook/:id/order",
+    wrapHandler(binancepay_webhook)
   );
 }

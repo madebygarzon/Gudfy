@@ -37,7 +37,6 @@ export default (rootDirectory: string): Router | Router[] => {
   const router = Router();
 
   // binance pay webhook
-  router.post("/binance_pay/webhook", wrapHandler(binancepay_webhook));
 
   // Set up root routes for store and admin endpoints, with appropriate CORS settings
   router.use("/store", cors(storeCorsOptions), bodyParser.json());
@@ -45,7 +44,11 @@ export default (rootDirectory: string): Router | Router[] => {
   router.use("/seller", cors(storeCorsOptions), bodyParser.json());
 
   // Add authentication to all admin routes *except* auth and account invite ones
-  router.use(/\/admin\/((?!auth)(?!invites).*)/, authenticate());
+  router.use(
+    /\/admin\/((?!auth)(?!invites).*)/,
+    registerLoggedInCustomer,
+    authenticate()
+  );
   router.use("/seller", registerLoggedInCustomer);
   router.use("/store", registerLoggedInCustomer);
 
