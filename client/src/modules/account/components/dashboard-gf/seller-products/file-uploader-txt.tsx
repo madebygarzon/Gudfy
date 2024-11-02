@@ -55,7 +55,6 @@ const FileUploader: React.FC<CodesArray> = ({ variantID, setAddResult }) => {
         variantID,
         codes: codesArray,
         quantity: codesArray.length,
-
         duplicates,
       })
 
@@ -65,7 +64,6 @@ const FileUploader: React.FC<CodesArray> = ({ variantID, setAddResult }) => {
           variantID,
           codes: codesArray,
           quantity: codesArray.length,
-
           duplicates: Object.keys(duplicates).length,
         },
       ])

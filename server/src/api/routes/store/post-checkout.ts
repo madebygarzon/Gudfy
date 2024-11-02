@@ -3,7 +3,7 @@ import axios from "axios";
 import crypto from "crypto";
 
 export default async (req: Request, res: Response): Promise<void> => {
-  const { payment_method } = req.body;
+  const { payment_method, order_id } = req.body;
   const cartId = req.params.id;
   const cartMarketService = req.scope.resolve("cartMarketService");
 
@@ -12,7 +12,7 @@ export default async (req: Request, res: Response): Promise<void> => {
   try {
     switch (payment_method) {
       case "automatic_binance_pay":
-        result = await autoBinancePay(cartItems);
+        result = await autoBinancePay(cartItems, order_id);
         break;
 
       default:
@@ -24,7 +24,7 @@ export default async (req: Request, res: Response): Promise<void> => {
   }
 };
 
-const autoBinancePay = async (cartItems) => {
+const autoBinancePay = async (cartItems, order_id) => {
   const timestamp = new Date().getTime();
   const nonce = generateRandomString(32);
   const goods = cartItems.map((item) => {
@@ -44,8 +44,12 @@ const autoBinancePay = async (cartItems) => {
     fiatAmount: handlerTotalPrice(cartItems),
     fiatCurrency: "USD",
     goodsDetails: goods,
-    webhookUrl: "https://example.com/binance_pay/",
-    returnUrl: "https://success_url",
+    webhookUrl: `${
+      process.env.BACKEND_URL ?? "http://localhost:9000"
+    }/store/binance_pay/webhook/${order_id}/order`, //"https://example.com/binance_pay/",
+    returnUrl: `${
+      process.env.FRONT_URL ?? "http://localhost:8000"
+    }/account/orders`,
     description: "Buy Order",
     supportPayCurrency: "USDT,BNB,BTC",
   };
