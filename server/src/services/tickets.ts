@@ -20,9 +20,8 @@ export default class TicketsService extends TransactionBaseService {
 
     this.ticketsRepository_ = ticketsRepository;
     this.ticketMessagesRepository_ = ticketMessagesRepository;
-    this.loggedInCustomer_ = loggedInCustomer;
+    this.loggedInCustomer_ = loggedInCustomer || null;
   }
-  w;
 
   async createdTicket(subject, message, image, customer_id) {
     const TicketRepository = this.activeManager_.withRepository(
