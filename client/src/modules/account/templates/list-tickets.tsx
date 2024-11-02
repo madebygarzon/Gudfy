@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { FaEdit } from "react-icons/fa"
 import React from "react"
 import {
@@ -20,72 +20,92 @@ import {
 } from "@nextui-org/react"
 import { FaPlus } from "react-icons/fa6"
 import TicketForm from "@modules/account/components/create_ticket"
+import { getListTickets } from "../actions/tikets/get-list-tikets"
+import { IconButton } from "@medusajs/ui"
+import Eye from "@modules/common/icons/eye"
+import ViewTicket from "../components/view-ticket"
 
 interface Ticket {
-  id: number
+  id: string
   status: "Cerrado" | "Abierto" | "Respondido"
   subject: string
-  createdAt: string
+  created_at: string
 }
 
-const fakeData: Ticket[] = [
-  {
-    id: 1,
-    status: "Cerrado",
-    subject: "Problema con la cuenta",
-    createdAt: "2024-07-10",
-  },
-  {
-    id: 2,
-    status: "Abierto",
-    subject: "Error en la aplicación",
-    createdAt: "2024-07-11",
-  },
-  {
-    id: 3,
-    status: "Respondido",
-    subject: "Pregunta sobre características",
-    createdAt: "2024-07-12",
-  },
-  {
-    id: 4,
-    status: "Cerrado",
-    subject: "Problema con la cuenta",
-    createdAt: "2024-07-10",
-  },
-  {
-    id: 5,
-    status: "Abierto",
-    subject: "Error en la aplicación",
-    createdAt: "2024-07-11",
-  },
-  {
-    id: 6,
-    status: "Respondido",
-    subject: "Pregunta sobre características",
-    createdAt: "2024-07-12",
-  },
-  {
-    id: 7,
-    status: "Cerrado",
-    subject: "Problema con la cuenta",
-    createdAt: "2024-07-10",
-  },
-  {
-    id: 8,
-    status: "Abierto",
-    subject: "Error en la aplicación",
-    createdAt: "2024-07-11",
-  },
-  {
-    id: 9,
-    status: "Respondido",
-    subject: "Pregunta sobre características",
-    createdAt: "2024-07-12",
-  },
-]
+// const fakeData: Ticket[] = [
+//   {
+//     id: 1,
+//     status: "Cerrado",
+//     subject: "Problema con la cuenta",
+//     createdAt: "2024-07-10",
+//   },
+//   {
+//     id: 2,
+//     status: "Abierto",
+//     subject: "Error en la aplicación",
+//     createdAt: "2024-07-11",
+//   },
+//   {
+//     id: 3,
+//     status: "Respondido",
+//     subject: "Pregunta sobre características",
+//     createdAt: "2024-07-12",
+//   },
+//   {
+//     id: 4,
+//     status: "Cerrado",
+//     subject: "Problema con la cuenta",
+//     createdAt: "2024-07-10",
+//   },
+//   {
+//     id: 5,
+//     status: "Abierto",
+//     subject: "Error en la aplicación",
+//     createdAt: "2024-07-11",
+//   },
+//   {
+//     id: 6,
+//     status: "Respondido",
+//     subject: "Pregunta sobre características",
+//     createdAt: "2024-07-12",
+//   },
+//   {
+//     id: 7,
+//     status: "Cerrado",
+//     subject: "Problema con la cuenta",
+//     createdAt: "2024-07-10",
+//   },
+//   {
+//     id: 8,
+//     status: "Abierto",
+//     subject: "Error en la aplicación",
+//     createdAt: "2024-07-11",
+//   },
+//   {
+//     id: 9,
+//     status: "Respondido",
+//     subject: "Pregunta sobre características",
+//     createdAt: "2024-07-12",
+//   },
+// ]
 
 const TicketTable: React.FC = () => {
+  const [tickets, setTickets] = useState<Ticket[]>()
+  const [ticket, setTicket] = useState<Ticket>()
+  const { isOpen, onOpen, onOpenChange } = useDisclosure()
+  const {
+    isOpen: isOpen2,
+    onOpen: onOpen2,
+    onOpenChange: onOpenChange2,
+    onClose,
+  } = useDisclosure()
+
+  const handlerSelectTicket = (ticketSelect: Ticket) => {
+    console.log("datos de la selleccion:", ticketSelect)
+    setTicket(ticketSelect)
+    onOpen2()
+  }
+
   const handleClose = () => {
     console.log("Formulario cerrado")
   }
@@ -99,8 +119,8 @@ const TicketTable: React.FC = () => {
 
   const filteredTickets =
     filterStatus === "all"
-      ? fakeData
-      : fakeData.filter((ticket) => ticket.status === filterStatus)
+      ? tickets
+      : tickets?.filter((ticket) => ticket.status === filterStatus)
 
   const getStatusColor = (
     status: "Cerrado" | "Abierto" | "Respondido"
@@ -116,7 +136,17 @@ const TicketTable: React.FC = () => {
         return ""
     }
   }
-  const { isOpen, onOpen, onOpenChange } = useDisclosure()
+
+  const handlerGetListTickets = () => {
+    getListTickets().then((e) => {
+      setTickets(e)
+    })
+  }
+
+  useEffect(() => {
+    handlerGetListTickets()
+  }, [])
+
   return (
     <div className="w-full">
       <div className="mb-8 flex flex-col gap-y-4">
@@ -183,46 +213,85 @@ const TicketTable: React.FC = () => {
               </tr>
             </thead>
             <tbody>
-              {filteredTickets.map((ticket) => (
-                <tr key={ticket.id} className="hover:bg-gray-50">
-                  <td className=" py-2">
-                    <p
-                      className={`${getStatusColor(
-                        ticket.status
-                      )} px-4 py-2 rounded-lg `}
-                    >
-                      {ticket.status}
-                    </p>
-                  </td>
+              {filteredTickets?.length ? (
+                filteredTickets.map((ticket) => (
+                  <tr key={ticket.id} className="hover:bg-gray-50">
+                    <td className=" py-2">
+                      <p
+                        className={`${getStatusColor(
+                          ticket.status
+                        )} px-4 py-2 rounded-lg `}
+                      >
+                        {ticket.status}
+                      </p>
+                    </td>
 
-                  <td className="px-4 py-2 ">{ticket.subject}</td>
-                  <td className="px-4 py-2 ">{ticket.createdAt}</td>
-                  <td className="px-4 py-2  text-center">
-                    <Dropdown>
-                      <DropdownTrigger>
-                        <Button variant="bordered"> ... </Button>
-                      </DropdownTrigger>
-                      <DropdownMenu aria-label="Static Actions">
-                        <DropdownItem key="new">Ver</DropdownItem>
-                        <DropdownItem key="copy">Responder</DropdownItem>
-                        <DropdownItem key="edit">Editar</DropdownItem>
-                        <DropdownItem
-                          key="delete"
-                          className="text-danger"
-                          color="danger"
-                        >
-                          Cerrar ticket
-                        </DropdownItem>
-                      </DropdownMenu>
-                    </Dropdown>
-                  </td>
-                </tr>
-              ))}
+                    <td className="px-4 py-2 ">{ticket.subject}</td>
+                    <td className="px-4 py-2 ">{ticket.created_at}</td>
+                    <td className="px-4 py-2  text-center">
+                      <IconButton onClick={() => handlerSelectTicket(ticket)}>
+                        {" "}
+                        <Eye />
+                      </IconButton>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <>Cargando...</>
+              )}
             </tbody>
           </table>
         </div>
+        <ModalViewTicket
+          isOpen={isOpen2}
+          onClose={onClose}
+          onOpen={onOpen2}
+          onOpenChange={onOpenChange2}
+          subject={ticket?.subject || ""}
+          ticketId={ticket?.id || ""}
+        />
       </div>
     </div>
+  )
+}
+
+interface propsModal {
+  subject: string
+  ticketId: string
+  isOpen: boolean
+  onOpen: () => void
+  onOpenChange: () => void
+  onClose: () => void
+}
+
+const ModalViewTicket = ({
+  subject,
+  ticketId,
+  isOpen,
+  onOpen,
+  onOpenChange,
+}: propsModal) => {
+  console.log("estos son losdatos del view", ticketId)
+  const handleReset = () => {}
+  return (
+    <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+      <ModalContent>
+        {(onClose) => (
+          <>
+            <ModalHeader className="flex flex-col gap-1"></ModalHeader>
+            <ModalBody>
+              <ViewTicket
+                onClose={onClose}
+                handlerReset={handleReset}
+                subject={subject}
+                ticketId={ticketId}
+              />
+            </ModalBody>
+            <ModalFooter></ModalFooter>
+          </>
+        )}
+      </ModalContent>
+    </Modal>
   )
 }
 

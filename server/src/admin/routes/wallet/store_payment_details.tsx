@@ -5,7 +5,7 @@ type DetailsPay = {
   name: string;
   price: number;
   quantity: number;
-  total_price: number;
+  total_price: string;
   store_order_id: string;
   customer_name: string;
 };
@@ -15,9 +15,12 @@ type props = {
 };
 
 export function StorePaymentDetails({ products }: props) {
-  const subtotal = products?.reduce((sum, order) => sum + order.total_price, 0);
+  const subtotal = products?.reduce(
+    (sum, prod) => sum + Number(prod.total_price),
+    0
+  );
   const comisionTotal = products?.reduce(
-    (sum, order) => sum + order.total_price * 0.1,
+    (sum, prod) => sum + Number(prod.total_price) * 0.1,
     0
   );
   const total = subtotal - comisionTotal;
@@ -59,7 +62,9 @@ export function StorePaymentDetails({ products }: props) {
               <Table.Cell>{product.quantity}</Table.Cell>
               <Table.Cell>{product.price}</Table.Cell>
               <Table.Cell>{product.total_price}</Table.Cell>
-              <Table.Cell>{(product.total_price * 0.1).toFixed(2)}</Table.Cell>
+              <Table.Cell>
+                {(Number(product.total_price) * 0.1).toFixed(2)}
+              </Table.Cell>
             </Table.Row>
           );
         })}
@@ -75,14 +80,14 @@ export function StorePaymentDetails({ products }: props) {
           <Table.Cell></Table.Cell>
           <Table.Cell></Table.Cell>
           <Table.Cell className="font-bold">Comisión Total</Table.Cell>
-          <Table.Cell>{comisionTotal}</Table.Cell>
+          <Table.Cell>{comisionTotal.toFixed(2)}</Table.Cell>
         </Table.Row>
         <Table.Row className="bg-ui-bg-subtle-pressed">
           <Table.Cell></Table.Cell>
           <Table.Cell></Table.Cell>
           <Table.Cell></Table.Cell>
           <Table.Cell className="font-bold">Total</Table.Cell>
-          <Table.Cell className="font-bold">{total}</Table.Cell>
+          <Table.Cell className="font-bold">{total.toFixed(2)}</Table.Cell>
         </Table.Row>
       </Table.Body>
     </Table>
