@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 
-export async function getMessagesTickets(
+export default async function getMessagesTickets(
   req: Request,
   res: Response
 ): Promise<void> {

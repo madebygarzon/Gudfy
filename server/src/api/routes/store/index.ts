@@ -42,7 +42,7 @@ import { getListTickets } from "./tickets/get-list-tickets";
 import { postAddTickets } from "./tickets/post-add-ticket";
 import Image from "../../middlewares/images-tickests";
 import { getMessagesTickets } from "./tickets/get-data-messages-ticket";
-import binancepay_webhook from "src/api/binancepay_webhook";
+import binancepay_webhook from "./binancepay_webhook";
 
 // Initialize a custom router
 const router = Router();

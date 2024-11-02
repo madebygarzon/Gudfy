@@ -67,43 +67,47 @@ class StoreProductVariantService extends TransactionBaseService {
   }
 
   async listProductVariantWithSellers() {
-    const variantRepository = this.manager_.withRepository(
-      this.productVariantRepository_
-    );
+    try {
+      const variantRepository = this.manager_.withRepository(
+        this.productVariantRepository_
+      );
 
-    const rawVariants = await variantRepository
-      .createQueryBuilder("pv")
-      .innerJoin("pv.store_x_variant", "sxv")
-      .innerJoinAndSelect("pv.product", "p")
-      .select([
-        "pv.id AS id",
-        "pv.title AS title",
-        "sxv.price AS price",
-        "p.title AS productparent",
-        "p.thumbnail AS thumbnail",
-        "p.description AS desciption",
-      ])
-      .getRawMany();
+      const rawVariants = await variantRepository
+        .createQueryBuilder("pv")
+        .innerJoin("pv.store_x_variant", "sxv")
+        .innerJoinAndSelect("pv.product", "p")
+        .select([
+          "pv.id AS id",
+          "pv.title AS title",
+          "sxv.price AS price",
+          "p.title AS productparent",
+          "p.thumbnail AS thumbnail",
+          "p.description AS desciption",
+        ])
+        .getRawMany();
 
-    const variantMap = new Map();
+      const variantMap = new Map();
 
-    rawVariants.forEach((variant) => {
-      if (!variantMap.has(variant.id)) {
-        variantMap.set(variant.id, {
+      rawVariants.forEach((variant) => {
+        if (!variantMap.has(variant.id)) {
+          variantMap.set(variant.id, {
+            ...variant,
+            prices: [variant.price],
+          });
+        } else variantMap.get(variant.id).prices.push(variant.price);
+      });
+
+      const listVariant = Array.from(variantMap.values()).map((variant) => {
+        return {
           ...variant,
-          prices: [variant.price],
-        });
-      } else variantMap.get(variant.id).prices.push(variant.price);
-    });
+          prices: variant.prices.sort((a, b) => a - b),
+        };
+      });
 
-    const listVariant = Array.from(variantMap.values()).map((variant) => {
-      return {
-        ...variant,
-        prices: variant.prices.sort((a, b) => a - b),
-      };
-    });
-
-    return listVariant;
+      return listVariant;
+    } catch (error) {
+      console.log("error al devolver los productos", error);
+    }
   }
 }
 
