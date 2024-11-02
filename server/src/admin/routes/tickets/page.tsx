@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Table, DropdownMenu, IconButton } from "@medusajs/ui";
+import { Table, Drawer } from "@medusajs/ui";
 import {
   PencilSquare,
   XMark,
@@ -17,81 +17,33 @@ import { Input, Select, Button, Heading } from "@medusajs/ui";
 import clsx from "clsx";
 import { ModalComment } from "../../components/seller-application/modal-commet";
 import { RouteConfig } from "@medusajs/admin";
+import { getListTickets } from "../../actions/tickets/get-list-tickets";
+import ViewTicket from "../../components/view-ticket";
 
-const fakeData = [
-  {
-    id: 1,
-    status: "Cerrado",
-    subject: "Problema con la cuenta",
-    createdAt: "2024-07-10",
-    client: "Elsy Yuliana",
-  },
-  {
-    id: 2,
-    status: "Abierto",
-    subject: "Error en la aplicación",
-    createdAt: "2024-07-11",
-    client: "Carlos Garzón",
-  },
-  {
-    id: 3,
-    status: "Respondido",
-    subject: "Pregunta sobre características",
-    createdAt: "2024-07-12",
-    client: "luis David Arias",
-  },
-  {
-    id: 4,
-    status: "Cerrado",
-    subject: "Problema con la cuenta",
-    createdAt: "2024-07-10",
-    client: "Luis Fernando Rivera",
-  },
-  {
-    id: 5,
-    status: "Abierto",
-    subject: "Error en la aplicación",
-    createdAt: "2024-07-11",
-    client: "Alejandra Perez",
-  },
-  {
-    id: 6,
-    status: "Respondido",
-    subject: "Pregunta sobre características",
-    createdAt: "2024-07-12",
-    client: "Juan Jose Sosa",
-  },
-  {
-    id: 7,
-    status: "Cerrado",
-    subject: "Problema con la cuenta",
-    createdAt: "2024-07-10",
-    client: "Blanca Isabel Aguirre",
-  },
-  {
-    id: 8,
-    status: "Abierto",
-    subject: "Error en la aplicación",
-    createdAt: "2024-07-11",
-    client: "Luisa Fernanda Giraldo",
-  },
-  {
-    id: 9,
-    status: "Respondido",
-    subject: "Pregunta sobre características",
-    createdAt: "2024-07-12",
-    client: "Alfonso Giraldo Osorio",
-  },
-];
+interface Ticket {
+  id: string;
+  status: "Cerrado" | "Abierto" | "Respondido";
+  subject: string;
+  last_name: string;
+  first_name: string;
+  created_at: string;
+}
 
 const TicketsListado = () => {
-  const [dataCustomer, setDataCustomer] = useState({
-    dataSellers: fakeData,
+  const [dataTickets, setDataTickets] = useState<{
+    dataTickets: Ticket[];
+    dataFilter: Ticket[];
+    dataPreview: Ticket[];
+    count: number;
+  }>({
+    dataTickets: [],
     dataFilter: [],
-    dataPreview: fakeData,
-    count: fakeData.length,
+    dataPreview: [],
+    count: 0,
   });
-  const [pageTotal, setPagetotal] = useState(Math.ceil(fakeData.length / 5));
+  const [pageTotal, setPagetotal] = useState(
+    Math.ceil(dataTickets.dataFilter.length / 5)
+  );
   const [page, setPage] = useState(1);
   const [rowsPages, setRowsPages] = useState(5);
   const [isLoading, setIsLoading] = useState(false);
@@ -100,10 +52,12 @@ const TicketsListado = () => {
   const handlerNextPage = (action) => {
     if (action === "NEXT")
       setPage((old) => {
-        setDataCustomer({
-          ...dataCustomer,
+        setDataTickets({
+          ...dataTickets,
           dataPreview: handlerPreviewSellerAplication(
-            dataCustomer.dataFilter.length ? dataCustomer.dataFilter : fakeData,
+            dataTickets.dataFilter.length
+              ? dataTickets.dataFilter
+              : dataTickets.dataTickets,
             page + 1
           ),
         });
@@ -112,10 +66,12 @@ const TicketsListado = () => {
 
     if (action === "PREV")
       setPage((old) => {
-        setDataCustomer({
-          ...dataCustomer,
+        setDataTickets({
+          ...dataTickets,
           dataPreview: handlerPreviewSellerAplication(
-            dataCustomer.dataFilter.length ? dataCustomer.dataFilter : fakeData,
+            dataTickets.dataFilter.length
+              ? dataTickets.dataFilter
+              : dataTickets.dataTickets,
             page - 1
           ),
         });
@@ -134,12 +90,14 @@ const TicketsListado = () => {
 
   const handlerFilter = (value) => {
     setPage(1);
-    let dataFilter = fakeData;
+    let dataFilter = dataTickets.dataTickets;
     if (value !== "All") {
-      dataFilter = fakeData.filter((data) => data.status === value);
+      dataFilter = dataTickets.dataTickets.filter(
+        (data) => data.status === value
+      );
     }
-    setDataCustomer({
-      ...dataCustomer,
+    setDataTickets({
+      ...dataTickets,
       dataPreview: handlerPreviewSellerAplication(dataFilter, 1),
       dataFilter: value === "All" ? [] : dataFilter,
     });
@@ -148,10 +106,12 @@ const TicketsListado = () => {
   const handlerRowsNumber = (value) => {
     const valueInt = parseInt(value);
     setRowsPages(valueInt);
-    setDataCustomer({
-      ...dataCustomer,
+    setDataTickets({
+      ...dataTickets,
       dataPreview: handlerPreviewSellerAplication(
-        dataCustomer.dataFilter.length ? dataCustomer.dataFilter : fakeData,
+        dataTickets.dataFilter.length
+          ? dataTickets.dataFilter
+          : dataTickets.dataTickets,
         1,
         valueInt
       ),
@@ -159,14 +119,14 @@ const TicketsListado = () => {
   };
 
   const handlerSearcherbar = (e) => {
-    const dataFilter = fakeData.filter((data) => {
+    const dataFilter = dataTickets.dataTickets.filter((data) => {
       const subjectIncludes = data.subject
         .toLowerCase()
         .includes(e.toLowerCase());
       return subjectIncludes;
     });
-    setDataCustomer({
-      ...dataCustomer,
+    setDataTickets({
+      ...dataTickets,
       dataPreview: handlerPreviewSellerAplication(dataFilter, 1),
       dataFilter: dataFilter.length ? dataFilter : [],
     });
@@ -192,6 +152,17 @@ const TicketsListado = () => {
         return "";
     }
   };
+
+  useEffect(() => {
+    getListTickets().then((e: Ticket[]) => {
+      setDataTickets({
+        dataTickets: e,
+        dataFilter: e,
+        dataPreview: e,
+        count: e.length,
+      });
+    });
+  }, []);
 
   return (
     <div className=" bg-white p-8 border border-gray-200 rounded-lg">
@@ -227,7 +198,7 @@ const TicketsListado = () => {
             <div className="min-h-[293px] flex items-center justify-center">
               <Spinner size="large" variant="secondary" />
             </div>
-          ) : dataCustomer.dataPreview.length ? (
+          ) : dataTickets.dataPreview.length ? (
             <div className="min-h-[293px]">
               <Table>
                 <Table.Header>
@@ -242,9 +213,8 @@ const TicketsListado = () => {
                   </Table.Row>
                 </Table.Header>
                 <Table.Body>
-                  {dataCustomer.dataPreview.map((data) => (
+                  {dataTickets.dataPreview.map((data) => (
                     <Table.Row key={data.id}>
-                      
                       <Table.Cell>
                         {isValidStatus(data.status) ? (
                           <p
@@ -258,33 +228,16 @@ const TicketsListado = () => {
                           <p className="px-4 py-2 rounded-lg">{data.status}</p>
                         )}
                       </Table.Cell>
-                      <Table.Cell>{DateFormat(data.createdAt)}</Table.Cell>
-                      <Table.Cell>{data.client}</Table.Cell>
+                      <Table.Cell>{DateFormat(data.created_at)}</Table.Cell>
+                      <Table.Cell>
+                        {data.first_name + data.last_name}
+                      </Table.Cell>
                       <Table.Cell>{data.subject}</Table.Cell>
                       <Table.Cell className="flex gap-x-2 items-center">
-                        <DropdownMenu>
-                          <DropdownMenu.Trigger asChild>
-                            <IconButton>
-                              <PencilSquare className="text-ui-fg-subtle" />
-                            </IconButton>
-                          </DropdownMenu.Trigger>
-                          <DropdownMenu.Content>
-                            <DropdownMenu.Item className="gap-x-2">
-                              <Check className="text-ui-fg-subtle" />
-                              Ver
-                            </DropdownMenu.Item>
-
-                            <DropdownMenu.Item className="gap-x-2">
-                              <XMark className="text-ui-fg-subtle" />
-                              Responder
-                            </DropdownMenu.Item>
-
-                            <DropdownMenu.Item className="gap-x-2">
-                              <ArrowPathMini className="text-ui-fg-subtle" />
-                              Cerrar ticket
-                            </DropdownMenu.Item>
-                          </DropdownMenu.Content>
-                        </DropdownMenu>
+                        <ModalViewTicket
+                          subject={data.subject}
+                          ticketId={data.id}
+                        />
                       </Table.Cell>
                     </Table.Row>
                   ))}
@@ -301,9 +254,7 @@ const TicketsListado = () => {
       </div>
 
       <div className="flex p-6">
-        <div className="w-[35%]">{`${
-          dataCustomer.count || 0
-        } solicitudes`}</div>
+        <div className="w-[35%]">{`${dataTickets.count || 0} solicitudes`}</div>
         <div className="flex w-[65%] gap-5 justify-end">
           <span className="text-[12px] mr-[4px]">{`N° Registros: `}</span>
           <div className="text-[12px] w-[50px]">
@@ -366,4 +317,36 @@ export const config: RouteConfig = {
     // icon: CustomIcon,
   },
 };
+
+interface propsModal {
+  subject: string;
+  ticketId: string;
+}
+
+const ModalViewTicket = ({ subject, ticketId }: propsModal) => {
+  const handleReset = () => {};
+  return (
+    <Drawer>
+      <Drawer.Trigger asChild>
+        <Button>Edit Variant</Button>
+      </Drawer.Trigger>
+      <Drawer.Content>
+        <Drawer.Header className="flex flex-col gap-1"></Drawer.Header>
+        <Drawer.Body>
+          <ViewTicket
+            handlerReset={handleReset}
+            subject={subject}
+            ticketId={ticketId}
+          />
+        </Drawer.Body>
+        <Drawer.Footer>
+          <Drawer.Close asChild>
+            <Button variant="secondary">Cerrar</Button>
+          </Drawer.Close>
+        </Drawer.Footer>
+      </Drawer.Content>
+    </Drawer>
+  );
+};
+
 export default TicketsListado;

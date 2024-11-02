@@ -1,10 +1,13 @@
 import { Lifetime } from "awilix";
 import StoreVariantOrderRepository from "src/repositories/store-variant-order";
 import StoreRepository from "src/repositories/store";
+import StoreOrderRepository from "src/repositories/store-order";
 import OrderPaymentRepository from "src/repositories/order-payment";
 import PaymentDetailRepository from "src/repositories/payment-detail";
+import SerialCodeRepository from "src/repositories/serial-code";
 import { TransactionBaseService } from "@medusajs/medusa";
 import { Manager } from "socket.io-client";
+import { Console } from "console";
 
 class OrderPaymentService extends TransactionBaseService {
   static LIFE_TIME = Lifetime.SCOPED;
@@ -12,6 +15,8 @@ class OrderPaymentService extends TransactionBaseService {
   protected readonly orderPaymentRepository_: typeof OrderPaymentRepository;
   protected readonly paymentDetailRepository_: typeof PaymentDetailRepository;
   protected readonly storeRepository_: typeof StoreRepository;
+  protected readonly serialCodeRepository_: typeof SerialCodeRepository;
+  protected readonly storeOrderRepository_: typeof StoreOrderRepository;
 
   constructor(container) {
     // @ts-expect-error prefer-rest-params
@@ -20,6 +25,8 @@ class OrderPaymentService extends TransactionBaseService {
     this.orderPaymentRepository_ = container.orderPaymentRepository;
     this.paymentDetailRepository_ = container.paymentDetailRepository;
     this.storeRepository_ = container.storeRepository;
+    this.serialCodeRepository_ = container.serialCodeRepository;
+    this.storeOrderRepository_ = container.storeOrderRepository;
   }
   async retriveListStoresToPay() {
     try {
@@ -232,6 +239,53 @@ class OrderPaymentService extends TransactionBaseService {
     const listPaymentOrder = Array.from(paymentdOrdersMap.values());
 
     return listPaymentOrder;
+  }
+
+  async successPayOrder(order_id) {
+    try {
+      const so = this.activeManager_.withRepository(this.storeOrderRepository_);
+      const svo = this.activeManager_.withRepository(
+        this.storeVariantOrderRepository_
+      );
+      const sc = this.activeManager_.withRepository(this.serialCodeRepository_);
+      const storeOrder = await so.findOne(order_id);
+      if (storeOrder.order_status_id !== "Payment_Pending_ID")
+        throw new Error("Order status is not pending payment");
+
+      const ListSVO = await svo.find({
+        where: {
+          store_order_id: order_id,
+        },
+      });
+
+      for (const variant of ListSVO) {
+        const quantity = variant.quantity;
+        const id = variant.id;
+
+        const serialCodesToUpdate = await sc.find({
+          where: {
+            store_variant_order_id: null,
+            store_variant_id: variant.id,
+          },
+          take: quantity,
+        });
+
+        for (const serialCode of serialCodesToUpdate) {
+          await sc.update(serialCode.id, { store_variant_order_id: id });
+        }
+
+        const upDateSVO = svo.update(variant.id, {
+          variant_order_status_id: "Completed_ID",
+        });
+      }
+      const storeOrderUpdate = await so.update(order_id, {
+        order_status_id: "Completed_ID",
+      });
+    } catch (error) {
+      console.log(
+        "error en el servicio para actualizar los datos en la confirmacion de la orden "
+      );
+    }
   }
 }
 export default OrderPaymentService;
