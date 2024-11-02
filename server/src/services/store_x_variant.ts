@@ -203,13 +203,13 @@ class StoreXVariantService extends TransactionBaseService {
         });
         const productSave = await storeXVaraintRepository.save(productCreate);
 
-        data.codes.forEach(async (code) => {
+        for (const code of data.codes) {
           const productCode = await serialCodeRepository.create({
             serial: code,
             store_variant_id: productSave.id,
           });
           const productCodeSave = await serialCodeRepository.save(productCode);
-        });
+        }
       }
 
       return "products added correctly";

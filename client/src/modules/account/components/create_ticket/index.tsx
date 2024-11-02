@@ -4,15 +4,13 @@ import { Input, Textarea } from "@nextui-org/react"
 import { useForm } from "react-hook-form"
 //import { actionCreateSellerApplication } from "@modules/account/actions/action-seller-application"
 import { useMeCustomer } from "medusa-react"
-import axios from "axios";
+import axios from "axios"
+import { addTicket } from "@modules/account/actions/tikets/post-add-ticket"
+import InputFile from "@modules/common/components/input-file"
 
 interface ContactFormValues {
-  name: string
-  email: string
-  phone: string
   subject: string
   message: string
-  status: string;
 }
 
 type Props = {
@@ -23,13 +21,10 @@ type Props = {
 const TicketForm = ({ onClose, handlerReset }: Props) => {
   const { customer } = useMeCustomer()
   const [formData, setFormData] = useState<ContactFormValues>({
-    name: `${customer?.first_name || ""} ${customer?.last_name || ""}`,
-    email: customer?.email || "",
-    phone: customer?.phone || "",
     subject: "",
     message: "",
-    status: "",
   })
+  const [image, setImage] = useState<File | undefined>()
 
   const {
     register,
@@ -46,12 +41,11 @@ const TicketForm = ({ onClose, handlerReset }: Props) => {
 
   const onSubmit = handleSubmit(async () => {
     try {
-      const response = await axios.post('/api/tickets', formData);
-      console.log('Ticket creado:', response.data);
-      onClose();
-      handlerReset();
+      addTicket(formData, image, customer?.id)
+      onClose()
+      handlerReset()
     } catch (error) {
-      console.error('Error al crear el ticket:', error);
+      console.error("Error al crear el ticket:", error)
     }
   })
 
@@ -59,27 +53,7 @@ const TicketForm = ({ onClose, handlerReset }: Props) => {
     <form onSubmit={onSubmit} className="">
       <div className="flex flex-col w-full gap-y-2 text-sm ml-auto">
         <p className="mb-4 text-xl font-extrabold text-center">Crear ticket</p>
-        <Input
-          value={formData.name}
-          label="Nombre"
-          {...register("name", { required: "Campo requerido" })}
-          autoComplete="on"
-          onChange={handleInputChange}
-        />
-        <Input
-          value={formData.email}
-          label="Correo electrónico"
-          {...register("email", { required: "Campo requerido" })}
-          autoComplete="on"
-          onChange={handleInputChange}
-        />
-        <Input
-          value={formData.phone}
-          label="Número telefónico"
-          {...register("phone", { required: "Campo requerido" })}
-          autoComplete="on"
-          onChange={handleInputChange}
-        />
+
         <Input
           value={formData.subject}
           label="Asunto"
@@ -95,6 +69,11 @@ const TicketForm = ({ onClose, handlerReset }: Props) => {
           className=" rounded  mt-2"
           rows={5}
           onChange={handleInputChange}
+        />
+        <InputFile
+          alt="Image"
+          label="si lo requieres ingresa una imagen"
+          setFile={setImage}
         />
         <ButtonMedusa
           className="mt-4 mb-4 rounded-[5px]"

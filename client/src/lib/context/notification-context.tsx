@@ -47,7 +47,7 @@ export const NotificationProvider = ({
         setNotifications(result)
       })
       .catch((e) => {
-        alert(e.error.message)
+        console.log(e.error)
       })
   }
 
