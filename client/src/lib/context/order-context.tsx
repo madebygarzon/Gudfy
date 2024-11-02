@@ -89,7 +89,11 @@ interface orderContext {
   isLoadingCurrentOrder: boolean
   handlerListOrder: () => void
   handlerCurrentOrder: () => void
-  handlersubmitPaymentMethod: (checkbox: string, cart: Cart | undefined) => void
+  handlersubmitPaymentMethod: (
+    checkbox: string,
+    cart: Cart | undefined,
+    order_id: string
+  ) => void
   dataPay: dataPay | undefined
   setDataPay: react.Dispatch<SetStateAction<dataPay | undefined>>
   listOrder: order[] | null
@@ -161,7 +165,8 @@ export const OrderGudfyProvider = ({
 
   const handlersubmitPaymentMethod = async (
     checkbox: string,
-    cart: Cart | undefined
+    cart: Cart | undefined,
+    order_id: string
   ) => {
     setIsLoadingCurrentOrder(true)
     const response = await axios
@@ -169,6 +174,7 @@ export const OrderGudfyProvider = ({
         `${process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL}/store/carts/${cart?.id}/checkout`,
         {
           payment_method: checkbox,
+          order_id: order_id,
         },
         {
           withCredentials: true,

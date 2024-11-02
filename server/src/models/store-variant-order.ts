@@ -14,6 +14,7 @@ import { StoreOrder } from "./store-order";
 import { OrderClaim } from "./order-claim";
 import { OrderStatus } from "./order-state";
 import { PaymentDetail } from "./payment-detail";
+import { SerialCode } from "./serial-code";
 
 @Entity()
 export class StoreVariantOrder extends BaseEntity {
@@ -52,6 +53,9 @@ export class StoreVariantOrder extends BaseEntity {
 
   @OneToMany(() => PaymentDetail, (pd) => pd?.store_variant_order)
   payment_detail: PaymentDetail[];
+
+  @OneToMany(() => SerialCode, (sc) => sc?.store_variant_order)
+  serial_code?: SerialCode[];
 
   @BeforeInsert()
   private beforeInsert(): void {
