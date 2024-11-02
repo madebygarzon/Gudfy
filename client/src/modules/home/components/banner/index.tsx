@@ -12,7 +12,7 @@ const Banner = () => {
   return (
     <div className=" flex relative h-[400px] w-full items-center 2xl:my-12  ">
       <div className="text-white  w-full flex flex-col ml-[8%] ">
-        <h1 className="text-[60px] w-[700px] drop-shadow-md shadow-black leading-[65px] font-[900] ">
+        <h1 className="text-2xl sm:text-[60px] sm:w-[700px] drop-shadow-md shadow-black leading-[65px] font-[900] ">
           {t('firts_banner_text')}:
         </h1>
         <p className="text-[40px] text-[#9B48ED] w-auto drop-shadow-md shadow-black my-2 font-black">
