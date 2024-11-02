@@ -10,20 +10,47 @@ import Image from "next/image"
 import { usePathname } from "next/navigation"
 import CountrySelect from "../../components/country-select"
 import DropdownGudFy from "@modules/layout/components/dropdown-gf"
-import Link from "next/link"
+// import Link from "next/link"
 import Wallet from "@modules/layout/components/wallet-nav"
 import NavList from "@modules/layout/components/nav-list"
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from "react-i18next"
+import {
+  Navbar,
+  NavbarBrand,
+  NavbarContent,
+  NavbarItem,
+  NavbarMenuToggle,
+  NavbarMenu,
+  NavbarMenuItem,
+  Link,
+  Button,
+} from "@nextui-org/react"
 
 const Nav = () => {
-  const { t } = useTranslation('common');
+  //Inicio Menu responsive
+  const [isMenuOpen, setIsMenuOpen] = React.useState(false)
+  const menuItems = [
+    "Profile",
+    "Dashboard",
+    "Activity",
+    "Analytics",
+    "System",
+    "Deployments",
+    "My Settings",
+    "Team Settings",
+    "Help & Feedback",
+    "Log Out",
+  ]
+  //Fin Menu responsive
+
+  const { t } = useTranslation("common")
   const { customer } = useAccount()
   const [isScrolled, setIsScrolled] = useState<boolean>(true)
   const propsDropDown = {
-    name: t('log_in'),
+    name: t("log_in"),
     items: [
-      { label: t('log_in'), href: "/account/login" },
-      { label: t('sign_up'), href: "/account/register" },
+      { label: t("log_in"), href: "/account/login" },
+      { label: t("sign_up"), href: "/account/register" },
     ],
   }
 
@@ -31,12 +58,11 @@ const Nav = () => {
     name: "Name user",
     href: "/account/orders",
     items: [
-      { label: t('account_menu_cp'), href: "/account"},
-      { label: t('account_menu_mo'), href: "/account/orders" },
-      { label: t('account_menu_ep'), href: "/account/profile" },
-      { label: t('account_menu_mc'), href: "/cart" },
-      { label: t('account_menu_lg'), href: "/" },
-
+      { label: t("account_menu_cp"), href: "/account" },
+      { label: t("account_menu_mo"), href: "/account/orders" },
+      { label: t("account_menu_ep"), href: "/account/profile" },
+      { label: t("account_menu_mc"), href: "/cart" },
+      { label: t("account_menu_lg"), href: "/" },
     ],
   }
 
@@ -57,18 +83,67 @@ const Nav = () => {
   const { toggle } = useMobileMenu()
 
   return (
-    <div className={clsx("sticky top-0 inset-x-0 z-50 group")}>
-      <header className="relative h-[92px] px-8  mx-auto my-0 transition-colors bg-blue-gf border-transparent duration-500  shadow-gf border-b-1">
-        <nav
-          className={clsx(
-            "text-white flex items-center justify-between w-full h-full text-base transition-colors duration-200",
-            {
-              "text-white": !isScrolled,
-            }
-          )}
-        >
-          <div className="gap-x-5  h-full flex items-center">
-            <div className=" min-w-[167.84px] min-h-[54.42] transition ease-in-out delay-150 hover:-translate-y-1 hover:scale-110 duration-300">
+    <>
+      <div className={clsx("hidden sm:block sticky top-0 inset-x-0 z-50 group")}>
+        <header className="relative h-[92px] px-8  mx-auto my-0 transition-colors bg-blue-gf border-transparent duration-500  shadow-gf border-b-1">
+          <nav
+            className={clsx(
+              "text-white flex items-center justify-between w-full h-full text-base transition-colors duration-200",
+              {
+                "text-white": !isScrolled,
+              }
+            )}
+          >
+            <div className="gap-x-5  h-full flex items-center">
+              <div className=" min-w-[167.84px] min-h-[54.42] transition ease-in-out delay-150 hover:-translate-y-1 hover:scale-110 duration-300">
+                <Link href="/">
+                  <Image
+                    alt="gudfy"
+                    src="/header/gudfy_logo.svg"
+                    width={167.84}
+                    height={54.42}
+                  />
+                </Link>
+              </div>
+
+              <div className="hidden sm:flex ml-4 items-center h-full">
+                <DesktopSearchModal />
+                {/* {process.env.FEATURE_SEARCH_ENABLED && <DesktopSearchModal />} */}
+              </div>
+              <div className="min-w-[350px]">
+                <CountrySelect />
+              </div>
+            </div>
+            <div className="flex items-center gap-x-4 sm:gap-x-8 ">
+              <div>{/* <Wallet /> */}</div>
+              <div>
+                {!customer ? (
+                  <DropdownGudFy
+                    name={propsDropDown.name}
+                    items={propsDropDown.items}
+                  />
+                ) : (
+                  <DropdownGudFy
+                    name={customer?.first_name}
+                    items={propsDropDownLog.items}
+                  />
+                )}
+              </div>
+              <div>
+                <CartDropdown />
+              </div>
+            </div>
+          </nav>
+          <MobileMenu />
+        </header>
+        <NavList />
+        {/* {isScrolled ? <NavList /> : <div className="h-[1px] bg-blue-gf"></div>} */}
+      </div>
+      <div className="sm:hidden flex">
+        <Navbar className="bg-blue-gf sticky top-0 inset-x-0 z-50 group" onMenuOpenChange={setIsMenuOpen}>
+          <NavbarContent>
+           
+            <NavbarBrand>
               <Link href="/">
                 <Image
                   alt="gudfy"
@@ -77,41 +152,50 @@ const Nav = () => {
                   height={54.42}
                 />
               </Link>
-            </div>
+             
+            </NavbarBrand>
+            
+          </NavbarContent>
 
-            <div className="hidden sm:flex ml-4 items-center h-full">
-              <DesktopSearchModal />
-              {/* {process.env.FEATURE_SEARCH_ENABLED && <DesktopSearchModal />} */}
-            </div>
-            <div className="min-w-[350px]">
-              <CountrySelect /> 
-            </div>
-          </div>
-          <div className="flex items-center gap-x-4 sm:gap-x-8 ">
-            <div>{/* <Wallet /> */}</div>
-            <div>
-              {!customer ? (
-                <DropdownGudFy
-                  name={propsDropDown.name}
-                  items={propsDropDown.items}
-                />
-              ) : (
-                <DropdownGudFy
-                  name={customer?.first_name}
-                  items={propsDropDownLog.items}
-                />
-              )}
-            </div>
-            <div>
-              <CartDropdown />
-            </div>
-          </div>
-        </nav>
-        <MobileMenu />
-      </header>
-      <NavList />
-      {/* {isScrolled ? <NavList /> : <div className="h-[1px] bg-blue-gf"></div>} */}
-    </div>
+          <NavbarContent className="flex" justify="center">
+            
+                
+            
+          </NavbarContent>
+          <NavbarContent justify="end">
+            <NavbarItem className="hidden lg:flex">
+              <Link href="#">Login</Link>
+            </NavbarItem>
+            <NavbarItem>
+            <NavbarMenuToggle
+              aria-label={isMenuOpen ? "Close menu" : "Open menu"}
+              className="sm:hidden bg-white"
+            />
+            </NavbarItem>
+          </NavbarContent>
+          <NavbarMenu>
+            {menuItems.map((item, index) => (
+              <NavbarMenuItem key={`${item}-${index}`}>
+                <Link
+                  color={
+                    index === 2
+                      ? "primary"
+                      : index === menuItems.length - 1
+                      ? "danger"
+                      : "foreground"
+                  }
+                  className="w-full"
+                  href="#"
+                  size="lg"
+                >
+                  {item}
+                </Link>
+              </NavbarMenuItem>
+            ))}
+          </NavbarMenu>
+        </Navbar>
+      </div>
+    </>
   )
 }
 
