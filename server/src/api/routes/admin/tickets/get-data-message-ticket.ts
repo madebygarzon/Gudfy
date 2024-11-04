@@ -6,7 +6,7 @@ export default async function getMessagesTickets(
 ): Promise<void> {
   try {
     const { id } = req.params;
-    const ticketsService = req.scope.resolve("ticketsService");
+    const ticketsService = req.scope.resolve("ticketsAdminService");
 
     const list = await ticketsService.retriverTicketMessages(id);
 

@@ -4,10 +4,17 @@ import crypto from "crypto";
 
 export default async (req: Request, res: Response): Promise<void> => {
   const { payment_method, order_id } = req.body;
+
+  console.log(
+    "esto es lo que llega al endoint de pago",
+    payment_method,
+    order_id
+  );
   const cartId = req.params.id;
   const cartMarketService = req.scope.resolve("cartMarketService");
 
   const cartItems = await cartMarketService.recoveryCart(cartId);
+  console.log("DATOS ANTES DE PAGARRRRRRRRRRRRRRRRRR:", cartItems, order_id);
   var result = null;
   try {
     switch (payment_method) {
@@ -20,6 +27,7 @@ export default async (req: Request, res: Response): Promise<void> => {
     }
     res.status(200).json({ result });
   } catch (error) {
+    console.log("error en el endpoint dew la solicito a binance:", error);
     res.status(500).json({ error });
   }
 };
@@ -53,6 +61,7 @@ const autoBinancePay = async (cartItems, order_id) => {
     description: "Buy Order",
     supportPayCurrency: "USDT,BNB,BTC",
   };
+  console.log("DATOS ANTES DEL PAGO PARA IR A ", data);
   const body = JSON.stringify(data);
 
   const payload = `${timestamp}\n${nonce}\n${body}\n`;
@@ -72,9 +81,11 @@ const autoBinancePay = async (cartItems, order_id) => {
       },
     })
     .then((res) => {
+      console.log("ORDEN RESUELTAAAAAAA EN BINANNNCEEEE:", res);
       return res.data;
     })
     .catch((e) => {
+      console.log("ERRORRRRRRRRRR  EN BINANNNCEEEE:", e.response.data);
       throw e.response.data;
     });
 };

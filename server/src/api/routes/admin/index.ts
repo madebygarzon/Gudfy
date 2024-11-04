@@ -18,6 +18,8 @@ import voucher from "../../middlewares/voucher-order-pay";
 import getListOrderPayments from "./seller/get-list-order-payments";
 import getListTickets from "./tickets/get-list-tickets";
 import getMessagesTickets from "./tickets/get-data-message-ticket";
+import { postAddMessageTicket } from "./tickets/post-add-message-ticket";
+import Image from "../../middlewares/images-tickests";
 
 // Initialize a custom router
 const router = Router();
@@ -76,6 +78,11 @@ export function attachAdminRoutes(adminRouter: Router) {
   //--------------tickets-------------------
   router.get("/tickets/list-tickets", wrapHandler(getListTickets));
   router.get("/tickets/:id/messages-ticket", wrapHandler(getMessagesTickets));
+  router.post(
+    "/ticket/add-ticket-message",
+    Image.single("image"),
+    wrapHandler(postAddMessageTicket)
+  );
 
   // Attach routes for onboarding experience, defined separately
   onboardingRoutes(adminRouter);
