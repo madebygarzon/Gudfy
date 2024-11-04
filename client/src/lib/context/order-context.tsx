@@ -143,6 +143,7 @@ export const OrderGudfyProvider = ({
   }
 
   const handlerUpdateDataLastOrder = async (dataForm: orderDataForm) => {
+    console.log(dataForm, currentOrder)
     if (!currentOrder?.id)
       return alert(
         "No se encontro una orden disponible, por favor cree otra orden"
@@ -184,6 +185,7 @@ export const OrderGudfyProvider = ({
         }
       )
       .then((res) => {
+        console.log(res)
         const result = res.data.result
         setDataPay(result.data)
         setIsLoadingCurrentOrder(false)

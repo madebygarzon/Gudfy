@@ -52,11 +52,13 @@ const CheckoutForm = () => {
   }, [])
 
   const handlersubmit = async (dataForm?: orderDataForm) => {
+    console.log(dataForm)
     if (!dataForm) {
       return
     }
     handlerUpdateDataLastOrder({ ...dataForm, pay_method_id: checkbox }).then(
       () => {
+        console.log(dataForm, currentOrder, cart, checkbox)
         if (!currentOrder?.id) alert("error de orden , no se obtuvo la orden")
         else handlersubmitPaymentMethod(checkbox, cart, currentOrder.id)
       }

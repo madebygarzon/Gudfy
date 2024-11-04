@@ -5,7 +5,7 @@ export default async function getListTickets(
   res: Response
 ): Promise<void> {
   try {
-    const ticketsService = req.scope.resolve("ticketsService");
+    const ticketsService = req.scope.resolve("ticketsAdminService");
     const list = await ticketsService.retriverListAdminTickets();
 
     if (list) {
