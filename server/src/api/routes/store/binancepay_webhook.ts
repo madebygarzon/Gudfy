@@ -3,17 +3,11 @@ import { Request, Response } from "express";
 export default async (req: Request, res: Response): Promise<void> => {
   const { bizType, bizStatus, data } = req.body;
   const { id } = req.params;
-
+  console.log("----EL WEBHOOK FUE EXITOSO----");
   try {
     if (bizType === "PAY" && bizStatus === "PAY_SUCCESS") {
       const payData = JSON.parse(data);
-      console.log(
-        "-------------EL WEBHOOK FUE EXITOSO------------",
-        bizType,
-        bizStatus,
-        payData,
-        id
-      );
+      console.log(bizType, bizStatus, payData, id);
       const merchantTradeNo = payData.merchantTradeNo;
       const paymentInfo = payData.paymentInfo;
       const paymentInstructions = paymentInfo.paymentInstructions;
