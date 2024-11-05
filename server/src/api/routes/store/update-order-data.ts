@@ -8,6 +8,6 @@ export default async (req: Request, res: Response) => {
     store_order_id,
     dataForm
   );
-
+  console.log("Retorno en el punto final", updateData);
   if (updateData) res.status(200).send({ success: true });
 };
