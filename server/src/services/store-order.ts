@@ -12,13 +12,13 @@ class StoreOrderService extends TransactionBaseService {
   protected readonly storeXVariantRepository_: typeof StoreXVariantRepository;
   protected readonly loggedInCustomer_: Customer | null;
 
-  constructor({ loggedInCustomer }, container) {
+  constructor(container) {
     // @ts-expect-error prefer-rest-params
     super(...arguments);
     this.storeOrderRepository_ = container.storeOrderRepository;
     this.storeVariantOrderRepository_ = container.storeVariantOrderRepository;
     this.storeXVariantRepository_ = container.storeXVariantRepository;
-    this.loggedInCustomer_ = loggedInCustomer || null;
+    this.loggedInCustomer_ = container.loggedInCustomer || null;
   }
 
   async currnetOrder(customerId) {
@@ -303,20 +303,26 @@ class StoreOrderService extends TransactionBaseService {
   }
 
   async updateOrderData(store_order_id, dataForm) {
-    if (dataForm.pay_method_id === "automatic_binance_pay") {
-      dataForm = {
+    try {
+      if (dataForm.pay_method_id === "automatic_binance_pay") {
+        dataForm = {
+          ...dataForm,
+          pay_method_id: "Secondary_Method_BINANCE_ID",
+        };
+      }
+
+      const repoStoreOrder = this.activeManager_.withRepository(
+        this.storeOrderRepository_
+      );
+
+      const updateData = await repoStoreOrder.update(store_order_id, {
         ...dataForm,
-        pay_method_id: "Secondary_Method_BINANCE_ID",
-      };
+      });
+      console.log("uptade de la orden hecha: ", updateData);
+      return true;
+    } catch (error) {
+      console.log("error al actualizar la orden", error);
     }
-
-    const repoStoreOrder = this.activeManager_.withRepository(
-      this.storeOrderRepository_
-    );
-
-    const updateData = await repoStoreOrder.update(store_order_id, {
-      ...dataForm,
-    });
   }
 
   async updateStatus(orderId, order_status) {
