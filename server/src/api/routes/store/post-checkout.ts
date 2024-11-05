@@ -88,14 +88,14 @@ const autoBinancePay = async (cartItems, order_id) => {
 };
 
 const handlerTotalPrice = (items) => {
-  let total = 0;
+  let total: number = 0;
   if (items?.length) {
     items?.forEach((item) => {
       total = total + item.unit_price * item.quantity;
     });
   }
-  total + (total * 0.1).toFixed(2);
-  return;
+  total = parseFloat(total + (total * 0.1).toFixed(2));
+  return total;
 };
 
 const generateRandomString = (length) => {
