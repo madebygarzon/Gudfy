@@ -31,6 +31,12 @@ export default (rootDirectory: string): Router | Router[] => {
     credentials: true,
   };
 
+  const binanceWebhookCorsOptions = {
+    origin: "*", // Permitir cualquier origen solo para el webhook
+    methods: ["POST"],
+    //allowedHeaders: ['Content-Type', 'Binancepay-Signature']
+  };
+
   // Set up express router
   const router = Router();
 
@@ -38,6 +44,11 @@ export default (rootDirectory: string): Router | Router[] => {
   router.use("/store", cors(storeCorsOptions), bodyParser.json());
   router.use("/admin", cors(adminCorsOptions), bodyParser.json());
   router.use("/seller", cors(storeCorsOptions), bodyParser.json());
+  router.use(
+    "/store/binance_pay/webhook/:id/order",
+    cors(binanceWebhookCorsOptions),
+    bodyParser.json()
+  );
 
   // Add authentication to all admin routes *except* auth and account invite ones
   router.use(/\/admin\/((?!auth)(?!invites).*)/, authenticate());
