@@ -52,9 +52,7 @@ const autoBinancePay = async (cartItems, order_id) => {
     fiatAmount: handlerTotalPrice(cartItems),
     fiatCurrency: "USD",
     goodsDetails: goods,
-    webhookUrl: `${
-      process.env.BACKEND_URL ?? "http://localhost:9000"
-    }/store/binance_pay/webhook/${order_id}/order`, //"https://example.com/binance_pay/",
+    webhookUrl: `${process.env.BACKEND_URL}/store/binance_pay/webhook/${order_id}/order`, //"https://example.com/binance_pay/",
     returnUrl: `${
       process.env.FRONT_URL ?? "http://localhost:8000"
     }/account/orders`,
@@ -81,7 +79,6 @@ const autoBinancePay = async (cartItems, order_id) => {
       },
     })
     .then((res) => {
-      console.log("ORDEN RESUELTAAAAAAA EN BINANNNCEEEE:", res);
       return res.data;
     })
     .catch((e) => {
@@ -97,7 +94,8 @@ const handlerTotalPrice = (items) => {
       total = total + item.unit_price * item.quantity;
     });
   }
-  return total;
+  total + (total * 0.1).toFixed(2);
+  return;
 };
 
 const generateRandomString = (length) => {
