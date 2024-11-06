@@ -14,17 +14,17 @@ type DashboardProps = {
   customer?: Omit<Customer, "password_hash">
 }
 
-const driverObj = driver({
-  showProgress: true,
-  steps: [
-    { element: '#btn_left_dhb', popover: { title: 'Panel de Usuario', description: 'Secciones relevantes del panel de usuario. ' } },
-    { element: '#sct_per_info', popover: { title: 'Perfil', description: 'Información general de usuario.' } },
-    { element: '#sct_per', popover: { title: 'Perfil', description: 'Sección de datos de usuario.' } },
-    { element: '#sct_buy', popover: { title: 'Compras', description: 'Sección de datos de mis compras.' } },
-    { element: '#sct_spp', popover: { title: 'Soporte', description: 'Sección para realizar Tickets.' } },
-    { element: '#btn_clse', popover: { title: 'Cerrar sesión', description: 'Cierra sesión de manera segura.' } },
-  ]
-});
+// const driverObj = driver({
+//   showProgress: true,
+//   steps: [
+    
+//     { element: '#sct_per_info', popover: { title: 'Perfil', description: 'Información general de usuario.' } },
+//     { element: '#sct_per', popover: { title: 'Perfil', description: 'Sección de datos de usuario.' } },
+//     { element: '#sct_buy', popover: { title: 'Compras', description: 'Sección de datos de mis compras.' } },
+//     { element: '#sct_spp', popover: { title: 'Soporte', description: 'Sección para realizar Tickets.' } },
+//     { element: '#btn_clse', popover: { title: 'Cerrar sesión', description: 'Cierra sesión de manera segura.' } },
+//   ]
+// });
 
 type Config = { 
   nextBtnText?: "Siguiente";
@@ -32,7 +32,7 @@ type Config = {
   doneBtnText?: "Salir";
 }
 
-driverObj.drive();
+// driverObj.drive();
 
 const Dashboard = ({ orders, customer }: DashboardProps) => {
   const { t } = useTranslation('common');
@@ -53,7 +53,7 @@ const Dashboard = ({ orders, customer }: DashboardProps) => {
       </div> */}
 
       <div className="panel_admin w-full grid grid-cols-3 gap-2 py-1  justify-center">
-        <div id="sct_per_info" className="bg-[#1F0054] row-span-2 rounded-[10px] text-white">
+        <div className="bg-[#1F0054] row-span-2 rounded-[10px] text-white">
         
 
           <div className=" flex flex-col relative p-5 h-full shadow-card items-center justify-center rounded-[10px] ">
