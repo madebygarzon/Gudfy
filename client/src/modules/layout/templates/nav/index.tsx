@@ -84,7 +84,9 @@ const Nav = () => {
 
   return (
     <>
-      <div className={clsx("hidden sm:block sticky top-0 inset-x-0 z-50 group")}>
+      <div
+        className={clsx("hidden sm:block sticky top-0 inset-x-0 z-50 group")}
+      >
         <header className="relative h-[92px] px-8  mx-auto my-0 transition-colors bg-blue-gf border-transparent duration-500  shadow-gf border-b-1">
           <nav
             className={clsx(
@@ -137,63 +139,57 @@ const Nav = () => {
           <MobileMenu />
         </header>
         <NavList />
-        {/* {isScrolled ? <NavList /> : <div className="h-[1px] bg-blue-gf"></div>} */}
       </div>
-      <div className="sm:hidden flex">
-        <Navbar className="bg-blue-gf sticky top-0 inset-x-0 z-50 group" onMenuOpenChange={setIsMenuOpen}>
-          <NavbarContent>
-           
-            <NavbarBrand>
+
+      <div className={clsx("block sm:hidden sticky top-0 inset-x-0 z-50")}>
+        <header className="relative h-[70px] px-4 mx-auto my-0 transition-colors bg-blue-gf border-transparent duration-500 shadow-gf border-b-1">
+          <nav
+            className={clsx(
+              "text-white flex items-center justify-between w-full h-full text-sm transition-colors duration-200",
+              {
+                "text-white": !isScrolled,
+              }
+            )}
+          >
+            <div className="mt-2 transition ease-in-out delay-150 hover:-translate-y-1 hover:scale-110 duration-300">
               <Link href="/">
                 <Image
                   alt="gudfy"
                   src="/header/gudfy_logo.svg"
-                  width={167.84}
-                  height={54.42}
+                  width={110}
+                  height={38}
                 />
               </Link>
-             
-            </NavbarBrand>
-            
-          </NavbarContent>
 
-          <NavbarContent className="flex" justify="center">
-            
-                
-            
-          </NavbarContent>
-          <NavbarContent justify="end">
-            <NavbarItem className="hidden lg:flex">
-              <Link href="#">Login</Link>
-            </NavbarItem>
-            <NavbarItem>
-            <NavbarMenuToggle
-              aria-label={isMenuOpen ? "Close menu" : "Open menu"}
-              className="sm:hidden bg-white"
-            />
-            </NavbarItem>
-          </NavbarContent>
-          <NavbarMenu>
-            {menuItems.map((item, index) => (
-              <NavbarMenuItem key={`${item}-${index}`}>
-                <Link
-                  color={
-                    index === 2
-                      ? "primary"
-                      : index === menuItems.length - 1
-                      ? "danger"
-                      : "foreground"
-                  }
-                  className="w-full"
-                  href="#"
-                  size="lg"
-                >
-                  {item}
-                </Link>
-              </NavbarMenuItem>
-            ))}
-          </NavbarMenu>
-        </Navbar>
+              {/* <div className="flex sm:hidden">
+          <DesktopSearchModal />
+        </div> */}
+            </div>
+
+            <div className="ml-[-20px] flex items-center ">
+              <CountrySelect
+              // className="w-24"
+              />
+
+              <div className="ml-[-10px]">
+                {!customer ? (
+                  <DropdownGudFy
+                    name={propsDropDown.name}
+                    items={propsDropDown.items}
+                  />
+                ) : (
+                  <DropdownGudFy
+                    name={customer?.first_name}
+                    items={propsDropDownLog.items}
+                  />
+                )}
+              </div>
+            </div>
+            <CartDropdown />
+          </nav>
+          <MobileMenu />
+        </header>
+        <NavList />
       </div>
     </>
   )
