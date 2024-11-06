@@ -19,11 +19,12 @@ export default async (req: Request, res: Response): Promise<void> => {
       const succes = await ordedPaymentService.successPayOrder(id);
 
       res.status(200).json({ returnCode: "SUCCESS", returnMessage: null });
+    } else {
+      res.status(200).json({
+        returnCode: "Failed",
+        returnMessage: `bizType::${bizType}, bizStatus::${bizStatus}`,
+      });
     }
-    res.status(200).json({
-      returnCode: "Failed",
-      returnMessage: `bizType::${bizType}, bizStatus::${bizStatus}`,
-    });
   } catch (error) {
     console.log("ERROR EN EL SERVICIO DEL WEBHOOK", error);
   }
