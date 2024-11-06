@@ -82,7 +82,7 @@ const autoBinancePay = async (cartItems, order_id) => {
       return res.data;
     })
     .catch((e) => {
-      console.log("ERRORRRRRRRRRR  EN BINANNNCEEEE:", e.response.data);
+      console.log("ERROR EN BINANCE:", e.response.data);
       throw e.response.data;
     });
 };
@@ -94,7 +94,7 @@ const handlerTotalPrice = (items) => {
       total = total + item.unit_price * item.quantity;
     });
   }
-  total = parseFloat(total + (total * 0.1).toFixed(2));
+  total = total + total * 0.01;
   return total;
 };
 
