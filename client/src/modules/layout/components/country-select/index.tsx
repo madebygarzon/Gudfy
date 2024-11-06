@@ -69,7 +69,7 @@ const CountrySelect = () => {
             : undefined
         }
       >
-        <Listbox.Button className="py-1 w-auto">
+        <Listbox.Button className="py-1 min-w-[120px] w-auto">
           <div className="text-small-regular flex items-center gap-x-2 ">
             <span> </span>
             {current && (
@@ -84,8 +84,8 @@ const CountrySelect = () => {
                   countryCode={current.country}
                 />
                 {current.label == "Spain" ? <p>Español</p> : <p>English</p>}
-                <div className=" flex pl-2 w-auto h-[30px] border-l-[1px] border-l-white items-center">
-                  {current.label == "Spain" ? <p>COP</p> : <p>USD</p>}
+                <div className=" ">
+                  {/* {current.label == "Spain" ? <p>COP</p> : <p>USD</p>} */}
                 </div>
               </span>
             )}
