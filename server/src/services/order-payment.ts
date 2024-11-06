@@ -248,7 +248,7 @@ class OrderPaymentService extends TransactionBaseService {
         this.storeVariantOrderRepository_
       );
       const sc = this.activeManager_.withRepository(this.serialCodeRepository_);
-      const storeOrder = await so.findOne(order_id);
+      const storeOrder = await so.findOne({ where: { id: order_id } });
       if (storeOrder.order_status_id !== "Payment_Pending_ID")
         throw new Error("Order status is not pending payment");
 
@@ -257,19 +257,16 @@ class OrderPaymentService extends TransactionBaseService {
           store_order_id: order_id,
         },
       });
-
       for (const variant of ListSVO) {
         const quantity = variant.quantity;
         const id = variant.id;
-
         const serialCodesToUpdate = await sc.find({
           where: {
             store_variant_order_id: null,
-            store_variant_id: variant.id,
+            store_variant_id: variant.store_variant_id,
           },
           take: quantity,
         });
-
         for (const serialCode of serialCodesToUpdate) {
           await sc.update(serialCode.id, { store_variant_order_id: id });
         }
@@ -283,7 +280,8 @@ class OrderPaymentService extends TransactionBaseService {
       });
     } catch (error) {
       console.log(
-        "error en el servicio para actualizar los datos en la confirmacion de la orden "
+        "error en el servicio para actualizar los datos en la confirmacion de la orden ",
+        error
       );
     }
   }
