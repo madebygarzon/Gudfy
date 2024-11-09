@@ -5,6 +5,7 @@ import { Tabs, Tab, Card, CardBody } from "@nextui-org/react"
 import ClaimTable from "../components/order-claim-table.ts"
 import Notification from "@modules/common/components/notification"
 import { useNotificationContext } from "@lib/context/notification-context"
+import SerialCodeTable from "../components/products-serial-codes"
 
 export type order = {
   id: string
@@ -35,6 +36,7 @@ export type order = {
       price: string
       quantity: string
       total_price_for_product: string
+      serial_code_products: [{ id: string; serial: string }]
     }
   ]
 }
@@ -83,7 +85,9 @@ const OrdersTemplate = () => {
             </Tab>
             <Tab key="Compras" title="Compras">
               <Card>
-                <CardBody>Listado de Compras</CardBody>
+                <CardBody>
+                  <SerialCodeTable />
+                </CardBody>
               </Card>
             </Tab>
           </Tabs>

@@ -51,6 +51,12 @@ const OrderDetails = ({ orderData, onClose }: props) => {
     rating: 0,
   })
 
+  const handlerSubTotal = () => {
+    return orderData.store_variant.reduce((sum, p) => {
+      return sum + parseFloat(p.total_price_for_product)
+    }, 0)
+  }
+
   useEffect(() => {
     if (loading) {
       validateComment(orderData.id).then((e) => {
@@ -160,19 +166,13 @@ const OrderDetails = ({ orderData, onClose }: props) => {
             ))}
             <tr className="border-b">
               <td className="py-2 px-4 border-r">Subtotal:</td>
-              <td className="py-2 px-4 border-r">
-                $
-                {orderData.store_variant.reduce((sum, p) => {
-                  return sum + parseFloat(p.total_price_for_product)
-                }, 0)}{" "}
-                USD
-              </td>
+              <td className="py-2 px-4 border-r">${handlerSubTotal()} USD</td>
             </tr>
             <tr className="border-b">
               <td className="py-2 px-4 border-r ">
-                Comisión de la pasarela de pago:
+                Comisión de la pasarela de pago: 1%
               </td>
-              <td className="py-2 px-4 ">$0.23</td>
+              <td className="py-2 px-4 ">${handlerSubTotal() * 0.01}</td>
             </tr>
             <tr className="border-b">
               <td className="py-2 px-4 border-r">Método de pago:</td>
@@ -184,7 +184,7 @@ const OrderDetails = ({ orderData, onClose }: props) => {
                 $
                 {orderData.store_variant.reduce((sum, p) => {
                   return sum + parseFloat(p.total_price_for_product)
-                }, 0.23)}
+                }, handlerSubTotal() * 0.01)}
               </td>
             </tr>
           </tbody>
