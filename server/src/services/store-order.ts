@@ -4,12 +4,15 @@ import { TransactionBaseService, Customer } from "@medusajs/medusa";
 import StoreOrderRepository from "../repositories/store-order";
 import StoreVariantOrderRepository from "../repositories/store-variant-order";
 import StoreXVariantRepository from "../repositories/store-x-variant";
+import SerialCodeRepository from "src/repositories/serial-code";
 
 class StoreOrderService extends TransactionBaseService {
   static LIFE_TIME = Lifetime.SCOPED;
   protected readonly storeOrderRepository_: typeof StoreOrderRepository;
   protected readonly storeVariantOrderRepository_: typeof StoreVariantOrderRepository;
   protected readonly storeXVariantRepository_: typeof StoreXVariantRepository;
+  protected readonly serialCodeRepository_: typeof SerialCodeRepository;
+
   protected readonly loggedInCustomer_: Customer | null;
 
   constructor(container) {
@@ -18,6 +21,7 @@ class StoreOrderService extends TransactionBaseService {
     this.storeOrderRepository_ = container.storeOrderRepository;
     this.storeVariantOrderRepository_ = container.storeVariantOrderRepository;
     this.storeXVariantRepository_ = container.storeXVariantRepository;
+    this.serialCodeRepository_ = container.serialCodeRepository;
     this.loggedInCustomer_ = container.loggedInCustomer || null;
   }
 
@@ -117,6 +121,7 @@ class StoreOrderService extends TransactionBaseService {
         "so.city AS city",
         "so.phone AS phone",
         "so.created_at AS created_at",
+        "so.order_status_id AS status_id",
         "svo.id AS store_variant_order_id",
         "svo.quantity AS quantity",
         "svo.total_price AS total_price_for_product",
@@ -130,7 +135,7 @@ class StoreOrderService extends TransactionBaseService {
 
     const orderMap = new Map();
 
-    listOrder.forEach((order) => {
+    for (const order of listOrder) {
       const {
         store_id,
         store_name,
@@ -144,6 +149,7 @@ class StoreOrderService extends TransactionBaseService {
       if (!orderMap.has(order.id)) {
         orderMap.set(order.id, { ...rest, store_variant: [] });
       }
+
       orderMap.get(order.id).store_variant.push({
         store_id,
         store_name,
@@ -152,9 +158,28 @@ class StoreOrderService extends TransactionBaseService {
         price,
         quantity,
         total_price_for_product,
+        serial_code_products:
+          order.status_id === "Completed_ID" ||
+          order.status_id === "Finished_ID"
+            ? await this.functionRecoverCodes(store_variant_order_id)
+            : [],
       });
-    });
+    }
+
     return Array.from(orderMap.values());
+  }
+
+  async functionRecoverCodes(store_variant_order_id) {
+    const repoSerialCode = this.activeManager_.withRepository(
+      this.serialCodeRepository_
+    );
+
+    const serialCodesForProduct = await repoSerialCode.find({
+      where: {
+        store_variant_order_id,
+      },
+    });
+    return serialCodesForProduct;
   }
 
   async listSellerOrders(storeId) {
@@ -192,18 +217,8 @@ class StoreOrderService extends TransactionBaseService {
       ])
       .getRawMany();
     return listOrder;
-
-    //   {produc_title: "",
-    //   quantity: "",
-    //   price: "",
-    //   comision : "",
-    //   NumberOrder: "",
-    //   TotalPrice: "",
-    //   Customer: "",
-    //   date: "",
-    //   status: "",
-    //  }
   }
+
   async listSellerPayOrders() {
     const repoStoreOrder = this.activeManager_.withRepository(
       this.storeOrderRepository_
@@ -318,7 +333,6 @@ class StoreOrderService extends TransactionBaseService {
       const updateData = await repoStoreOrder.update(store_order_id, {
         ...dataForm,
       });
-      console.log("uptade de la orden hecha: ", updateData);
       return true;
     } catch (error) {
       console.log("error al actualizar la orden", error);
