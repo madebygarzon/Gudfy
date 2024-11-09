@@ -229,7 +229,24 @@ class CartMarketService extends TransactionBaseService {
     const storeOrderRepo = this.activeManager_.withRepository(
       this.storeOrderRepository_
     );
+    let newIdNumber = 1001;
+    let prefix = "MPG-";
+
+    const lastOrder = await storeOrderRepo
+      .createQueryBuilder("store_order")
+      .orderBy("store_order.created_at", "DESC")
+      .getOne();
+
+    if (lastOrder && lastOrder.id) {
+      const lastIdNumber = parseInt(lastOrder.id.replace(`${prefix}`, ""), 10);
+
+      if (!isNaN(lastIdNumber)) {
+        newIdNumber = lastIdNumber + 1;
+      }
+    }
+
     const createOrder = await storeOrderRepo.create({
+      id: `${prefix}${newIdNumber}`,
       customer_id: customer_id,
       // pay_method_id: "",
       order_status_id: "Payment_Pending_ID",
