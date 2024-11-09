@@ -1,5 +1,5 @@
 import { BaseEntity } from "@medusajs/medusa";
-import { generateEntityId } from "@medusajs/utils";
+// import { generateEntityId } from "@medusajs/utils";
 import {
   BeforeInsert,
   Column,
@@ -69,9 +69,4 @@ export class StoreOrder extends BaseEntity {
 
   @OneToMany(() => StoreReview, (sr) => sr?.store_order_id)
   storeReviws?: StoreReview[];
-
-  @BeforeInsert()
-  private beforeInsert(): void {
-    this.id = generateEntityId(this.id, "store_order_id");
-  }
 }

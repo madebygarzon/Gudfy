@@ -30,6 +30,13 @@ const ModalOrderComplete = ({
 }: ModalOrderProps) => {
   const { isOpen, onOpen, onOpenChange } = useDisclosure()
 
+  const handlerSubTotal = () => {
+    if (!orderData?.store_variant) return 0
+    return orderData?.store_variant.reduce((sum, p) => {
+      return sum + parseFloat(p.total_price_for_product)
+    }, 0)
+  }
+
   const handlerFinishedOrder = () => {
     updateFinishedOrder(orderData?.id || " ").then(() => {
       handleReset()
@@ -43,11 +50,8 @@ const ModalOrderComplete = ({
           <div className="container mx-auto px-4 py-1 -mb-2">
             <div className="mb-8">
               <p className="text-base">
-                El pedido{" "}
-                <span className="font-bold">
-                  #{orderData.id.replace("store_order_id_", "")}
-                </span>{" "}
-                se realizó el{" "}
+                El pedido <span className="font-bold">#{orderData.id}</span> se
+                realizó el{" "}
                 <span className="font-bold">
                   {handlerformatDate(orderData.created_at)}
                 </span>{" "}
@@ -74,13 +78,22 @@ const ModalOrderComplete = ({
                   {orderData.store_variant.map((p, i) => (
                     <>
                       <tr className="border-b">
-                        <td className="py-2 px-4 border-r  flex justify-between">
-                          <div>
-                            {p.produc_title} – ${p.price} USD x {p.quantity}
-                            <br />
+                        <td className="py-2 px-4 border-r  ">
+                          <div className="flex justify-between">
+                            <div>
+                              {p.produc_title} – ${p.price} USD x {p.quantity}
+                              <br />
+                            </div>
+                            <div className="text-sm font-light">
+                              <p>Vendido por: {p.store_name}</p>
+                            </div>
                           </div>
-                          <div className="text-sm font-light">
-                            <p>Vendido por: {p.store_name}</p>
+                          <div>
+                            {p.serial_code_products?.map((sc) => (
+                              <p key={sc.id} className="ml-2">
+                                {sc.serial}
+                              </p>
+                            ))}
                           </div>
                         </td>
                         <td className="py-2 px-4 border-b ">
@@ -92,10 +105,7 @@ const ModalOrderComplete = ({
                   <tr className="border-b">
                     <td className="py-2 px-4 border-r">Subtotal:</td>
                     <td className="py-2 px-4 border-r">
-                      $
-                      {orderData.store_variant.reduce((sum, p) => {
-                        return sum + parseFloat(p.total_price_for_product)
-                      }, 0)}{" "}
+                      ${handlerSubTotal()}
                       USD
                     </td>
                   </tr>
@@ -103,7 +113,7 @@ const ModalOrderComplete = ({
                     <td className="py-2 px-4 border-r ">
                       Comisión de la pasarela de pago:
                     </td>
-                    <td className="py-2 px-4 ">$0.23</td>
+                    <td className="py-2 px-4 ">${handlerSubTotal() * 0.01}</td>
                   </tr>
                   <tr className="border-b">
                     <td className="py-2 px-4 border-r">Método de pago:</td>
@@ -117,7 +127,7 @@ const ModalOrderComplete = ({
                       $
                       {orderData.store_variant.reduce((sum, p) => {
                         return sum + parseFloat(p.total_price_for_product)
-                      }, 0.23)}
+                      }, handlerSubTotal() * 0.01)}
                     </td>
                   </tr>
                 </tbody>

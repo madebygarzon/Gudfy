@@ -43,6 +43,7 @@ export type order = {
       price: string
       quantity: string
       total_price_for_product: string
+      serial_code_products: [{ id: string; serial: string }]
     }
   ]
 }
@@ -143,7 +144,6 @@ export const OrderGudfyProvider = ({
   }
 
   const handlerUpdateDataLastOrder = async (dataForm: orderDataForm) => {
-    console.log(dataForm, currentOrder)
     if (!currentOrder?.id)
       return alert(
         "No se encontro una orden disponible, por favor cree otra orden"
