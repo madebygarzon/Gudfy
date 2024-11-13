@@ -44,6 +44,7 @@ import Image from "../../middlewares/images-tickests";
 import { getMessagesTickets } from "./tickets/get-data-messages-ticket";
 import binancepay_webhook from "./binancepay_webhook";
 import getListSerialCodes from "./serial-codes/get-list-serial-codes";
+import deleteCart from "./cart/delete-cart";
 
 // Initialize a custom router
 const router = Router();
@@ -117,6 +118,7 @@ export function attachStoreRoutes(storeRouter: Router) {
     "/cart/:id_cart/delete-item/:id_item",
     wrapHandler(deleteCartItem)
   );
+  router.delete("/cart/:id_cart/delete-cart/", wrapHandler(deleteCart));
   router.post("/carts/:id/add-item", wrapHandler(postAddItem));
   router.get("/cart/variant-stock", wrapHandler(getCartVariantStock));
   router.post("/carts/:id/checkout", wrapHandler(postCheckout));

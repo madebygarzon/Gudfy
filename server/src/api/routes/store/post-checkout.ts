@@ -5,16 +5,9 @@ import crypto from "crypto";
 export default async (req: Request, res: Response): Promise<void> => {
   const { payment_method, order_id } = req.body;
 
-  console.log(
-    "esto es lo que llega al endoint de pago",
-    payment_method,
-    order_id
-  );
   const cartId = req.params.id;
   const cartMarketService = req.scope.resolve("cartMarketService");
-
   const cartItems = await cartMarketService.recoveryCart(cartId);
-  console.log("DATOS ANTES DE PAGARRRRRRRRRRRRRRRRRR:", cartItems, order_id);
   var result = null;
   try {
     switch (payment_method) {
@@ -52,14 +45,17 @@ const autoBinancePay = async (cartItems, order_id) => {
     fiatAmount: handlerTotalPrice(cartItems),
     fiatCurrency: "USD",
     goodsDetails: goods,
-    webhookUrl: `${process.env.BACKEND_URL}/store/binance_pay/webhook/${order_id}/order`, //"https://example.com/binance_pay/",
+    webhookUrl: `${
+      process.env.BACKEND_URL.includes("localhost")
+        ? "http://179.61.219.62/:9000"
+        : process.env.BACKEND_URL
+    }/store/binance_pay/webhook/${order_id}/order`,
     returnUrl: `${
       process.env.FRONT_URL ?? "http://localhost:8000"
     }/account/orders`,
     description: "Buy Order",
     supportPayCurrency: "USDT,BNB,BTC",
   };
-  console.log("DATOS ANTES DEL PAGO PARA IR A ", data);
   const body = JSON.stringify(data);
 
   const payload = `${timestamp}\n${nonce}\n${body}\n`;
