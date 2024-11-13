@@ -6,6 +6,7 @@ import { Variant } from "types/medusa"
 import { useCart, useCreateLineItem } from "medusa-react"
 import axios from "axios"
 import { Cart, LineItem } from "@medusajs/medusa"
+import { useSessionCart } from "medusa-react"
 
 interface variant {
   id: string
@@ -38,6 +39,7 @@ interface CartContext {
   createNewCart: () => void
   deleteLineItem: (lineItemId: string) => void
   updateLineItem: (lineItemId: string, quantity: number) => void
+  deleteCart: () => void
 }
 
 type validateItemExistence = {
@@ -139,6 +141,27 @@ export const CartGudfyProvider = ({
         })
     }
   }
+
+  const deleteCart = async () => {
+    if (cart && cart.id) {
+      await axios
+        .delete(
+          `${process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL}/store/cart/${cart.id}/delete-cart/`,
+          {
+            withCredentials: true,
+          }
+        )
+        .then((response) => {
+          localStorage.removeItem("cart_id")
+          createNewCart()
+          setItems([])
+        })
+        .catch((error) => {
+          console.error("Error deleting line item:", error)
+        })
+    }
+  }
+
   const updateLineItem = (lineItemId: string, quantity: number) => {
     axios
       .post(
@@ -219,6 +242,7 @@ export const CartGudfyProvider = ({
         createNewCart,
         deleteLineItem,
         updateLineItem,
+        deleteCart,
       }}
     >
       {children}
