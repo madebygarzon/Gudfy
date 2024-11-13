@@ -208,8 +208,23 @@ class CartMarketService extends TransactionBaseService {
       console.log(error);
     }
   }
+  async deleteCart(idCart) {
+    const cartRepo = this.activeManager_.withRepository(this.cartRepository_);
+    try {
+      if (!idCart) throw "Error no proporcionaste idCart o idItem";
 
-  //Functions assistant --------------------------------------------
+      const cart = await cartRepo.findOne({
+        where: { id: idCart },
+      });
+      if (!cart) {
+        throw new Error("el carrito");
+      }
+      await cartRepo.remove(cart);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   private async reserverStock(store_variant_id, quantity) {
     const storeVariantRepo = this.activeManager_.withRepository(
       this.storeXVariantRepository_
