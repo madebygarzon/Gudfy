@@ -23,7 +23,8 @@ type CompleteForm = {
   TermsConditions: boolean
 }
 const CheckoutForm = () => {
-  const { cart } = useCartGudfy()
+  const { cart, deleteCart } = useCartGudfy()
+
   const {
     isLoadingCurrentOrder,
     dataPay,
@@ -52,15 +53,16 @@ const CheckoutForm = () => {
   }, [])
 
   const handlersubmit = async (dataForm?: orderDataForm) => {
-    console.log(dataForm)
     if (!dataForm) {
       return
     }
     handlerUpdateDataLastOrder({ ...dataForm, pay_method_id: checkbox }).then(
       () => {
-        console.log(dataForm, currentOrder, cart, checkbox)
         if (!currentOrder?.id) alert("error de orden , no se obtuvo la orden")
-        else handlersubmitPaymentMethod(checkbox, cart, currentOrder.id)
+        else {
+          handlersubmitPaymentMethod(checkbox, cart, currentOrder.id)
+          deleteCart()
+        }
       }
     )
   }
