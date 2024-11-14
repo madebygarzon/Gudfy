@@ -60,8 +60,11 @@ const CheckoutForm = () => {
       () => {
         if (!currentOrder?.id) alert("error de orden , no se obtuvo la orden")
         else {
-          handlersubmitPaymentMethod(checkbox, cart, currentOrder.id)
-          deleteCart()
+          handlersubmitPaymentMethod(checkbox, cart, currentOrder.id).then(
+            () => {
+              deleteCart()
+            }
+          )
         }
       }
     )
