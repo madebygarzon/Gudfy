@@ -83,7 +83,7 @@ const LoginComponente = () => {
       )
       }
 
-      <h1 className="text-large-semi  mb-1 text-3xl">Iniciar Sesión</h1>
+      <h1 className="text-large-semi  mb-1 text-3xl">Iniciar sesión</h1>
       <p className="text-center text-base-regular text-gray-700 mb-8">
         ¿Nuevo usuario? <Link href={"/account/register"}>Crear una cuenta</Link>
         .
