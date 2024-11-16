@@ -57,12 +57,10 @@ const RecoverAccount: React.FC<stateProps> = ({ setIsRecovery }) => {
 
   return (
     <div className="max-w-md w-full flex flex-col items-center">
-      <h1 className="text-large-semi  mb-6 text-3xl">
-        Restrablecer Contraseña
+      <h1 className="text-large-semi  mb-2 text-3xl">
+        Restrablecer contraseña
       </h1>
-      <p className="text-center text-base-regular text-gray-700 mb-8">
-        ¿Nuevo usuario? <Link href={"./register"}>Crear una cuenta</Link>.
-      </p>
+      
       {!mailSent ? (
         <form
           className="w-full font[400] shadow-xl rounded-3xl p-12 flex flex-col items-center "
