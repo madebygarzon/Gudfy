@@ -6,8 +6,10 @@ import ButtonLigth from "@modules/common/components/button_light"
 
 const MedusaCTA = () => {
   return (
-    <div className="bg-blue-gf justify-center space-x-40 p-3 flex items-end pt-8 ">
-      <div className="text-[#C7C7C7] font-[300] text-[14px]">
+    <div className="bg-blue-gf px-8 justify-center sm:space-x-40 p-3 block sm:flex sm:items-end pt-8 ">
+      
+      
+      <div className="text-[#C7C7C7] font-[300] text-[14px] flex flex-col items-start">
         Ver nuestros comentarios en
         <a
           href="https://es.trustpilot.com/review/gudfy.com"
@@ -25,7 +27,10 @@ const MedusaCTA = () => {
         <ReviewsTrusPilot />
       </div>
 
-      <div className="text-[#C7C7C7] font-[300] text-[14px] mb-5">
+
+
+
+      <div className="text-[#C7C7C7] sm:mt-0 mt-6 font-[300] text-[14px] mb-5">
         Suscríbete a nuestro newsletter y obtén contenido exclusivo.
         <Formik
           initialValues={{ email: "" }}
@@ -34,15 +39,15 @@ const MedusaCTA = () => {
             alert(JSON.stringify(values, null, 2))
           }}
         >
-          <Form className="flex space-x-4 mt-6">
+          <Form className="sm:flex block sm:space-x-4 mt-6">
             <Field
-              className="border-white border-solid border text-[#ffffff] font-[400] bg-transparent rounded min-h-[40px] pl-6 w-[250px]"
+              className="border-white border-solid border text-[#ffffff] font-[400] bg-transparent rounded min-h-[40px] pl-6 sm:w-[250px] w-full"
               placeholder="Ingresa tu email"
               name="email"
               type="email"
             />
             <ButtonLigth
-              className="text-[#000] font-semibold text-[14px] bg-white"
+              className="text-[#000] mt-6 sm:mt-0 font-semibold text-[14px] bg-white"
               type="submit"
             >
               Suscribirme
