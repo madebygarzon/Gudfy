@@ -94,7 +94,7 @@ interface orderContext {
     checkbox: string,
     cart: Cart | undefined,
     order_id: string
-  ) => void
+  ) => Promise<void>
   dataPay: dataPay | undefined
   setDataPay: react.Dispatch<SetStateAction<dataPay | undefined>>
   listOrder: order[] | null

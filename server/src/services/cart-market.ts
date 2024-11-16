@@ -210,9 +210,12 @@ class CartMarketService extends TransactionBaseService {
   }
   async deleteCart(idCart) {
     const cartRepo = this.activeManager_.withRepository(this.cartRepository_);
+    const lineItemsRepo = this.activeManager_.withRepository(
+      this.lineItemRepository_
+    );
     try {
       if (!idCart) throw "Error no proporcionaste idCart o idItem";
-
+      await lineItemsRepo.delete({ cart_id: idCart });
       const cart = await cartRepo.findOne({
         where: { id: idCart },
       });
