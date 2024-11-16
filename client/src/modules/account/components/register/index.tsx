@@ -194,8 +194,8 @@ const Register = () => {
           Crear
         </Button>
       </form>
-      <p className="my-5 font[900] text-sm">O ingresa con:</p>
-      <SocialButtons />
+      {/* <p className="my-5 font[900] text-sm">O ingresa con:</p>
+      <SocialButtons /> */}
     </div>
   )
 }

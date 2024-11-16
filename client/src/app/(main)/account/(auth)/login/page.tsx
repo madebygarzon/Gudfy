@@ -6,6 +6,8 @@ import Image from "next/image"
 import ButtonLigth from "@modules/common/components/button_light"
 import { BsFillArrowLeftCircleFill } from "react-icons/bs"
 import CurrentYear from "@lib/util/current-year"
+import Nav from "@modules/layout/templates/nav"
+import Footer from "@modules/layout/templates/footer/index"
 export const metadata: Metadata = {
   title: "Iniciar sesión",
   description: "Inicia sesión en Gudfy.",
@@ -13,8 +15,8 @@ export const metadata: Metadata = {
 
 export default function Login() {
   return (
-    <div className="grid grid-cols-2 h-screen ">
-      <div className="bg-blue-gf ">
+    <div className="grid sm:grid-cols-2 h-screen ">
+      <div className="bg-blue-gf sm:block hidden">
         <div className="flex h-[25%] m-[20px] justify-start items-center pl-9 mb-16">
           <Link href="/">
             <Image
@@ -54,8 +56,15 @@ export default function Login() {
           </p>
         </div>
       </div>
-      <div className="flex items-center justify-center">
+
+      <div className="sm:flex block items-center justify-center">
+        <div className="block mb-10 sm:hidden">
+          <Nav />
+        </div>
         <LoginComponente />
+        <div className="block mt-10 sm:hidden">
+        <Footer />
+        </div>
       </div>
     </div>
   )
