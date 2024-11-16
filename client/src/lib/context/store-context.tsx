@@ -35,7 +35,6 @@ interface StoreContext {
 const StoreContext = React.createContext<StoreContext | null>(null)
 
 export const useStore = () => {
-  
   const context = React.useContext(StoreContext)
   if (context === null) {
     throw new Error("useStore must be used within a StoreProvider")
@@ -57,8 +56,8 @@ export const StoreProvider = ({ children }: StoreProps) => {
   const [countryCode, setCountryCode] = useState<string | undefined>(undefined)
   const { timedOpen } = useCartDropdown()
   const addLineItem = useCreateLineItem(cart?.id!)
-  const removeLineItem = useDeleteLineItem(cart?.id!)
-  const adjustLineItem = useUpdateLineItem(cart?.id!)
+  //const removeLineItem = useDeleteLineItem(cart?.id!)
+  //const adjustLineItem = useUpdateLineItem(cart?.id!)
 
   const storeRegion = (regionId: string, countryCode: string) => {
     if (!IS_SERVER) {
@@ -143,15 +142,15 @@ export const StoreProvider = ({ children }: StoreProps) => {
   }
 
   const deleteCart = () => {
-    if (!IS_SERVER) {
-      localStorage.removeItem(CART_KEY)
-    }
+    // if (!IS_SERVER) {
+    //   localStorage.removeItem(CART_KEY)
+    // }
   }
 
   const deleteRegion = () => {
-    if (!IS_SERVER) {
-      localStorage.removeItem(REGION_KEY)
-    }
+    // if (!IS_SERVER) {
+    //   localStorage.removeItem(REGION_KEY)
+    // }
   }
 
   const createNewCart = async (regionId?: string) => {
@@ -176,27 +175,25 @@ export const StoreProvider = ({ children }: StoreProps) => {
   }
 
   const resetCart = () => {
-    deleteCart()
-
-    const savedRegion = getRegion()
-
-    createCart.mutate(
-      {
-        region_id: savedRegion?.regionId,
-      },
-      {
-        onSuccess: ({ cart }) => {
-          setCart(cart)
-          storeCart(cart.id)
-          ensureRegion(cart.region, cart.shipping_address?.country_code)
-        },
-        onError: (error) => {
-          if (process.env.NODE_ENV === "development") {
-            console.error(error)
-          }
-        },
-      }
-    )
+    // deleteCart()
+    // const savedRegion = getRegion()
+    // createCart.mutate(
+    //   {
+    //     region_id: savedRegion?.regionId,
+    //   },
+    //   {
+    //     onSuccess: ({ cart }) => {
+    //       setCart(cart)
+    //       storeCart(cart.id)
+    //       ensureRegion(cart.region, cart.shipping_address?.country_code)
+    //     },
+    //     onError: (error) => {
+    //       if (process.env.NODE_ENV === "development") {
+    //         console.error(error)
+    //       }
+    //     },
+    //   }
+    // )
   }
 
   useEffect(() => {
@@ -205,31 +202,29 @@ export const StoreProvider = ({ children }: StoreProps) => {
       const region = getRegion()
 
       if (cartId) {
-        const cartRes = await medusaClient.carts
-          .retrieve(cartId)
-          .then(({ cart }) => {
-            return cart
-          })
-          .catch(async (_) => {
-            return null
-          })
-
-        if (!cartRes || cartRes.completed_at) {
-          deleteCart()
-          deleteRegion()
-          await createNewCart()
-          return
-        }
-
-        setCart(cartRes)
-        ensureRegion(cartRes.region)
+        // const cartRes = await medusaClient.carts
+        //   .retrieve(cartId)
+        //   .then(({ cart }) => {
+        //     return cart
+        //   })
+        //   .catch(async (_) => {
+        //     return null
+        //   })
+        // if (!cartRes || cartRes.completed_at) {
+        //   deleteCart()
+        //   deleteRegion()
+        //   await createNewCart()
+        //   return
+        // }
+        // setCart(cartRes)
+        // ensureRegion(cartRes.region)
       } else {
-        await createNewCart(region?.regionId)
+        // await createNewCart(region?.regionId)
       }
     }
 
     if (!IS_SERVER && !cart?.id) {
-      ensureCart()
+      // ensureCart()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
@@ -241,40 +236,40 @@ export const StoreProvider = ({ children }: StoreProps) => {
     variantId: string
     quantity: number
   }) => {
-    addLineItem.mutate(
-      {
-        variant_id: variantId,
-        quantity: quantity,
-      },
-      {
-        onSuccess: ({ cart }) => {
-          setCart(cart)
-          storeCart(cart.id)
-          timedOpen()
-        },
-        onError: (error) => {
-          handleError(error)
-        },
-      }
-    )
+    // addLineItem.mutate(
+    //   {
+    //     variant_id: variantId,
+    //     quantity: quantity,
+    //   },
+    //   {
+    //     onSuccess: ({ cart }) => {
+    //       setCart(cart)
+    //       storeCart(cart.id)
+    //       timedOpen()
+    //     },
+    //     onError: (error) => {
+    //       handleError(error)
+    //     },
+    //   }
+    // )
   }
 
   const deleteItem = (lineId: string) => {
-    removeLineItem.mutate(
-      {
-        lineId,
-      },
-      {
-        onSuccess: ({ cart }) => {
-          setCart(cart)
-          storeCart(cart.id)
-          listItem()
-        },
-        onError: (error) => {
-          handleError(error)
-        },
-      }
-    )
+    // removeLineItem.mutate(
+    //   {
+    //     lineId,
+    //   },
+    //   {
+    //     onSuccess: ({ cart }) => {
+    //       setCart(cart)
+    //       storeCart(cart.id)
+    //       listItem()
+    //     },
+    //     onError: (error) => {
+    //       handleError(error)
+    //     },
+    //   }
+    // )
   }
 
   const updateItem = ({
@@ -284,21 +279,21 @@ export const StoreProvider = ({ children }: StoreProps) => {
     lineId: string
     quantity: number
   }) => {
-    adjustLineItem.mutate(
-      {
-        lineId,
-        quantity,
-      },
-      {
-        onSuccess: ({ cart }) => {
-          setCart(cart)
-          storeCart(cart.id)
-        },
-        onError: (error) => {
-          handleError(error)
-        },
-      }
-    )
+    // adjustLineItem.mutate(
+    //   {
+    //     lineId,
+    //     quantity,
+    //   },
+    //   {
+    //     onSuccess: ({ cart }) => {
+    //       setCart(cart)
+    //       storeCart(cart.id)
+    //     },
+    //     onError: (error) => {
+    //       handleError(error)
+    //     },
+    //   }
+    // )
   }
 
   return (

@@ -10,7 +10,7 @@ import Thumbnail from "@modules/products/components/thumbnail"
 import { formatAmount, useCart } from "medusa-react"
 import Link from "next/link"
 import Image from "next/image"
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from "react-i18next"
 import { Fragment, useEffect, useState } from "react"
 import { useCartGudfy } from "@lib/context/cart-gudfy"
 
@@ -23,9 +23,9 @@ const CartDropdown = () => {
   const [subTotal, setSubtotal] = useState<number>(0)
 
   useEffect(() => {
-    if (!items?.length) listItem()
+    listItem()
     handlerSubTotal()
-  }, [items])
+  }, [])
 
   const handlerSubTotal = () => {
     let total =
@@ -36,7 +36,7 @@ const CartDropdown = () => {
         : 0
     setSubtotal(total)
   }
-  const { t } = useTranslation('common');
+  const { t } = useTranslation("common")
 
   return (
     <div className="h-full z-50" onMouseEnter={open} onMouseLeave={close}>
@@ -71,7 +71,7 @@ const CartDropdown = () => {
             className="hidden small:block absolute top-[calc(100%+30px)] right-0 bg-white border-x border-b border-gray-200 w-[382px] text-gray-900"
           >
             <div className="p-4 flex items-center justify-center">
-              <h3 className="text-large-semi">{t('cart_shopping_cart')}</h3>
+              <h3 className="text-large-semi">{t("cart_shopping_cart")}</h3>
             </div>
             {items?.length ? (
               <>
@@ -106,8 +106,12 @@ const CartDropdown = () => {
                                 </h4>
                                 {/* <LineItemOptions variant={item.variant} /> */}
                                 <div className="text-xs text-slate-400">
-                                  <p> {t('cart_quantity')}: {item.quantity}</p>
-                                  <p> {t('cart_price')}: {item.unit_price} </p>
+                                  <p>
+                                    {t("cart_quantity")}: {item.quantity}
+                                  </p>
+                                  <p>
+                                    {t("cart_price")}: {item.unit_price}{" "}
+                                  </p>
                                 </div>
                               </div>
                               <div className="flex justify-end">
@@ -122,7 +126,7 @@ const CartDropdown = () => {
                           <div className="flex items-end justify-between text-small-regular flex-1">
                             <div>
                               <h4 className="text-sm">
-                              {t('cart_total')}: $
+                                {t("cart_total")}: $
                                 {parseFloat(
                                   (item.unit_price * item.quantity).toFixed(2)
                                 )}
@@ -133,7 +137,7 @@ const CartDropdown = () => {
                                 onClick={() => deleteLineItem(item.id)}
                               >
                                 <Trash size={14} className="text-red-600" />
-                                <span>{t('cart_remove')}</span>
+                                <span>{t("cart_remove")}</span>
                               </button>
                             </div>
                           </div>
@@ -144,8 +148,10 @@ const CartDropdown = () => {
                 <div className="p-4 flex flex-col gap-y-4 text-small-regular">
                   <div className="flex items-center justify-between">
                     <span className="text-gray-700 font-semibold">
-                    {t('cart_subtotal')}: {parseFloat(subTotal.toFixed(2))}
-                      <span className="font-normal">({t('cart_taxes_included')})</span>
+                      {t("cart_subtotal")}: {parseFloat(subTotal.toFixed(2))}
+                      <span className="font-normal">
+                        ({t("cart_taxes_included")})
+                      </span>
                     </span>
                     <span className="text-large-semi">
                       {/* {formatAmount({
@@ -156,7 +162,9 @@ const CartDropdown = () => {
                     </span>
                   </div>
                   <Link href="/cart" passHref>
-                    <Button className="rounded-30">{t('cart_go_to_checkout')}</Button>
+                    <Button className="rounded-30">
+                      {t("cart_go_to_checkout")}
+                    </Button>
                   </Link>
                 </div>
               </>
@@ -166,13 +174,13 @@ const CartDropdown = () => {
                   <div className="bg-gray-900 text-small-regular flex items-center justify-center w-6 h-6 rounded-full text-white">
                     <span>0</span>
                   </div>
-                  <span>{t('cart_your_cart_is_empty')}.</span>
+                  <span>{t("cart_your_cart_is_empty")}.</span>
                   <div>
                     <Link href="/store">
                       <>
-                        <span className="sr-only">{t('go_the_store')}</span>
+                        <span className="sr-only">{t("go_the_store")}</span>
                         <Button className="rounded-30" onClick={close}>
-                        {t('cart_explore_products')}
+                          {t("cart_explore_products")}
                         </Button>
                       </>
                     </Link>
