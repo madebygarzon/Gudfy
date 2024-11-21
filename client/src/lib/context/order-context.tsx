@@ -140,7 +140,9 @@ export const OrderGudfyProvider = ({
         setCurrentOrderr(e)
         setIsLoadingCurrentOrder(false)
       })
-      .catch()
+      .catch((error) => {
+        console.log("error el la recuperacion de la orden")
+      })
   }
 
   const handlerUpdateDataLastOrder = async (dataForm: orderDataForm) => {
@@ -185,14 +187,12 @@ export const OrderGudfyProvider = ({
         }
       )
       .then((res) => {
-        console.log(res)
         const result = res.data.result
         setDataPay(result.data)
         setIsLoadingCurrentOrder(false)
         // location.href = result.data.checkoutUrl //redirect user to pay link
       })
       .catch((e) => {
-        console.log("error binance", e)
         alert(e.error.message)
       })
   }

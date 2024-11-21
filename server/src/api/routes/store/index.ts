@@ -45,6 +45,7 @@ import { getMessagesTickets } from "./tickets/get-data-messages-ticket";
 import binancepay_webhook from "./binancepay_webhook";
 import getListSerialCodes from "./serial-codes/get-list-serial-codes";
 import deleteCart from "./cart/delete-cart";
+import { registerLoggedInCustomer } from "../../middlewares/customerLogged";
 
 // Initialize a custom router
 const router = Router();
