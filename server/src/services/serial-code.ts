@@ -1,16 +1,19 @@
 import { Lifetime } from "awilix";
 import SerialCodeRepository from "src/repositories/serial-code";
+import StoreXVariantRepository from "src/repositories/store-x-variant";
 import { TransactionBaseService, Customer } from "@medusajs/medusa";
 
 class SerialCodeService extends TransactionBaseService {
   static LIFE_TIME = Lifetime.SCOPED;
   protected readonly serialCodeRepository_: typeof SerialCodeRepository;
+  protected readonly storeXVariantRepository_: typeof StoreXVariantRepository;
   protected readonly loggedInCustomer_: Customer | null;
 
   constructor(container) {
     // @ts-expect-error prefer-rest-params
     super(...arguments);
     this.serialCodeRepository_ = container.serialCodeRepository;
+    this.storeXVariantRepository_ = container.storeXVariantRepository;
     this.loggedInCustomer_ = container.loggedInCustomer || null;
   }
 
@@ -72,6 +75,32 @@ class SerialCodeService extends TransactionBaseService {
         error
       );
     }
+  }
+
+  async addListCodesStoreVariant(dataCodes) {
+    if (!dataCodes.codes.length) return;
+    const repoSerialCode = this.activeManager_.withRepository(
+      this.serialCodeRepository_
+    );
+
+    const repostoreVariant = this.activeManager_.withRepository(
+      this.storeXVariantRepository_
+    );
+
+    for (const codes of dataCodes.codes) {
+      const createCode = await repoSerialCode.create({
+        serial: codes,
+        store_variant_id: dataCodes.productvariantid,
+      });
+      await repoSerialCode.save(createCode);
+    }
+
+    await repostoreVariant.increment(
+      { id: dataCodes.productvariantid },
+      "quantity_store",
+      dataCodes.codes.length
+    );
+    return true;
   }
 }
 export default SerialCodeService;

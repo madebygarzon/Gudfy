@@ -15,6 +15,7 @@ import { waitForDebugger } from "inspector";
 import { getWallet } from "./get-wallet";
 import { getListSellerPayOrders } from "./get-list-seller-pay-orders";
 import { getListOrderPayments } from "./get-list-order-payments";
+import { postAddCodesStoreVariant } from "./post-add-codes-store-variant";
 
 const router = Router();
 
@@ -36,4 +37,10 @@ export function attachSellerRoutes(customerRouter: Router) {
   //----wallet----
   router.get("/wallet", wrapHandler(getWallet));
   router.get("/wallet/orders", wrapHandler(getListSellerPayOrders));
+
+  //---serial-codes--------
+  router.post(
+    "/add-codes-store-variant",
+    wrapHandler(postAddCodesStoreVariant)
+  );
 }

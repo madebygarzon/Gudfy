@@ -8,7 +8,9 @@ type Props = {
 }
 
 async function getProducts(productvariant: string) {
-  const product = await getProductVariant(decodeURIComponent(productvariant))
+  const product = await getProductVariant(
+    decodeURIComponent(productvariant).replaceAll("_", " ")
+  )
   if (!product) {
     throw new Error(`Failed to fetch product: ${productvariant}`)
   }
