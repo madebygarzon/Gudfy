@@ -13,7 +13,11 @@ const ProductPreview = ({
   prices,
 }: productVariant) => {
   return (
-    <Link href={`/products/${productparent}/${title}`}>
+    <Link
+      href={`/products/${productparent}/${title
+        .replaceAll(" ", "_")
+        .toLowerCase()}`}
+    >
       <div>
         <Thumbnail thumbnail={thumbnail} size="full" />
         <div className="flex justify-center">
