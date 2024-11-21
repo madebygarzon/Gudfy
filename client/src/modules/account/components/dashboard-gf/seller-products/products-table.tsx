@@ -3,8 +3,6 @@ import { Table, DropdownMenu, IconButton, Input, Select } from "@medusajs/ui"
 import {
   PencilSquare,
   XMark,
-  Eye,
-  Check,
   ArrowLongRight,
   ArrowLongLeft,
 } from "@medusajs/icons"
@@ -32,8 +30,9 @@ type StoreProducVariant = {
   storexvariantid: string
   variantid: string
   productvarianttitle: string
-  amount: string
+  quantity: string
   price: string
+  serialCodeCount: number
 }
 
 type ListDataSellerProduct = {
@@ -182,53 +181,12 @@ export default function ProductsTable() {
       ),
     })
   }
-  // const handlerFilterStatus = (value: any) => {
-  //   setPage(1)
-  //   let dataFilter
-  //   switch (value) {
-  //     case dataSelecFilter[1].value:
-  //       dataFilter = dataProducts.dataProduct.filter(
-  //         (data) => data.status === "draft"
-  //       )
 
-  //       break
-  //     case dataSelecFilter[2].value:
-  //       dataFilter = dataProducts.dataProduct.filter(
-  //         (data) => data.status === "published"
-  //       )
-
-  //       break
-  //     default:
-  //       dataFilter = dataProducts.dataProduct
-  //       break
-  //   }
-  //   setPagetotal(Math.ceil(dataFilter.length / rowsPerPages))
-  //   setDataProducts({
-  //     ...dataProducts,
-  //     dataFilter: dataFilter,
-  //     dataPreview: handlerPreviewProducts(dataFilter, 1),
-  //   })
-  // }
-  // const handlerFilterCategories = (value: any) => {
-  //   setPage(1)
-
-  //   const dataFilter = dataProducts.dataProduct.filter((data) => {
-  //     const category = data.categories.find((ct) => ct.name === value)
-  //     if (category) return true
-  //     return false
-  //   })
-  //   setPagetotal(Math.ceil(dataFilter.length / rowsPerPages))
-  //   setDataProducts({
-  //     ...dataProducts,
-  //     dataFilter: dataFilter,
-  //     dataPreview: handlerPreviewProducts(dataFilter, 1),
-  //   })
-  // }
   // Controller from Edit Product
-  const { isOpen, onOpen, onOpenChange } = useDisclosure()
-  const [editProduct, setEditProduct] = useState<StoreProducVariant>()
+  const [productEdit, setProductEdit] = useState<StoreProducVariant>()
+  const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure()
   const handlerEditProduct = (product: StoreProducVariant) => {
-    setEditProduct(product)
+    setProductEdit(product)
     onOpen()
   }
   const handlerSearcherbar = (e: string) => {
@@ -271,8 +229,6 @@ export default function ProductsTable() {
         </div>
         {!isLoading && dataProducts.dataPreview.length ? (
           <>
-
-
             <table className="table w-full">
               <thead className="heade_table rounded text-left border-1 border-gray-200">
                 <tr className="table_header  shadow-sm border-[15px] border-white">
@@ -292,74 +248,33 @@ export default function ProductsTable() {
                       className="cursor-pointer my-6 "
                     >
                       <td>
-                        <Link href={`./products/${data.storexvariantid}`}>
-                          <div className="flex gap-3 items-center">
-                            {data.thumbnail ? (
-                              <Image
-                                src={data.thumbnail}
-                                width={28}
-                                height={38}
-                                alt={data.producttitle}
-                              />
-                            ) : (
-                              <ImagePlaceholderIcon />
-                            )}
-                            {` ${data.productvarianttitle} `}
-                          </div>
-                        </Link>
+                        <div className="flex gap-3 items-center">
+                          {data.thumbnail ? (
+                            <Image
+                              src={data.thumbnail}
+                              width={28}
+                              height={38}
+                              alt={data.producttitle}
+                            />
+                          ) : (
+                            <ImagePlaceholderIcon />
+                          )}
+                          {` ${data.productvarianttitle} `}
+                        </div>
                       </td>
                       <td> $ {data.price} USD</td>
-                      <td>{data.amount} Codigos </td>
-                      <td>
-                        GifCards
-                        {/* {data.categories.length ? (
-              data.categories.map((c) => (
-                <span className="text-[12px] capitalize">{`${c.name}, `}</span>
-              ))
-            ) : (
-              <p className="text-[12px]">Sin Categoria</p>
-            )} */}
-                      </td>
+                      <td>{data.quantity} Codigos</td>
+                      <td>GifCards</td>
                       <td className="flex gap-x-2 items-center">
-                        <IconButton>
+                        <IconButton onClick={() => onOpen()}>
                           <PencilSquare className="text-ui-fg-subtle" />
                         </IconButton>
-                        {/* <IconButton>
-                          <Eye />
-                        </IconButton> */}
-                        {/* <DropdownMenu>
-                          <DropdownMenu.Trigger asChild>
-                            <IconButton>
-                              <PencilSquare className="text-ui-fg-subtle" />
-                            </IconButton>
-                          </DropdownMenu.Trigger>
-                          <DropdownMenu.Content>
-                            <DropdownMenu.Item
-                              className="gap-x-2"
-                              onClick={() => {}}
-                            >
-                              <Check className="text-ui-fg-subtle" />
-                              Publico
-                            </DropdownMenu.Item>
-                            <DropdownMenu.Item
-                              className="gap-x-2"
-                              onClick={() => {}}
-                            >
-                              <XMark className="text-ui-fg-subtle" />
-                              Privado
-                            </DropdownMenu.Item>
-                          </DropdownMenu.Content>
-                        </DropdownMenu> */}
                       </td>
                     </tr>
                   )
                 })}
               </tbody>
             </table>
-
-
-
-            
           </>
         ) : isLoading && !dataProducts.dataPreview.length ? (
           <div className="flex justify-center items-center py-10">
@@ -377,7 +292,7 @@ export default function ProductsTable() {
           {`${dataProducts.dataFilter.length} Productos`}{" "}
           <Select onValueChange={handlerFilterRows} size="small">
             <Select.Trigger className="bg-white text-[#C2C2C2] text-gra-200">
-              <Select.Value  placeholder="10" />
+              <Select.Value placeholder="10" />
             </Select.Trigger>
             <Select.Content>
               {dataSelecterPAge.map((item) => (
@@ -407,28 +322,21 @@ export default function ProductsTable() {
           </button>
         </div>
       </div>
-      {/* {editProduct && (
+      {productEdit ? (
         <EditProduct
-          key={editProduct.id}
+          key={productEdit?.storexvariantid}
           isOpen={isOpen}
           onOpen={onOpen}
           onOpenChange={onOpenChange}
-          productData={editProduct}
+          productData={productEdit}
           setReset={setReset}
+          onClose={onClose}
         />
-      )} */}
+      ) : (
+        <></>
+      )}
+
       <span></span>
     </div>
   )
-}
-
-const InventoryVariants = (v: any) => {
-  const numVari = v.variants.length
-  const Inventory = v.variants.reduce(
-    (acu: any, vari: { inventory_quantity: any }) =>
-      acu + vari.inventory_quantity,
-    0
-  )
-
-  return <span>{`Variantes: ${numVari}, Inventario: ${Inventory}`}</span>
 }

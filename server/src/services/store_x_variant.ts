@@ -6,6 +6,7 @@ import ProductRepository from "@medusajs/medusa/dist/repositories/product";
 import ProductVariantRepository from "@medusajs/medusa/dist/repositories/product-variant";
 import StoreService from "./store";
 import { map } from "zod";
+import { IsNull, Not } from "typeorm";
 
 class StoreXVariantService extends TransactionBaseService {
   static LIFE_TIME = Lifetime.SCOPED;
@@ -160,6 +161,9 @@ class StoreXVariantService extends TransactionBaseService {
     const productV = this.manager_.withRepository(
       this.storeXVariantRepository_
     );
+    const repoSerialCode = this.manager_.withRepository(
+      this.serialCodeRepository_
+    );
     const listProduct = await productV
       .createQueryBuilder("sxv")
       .innerJoinAndSelect("sxv.variant", "pv")
@@ -181,6 +185,15 @@ class StoreXVariantService extends TransactionBaseService {
         "p.description AS description",
       ])
       .getRawMany();
+    for (const product of listProduct) {
+      const count = await repoSerialCode.count({
+        where: {
+          store_variant_id: product.storexvariantid,
+          store_variant_order_id: Not(IsNull()),
+        },
+      });
+      product.serialCodeCount = count;
+    }
 
     return listProduct;
   }

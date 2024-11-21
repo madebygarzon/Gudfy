@@ -83,7 +83,7 @@ const FileUploader: React.FC<CodesArray> = ({ variantID, setAddResult }) => {
     }
   }, [result])
   return (
-    <div className="flex justify-center w-[250px] ">
+    <div className="flex w-[250px] ">
       <div>
         <Tooltip
           className="mb-5 w-[350px]"
@@ -115,7 +115,7 @@ const FileUploader: React.FC<CodesArray> = ({ variantID, setAddResult }) => {
         {result && (
           <div className=" text-xs ">
             <div>
-              <span>{`Codigos: ${result.quantity} `}</span>
+              <span className="pl-1 pt-1">{`Codigos: ${result.quantity} `}</span>
               {Object.keys(result.duplicates).length > 0 && (
                 <>
                   <span>{`Duplicados: ${
