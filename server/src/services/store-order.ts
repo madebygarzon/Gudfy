@@ -25,76 +25,78 @@ class StoreOrderService extends TransactionBaseService {
     this.loggedInCustomer_ = container.loggedInCustomer || null;
   }
 
-  async currnetOrder(customerId) {
-    const repoStoreOrder = this.activeManager_.withRepository(
-      this.storeOrderRepository_
-    );
-
-    const listOrder = await repoStoreOrder
-      .createQueryBuilder("so")
-      .innerJoinAndSelect("so.order_status", "sso")
-      .leftJoinAndSelect("so.storeVariantOrder", "svo")
-      .leftJoinAndSelect("svo.store_variant", "sxv")
-      .innerJoinAndSelect("sxv.variant", "pv")
-      .leftJoinAndSelect("sxv.store", "s")
-      .where("so.customer_id = :customer_id ", { customer_id: customerId })
-      .select([
-        "so.id AS id",
-        "so.pay_method_id AS pay_method_id ",
-        "so.quantity_products AS quantity_products ",
-        "so.total_price AS total_price",
-        "so.name AS person_name",
-        "so.last_name AS person_last_name",
-        "so.email AS email",
-        "so.contry AS contry",
-        "so.city AS city",
-        "so.phone AS phone",
-        "so.created_at AS created_at",
-        "svo.quantity AS quantity",
-        "svo.total_price AS total_price_for_product",
-        "sso.state AS state_order",
-        "pv.title AS produc_title",
-        "sxv.price AS price",
-        "s.name AS store_name",
-      ])
-      .getRawMany();
-
-    const now = new Date();
-    const tenMinutesInMillis = 10 * 60 * 1000;
-    const validOrder = listOrder.find((order) => {
-      if (order.state_order === "Pendiente de pago") {
-        const createdAt = new Date(order.created_at);
-        return now.getTime() - createdAt.getTime() < tenMinutesInMillis;
+  async currentOrder(customerId) {
+    try {
+      const repoStoreOrder = this.activeManager_.withRepository(
+        this.storeOrderRepository_
+      );
+      console.log("recuperacion de la orden servicio activado");
+      const listOrder = await repoStoreOrder
+        .createQueryBuilder("so")
+        .innerJoinAndSelect("so.order_status", "sso")
+        .leftJoinAndSelect("so.storeVariantOrder", "svo")
+        .leftJoinAndSelect("svo.store_variant", "sxv")
+        .innerJoinAndSelect("sxv.variant", "pv")
+        .leftJoinAndSelect("sxv.store", "s")
+        .where("so.customer_id = :customer_id ", {
+          customer_id: customerId || this.loggedInCustomer_.id,
+        })
+        .select([
+          "so.id AS id",
+          "so.pay_method_id AS pay_method_id ",
+          "so.quantity_products AS quantity_products ",
+          "so.total_price AS total_price",
+          "so.name AS person_name",
+          "so.last_name AS person_last_name",
+          "so.email AS email",
+          "so.contry AS contry",
+          "so.city AS city",
+          "so.phone AS phone",
+          "so.created_at AS created_at",
+          "svo.quantity AS quantity",
+          "svo.total_price AS total_price_for_product",
+          "sso.state AS state_order",
+          "pv.title AS produc_title",
+          "sxv.price AS price",
+          "s.name AS store_name",
+        ])
+        .getRawMany();
+      const now = new Date();
+      const tenMinutesInMillis = 10 * 60 * 1000;
+      const validOrder = listOrder.find((order) => {
+        if (order.state_order === "Pendiente de pago") {
+          const createdAt = new Date(order.created_at);
+          return now.getTime() - createdAt.getTime() < tenMinutesInMillis;
+        }
+      });
+      if (!validOrder) {
+        return null; // No hay pedidos que cumplan con la condición
       }
-    });
 
-    if (!validOrder) {
-      return null; // No hay pedidos que cumplan con la condición
-    }
+      const {
+        produc_title,
+        store_name,
+        price,
+        quantity,
+        total_price_for_product,
+        ...rest
+      } = validOrder;
 
-    const {
-      produc_title,
-      store_name,
-      price,
-      quantity,
-      total_price_for_product,
-      ...rest
-    } = validOrder;
-
-    const result = {
-      ...rest,
-      store_variant: [
-        {
-          produc_title,
-          quantity,
-          total_price_for_product,
-          price,
-          store_name,
-        },
-      ],
-    };
-
-    return result;
+      const result = {
+        ...rest,
+        store_variant: [
+          {
+            produc_title,
+            quantity,
+            total_price_for_product,
+            price,
+            store_name,
+          },
+        ],
+      };
+      console.log("Entrega", result);
+      return result;
+    } catch (error) {}
   }
 
   async listCustomerOrders(customerId) {
