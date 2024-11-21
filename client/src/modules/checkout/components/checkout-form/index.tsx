@@ -5,6 +5,7 @@ import { useCartGudfy } from "@lib/context/cart-gudfy"
 import { orderDataForm, useOrderGudfy } from "@lib/context/order-context"
 import CheckoutSelectPayment from "../checkout-select-payment"
 import BinanceAutomaticPayment from "../binance-automatic-payment"
+import { useMeCustomer } from "medusa-react"
 
 const methodPayment = [
   "automatic_binance_pay",
@@ -24,6 +25,7 @@ type CompleteForm = {
 }
 const CheckoutForm = () => {
   const { cart, deleteCart } = useCartGudfy()
+  const { customer } = useMeCustomer()
 
   const {
     isLoadingCurrentOrder,
@@ -50,7 +52,7 @@ const CheckoutForm = () => {
     setSelectedKeys(new Set([checkbox]))
     if (checkbox) setCompleteForm((com) => ({ ...com, payment: true }))
     else setCompleteForm((com) => ({ ...com, payment: false }))
-  }, [])
+  }, [customer])
 
   const handlersubmit = async (dataForm?: orderDataForm) => {
     if (!dataForm) {
