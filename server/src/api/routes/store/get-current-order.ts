@@ -6,10 +6,8 @@ export async function getCurrentOrder(
 ): Promise<void> {
   try {
     const { id } = req.params;
-
     const productService = req.scope.resolve("storeOrderService");
-
-    const list = await productService.currnetOrder(id);
+    const list = await productService.currentOrder(id);
 
     if (list) {
       res.status(200).send(list);

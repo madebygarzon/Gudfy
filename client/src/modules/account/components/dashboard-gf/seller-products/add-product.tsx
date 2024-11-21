@@ -27,6 +27,18 @@ type listProductsVariant = {
   titulo: string
   titleVariant: string
 }
+
+type dataSend = {
+  variantID: string
+  price?: number | undefined
+  codes: string[]
+  quantity: number
+  duplicates:
+    | {
+        [key: string]: number
+      }
+    | number
+}[]
 interface listproducts {
   products: Array<listProductsVariant>
   productsReviwe: Array<listProductsVariant>
@@ -56,17 +68,23 @@ export default function AddProducts({ setReset }: Reset) {
   const [addPrice, setAddPrice] = useState<ProductPrice[]>([])
   const [isloadingPV, setLoadingPV] = useState<boolean>(false)
   const [susccessful, setSusccessful] = useState<boolean>(false)
+  const [erros, setErrors] = useState<{
+    codes: boolean
+    price: boolean
+  }>({ codes: true, price: true })
 
   useEffect(() => {
     if (isOpen)
-      getListProductVariant().then((data) =>
+      getListProductVariant().then((data) => {
         setListProducts({
           products: data,
           productsReviwe: data,
           unselectedProducts: data,
           selectedProducts: [],
         })
-      )
+        setLoadingPV(false)
+        setErrors({ codes: true, price: true })
+      })
   }, [isOpen])
 
   const handlerSearcherbar = (value: string) => {
@@ -131,8 +149,29 @@ export default function AddProducts({ setReset }: Reset) {
     setAddPrice((addPrice) => [...addPrice, { price: value, variantID }])
   }
 
+  const handlerValidateData = (dataSend: dataSend): boolean => {
+    let codes = dataSend.length ? true : false
+    let price = dataSend.length ? true : false
+    dataSend.forEach((data) => {
+      if (!data.price) {
+        price = false
+      }
+    })
+    dataSend.forEach((data) => {
+      if (!data.codes.length) {
+        codes = false
+      }
+    })
+
+    if (!codes) setErrors((old) => ({ ...old, codes: false }))
+    if (!price) setErrors((old) => ({ ...old, price: false }))
+
+    return price && codes
+  }
+
   const onSubmit = () => {
     setLoadingPV(true)
+
     const dataSend = addResult.map((data) => {
       const dataPrice = addPrice.find(
         (price) => price.variantID === data.variantID
@@ -140,7 +179,10 @@ export default function AddProducts({ setReset }: Reset) {
       return { ...data, ...dataPrice }
     })
 
+    if (!handlerValidateData(dataSend)) return setLoadingPV(false)
+
     AddProductsVariant(dataSend).then(() => {
+      setAddResult([])
       setLoadingPV(false)
       setSusccessful(true)
       setListProducts((data) => ({ ...data, selectedProducts: [] }))
@@ -313,24 +355,46 @@ export default function AddProducts({ setReset }: Reset) {
                 </div>
               </ModalBody>
               <ModalFooter className="mb-[2%] justify-center">
-                <ButtonM
-                  variant="transparent"
-                  className="text-red-700 border border-red-700"
-                  onClick={onClose}
-                >
-                  Cancelar
-                </ButtonM>
-                <ButtonM
-                  variant="transparent"
-                  className="text-blue-700  border border-blue-700"
-                  onClick={onSubmit}
-                >
-                  {isloadingPV ? (
-                    <Spinner color="secondary" />
+                <div>
+                  {!erros.codes ? (
+                    <div>
+                      <p className="text-red-600">
+                        ** No se an insertado los codigos de algun producto **
+                      </p>
+                    </div>
                   ) : (
-                    "Guardar productos"
+                    <></>
                   )}
-                </ButtonM>
+                  {!erros.price ? (
+                    <div>
+                      <p className="text-red-600">
+                        ** No se an insertado el precio de algun producto **
+                      </p>
+                    </div>
+                  ) : (
+                    <div></div>
+                  )}
+                  <div className="flex justify-center">
+                    <ButtonM
+                      variant="transparent"
+                      className="text-red-700 border border-red-700"
+                      onClick={onClose}
+                    >
+                      Cancelar
+                    </ButtonM>
+                    <ButtonM
+                      variant="transparent"
+                      className="text-blue-700  border border-blue-700"
+                      onClick={onSubmit}
+                    >
+                      {isloadingPV ? (
+                        <Spinner color="secondary" />
+                      ) : (
+                        "Guardar productos"
+                      )}
+                    </ButtonM>
+                  </div>
+                </div>
               </ModalFooter>
             </>
           )}
