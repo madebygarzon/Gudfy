@@ -47,11 +47,13 @@ const autoBinancePay = async (cartItems, order_id) => {
     goodsDetails: goods,
     webhookUrl: `${
       process.env.BACKEND_URL.includes("localhost")
-        ? "http://179.61.219.62/:9000"
+        ? "http://179.61.219.62:9000"
         : process.env.BACKEND_URL
     }/store/binance_pay/webhook/${order_id}/order`,
     returnUrl: `${
-      process.env.FRONT_URL.includes("localhost") ? "http://179.61.219.62/:8000" :  process.env.FRONT_URL
+      process.env.FRONT_URL.includes("localhost")
+        ? "http://179.61.219.62:8000"
+        : process.env.FRONT_URL
     }/account/orders`,
     description: "Buy Order",
     supportPayCurrency: "USDT,BNB,BTC",
