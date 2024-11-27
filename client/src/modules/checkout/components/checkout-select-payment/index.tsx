@@ -69,7 +69,7 @@ const CheckoutSelectPayment: React.FC<CheckoutDetailsProps> = ({
   })
   return (
     <div>
-      <form onSubmit={() => handlersubmit(dataForm)}>
+      <form>
         <div className="w-full grid grid-cols-1 gap-y-8">
           <div className="bg-white p-10">
             <h2 className="font-bold text-2xl text-center my-3">
@@ -226,7 +226,6 @@ const CheckoutSelectPayment: React.FC<CheckoutDetailsProps> = ({
       </form>
       <Button
         onClick={() => handlersubmit(dataForm)}
-        type="submit"
         disabled={
           !(
             completedForm.TermsConditions &&
