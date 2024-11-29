@@ -139,7 +139,10 @@ const OrderDetails = ({ orderData, onClose }: props) => {
                                     store_name: p.store_name,
                                     store_id: p.store_id,
                                     store_order_id: orderData.id,
-                                    customer_name: customer?.last_name || " ",
+                                    customer_name: customer
+                                      ? customer?.last_name +
+                                        customer?.first_name
+                                      : " ",
                                     customer_id: customer?.id || " ",
                                     content: "",
                                     rating: 0,

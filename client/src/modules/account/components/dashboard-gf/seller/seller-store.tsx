@@ -1,7 +1,14 @@
-import React from "react"
+import React, { useEffect, useState } from "react"
 import { Customer, Order } from "@medusajs/medusa"
 import Link from "next/link"
-import { Avatar } from "@nextui-org/react"
+import {
+  Avatar,
+  Modal,
+  ModalContent,
+  useDisclosure,
+  ModalBody,
+  ModalHeader,
+} from "@nextui-org/react"
 import ButtonLigth from "@modules/common/components/button_light"
 import Cart from "@modules/common/icons/cart"
 import Product from "@modules/common/icons/package"
@@ -10,6 +17,10 @@ import { useCustomerOrders, useMeCustomer } from "medusa-react"
 import { Progress } from "@nextui-org/react"
 import { useNotificationContext } from "@lib/context/notification-context"
 import Notification from "@modules/common/components/notification"
+import { getDataReviews } from "@modules/account/actions/reviews/get-data-reviews"
+import handlerformatDate from "@lib/util/formatDate"
+import { getStoreReviews } from "@modules/account/actions/reviews/get-store-revioews"
+import clsx from "clsx"
 
 type store = {
   id: string
@@ -112,47 +123,97 @@ const CardItemsDashboard: React.FC<CardDasboard> = ({
   )
 }
 
+type dataReview = {
+  id: string
+  store_order_id: string
+  store_id: string
+  customer_id: string
+  customer_name: string
+  rating: number
+  content: string
+  created_at: string
+}
+
 const CardReviewProductDashboard: React.FC = () => {
+  const [dataReview, setDataReview] = useState<{
+    totalReviews: number
+    rating: number
+    latestComment: dataReview | null
+  }>({
+    totalReviews: 0,
+    rating: 0,
+    latestComment: null,
+  })
+  const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure()
+
+  const handlerGetReview = () => {
+    getDataReviews().then((e) => {
+      setDataReview(e)
+    })
+  }
+  useEffect(() => {
+    handlerGetReview()
+  }, [])
+
   return (
-    <div className=" min-h-[200px] w-full flex flex-col py-5 px-2  h-full shadow-card rounded-[10px] items-center  justify-center">
-      <div className="text-center">
-        <h3 className="text-4xl font-bold -mb-2 ">80</h3>
-        <p className="text-sm ">Valoraciones a productos</p>
+    <div className=" min-h-[200px] w-full flex flex-col py-2 px-2  h-full shadow-card rounded-[10px] items-center  justify-center">
+      <div className="flex items-center justify-between border-b-1 w-full border-b-[#9B48ED] p-4 ">
+        <h3 className="text-xl font-bold">Mis Valoraciones</h3>
+        <p className="text-ms text-[#9B48ED]">
+          Reviews: {dataReview.totalReviews}{" "}
+        </p>
+        <p
+          className="text-ms text-[#9B48ED] cursor-pointer"
+          onClick={() => onOpen()}
+        >
+          Ver mas reviews
+        </p>
       </div>
-      <div className="flex w-[100%] max-w-md justify-center mt-2">
-        <div className=" w-[60%] z-20">
-          <Progress color="primary" value={100} />
-        </div>
-        <div className="w-[30%] z-10 -ml-4 ">
-          <Progress color="warning" value={100} />
-        </div>
-        <div className="w-[10%] z-0 -ml-4">
-          <Progress color="danger" value={100} />
-        </div>
-      </div>
-      <div className=" flex w-full justify-between px-10 mt-10">
-        <div className="">
-          <div className=" flex gap-1 items-center justify-center">
-            <h3 className="text-xl font-bold  ">48</h3>
-            <div className="w-[14px] h-[14px] rounded-full bg-blue-500"></div>
-          </div>
-          <p className="text-sm ">5-4 Estrellas</p>
-        </div>
+      <div className="pt-4 w-full">
         <div className="text-center">
-          <div className=" flex gap-1 items-center justify-center">
-            <h3 className="text-xl font-bold  ">24</h3>
-            <div className="w-[14px] h-[14px] rounded-full bg-warning-500"></div>
-          </div>
-          <p className="text-sm ">3-2 Estrellas</p>
+          <h3 className="text-4xl font-bold -mb-2 ">{dataReview?.rating}%</h3>
+          <p className="text-sm " onClick={() => {}}>
+            Valoraciones Positivas
+          </p>
         </div>
-        <div className="text-center">
-          <div className=" flex gap-1 items-center justify-center">
-            <h3 className="text-xl font-bold  ">8</h3>
-            <div className="w-[14px] h-[14px] rounded-full bg-danger-500"></div>
+        <div className="flex w-[100%]  justify-center mt-2">
+          <div className={`w-[${dataReview?.rating}%] z-20`}>
+            <Progress color={"secondary"} value={dataReview?.rating} />
           </div>
-          <p className="text-sm ">1-0 Estrellas</p>
         </div>
       </div>
+      <div className=" flex w-full  justify-center px-2 mt-4">
+        {dataReview?.latestComment ? (
+          <div
+            key={dataReview?.latestComment?.id}
+            className="p-2 bg-white rounded-md shadow-sm border w-[70%]"
+          >
+            <div className="flex  relative justify-between items-center mb-2">
+              <div>
+                <p className="font-semibold text-sm mr-4">
+                  {dataReview?.latestComment.customer_name}
+                </p>
+                <p className="text-gray-300 text-xs">
+                  {handlerformatDate(dataReview?.latestComment.created_at)}
+                </p>
+              </div>
+              <p className="text-yellow-500 font-bold text-xs absolute top-0 right-0">
+                Valor : {dataReview?.latestComment.rating}
+              </p>
+            </div>
+            <p className="text-gray-700 text-sm font-sans">
+              "{dataReview?.latestComment.content}"
+            </p>
+          </div>
+        ) : (
+          <></>
+        )}
+      </div>
+      <ModalReviews
+        isOpen={isOpen}
+        onClose={onClose}
+        onOpenChange={onOpenChange}
+      />
     </div>
   )
 }
@@ -181,6 +242,81 @@ const CardPrefileDashboard: React.FC<CardPrefileDashboard> = ({ customer }) => {
         </div>
       </div>
     </div>
+  )
+}
+
+interface ModalProps {
+  isOpen: boolean
+  onOpenChange: () => void
+  onClose: () => void
+}
+
+const ModalReviews = ({ isOpen, onOpenChange, onClose }: ModalProps) => {
+  const { customer } = useMeCustomer()
+  const [nextPage, setNextPage] = useState<number>(1)
+  const [reviews, setReviews] = useState<dataReview[]>([])
+
+  useEffect(() => {
+    if (isOpen)
+      getStoreReviews(nextPage).then((e) => {
+        setReviews(e)
+      })
+  }, [isOpen])
+  return (
+    <Modal
+      isOpen={isOpen}
+      onOpenChange={onOpenChange}
+      onClose={onClose}
+      size="5xl"
+    >
+      <ModalContent>
+        {(onClose) => (
+          <>
+            <ModalBody>
+              <div className="p-6 bg-gray-50 rounded-md shadow-md">
+                <h2 className="text-2xl font-bold mb-4">Reseñas</h2>
+                {reviews.length > 0 ? (
+                  <div className="space-y-4">
+                    {reviews.map((review) => (
+                      <div
+                        key={review.id}
+                        className="p-4 bg-white rounded-md shadow-sm border"
+                      >
+                        <div className="flex justify-between items-center mb-2">
+                          <div>
+                            <p className="font-semibold">
+                              {review.customer_name}
+                            </p>
+                            <p className="text-gray-500 text-sm">
+                              {review.created_at}
+                            </p>
+                          </div>
+                          <p
+                            className={clsx(
+                              {
+                                "text-yellow-500": review.rating == 3,
+                                "text-green-500": review.rating == 5,
+                                "text-red-500": review.rating == 1,
+                              },
+                              " font-bold"
+                            )}
+                          >
+                            Rating: {review.rating}
+                          </p>
+                        </div>
+                        <p className="text-gray-700">{review.content}</p>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-gray-500">No hay reseñas disponibles.</p>
+                )}
+              </div>
+            </ModalBody>
+          </>
+        )}
+      </ModalContent>
+    </Modal>
   )
 }
 export default CustomerStore
