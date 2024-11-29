@@ -8,7 +8,7 @@ import {
   Button,
 } from "@nextui-org/react"
 import Link from "next/link"
-import OrderRevie from "../order-overview"
+import OrderRevie from "../order-review"
 import { updateCancelStoreOrder } from "@modules/account/actions/update-cancel-store-order"
 import type { order } from "../../templates/orders-template"
 

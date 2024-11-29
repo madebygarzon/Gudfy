@@ -14,6 +14,10 @@ interface Seller {
   email: string
   quantity: number
   price: number
+  parameters: {
+    rating: number
+    sales: number
+  }
 }
 
 interface TableProps {
@@ -93,12 +97,15 @@ const TableSeller: React.FC<TableProps> = ({
                           Vendedor excelente
                         </p>
                         <p className="text-xs font-normal text-gray-500">
-                          <span className="font-bold">100%</span> Comentarios
-                          positivos
+                          <span className="font-bold">
+                            {seller.parameters.rating}%
+                          </span>{" "}
+                          Comentarios positivos
                         </p>
                       </div>
                       <div className="mt-8 flex items-center gap-2 ite">
-                        | <HiOutlineShoppingCart size={15} /> 0
+                        | <HiOutlineShoppingCart size={15} />{" "}
+                        {seller.parameters.sales}
                       </div>
                     </div>
                   </td>

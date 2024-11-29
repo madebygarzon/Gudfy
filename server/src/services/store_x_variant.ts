@@ -4,12 +4,15 @@ import SerialCodeRepository from "../repositories/serial-code";
 import StoreXVariantRepository from "../repositories/store-x-variant";
 import ProductRepository from "@medusajs/medusa/dist/repositories/product";
 import ProductVariantRepository from "@medusajs/medusa/dist/repositories/product-variant";
+import { StoreReviewRepository } from "../repositories/store-review";
 import StoreService from "./store";
 import { map } from "zod";
 import { IsNull, Not } from "typeorm";
+import handler from "src/jobs/timerOrder";
 
 class StoreXVariantService extends TransactionBaseService {
   static LIFE_TIME = Lifetime.SCOPED;
+  protected readonly storeReviewRepository_: typeof StoreReviewRepository;
   protected readonly serialCodeRepository_: typeof SerialCodeRepository;
   protected readonly storeXVariantRepository_: typeof StoreXVariantRepository;
   protected readonly loggedInCustomer_: Customer | null;
@@ -19,6 +22,7 @@ class StoreXVariantService extends TransactionBaseService {
     super(...arguments);
 
     try {
+      this.storeReviewRepository_ = container.storeReviewRepository;
       this.loggedInCustomer_ = container.loggedInCustomer || "";
       this.storeXVariantRepository_ = container.storeXVariantRepository;
       this.serialCodeRepository_ = container.serialCodeRepository;
@@ -59,7 +63,7 @@ class StoreXVariantService extends TransactionBaseService {
 
       const variantMap = new Map();
 
-      rawVariants.forEach((variant) => {
+      for (const variant of rawVariants) {
         if (!variantMap.has(variant.variantid)) {
           variantMap.set(variant.variantid, {
             id: variant.variantid,
@@ -75,6 +79,10 @@ class StoreXVariantService extends TransactionBaseService {
                 email: variant.customer_email,
                 quantity: variant.quantity,
                 price: variant.price,
+                parameters: {
+                  rating: await this.getSellerRating(variant.store_id),
+                  sales: await this.getNumberOfSales(variant.store_id),
+                },
               },
             ],
           });
@@ -87,7 +95,9 @@ class StoreXVariantService extends TransactionBaseService {
             quantity: variant.quantity,
             price: variant.price,
           });
-      });
+      }
+
+      rawVariants.forEach((variant) => {});
 
       const listSellerxVariant = Array.from(variantMap.values());
 
@@ -229,6 +239,46 @@ class StoreXVariantService extends TransactionBaseService {
     } catch (error) {
       console.log("ERROR EN EL SERVICIO AL AGREGAR LOS PRODUCTOS", error);
     }
+  }
+
+  async getSellerRating(seller_id) {
+    const repoStoreReview = this.activeManager_.withRepository(
+      this.storeReviewRepository_
+    );
+
+    const reviews = await repoStoreReview.find({
+      where: {
+        store_id: seller_id,
+      },
+    });
+
+    if (!reviews.length) return 0;
+
+    const sum = reviews.reduce((sum, review) => {
+      return sum + review.rating;
+    }, 0);
+
+    return ((sum / reviews.length) * 100) / 5;
+  }
+
+  async getNumberOfSales(seller_id) {
+    const productV = this.manager_.withRepository(
+      this.storeXVariantRepository_
+    );
+
+    const numberSales = await productV
+      .createQueryBuilder("sxv")
+      .innerJoinAndSelect("sxv.storeVariantOrder", "svo")
+      .innerJoinAndSelect("svo.store_order", "so")
+      .where("sxv.store_id = :store_id", {
+        store_id: seller_id,
+      })
+      .andWhere("so.order_status_id = :status_id", {
+        status_id: "Finished_ID",
+      })
+      .getCount();
+
+    return numberSales;
   }
 }
 

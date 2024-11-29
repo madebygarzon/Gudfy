@@ -24,7 +24,7 @@ import { getListStoresToPay } from "../../actions/payments/get-list-store-to-pay
 import { postDataOrderPay } from "../../actions/payments/post-data-order-pay";
 import { formatDate } from "../../utils/format-date";
 
-type daraSotores = {
+type dataSotores = {
   store_id: string;
   store_name: string;
   date_order: string;
@@ -66,9 +66,9 @@ type detailsPays = {
 };
 const WalletListado = () => {
   const [dataCustomer, setDataCustomer] = useState<{
-    dataStore: daraSotores[];
-    dataFilter: daraSotores[];
-    dataPreview: daraSotores[];
+    dataStore: dataSotores[];
+    dataFilter: dataSotores[];
+    dataPreview: dataSotores[];
     count: number;
   }>({
     dataStore: [],
@@ -173,7 +173,7 @@ const WalletListado = () => {
     }[]
   >();
 
-  const handlerDataOrder = (data: daraSotores) => {
+  const handlerDataOrder = (data: dataSotores) => {
     setDataPay({
       amount_paid: data.available_balance,
       payment_note: " ",
@@ -197,7 +197,6 @@ const WalletListado = () => {
   };
 
   const handlerSubmitPay = () => {
-    console.log("este es el paht", voucher);
     postDataOrderPay(dataPay, voucher, products).then(() => {
       alert("hecho");
     });

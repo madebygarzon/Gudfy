@@ -12,6 +12,10 @@ interface Seller {
   email: string
   quantity: number
   price: number
+  parameters: {
+    rating: number
+    sales: number
+  }
 }
 
 interface TableProps {
@@ -72,11 +76,15 @@ const TableSellerDefault: React.FC<TableProps> = ({
               {sellerWithLowestPrice.store_name}
             </h3>
             <p className="text-xs font-normal text-gray-500">
-              <span className="font-bold">100%</span> Comentarios positivos
+              <span className="font-bold">
+                {sellerWithLowestPrice.parameters.rating}%
+              </span>{" "}
+              Comentarios positivos
             </p>
           </div>
           <div className="flex mt-4 items-center gap-2">
-            | <HiOutlineShoppingCart size={15} /> 0
+            | <HiOutlineShoppingCart size={15} />{" "}
+            {sellerWithLowestPrice.parameters.sales}
           </div>
         </div>
         <div className="ml-[-13px] mb-4 ">
