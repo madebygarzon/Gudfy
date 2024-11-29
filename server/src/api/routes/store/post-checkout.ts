@@ -58,6 +58,9 @@ const autoBinancePay = async (cartItems, order_id) => {
     description: "Buy Order",
     supportPayCurrency: "USDT,BNB,BTC",
   };
+
+  console.log("estos son los datos de la orden enviados a binance", data);
+
   const body = JSON.stringify(data);
 
   const payload = `${timestamp}\n${nonce}\n${body}\n`;

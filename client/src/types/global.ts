@@ -60,6 +60,10 @@ export type storeProductVariant = {
     email: string
     quantity: number
     price: number
+    parameters: {
+      rating: number
+      sales: number
+    }
   }[]
 }
 
