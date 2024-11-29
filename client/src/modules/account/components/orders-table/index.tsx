@@ -13,7 +13,7 @@ import {
   useDisclosure,
 } from "@nextui-org/react"
 import { FaPlus, FaEye } from "react-icons/fa6"
-import OrderRevie from "../order-overview"
+import OrderRevie from "../order-review"
 import { PlusMini } from "@medusajs/icons"
 import { Button as ButtonMedusa } from "@medusajs/ui"
 import Link from "next/link"

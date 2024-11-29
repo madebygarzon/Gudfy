@@ -1,12 +1,14 @@
-import { TransactionBaseService } from "@medusajs/medusa";
+import { TransactionBaseService, Customer } from "@medusajs/medusa";
 import { StoreReviewRepository } from "../repositories/store-review";
 
 export default class StoreReviewService extends TransactionBaseService {
   protected readonly storeReviewRepository_: typeof StoreReviewRepository;
+  protected readonly loggedInCustomer_: Customer | null | undefined;
 
-  constructor({ storeReviewRepository }) {
+  constructor({ storeReviewRepository, loggedInCustomer }) {
     super(arguments[0]);
     this.storeReviewRepository_ = storeReviewRepository;
+    this.loggedInCustomer_ = loggedInCustomer;
   }
   async getStarsStoreReviews(store_id) {
     const storeReviewRepository = this.activeManager_.withRepository(
@@ -27,38 +29,93 @@ export default class StoreReviewService extends TransactionBaseService {
       }, 0) / total;
     return { dataStars: calculeStars, total, media };
   }
+  async getDataReviews() {
+    try {
+      const storeReviewRepository = this.activeManager_.withRepository(
+        this.storeReviewRepository_
+      );
+      const storeId = this.loggedInCustomer_.store_id;
 
-  async getStoreReviews(store_id, next) {
-    /* @ts-ignore */
-    const storeReviewRepository = this.activeManager_.withRepository(
-      this.storeReviewRepository_
-    );
-    if (next) {
-      return await storeReviewRepository.find({
+      if (!storeId) {
+        throw new Error(
+          "No existen parámetros relacionados para recuperar los reviews"
+        );
+      }
+
+      const count = await storeReviewRepository.count({
         where: {
-          store_id,
+          store_id: storeId,
+          approved: true,
+        },
+      });
+
+      if (count === 0) {
+        return {
+          totalReviews: 0,
+          averageRating: 0,
+          latestComment: null,
+        };
+      }
+
+      // Calcular el promedio de ratings
+      const { avg } = await storeReviewRepository
+        .createQueryBuilder("review")
+        .select("AVG(review.rating)", "avg")
+        .where("review.store_id = :storeId", { storeId })
+        .andWhere("review.approved = :approved", { approved: true })
+        .getRawOne();
+
+      const latestComment = await storeReviewRepository.findOne({
+        where: {
+          store_id: storeId,
           approved: true,
         },
         order: {
           created_at: "DESC",
         },
-        take: 5 * next,
       });
-    } else {
-      return await storeReviewRepository.find({
-        where: {
-          store_id,
-          approved: true,
-        },
-        order: {
-          created_at: "DESC",
-        },
-      });
+
+      return {
+        totalReviews: count,
+        rating: (parseFloat(avg) * 100) / 5,
+        latestComment: latestComment || null,
+      };
+    } catch (error) {
+      console.log("Error en el servicio", error);
+      throw error;
+    }
+  }
+
+  async getStoreReviews(next) {
+    try {
+      const storeReviewRepository = this.activeManager_.withRepository(
+        this.storeReviewRepository_
+      );
+      if (next && this.loggedInCustomer_.store_id) {
+        const reviews = await storeReviewRepository.find({
+          where: {
+            store_id: this.loggedInCustomer_.store_id,
+            approved: true,
+          },
+          order: {
+            created_at: "DESC",
+          },
+          take: 5 * next,
+        });
+        if (!reviews.length) return [];
+
+        return reviews;
+      } else {
+        throw new Error(
+          "No existen parametros relacionados para recuperar los reviews"
+        );
+      }
+    } catch (error) {
+      console.log("Error en el servicio al enlistar los commentarios", error);
     }
   }
 
   async getCustomerStoreReviews(customer_id) {
-    /* @ts-ignore */
     const storeReviewRepository = this.activeManager_.withRepository(
       this.storeReviewRepository_
     );
@@ -71,7 +128,6 @@ export default class StoreReviewService extends TransactionBaseService {
   }
 
   async getReview(id) {
-    /* @ts-ignore */
     const storeReviewRepository = this.activeManager_.withRepository(
       this.storeReviewRepository_
     );
@@ -113,7 +169,6 @@ export default class StoreReviewService extends TransactionBaseService {
         "Adding store review requires store_store_variant_id, customer_id, content, and rating"
       );
     }
-    /* @ts-ignore */
     const storeReviewRepository = this.activeManager_.withRepository(
       this.storeReviewRepository_
     );
@@ -124,7 +179,7 @@ export default class StoreReviewService extends TransactionBaseService {
       customer_name,
       content,
       rating,
-      approved: true,
+      approved: false,
     });
     const storeReview = await storeReviewRepository.save(createdReview);
     return storeReview;
@@ -136,7 +191,7 @@ export default class StoreReviewService extends TransactionBaseService {
         "Updating a store review requires id, content, rating, and approved"
       );
     }
-    /* @ts-ignore */
+
     const storeReviewRepository = this.activeManager_.withRepository(
       this.storeReviewRepository_
     );
@@ -152,7 +207,6 @@ export default class StoreReviewService extends TransactionBaseService {
     if (!id) {
       throw new Error("Deleting a store review requires id");
     }
-    /* @ts-ignore */
     const storeReviewRepository = this.activeManager_.withRepository(
       this.storeReviewRepository_
     );

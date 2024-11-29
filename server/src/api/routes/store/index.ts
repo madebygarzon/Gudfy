@@ -1,13 +1,6 @@
 import { Router, json } from "express";
-import customRouteHandler from "./custom-route-handler";
-import postProductReviews from "./post-store-reviews";
 import postAccountSeller from "./post-account-seller";
-import updateReview from "./update-review";
-import getProductAllReviews from "./get-product-allReviews";
-import getStarsProduct from "./get-stars-product";
-import { authenticate, authenticateCustomer } from "@medusajs/medusa";
 import { wrapHandler } from "@medusajs/utils";
-import deleteReview from "./delete-review";
 import postSellerApplication from "./post-seller-application";
 import getSellerApplication from "./get-seller-application";
 import documents from "../../middlewares/documents-seller-application";
@@ -26,7 +19,6 @@ import { getListCustomerOrders } from "./get-list-customer-orders";
 import updateCancelStoreOrder from "./update-cancel-store-order";
 import { getCurrentOrder } from "./get-current-order";
 import deleteCartItem from "./delete-cart-item";
-import getValidateReview from "./get-validate-review";
 import postClaim from "./post-claim";
 import updateFinishedOrder from "./update-finished-order";
 import { getListClaim } from "./get-list-claim";
@@ -45,7 +37,6 @@ import { getMessagesTickets } from "./tickets/get-data-messages-ticket";
 import binancepay_webhook from "./binancepay_webhook";
 import getListSerialCodes from "./serial-codes/get-list-serial-codes";
 import deleteCart from "./cart/delete-cart";
-import { registerLoggedInCustomer } from "../../middlewares/customerLogged";
 
 // Initialize a custom router
 const router = Router();
@@ -54,36 +45,6 @@ export function attachStoreRoutes(storeRouter: Router) {
   // Attach our router to a custom path on the store router
   storeRouter.use("/", router, json());
   // Define a GET endpoint on the root route of our custom path
-
-  // ----------------------EndPoinst for product reviws and stars------------------------
-  // router.get("/products/:id/reviews", wrapHandler(getProductAllReviews));
-  // router.get("/products/:id/stars", wrapHandler(getStarsProduct));
-
-  router.get(
-    "/store-order/:store_order_id/reviews",
-    wrapHandler(getValidateReview)
-  );
-  //create new review
-  router.post(
-    "/reviews/store-order",
-    authenticateCustomer(),
-    wrapHandler(postProductReviews)
-  );
-
-  //update new review
-  router.post(
-    "/reviews/:id",
-    authenticateCustomer(),
-    wrapHandler(updateReview)
-  );
-
-  router.delete(
-    "/reviews/:id",
-    authenticateCustomer(),
-    wrapHandler(deleteReview)
-  );
-
-  // -----------------------------------------------------------------------------
 
   // ---------------------------------Test Endpoins-------------------------------
   //create a store for customer -- admin
