@@ -20,6 +20,9 @@ import getListTickets from "./tickets/get-list-tickets";
 import getMessagesTickets from "./tickets/get-data-message-ticket";
 import { postAddMessageTicket } from "./tickets/post-add-message-ticket";
 import Image from "../../middlewares/images-tickests";
+import getSellerList from "./seller/get-seller-list";
+import UpdateSellerReview from "./seller/update-seller-review";
+import getSellersReviewsList from "./seller/get-seller-reviews-list";
 
 // Initialize a custom router
 const router = Router();
@@ -52,7 +55,7 @@ export function attachAdminRoutes(adminRouter: Router) {
     wrapHandler(updateCommentSellerApplication)
   );
 
-  //reclamaciones
+  //------------reclamaciones
 
   router.get("/list-claim-orders", wrapHandler(getListClaimAdmin));
   router.get("/claim/:id/comment", wrapHandler(getClaimComments));
@@ -84,6 +87,11 @@ export function attachAdminRoutes(adminRouter: Router) {
     wrapHandler(postAddMessageTicket)
   );
 
+  //------------seller---------
+
+  router.get("/sellers-list", wrapHandler(getSellerList));
+  router.get("/sellers-reviews-list", wrapHandler(getSellersReviewsList));
+  router.post("/update/seller-review", wrapHandler(UpdateSellerReview));
   // Attach routes for onboarding experience, defined separately
   onboardingRoutes(adminRouter);
 }
