@@ -13,7 +13,6 @@ import { useCart } from "medusa-react"
 
 import { useCartGudfy } from "@lib/context/cart-gudfy"
 
-
 type ProductVariantTemplateProps = {
   product: storeProductVariant
 }
@@ -24,14 +23,16 @@ interface Seller {
   email: string
   quantity: number
   price: number
+  parameters: {
+    rating: number
+    sales: number
+  }
 }
 
 const ProductTemplate: React.FC<ProductVariantTemplateProps> = ({
   product,
 }) => {
-
   const { addItem, existingVariant } = useCartGudfy()
-
 
   const [selectedSeller, setSelectedSeller] = useState<Seller>(
     product.sellers[0]
@@ -68,7 +69,6 @@ const ProductTemplate: React.FC<ProductVariantTemplateProps> = ({
   }
 
   const handlerAddCart = () => {
-
     addItem(
       {
         description: product.title,
@@ -80,7 +80,6 @@ const ProductTemplate: React.FC<ProductVariantTemplateProps> = ({
       amount,
       selectedSeller.store_variant_id
     )
-
   }
   useEffect(() => {
     setAmount(1)
@@ -129,7 +128,6 @@ const ProductTemplate: React.FC<ProductVariantTemplateProps> = ({
             </div>
           </div>
 
-
           <div className="  border border-solid border-gray-200 p-5 rounded-[5px] shadow-lg">
             <TableSellerDefault
               sellers={product.sellers}
@@ -155,8 +153,6 @@ const ProductTemplate: React.FC<ProductVariantTemplateProps> = ({
             ) : (
               <p>Selecciona un Vendedor</p>
             )}
-            {/* <ProductInfo product={product} />
-            <ProductTabs product={product} />  */}
           </div>
           {existingVariant === selectedSeller.store_variant_id ? (
             <p className="text-red-700 text-sm">
@@ -166,7 +162,6 @@ const ProductTemplate: React.FC<ProductVariantTemplateProps> = ({
             <></>
           )}
 
-
           <Button
             disabled={amount ? false : true}
             onPress={handlerAddCart}
@@ -174,8 +169,6 @@ const ProductTemplate: React.FC<ProductVariantTemplateProps> = ({
           >
             Añadir al Carrito
           </Button>
-
-          
 
           {/* <a className ="mb-[80px]" href="#list-sellers">
             <span className="text-[#402e72] text-sm font-bold">
