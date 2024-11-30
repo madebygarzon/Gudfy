@@ -7,6 +7,7 @@ import { FaEye } from "react-icons/fa6"
 import { updateCancelStoreOrder } from "@modules/account/actions/update-cancel-store-order"
 import { getListSerialCode } from "@modules/account/actions/serial-code/get-list-serial-code"
 import Image from "next/image"
+import Loader from "@lib/loader"
 
 type SerialCodes = {
   store_variant_order: string
@@ -46,7 +47,7 @@ const SerialCodeTable: React.FC = () => {
   }, [])
 
   return (
-    <div className="w-full">
+    <div className="w-full p-6">
       <div className="mb-8 flex flex-col gap-y-4 ">
         <h1 className="text-2xl-semi">Mis Ordenes</h1>
       </div>
@@ -116,7 +117,7 @@ const SerialCodeTable: React.FC = () => {
                   </tr>
                 ))
               ) : (
-                <>Cargando...</>
+                <div className="p-6"><Loader/></div>
               )}
             </tbody>
           </table>
