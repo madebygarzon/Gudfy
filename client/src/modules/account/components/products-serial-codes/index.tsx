@@ -98,15 +98,16 @@ const SerialCodeTable: React.FC = () => {
                       >
                         <AccordionItem
                           key={i}
-                          aria-label="Connected devices"
-                          startContent={<FaEye className="text-primary" />}
+                          aria-label="Lista de codigos"
+                          startContent={<FaEye className="text-lila-gf" />}
                           subtitle={
                             <p className="flex">
-                              2 issues to{" "}
-                              <span className="text-primary ml-1">fix now</span>
+                              {code.serial_codes.length}
+                              {" Codigos - "}
+                              <span className="text-lila-gf ml-1">Ver más</span>
                             </p>
                           }
-                          title="Connected devices"
+                          title="Lista de codigos"
                         >
                           {code.serial_codes.map((code) => (
                             <Snippet color="default">{code}</Snippet>
