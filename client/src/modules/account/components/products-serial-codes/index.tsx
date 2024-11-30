@@ -7,6 +7,7 @@ import { FaEye } from "react-icons/fa6"
 import { updateCancelStoreOrder } from "@modules/account/actions/update-cancel-store-order"
 import { getListSerialCode } from "@modules/account/actions/serial-code/get-list-serial-code"
 import Image from "next/image"
+import Loader from "@lib/loader"
 
 type SerialCodes = {
   store_variant_order: string
@@ -46,7 +47,7 @@ const SerialCodeTable: React.FC = () => {
   }, [])
 
   return (
-    <div className="w-full">
+    <div className="w-full p-6">
       <div className="mb-8 flex flex-col gap-y-4 ">
         <h1 className="text-2xl-semi">Mis Ordenes</h1>
       </div>
@@ -97,15 +98,16 @@ const SerialCodeTable: React.FC = () => {
                       >
                         <AccordionItem
                           key={i}
-                          aria-label="Connected devices"
-                          startContent={<FaEye className="text-primary" />}
+                          aria-label="Lista de codigos"
+                          startContent={<FaEye className="text-lila-gf" />}
                           subtitle={
                             <p className="flex">
-                              2 issues to{" "}
-                              <span className="text-primary ml-1">fix now</span>
+                              {code.serial_codes.length}
+                              {" Codigos - "}
+                              <span className="text-lila-gf ml-1">Ver más</span>
                             </p>
                           }
-                          title="Connected devices"
+                          title="Lista de codigos"
                         >
                           {code.serial_codes.map((code) => (
                             <Snippet color="default">{code}</Snippet>
@@ -116,7 +118,7 @@ const SerialCodeTable: React.FC = () => {
                   </tr>
                 ))
               ) : (
-                <>Cargando...</>
+                <div className="p-6"><Loader/></div>
               )}
             </tbody>
           </table>
