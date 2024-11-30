@@ -30,6 +30,7 @@ import ModalOrderPending from "../order-status/pay-pending"
 import ModalOrderCancel from "../order-status/cancel"
 import ModalOrderFinished from "../order-status/finished"
 import ModalOrderClaim from "../order-status/claim"
+import Loader from "@lib/loader"
 
 type orders = {
   orders: order[]
@@ -100,7 +101,7 @@ const TicketTable: React.FC = () => {
   }, [])
 
   return (
-    <div className="w-full">
+    <div className="w-full p-6">
       <div className="mb-8 flex flex-col gap-y-4 ">
         <h1 className="text-2xl-semi">Mis Ordenes</h1>
       </div>
@@ -131,7 +132,7 @@ const TicketTable: React.FC = () => {
               <option value="Completado">Completado</option>
             </select>
           </div>
-          <div className="">
+          {/* <div className="">
             ¿Necesitas ayuda? Crea un ticket:
             <div className="flex justify-center mt-5">
               <ButtonMedusa
@@ -142,23 +143,23 @@ const TicketTable: React.FC = () => {
                 Nuevo ticket
               </ButtonMedusa>
             </div>
-          </div>
+          </div> */}
         </div>
         <div className="overflow-x-auto">
           <table className="min-w-full bg-white  rounded-lg shadow-md">
             <thead>
               <tr>
                 <th className="px-4 py-2  bg-gray-100 text-left">
-                  Estado de la Orden
+                  Estado de la orden
                 </th>
                 <th className="px-4 py-2  bg-gray-100 text-left">
-                  Numero de Orden
+                  Numero de orden
                 </th>
                 <th className="px-4 py-2  bg-gray-100 text-left">
-                  Fecha y hora de Creación
+                  Fecha y hora de creación
                 </th>
                 <th className="px-4 py-2  bg-gray-100 text-left">
-                  Tiempo a Pagar
+                  Tiempo a pagar
                 </th>
                 <th className="px-4 py-2  bg-gray-100 text-left"></th>
               </tr>
@@ -199,22 +200,26 @@ const TicketTable: React.FC = () => {
                         <></>
                       )}
                     </td>
-                    <td className="px-4 py-2  text-center">
-                      <ButtonMedusa
-                        className=" bg-ui-button-neutral border-ui-button-neutral hover:bg-ui-button-neutral-hover rounded-[5px] text-[#402e72]"
-                        onClick={() => {
-                          setTelectOrderData(order)
-                          onOpen()
-                        }}
-                      >
-                        <FaEye />
-                        Ver detalle de la orden
-                      </ButtonMedusa>
+                    <td className="px-4 py-2 text-center">
+                      {(order.state_order === "Completado" ||
+                        order.state_order === "Finalizado") && (
+                        <ButtonMedusa
+                          id="btn-view-order"
+                          className="bg-[#1f0146cf] border-none shadow-none hover:bg-blue-gf hover:text-white text-slate-200 rounded-[5px]"
+                          onClick={() => {
+                            setTelectOrderData(order)
+                            onOpen()
+                          }}
+                        >
+                          <FaEye />
+                          Ver detalle de la orden
+                        </ButtonMedusa>
+                      )}
                     </td>
                   </tr>
                 ))
               ) : (
-                <>Cargando...</>
+                <div className="p-6"><Loader/></div>
               )}
             </tbody>
           </table>
