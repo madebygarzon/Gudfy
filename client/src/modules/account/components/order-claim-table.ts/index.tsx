@@ -25,6 +25,7 @@ import Notification from "@modules/common/components/notification"
 import { updateStateNotification } from "@modules/account/actions/update-state-notification"
 import { hasPassed48Hours } from "@lib/util/date-for-escalation-admin"
 import io, { Socket } from "socket.io-client"
+import Loader from "@lib/loader"
 
 type orders = {
   orders: order[]
@@ -66,7 +67,7 @@ const ClaimTable: React.FC = () => {
   }, [])
 
   return (
-    <div className="w-full">
+    <div className="w-full p-6">
       <div className="mb-8 flex flex-col gap-y-4 ">
         <h1 className="text-2xl-semi">Mis Reclamos</h1>
       </div>
@@ -156,7 +157,7 @@ const ClaimTable: React.FC = () => {
                         })}
                       </div>
                       <ButtonMedusa
-                        className=" bg-ui-button-neutral border-ui-button-neutral hover:bg-ui-button-neutral-hover rounded-[5px] text-[#402e72]"
+                        className="bg-[#1f0146cf] border-none shadow-none hover:bg-blue-gf hover:text-white text-slate-200 rounded-[5px]"
                         onClick={() => {
                           handlerSelectClaimOrder(claim)
                         }}
@@ -167,7 +168,8 @@ const ClaimTable: React.FC = () => {
                   </tr>
                 ))
               ) : (
-                <>Cargando..</>
+                <div className="p-6"><Loader/></div>
+                
               )}
             </tbody>
           </table>
