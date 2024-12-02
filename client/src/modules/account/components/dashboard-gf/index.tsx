@@ -26,11 +26,11 @@ type DashboardProps = {
 //   ]
 // });
 
-type Config = { 
-  nextBtnText?: "Siguiente";
-  prevBtnText?: "Atras";
-  doneBtnText?: "Salir";
-}
+// type Config = { 
+//   nextBtnText?: "Siguiente";
+//   prevBtnText?: "Atras";
+//   doneBtnText?: "Salir";
+// }
 
 // driverObj.drive();
 
@@ -52,8 +52,8 @@ const Dashboard = ({ orders, customer }: DashboardProps) => {
         
       </div> */}
 
-      <div className="panel_admin w-full grid grid-cols-3 gap-2 py-1  justify-center">
-        <div className="bg-[#1F0054] row-span-2 rounded-[10px] text-white">
+      <div className="panel_admin w-full block sm:grid grid-cols-3 gap-2 py-1  justify-center">
+        <div className="bg-[#1F0054] row-span-2 my-6 sm:my-0 rounded-[10px] text-white">
         
 
           <div className=" flex flex-col relative p-5 h-full shadow-card items-center justify-center rounded-[10px] ">
@@ -86,7 +86,7 @@ const Dashboard = ({ orders, customer }: DashboardProps) => {
             </div>
           </div>
         </div>
-        <div id="sct_per" className="min-h-[200px] p-1">
+        <div id="sct_per" className="my-6 sm:my-0 min-h-[200px] p-1">
           <div className=" py-5 px-1  h-full shadow-card rounded-[10px] items-center  justify-center">
             <div className="flex justify-center">
               <Image
@@ -112,7 +112,7 @@ const Dashboard = ({ orders, customer }: DashboardProps) => {
             </div>
           </div>
         </div>
-        <div id="sct_buy" className="min-h-[200px] p-1">
+        <div id="sct_buy" className="my-6 sm:my-0 min-h-[200px] p-1">
           <div className=" py-5 px-1  h-full shadow-card rounded-[10px] items-center  justify-center">
             <div className="flex items-center justify-center">
               <Image
@@ -140,7 +140,7 @@ const Dashboard = ({ orders, customer }: DashboardProps) => {
             </div>
           </div>
         </div>
-        <div id="sct_spp" className="min-h-[200px] p-1">
+        <div id="sct_spp" className="my-6 sm:my-0 min-h-[200px] p-1">
           <div className=" py-5 px-1  h-full shadow-card rounded-[10px] items-center  justify-center">
             <div className="flex justify-center">
               <Image
@@ -168,7 +168,7 @@ const Dashboard = ({ orders, customer }: DashboardProps) => {
           </div>
         </div>
 
-        <div id="sct_wal" className="min-h-[200px] p-1">
+        <div id="sct_wal" className="my-6 sm:my-0 min-h-[200px] p-1">
 
           <div className=" py-5 px-1  h-full shadow-card rounded-[10px] items-center  justify-center">
             <div className="flex justify-center">
@@ -197,6 +197,8 @@ const Dashboard = ({ orders, customer }: DashboardProps) => {
           </div>
         </div>
       </div>
+
+
     </div>
   )
 }
