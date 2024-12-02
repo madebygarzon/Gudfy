@@ -7,6 +7,12 @@ import { ApplicationDataRepository } from "../repositories/application-data";
 import CustomerRepository from "../repositories/customer";
 import { StoreReviewRepository } from "src/repositories/store-review";
 import CustomerService from "./customer";
+import {
+  ApprovedEmailSellerApplication,
+  CorrectionEmailSellerApplication,
+  RejectedEmailSellerApplication,
+  SendEmailSellerApplication,
+} from "../api/email/index";
 
 type updateSellerAplication = {
   payload: string;
@@ -19,12 +25,14 @@ export default class SellerAdminService extends TransactionBaseService {
   protected readonly sellerApplicationRepository_: typeof SellerApplicationRepository;
   protected readonly customerRepository_: typeof CustomerRepository;
   protected readonly storeReviewRepository_: typeof StoreReviewRepository;
+  protected readonly customerService_: CustomerService;
 
   constructor({
     applicationDataRepository,
     sellerApplicationRepository,
     customerRepository,
     storeReviewRepository,
+    customerService,
   }) {
     // @ts-expect-error prefer-rest-params
     super(...arguments);
@@ -33,6 +41,7 @@ export default class SellerAdminService extends TransactionBaseService {
       this.sellerApplicationRepository_ = sellerApplicationRepository;
       this.customerRepository_ = customerRepository;
       this.storeReviewRepository_ = storeReviewRepository;
+      this.customerService_ = customerService;
     } catch (e) {
       // avoid errors when backend first runs
     }
@@ -99,5 +108,134 @@ export default class SellerAdminService extends TransactionBaseService {
     } catch (error) {
       console.log("error en el servicio al recuperar los vendedores", error);
     }
+  }
+
+  async getListApplication(order) {
+    try {
+      const sellerApplicationRepository = this.activeManager_.withRepository(
+        this.sellerApplicationRepository_
+      );
+
+      const getList = await sellerApplicationRepository.find({
+        order: { created_at: order },
+        relations: ["state_application", "application_data"],
+      });
+
+      const dataList = await Promise.all(
+        getList.map(async (data) => {
+          const dataCustomer = await this.retrieveCustomer(data.customer_id);
+          return {
+            ...data,
+            customer: dataCustomer,
+          };
+        })
+      );
+
+      return dataList;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async updateSellerAplication(payload, customer_id, comment_status?) {
+    const sellerApplicationRepository = this.activeManager_.withRepository(
+      this.sellerApplicationRepository_
+    );
+    if (!payload || !customer_id) {
+      throw new Error(
+        "Updating a product review requires payload, customer_id"
+      );
+    }
+    if (payload === "REJECTED" && !comment_status) {
+      throw new Error("A comment is expected, comment_status");
+    }
+    const customer = await this.retrieveCustomer(customer_id);
+    if (payload === "APPROVED") {
+      const sellerApplication = await sellerApplicationRepository.update(
+        { customer_id: customer_id },
+        {
+          state_application_id: "A",
+        }
+      );
+
+      // se crea una tienda solamente si la solicitud esta aprovada.
+      //createStore() tiene una validacion la cual retorna si ya tiene una tienda asociada
+      await this.customerService_.createStore(customer_id);
+      await ApprovedEmailSellerApplication({
+        name: customer.name,
+        email: customer.email,
+      });
+      return sellerApplication;
+    } else if (payload === "REJECTED") {
+      const sellerApplication = await sellerApplicationRepository.update(
+        { customer_id: customer_id },
+        {
+          state_application_id: "B",
+          comment_status: comment_status,
+        }
+      );
+      RejectedEmailSellerApplication({
+        name: customer.name,
+        email: customer.email,
+        message: comment_status,
+      });
+      return sellerApplication;
+    } else if (payload === "CORRECT") {
+      const sellerApplication = await sellerApplicationRepository.update(
+        { customer_id: customer_id },
+        {
+          state_application_id: "D",
+          comment_status: comment_status,
+        }
+      );
+      await CorrectionEmailSellerApplication({
+        name: customer.name,
+        email: customer.email,
+        message: comment_status,
+      });
+      return sellerApplication;
+    }
+    return;
+  }
+  private async retrieveCustomer(customerId: string) {
+    const customerRepository = this.manager_.withRepository(
+      this.customerRepository_
+    );
+    const dataCustomer = await customerRepository.findOne({
+      where: {
+        id: customerId,
+      },
+    });
+    return {
+      name: `${dataCustomer.first_name} ${dataCustomer.last_name}`,
+      email: dataCustomer.email,
+    };
+  }
+  async getComment(customer_id) {
+    const commentSellerApplication = this.manager_.withRepository(
+      this.sellerApplicationRepository_
+    );
+    const comment = await commentSellerApplication.findOne({
+      where: {
+        customer_id: customer_id,
+      },
+    });
+    return comment;
+  }
+
+  async updateComment(customer_id, comment_status) {
+    const sellerApplicationRepository = this.activeManager_.withRepository(
+      this.sellerApplicationRepository_
+    );
+    if (!customer_id) {
+      throw new Error("Updating a product review requires  customer_id");
+    }
+
+    const sellerApplication = await sellerApplicationRepository.update(
+      { customer_id: customer_id },
+      { comment_status: comment_status }
+    );
+
+    return sellerApplication;
   }
 }

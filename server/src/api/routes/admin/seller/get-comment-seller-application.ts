@@ -6,7 +6,7 @@ export default async function getCommentSellerApplication(
 ) {
   const { customer_id } = req.query;
   try {
-    const SellerApplication = req.scope.resolve("sellerApplicationService");
+    const SellerApplication = req.scope.resolve("sellerAdminService");
     const data = await SellerApplication.getComment(customer_id);
     res.status(200).json(data);
   } catch (error) {
