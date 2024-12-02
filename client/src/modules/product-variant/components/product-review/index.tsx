@@ -122,16 +122,13 @@ const ReviewProduct: React.FC<props> = ({ product }) => {
           Añadir reseña
         </Button>
       </div>
-      {/* Promedio de estrellas y progreso */}
       {arrayReviews.length ? (
         <div className="mt-[-20px]">
-          {/* Card para las reseñas */}
           <CardReview
             reviews={arrayReviews}
             handlerReviews={handlerGetProducsReviews}
           />
           <div className="w-full flex justify-center mt-[20px]">
-            {/* Boton para agrefar mas */}
             <ButtonLigth
               onClick={async () => {
                 handlerGetProducsReviews(true)
