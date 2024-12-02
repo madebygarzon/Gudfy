@@ -98,14 +98,15 @@ const TableSeller: React.FC<TableProps> = ({
                         </p>
                         <p className="text-xs font-normal text-gray-500">
                           <span className="font-bold">
-                            {seller.parameters.rating}%
+                            {seller.parameters?.rating
+                              ? `${seller.parameters?.rating}% Comentarios positivos`
+                              : "Sin compras"}
                           </span>{" "}
-                          Comentarios positivos
                         </p>
                       </div>
                       <div className="mt-8 flex items-center gap-2 ite">
                         | <HiOutlineShoppingCart size={15} />{" "}
-                        {seller.parameters.sales}
+                        {seller.parameters?.sales ?? 0}
                       </div>
                     </div>
                   </td>
