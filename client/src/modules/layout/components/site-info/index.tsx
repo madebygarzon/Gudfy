@@ -6,7 +6,7 @@ const InfoContainer: React.FC<{ label: string }> = ({ label, children }) => {
   return (
     <div>
       <div className="hidden lg:flex lg:flex-col lg:gap-y-2">
-        <span className="text-small-semi">{label}hola</span>
+        <span className="text-small-semi">{label}</span>
         {children}
       </div>
       <div className="lg:hidden mb-3">
