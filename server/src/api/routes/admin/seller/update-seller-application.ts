@@ -6,9 +6,7 @@ export default async function UpdateSellerAplication(
 ) {
   try {
     const { payload, customer_id, comment_status } = req.body;
-    const sellerApplicationRepository = req.scope.resolve(
-      "sellerApplicationService"
-    );
+    const sellerApplicationRepository = req.scope.resolve("sellerAdminService");
     const data = await sellerApplicationRepository.updateSellerAplication(
       payload,
       customer_id,
