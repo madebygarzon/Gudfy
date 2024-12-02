@@ -24,13 +24,11 @@ const AccountNav = () => {
             href="/account"
             className="flex items-center gap-x-2 text-small-regular py-2"
           >
-            <>
-              <span>Account</span>
-            </>
+           
           </Link>
         )}
       </div>
-      <div className=" hidden small:block ">
+      <div className=" hidden sm:block ">
         <div>
           <div className="text-base h-full flex flex-col justify-start items-center">
             <ul className="mb-auto flex flex-col gap-y-4">
