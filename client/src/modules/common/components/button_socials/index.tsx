@@ -3,7 +3,7 @@ import Image from "next/image"
 
 const SocialButtons = () => {
   return (
-    <div className="flex gap-4 pt-2">
+    <div className="flex gap-4 pt-2 justify-center">
       <a
         type="button"
         href="http://localhost:9000/store/auth/auth0/cb" // deberia de ser una variable de entorno

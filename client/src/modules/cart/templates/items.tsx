@@ -172,9 +172,9 @@ const ItemsTemplate = ({ items, modifyProduct }: ItemsTemplateProps) => {
                 ))}
             </div>
             <div className="p-4 flex flex-col gap-y-4 text-small-regular">
-              <Link href="/cart" passHref>
+              {/* <Link href="/cart" passHref>
                 <Button className="rounded-30">Ir a pagar</Button>
-              </Link>
+              </Link> */}
             </div>
           </>
         ) : (

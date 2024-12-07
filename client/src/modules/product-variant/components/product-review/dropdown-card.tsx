@@ -39,17 +39,17 @@ const DropdownCard: React.FC<props> = ({ data, handlerReviews }) => {
   const handlerEdit = () => {
     onOpen()
   }
-  const handlerDelete = () => {
-    axios
-      .delete(`http://localhost:9000/store/reviews/${data.id}`)
-      .then((e) => {
-        console.log(e)
-        handlerReviews()
-      })
-      .catch((e) => {
-        console.log(e)
-      })
-  }
+  // const handlerDelete = () => {
+  //   axios
+  //     .delete(`http://localhost:9000/store/reviews/${data.id}`)
+  //     .then((e) => {
+  //       console.log(e)
+  //       handlerReviews()
+  //     })
+  //     .catch((e) => {
+  //       console.log(e)
+  //     })
+  // }
 
   return (
     <>
@@ -74,7 +74,6 @@ const DropdownCard: React.FC<props> = ({ data, handlerReviews }) => {
             startContent={
               <DeleteDocumentIcon className={cn(iconClasses, "text-danger")} />
             }
-            onClick={handlerDelete}
           >
             Borrar Comentario
           </DropdownItem>
