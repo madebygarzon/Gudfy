@@ -15,13 +15,15 @@ import { useCartGudfy } from "@lib/context/cart-gudfy"
 import { useState } from "react"
 
 const CartTemplate = () => {
+  const { cart } = useCart()
   const { customer, isLoading } = useMeCustomer()
   const { items } = useCartGudfy()
   const [modifyProduct, setModifyProduct] = useState<string[]>([])
 
-  if (isLoading) {
-    return <SkeletonCartPage />
-  }
+  // if (isLoading) {
+  //   console.log("entra al if")
+  //   return <SkeletonCartPage />
+  // }
 
   return (
     <div className="bg-gray-50 pb-12">

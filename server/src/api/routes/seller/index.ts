@@ -18,6 +18,7 @@ import { getListOrderPayments } from "./get-list-order-payments";
 import { postAddCodesStoreVariant } from "./post-add-codes-store-variant";
 import getDataReviews from "./get-data-reviews";
 import getStoreReviews from "./get-store-reviews";
+import { updateNameStore } from "./update-name-store";
 const router = Router();
 
 export function attachSellerRoutes(customerRouter: Router) {
@@ -46,4 +47,7 @@ export function attachSellerRoutes(customerRouter: Router) {
   );
   router.get("/data-reviews", wrapHandler(getDataReviews));
   router.get("/reviews", wrapHandler(getStoreReviews));
+
+  //----Store--------------
+  router.post("/edit-name-store", wrapHandler(updateNameStore));
 }
