@@ -8,10 +8,14 @@ import {
   useDisclosure,
   ModalBody,
   ModalHeader,
+  Button,
+  Input,
 } from "@nextui-org/react"
 import ButtonLigth from "@modules/common/components/button_light"
 import Cart from "@modules/common/icons/cart"
+import Edit from "@modules/common/icons/edit"
 import Product from "@modules/common/icons/package"
+import { CiCircleCheck } from "react-icons/ci"
 import Image from "next/image"
 import { useCustomerOrders, useMeCustomer } from "medusa-react"
 import { Progress } from "@nextui-org/react"
@@ -21,10 +25,15 @@ import { getDataReviews } from "@modules/account/actions/reviews/get-data-review
 import handlerformatDate from "@lib/util/formatDate"
 import { getStoreReviews } from "@modules/account/actions/reviews/get-store-revioews"
 import clsx from "clsx"
+import { updateStoreName } from "@modules/account/actions/seller/update-name-store"
 
 type store = {
   id: string
   name: string
+  parameters: {
+    numberSales: number
+    productCount: number
+  }
 }
 
 const CustomerStore: React.FC<store> = (store) => {
@@ -35,7 +44,7 @@ const CustomerStore: React.FC<store> = (store) => {
         <span>
           ¡Tu tienda{" "}
           <span className=" text-xl-semi capitalize">
-            {customer?.first_name} {customer?.last_name}
+            {customer?.first_name}
           </span>
           !
         </span>
@@ -43,7 +52,7 @@ const CustomerStore: React.FC<store> = (store) => {
       </div>
       <div className="flex min-h-[230px] my-4 gap-2">
         <div className="w-[40%] flex justify-center ">
-          <CardPrefileDashboard customer={customer} />
+          <CardPrefileDashboard customer={customer} store={store} />
         </div>
         <div className=" w-[60%] flex justify-center ">
           <CardReviewProductDashboard />
@@ -219,26 +228,72 @@ const CardReviewProductDashboard: React.FC = () => {
 }
 interface CardPrefileDashboard {
   customer: Omit<Customer, "password_hash"> | undefined
+  store: store
 }
 
-const CardPrefileDashboard: React.FC<CardPrefileDashboard> = ({ customer }) => {
+const CardPrefileDashboard: React.FC<CardPrefileDashboard> = ({
+  customer,
+  store,
+}) => {
+  const [nameEdit, setNameEdit] = useState<{
+    stateEdit: boolean
+    storeName: string
+  }>({
+    stateEdit: false,
+    storeName: store.name.replace("GF-", ""),
+  })
+  const handlerEditNameStore = () => {
+    updateStoreName(nameEdit.storeName).then(() => {
+      setNameEdit((old) => ({ ...old, stateEdit: false }))
+    })
+  }
   return (
     <div className="flex flex-col w-full  py-5 px-2  h-full shadow-card rounded-[10px] items-center  justify-center">
       <Avatar
         src="https://i.pravatar.cc/150?u=a04258114e29026708c"
         className=" w-[100px]  h-[100px] border-solid border-5 border-[#9B48ED]"
       />
-      <p className="text-xl-semi capitalize">
-        {customer?.first_name} {customer?.last_name}
-      </p>
+      {nameEdit.stateEdit ? (
+        <div className="flex items-center">
+          <Input
+            size="sm"
+            value={nameEdit.storeName}
+            onChange={(e) =>
+              setNameEdit((old) => ({
+                ...old,
+                storeName: e.target.value,
+              }))
+            }
+          />
+
+          <CiCircleCheck
+            className={"cursor-pointer"}
+            size={25}
+            onClick={handlerEditNameStore}
+          />
+        </div>
+      ) : (
+        <div className="flex">
+          <p className=" text-xl-semi capitalize">
+            {"GF-" + nameEdit.storeName}
+          </p>{" "}
+          <Edit
+            className={"cursor-pointer"}
+            size={18}
+            onClick={() => setNameEdit((old) => ({ ...old, stateEdit: true }))}
+          />
+        </div>
+      )}
+
       <span className="font-semibold text-gray-500">{customer?.email}</span>
       <div className="flex gap-2 my-4">
         <div className="flex text-gray-400 text-xs ">
-          <Cart size={16} /> <p className="text-[10px]">{`(10) Ventas`}</p>
+          <Cart size={16} />{" "}
+          <p className="text-[10px]">{`(${store.parameters.numberSales}) Ventas`}</p>
         </div>
         <div className="flex text-gray-400 text-xs ">
           <Product size={16} />{" "}
-          <p className="text-[10px]">{`(13) Productos`}</p>
+          <p className="text-[10px]">{`(${store.parameters.productCount}) Productos`}</p>
         </div>
       </div>
     </div>

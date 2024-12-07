@@ -1,20 +1,58 @@
 import Button from "@modules/common/components/button"
 import Link from "next/link"
+import {
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  useDisclosure,
+} from "@nextui-org/modal"
+import LoginLight from "@modules/account/components/login/login-light"
+import { useState } from "react"
+import RegisterLight from "@modules/account/components/register/register-light"
 
 const SignInPrompt = () => {
+  const { isOpen, onOpen, onOpenChange } = useDisclosure()
+  const [auth, setAuth] = useState<"LOGIN" | "REGISTER">("LOGIN")
+  const handlerAuth = (payload: "LOGIN" | "REGISTER") => {
+    setAuth(payload)
+    onOpen()
+  }
   return (
     <div className="bg-white flex items-start justify-between">
       <div>
         <h2 className="text-xl-semi">¿Ya tienes una cuenta?</h2>
         <p className="text-base-regular text-gray-700 mt-2">
-        Regístrese para una mejor experiencia.
+          Inicia session o Regístrese para una mejor experiencia.
         </p>
       </div>
-      <div>
-        <Link href="/account/register">
-          <Button variant="secondary">Registrarme</Button>
-        </Link>
+      <div className=" flex gap-2">
+        <Button variant="primary" onClick={() => handlerAuth("LOGIN")}>
+          Iniciar sesión
+        </Button>
+        <Button variant="primary" onClick={() => handlerAuth("REGISTER")}>
+          Registrarse
+        </Button>
       </div>
+      <>
+        <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+          <ModalContent>
+            {(onClose) => (
+              <>
+                <ModalBody>
+                  {auth == "LOGIN" ? <LoginLight /> : <RegisterLight />}
+                </ModalBody>
+                <ModalFooter>
+                  <Button color="danger" onClick={onClose}>
+                    Cerrar
+                  </Button>
+                </ModalFooter>
+              </>
+            )}
+          </ModalContent>
+        </Modal>
+      </>
     </div>
   )
 }
