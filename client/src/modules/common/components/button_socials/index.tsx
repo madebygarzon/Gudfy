@@ -1,5 +1,6 @@
 import React from "react"
 import Image from "next/image"
+import Button from "../button"
 
 const SocialButtons = () => {
   return (
@@ -62,6 +63,7 @@ const SocialButtons = () => {
         Google
       </a>
     </div>
+
   )
 }
 
