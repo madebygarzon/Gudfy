@@ -94,7 +94,6 @@ class StoreOrderService extends TransactionBaseService {
           },
         ],
       };
-      console.log("Entrega", result);
       return result;
     } catch (error) {}
   }
@@ -167,8 +166,12 @@ class StoreOrderService extends TransactionBaseService {
             : [],
       });
     }
-
-    return Array.from(orderMap.values());
+    const returnArray = Array.from(orderMap.values());
+    returnArray.sort(
+      (a, b) =>
+        new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+    );
+    return returnArray;
   }
 
   async functionRecoverCodes(store_variant_order_id) {
@@ -217,6 +220,7 @@ class StoreOrderService extends TransactionBaseService {
         "c.first_name AS customer_name",
         "c.last_name AS customer_last_name",
       ])
+      .orderBy("so.created_at", "DESC")
       .getRawMany();
     return listOrder;
   }

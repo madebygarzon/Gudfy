@@ -39,6 +39,10 @@ export type SellerOrder = {
 type store = {
   id: string
   name: string
+  parameters: {
+    numberSales: number
+    productCount: number
+  }
 }
 
 const SellerStoreContext = React.createContext<SellerStoreContext | null>(null)

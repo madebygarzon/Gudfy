@@ -34,7 +34,9 @@ const FileUploader: React.FC<CodesArray> = ({ variantID, setAddResult }) => {
         .filter((code) => code !== "")
 
       // Example validation: check if all codes match a pattern (e.g., alphanumeric)
-      const isValid = codesArray.every((code) => /^[a-zA-Z0-9]+$/.test(code))
+      const isValid = codesArray.every(
+        (code) => /^[a-zA-Z0-9]+$/.test(code) && !/,/.test(code)
+      )
 
       if (!isValid) {
         throw new Error(
@@ -94,8 +96,12 @@ const FileUploader: React.FC<CodesArray> = ({ variantID, setAddResult }) => {
               </div>
               <div className="text-tiny">
                 Un archivo de texto que contiene claves de licencia, solo una
-                clave separado por coma ",". Ejemplo: A1Bc2xxxxx, A1Bc2xxxxx,
-                A1Bc2xxxxx, ...{" "}
+                clave separado por linea "Enter". Ejemplo: A1Bc2xxxxx
+                <br />
+                A1Bc2xxxxx
+                <br />
+                A1Bc2xxxxx
+                <br /> ...{" "}
               </div>
             </div>
           }

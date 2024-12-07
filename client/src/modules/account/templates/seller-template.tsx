@@ -63,7 +63,7 @@ const SupplierTemplate: React.FC = () => {
       {!isSeller?.application && <ApplyForSeller handlerReset={handlerReset} />}
       {isSeller?.state === "aprobada" &&
         (storeSeller ? (
-          <SellerStore id={storeSeller.id} name={storeSeller.name} />
+          <SellerStore {...storeSeller} />
         ) : (
           <Spinner size="32" />
         ))}

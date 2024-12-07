@@ -98,14 +98,15 @@ const TableSeller: React.FC<TableProps> = ({
                         </p>
                         <p className="text-xs font-normal text-gray-500">
                           <span className="font-bold">
-                            {seller.parameters.rating}%
+                            {seller.parameters?.rating
+                              ? `${seller.parameters?.rating}% Comentarios positivos`
+                              : "Sin compras"}
                           </span>{" "}
-                          Comentarios positivos
                         </p>
                       </div>
                       <div className="mt-8 flex items-center gap-2 ite">
                         | <HiOutlineShoppingCart size={15} />{" "}
-                        {seller.parameters.sales}
+                        {seller.parameters?.sales ?? 0}
                       </div>
                     </div>
                   </td>
@@ -133,25 +134,13 @@ const TableSeller: React.FC<TableProps> = ({
                       Precio: $ {seller.price}
                     </span>
                   </td>
-
-                  <td className="w-[20%] p-4">
-                    <Input
-                      //value={`${amount}`}
-                      type="number"
-                      label=""
-                      placeholder="Cantid."
-                      labelPlacement="outside"
-                      //onChange={(e) => handlerAmount(e.target.value)}
-                    />
-                  </td>
-
                   <td className="w-[20%] p-4">
                     <Button
-                      //disabled={amount ? false : true}
-                      //onPress={handlerAddCart}
+                      disabled={seller.quantity ? false : true}
+                      onClick={() => handleRowClick(seller)}
                       className="bg-[#402e72] hover:bg-blue-gf text-white rounded-[5px]"
                     >
-                      Añadir al Carrito
+                      Seleccionar
                     </Button>
                   </td>
                 </tr>
