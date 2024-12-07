@@ -66,7 +66,11 @@ const Summary = ({ items, setModifyProduct }: ItemsTemplateProps) => {
           </div>
         </div>
         {/* <CartTotals cart={cart} /> */}
-        <Button className="rounded-3xl" onClick={handlerAddOrder}>
+        <Button
+          className="rounded-3xl"
+          onClick={handlerAddOrder}
+          disabled={!customer}
+        >
           Ir a pagar
         </Button>
 

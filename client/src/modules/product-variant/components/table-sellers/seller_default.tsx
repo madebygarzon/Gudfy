@@ -48,12 +48,13 @@ const TableSellerDefault: React.FC<TableProps> = ({
   }
 
   const sellerWithLowestPrice = useMemo(() => {
+    if (selectedSeller) return selectedSeller
     return sellers.reduce(
       (minSeller, currentSeller) =>
         currentSeller.price < minSeller.price ? currentSeller : minSeller,
       sellers[0]
     )
-  }, [sellers])
+  }, [selectedSeller])
 
   return (
     <div className="">

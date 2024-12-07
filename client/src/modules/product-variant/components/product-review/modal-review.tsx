@@ -83,16 +83,16 @@ const ModalReview: React.FC<props> = ({
       setAuthError("Ingrese las credenciales correctas")
       return
     } else {
-      axios
-        .post(`http://localhost:9000/store/reviews/${data.id}`, body)
-        .then((e) => {
-          handlerReviews()
-          setSuccess(true)
-          handleCleanValues()
-        })
-        .catch((e) => {
-          console.log(e, "no se logro")
-        })
+      // axios
+      //   .post(`http://localhost:9000/store/reviews/${data.id}`, body)
+      //   .then((e) => {
+      //     handlerReviews()
+      //     setSuccess(true)
+      //     handleCleanValues()
+      //   })
+      //   .catch((e) => {
+      //     console.log(e, "no se logro")
+      //   })
     }
   })
 
