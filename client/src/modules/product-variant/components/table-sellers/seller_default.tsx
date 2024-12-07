@@ -48,12 +48,13 @@ const TableSellerDefault: React.FC<TableProps> = ({
   }
 
   const sellerWithLowestPrice = useMemo(() => {
+    if (selectedSeller) return selectedSeller
     return sellers.reduce(
       (minSeller, currentSeller) =>
         currentSeller.price < minSeller.price ? currentSeller : minSeller,
       sellers[0]
     )
-  }, [sellers])
+  }, [selectedSeller])
 
   return (
     <div className="">
@@ -77,14 +78,15 @@ const TableSellerDefault: React.FC<TableProps> = ({
             </h3>
             <p className="text-xs font-normal text-gray-500">
               <span className="font-bold">
-                {sellerWithLowestPrice.parameters.rating}%
-              </span>{" "}
-              Comentarios positivos
+                {sellerWithLowestPrice.parameters?.rating
+                  ? `${sellerWithLowestPrice.parameters?.rating}% Comentarios positivos`
+                  : "Sin compras"}
+              </span>
             </p>
           </div>
           <div className="flex mt-4 items-center gap-2">
             | <HiOutlineShoppingCart size={15} />{" "}
-            {sellerWithLowestPrice.parameters.sales}
+            {sellerWithLowestPrice.parameters?.sales ?? 0}
           </div>
         </div>
         <div className="ml-[-13px] mb-4 ">
