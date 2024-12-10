@@ -1,4 +1,4 @@
-import { Entity, OneToMany, OneToOne } from "typeorm";
+import { Entity, OneToMany, OneToOne, Column } from "typeorm";
 import { Store as MedusaStore } from "@medusajs/medusa";
 import { Customer } from "./customer";
 import { StoreXVariant } from "./store_x_variant";
@@ -8,6 +8,9 @@ import { OrderPayments } from "./order-payments";
 
 @Entity()
 export class Store extends MedusaStore {
+  @Column({ type: "varchar", nullable: true })
+  avatar?: string;
+
   @OneToMany(() => Customer, (customer) => customer?.store)
   members?: Customer[];
 
