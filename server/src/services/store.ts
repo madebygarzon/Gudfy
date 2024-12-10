@@ -58,13 +58,14 @@ class StoreService extends MedusaStoreService {
       .andWhere("so.order_status_id = :status_id", {
         status_id: "Finished_ID",
       })
-      .getCount();
+      .select()
+      .getRawMany();
 
     const productCount = await productV.count({
       where: { store_id: seller_id }, // Si los productos están vinculados a una tienda específica
     });
 
-    return { numberSales, productCount };
+    return { numberSales: numberSales.length, productCount };
   }
 
   async updateNameStore(newName) {
@@ -73,6 +74,16 @@ class StoreService extends MedusaStoreService {
 
     const update = await repoStore.update(id, {
       name: newName.includes("GF-") ? newName : `GF-${newName}`,
+    });
+    return true;
+  }
+
+  async updateAvatarStore(avatar) {
+    const repoStore = this.manager_.withRepository(this.storeRepository_);
+    const id = this.loggedInCustomer_.store_id;
+
+    const update = await repoStore.update(id, {
+      avatar: avatar,
     });
     return true;
   }

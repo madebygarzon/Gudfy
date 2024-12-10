@@ -94,10 +94,12 @@ class StoreXVariantService extends TransactionBaseService {
             email: variant.customer_email,
             quantity: variant.quantity,
             price: variant.price,
+            parameters: {
+              rating: await this.getSellerRating(variant.store_id),
+              sales: await this.getNumberOfSales(variant.store_id),
+            },
           });
       }
-
-      rawVariants.forEach((variant) => {});
 
       const listSellerxVariant = Array.from(variantMap.values());
 
@@ -241,14 +243,14 @@ class StoreXVariantService extends TransactionBaseService {
     }
   }
 
-  async getSellerRating(seller_id) {
+  async getSellerRating(store_id) {
     const repoStoreReview = this.activeManager_.withRepository(
       this.storeReviewRepository_
     );
 
     const reviews = await repoStoreReview.find({
       where: {
-        store_id: seller_id,
+        store_id: store_id,
       },
     });
 
@@ -261,23 +263,25 @@ class StoreXVariantService extends TransactionBaseService {
     return ((sum / reviews.length) * 100) / 5;
   }
 
-  async getNumberOfSales(seller_id) {
+  async getNumberOfSales(store_id) {
     const productV = this.manager_.withRepository(
       this.storeXVariantRepository_
     );
 
-    const numberSales = await productV
+    const result = await productV
       .createQueryBuilder("sxv")
       .innerJoinAndSelect("sxv.storeVariantOrder", "svo")
       .innerJoinAndSelect("svo.store_order", "so")
       .where("sxv.store_id = :store_id", {
-        store_id: seller_id,
+        store_id: store_id,
       })
       .andWhere("so.order_status_id = :status_id", {
         status_id: "Finished_ID",
       })
-      .getCount();
+      .select("COUNT(svo.id)", "count")
+      .getRawOne();
 
+    const numberSales = parseInt(result.count, 10);
     return numberSales;
   }
 }

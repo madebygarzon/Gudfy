@@ -86,7 +86,11 @@ const TableSeller: React.FC<TableProps> = ({
                           size="md"
                           color="secondary"
                           className=""
-                          name={seller.store_name}
+                          name={seller.store_name
+                            .trim()
+                            .split(/\s+/)
+                            .map((word) => word[0])
+                            .join("")}
                         />
                       </div>
                       <div>

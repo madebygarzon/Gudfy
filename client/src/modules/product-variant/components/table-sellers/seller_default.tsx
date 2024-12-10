@@ -69,7 +69,11 @@ const TableSellerDefault: React.FC<TableProps> = ({
               size="md"
               color="secondary"
               className=""
-              name={sellerWithLowestPrice.store_name}
+              name={sellerWithLowestPrice.store_name
+                .trim()
+                .split(/\s+/)
+                .map((word) => word[0])
+                .join("")}
             />
           </div>
           <div>
