@@ -65,7 +65,7 @@ const Dashboard = ({ orders, customer }: DashboardProps) => {
             </div>
           </div>
         </div>
-        <div id="sct_per" className="min-h-[200px] p-1">
+        <div id="sct_per" className="my-6 sm:my-0 min-h-[200px] p-1">
           <div className=" py-5 px-1  h-full shadow-card rounded-[10px] items-center  justify-center">
             <div className="flex justify-center">
               <Image
@@ -91,7 +91,7 @@ const Dashboard = ({ orders, customer }: DashboardProps) => {
             </div>
           </div>
         </div>
-        <div id="sct_buy" className="min-h-[200px] p-1">
+        <div id="sct_buy" className="my-6 sm:my-0 min-h-[200px] p-1">
           <div className=" py-5 px-1  h-full shadow-card rounded-[10px] items-center  justify-center">
             <div className="flex items-center justify-center">
               <Image
@@ -120,7 +120,7 @@ const Dashboard = ({ orders, customer }: DashboardProps) => {
             </div>
           </div>
         </div>
-        <div id="sct_spp" className="min-h-[200px] p-1">
+        <div id="sct_spp" className="my-6 sm:my-0 min-h-[200px] p-1">
           <div className=" py-5 px-1  h-full shadow-card rounded-[10px] items-center  justify-center">
             <div className="flex justify-center">
               <Image

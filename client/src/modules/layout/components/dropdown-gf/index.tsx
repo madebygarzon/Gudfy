@@ -61,7 +61,7 @@ const DropdownGudFy: React.FC<DropdownProps> = ({ name, items }) => {
         </svg>
       </div>
       {isOpen && (
-        <div className="absolute w-max top-[33px] gap-x-4 gap-y-2">
+        <div className="absolute w-max top-[18px] sm:top-[33px] gap-x-4 gap-y-2">
           <div className="relative bg-blue-gf top-[27px]">
             {items?.map((item, index) => {
               return (
