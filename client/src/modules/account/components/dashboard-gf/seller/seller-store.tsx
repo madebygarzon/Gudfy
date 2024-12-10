@@ -10,6 +10,7 @@ import {
   ModalHeader,
   Button,
   Input,
+  Tooltip,
 } from "@nextui-org/react"
 import ButtonLigth from "@modules/common/components/button_light"
 import Cart from "@modules/common/icons/cart"
@@ -41,13 +42,7 @@ const CustomerStore: React.FC<store> = (store) => {
   return (
     <div className="w-full pb-5">
       <div className="text-xl-semi flex justify-between items-start ">
-        <span>
-          ¡Tu tienda{" "}
-          <span className=" text-xl-semi capitalize">
-            {customer?.first_name}
-          </span>
-          !
-        </span>
+        <span>¡Bienvenido a tu tienda: {store.name}!</span>
         <span className="text-small-regular text-gray-700"></span>
       </div>
       <div className="flex min-h-[230px] my-4 gap-2">
@@ -235,56 +230,26 @@ const CardPrefileDashboard: React.FC<CardPrefileDashboard> = ({
   customer,
   store,
 }) => {
-  const [nameEdit, setNameEdit] = useState<{
-    stateEdit: boolean
-    storeName: string
-  }>({
-    stateEdit: false,
-    storeName: store.name.replace("GF-", ""),
-  })
-  const handlerEditNameStore = () => {
-    updateStoreName(nameEdit.storeName).then(() => {
-      setNameEdit((old) => ({ ...old, stateEdit: false }))
-    })
-  }
   return (
     <div className="flex flex-col w-full  py-5 px-2  h-full shadow-card rounded-[10px] items-center  justify-center">
       <Avatar
-        src="https://i.pravatar.cc/150?u=a04258114e29026708c"
-        className=" w-[100px]  h-[100px] border-solid border-5 border-[#9B48ED]"
+        size="md"
+        name={store.name
+          .trim()
+          .split(/\s+/)
+          .map((word) => word[0])
+          .join("")}
+        className=" w-[100px]  bg-white h-[100px] border-solid border-5 border-[#9B48ED] text-3xl text-lila-gf font-extrabold"
       />
-      {nameEdit.stateEdit ? (
-        <div className="flex items-center">
-          <Input
-            size="sm"
-            value={nameEdit.storeName}
-            onChange={(e) =>
-              setNameEdit((old) => ({
-                ...old,
-                storeName: e.target.value,
-              }))
-            }
-          />
-
-          <CiCircleCheck
-            className={"cursor-pointer"}
-            size={25}
-            onClick={handlerEditNameStore}
-          />
-        </div>
-      ) : (
-        <div className="flex">
-          <p className=" text-xl-semi capitalize">
-            {"GF-" + nameEdit.storeName}
-          </p>{" "}
-          <Edit
-            className={"cursor-pointer"}
-            size={18}
-            onClick={() => setNameEdit((old) => ({ ...old, stateEdit: true }))}
-          />
-        </div>
-      )}
-
+      <div className="flex">
+        <p className=" text-xl-semi capitalize">{store.name}</p>{" "}
+        <Tooltip
+          className="mb-5 w-[350px]"
+          content={
+            <div className="px-1 py-2">Editar el nombre de la tienda</div>
+          }
+        ></Tooltip>
+      </div>
       <span className="font-semibold text-gray-500">{customer?.email}</span>
       <div className="flex gap-2 my-4">
         <div className="flex text-gray-400 text-xs ">
