@@ -13,18 +13,6 @@ type DashboardProps = {
   customer?: Omit<Customer, "password_hash">
 }
 
-// const driverObj = driver({
-//   showProgress: true,
-//   steps: [
-
-//     { element: '#sct_per_info', popover: { title: 'Perfil', description: 'Información general de usuario.' } },
-//     { element: '#sct_per', popover: { title: 'Perfil', description: 'Sección de datos de usuario.' } },
-//     { element: '#sct_buy', popover: { title: 'Compras', description: 'Sección de datos de mis compras.' } },
-//     { element: '#sct_spp', popover: { title: 'Soporte', description: 'Sección para realizar Tickets.' } },
-//     { element: '#btn_clse', popover: { title: 'Cerrar sesión', description: 'Cierra sesión de manera segura.' } },
-//   ]
-// });
-
 type Config = {
   nextBtnText?: "Siguiente"
   prevBtnText?: "Atras"
@@ -37,24 +25,8 @@ const Dashboard = ({ orders, customer }: DashboardProps) => {
   const { t } = useTranslation("common")
   return (
     <div className="w-full sectionFull ">
-      {/* <div className="sectionname h-40 text-xl-semi capitalize flex items-center">
-        
-          <Avatar
-            src="https://i.pravatar.cc/150?u=a04258114e29026708c"
-            className="ml-4 w-20 h-20 text-large border-solid border-5 border-[#9B48ED]"
-          />
-          <span className="ml-4 ">
-            {customer?.first_name} {customer?.last_name}
-          </span>
-          
-        
-        
-      </div> */}
-
-
       <div className="panel_admin w-full grid grid-cols-3 gap-2 py-1  justify-center">
         <div className="bg-[#1F0054] row-span-2 rounded-[10px] text-white">
-
           <div className=" flex flex-col relative p-5 h-full shadow-card items-center justify-center rounded-[10px] ">
             <div className="flex  absolute top-2 right-2 items-end gap-x-2 ">
               <span className="text-xs leading-none text-white ">
@@ -63,8 +35,15 @@ const Dashboard = ({ orders, customer }: DashboardProps) => {
             </div>
             <div className="relative group">
               <Avatar
-                src="https://i.pravatar.cc/150?u=a04258114e29026708c"
-                className="w-40 h-40 text-large border-solid border-5 border-[#ffffff] opacity-100 group-hover:opacity-50 transition-opacity duration-300 cursor-pointer"
+                color="secondary"
+                size="lg"
+                className="w-40 h-40 text-5xl border-solid border-5 border-[#ffffff] opacity-100 group-hover:opacity-50 transition-opacity duration-300 cursor-pointer"
+                name={
+                  customer
+                    ? customer?.first_name.charAt(0) +
+                      customer?.last_name.charAt(0)
+                    : " "
+                }
               />
               <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                 <span className="text-sm leading-none text-white uppercase">
@@ -167,8 +146,7 @@ const Dashboard = ({ orders, customer }: DashboardProps) => {
           </div>
         </div>
 
-        <div id="sct_wal" className="min-h-[200px] p-1">
-
+        {/* <div id="sct_wal" className="min-h-[200px] p-1">
           <div className=" py-5 px-1  h-full shadow-card rounded-[10px] items-center  justify-center">
             <div className="flex justify-center">
               <Image
@@ -178,7 +156,7 @@ const Dashboard = ({ orders, customer }: DashboardProps) => {
                 height={70}
               />
             </div>
-            {/* <div className="flex flex-col items-center">
+            <div className="flex flex-col items-center">
               <h3 className="text-2xl font-bold ">{t('acc_wallet_title')}</h3>
               <p className="text-sm text-center">
                 {t('acc_wallet_subtitle')}
@@ -192,12 +170,10 @@ const Dashboard = ({ orders, customer }: DashboardProps) => {
                   {t('acc_btn_wallet')}
                 </ButtonLigth>
               </Link>
-            </div> */}
+            </div>
           </div>
-        </div>
+        </div> */}
       </div>
-
-
     </div>
   )
 }

@@ -34,6 +34,9 @@ export class Customer extends MedusaCustomer {
   @JoinColumn({ name: "role_id" })
   customerRole?: CustomerRole;
 
+  @Column({ type: "varchar", nullable: true })
+  avatar?: string;
+
   @OneToOne(() => SellerApplication, (seller) => seller?.customer)
   sellerapplications?: SellerApplication[];
 
