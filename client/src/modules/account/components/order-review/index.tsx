@@ -70,11 +70,8 @@ const OrderDetails = ({ orderData, onClose }: props) => {
     <div className="container mx-auto p-4">
       <div className="mb-8">
         <p className="text-base">
-          El pedido{" "}
-          <span className="font-bold">
-            #{orderData.id.replace("store_order_id_", "")}
-          </span>{" "}
-          se realizó el{" "}
+          El pedido <span className="font-bold">#{orderData.id}</span> se
+          realizó el{" "}
           <span className="font-bold">
             {handlerformatDate(orderData.created_at)}
           </span>{" "}
