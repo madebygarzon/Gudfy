@@ -10,16 +10,16 @@ const BannerSecondary = () => {
       }}
     >
       <div className="">
-        <h1 className="text-5xl font-black text-white">¡NO TE ENREDES!</h1>
+        <h1 className="sm:text-5xl text-4xl font-black text-white">¡NO TE ENREDES!</h1>
       </div>
 
       <div className="">
-        <p className="text-purple-600 text-6xl not-italic font-extrabold">
+        <p className="text-purple-600 sm:text-6xl text-3xl not-italic font-extrabold">
           PAGA CON CRIPTOMONEDAS.
         </p>
       </div>
 
-      <div className=" space-x-4 flex justify-center mx-auto p-4">
+      <div className="mt-4 space-x-4 flex justify-center mx-auto p-4">
         <Image
           src="/image_coins/ethereum_icon.svg"
           alt="You can pay with litecoin"
