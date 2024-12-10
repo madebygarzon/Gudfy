@@ -49,7 +49,10 @@ class CustomerService extends MedusaCustomerService {
 
     const storeRepo = this.manager_.withRepository(this.storeRepository_);
     let newStore = storeRepo.create();
-    newStore = await storeRepo.save(newStore);
+    newStore = await storeRepo.save({
+      ...newStore,
+      name: generateRandomStoreName(),
+    });
 
     const updateData: UpdateCustomerInput = {
       ...customer,
@@ -69,5 +72,58 @@ class CustomerService extends MedusaCustomerService {
     return await super.create(dataCustomer);
   }
 }
+const adjectives = [
+  "Happy",
+  "Sad",
+  "Bright",
+  "Dark",
+  "Strong",
+  "Weak",
+  "Fast",
+  "Slow",
+  "Big",
+  "Small",
+  "Friendly",
+  "Angry",
+  "Quiet",
+  "Loud",
+  "Sharp",
+  "Soft",
+  "Clean",
+  "Dirty",
+  "Brave",
+  "Calm",
+];
+
+// Animals list
+const animals = [
+  "Lion",
+  "Tiger",
+  "Elephant",
+  "Giraffe",
+  "Zebra",
+  "Kangaroo",
+  "Penguin",
+  "Dolphin",
+  "Shark",
+  "Eagle",
+  "Owl",
+  "Rabbit",
+  "Bear",
+  "Wolf",
+  "Fox",
+  "Snake",
+  "Turtle",
+  "Frog",
+  "Horse",
+  "Monkey",
+];
+
+const generateRandomStoreName = (): string => {
+  const randomAdjective =
+    adjectives[Math.floor(Math.random() * adjectives.length)];
+  const randomAnimal = animals[Math.floor(Math.random() * animals.length)];
+  return `${randomAdjective} ${randomAnimal}` + " Store";
+};
 
 export default CustomerService;

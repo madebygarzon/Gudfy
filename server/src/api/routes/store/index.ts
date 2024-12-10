@@ -19,6 +19,8 @@ import { getListCustomerOrders } from "./get-list-customer-orders";
 import updateCancelStoreOrder from "./update-cancel-store-order";
 import { getCurrentOrder } from "./get-current-order";
 import deleteCartItem from "./delete-cart-item";
+import { getValidateReview } from "./get-validate-review";
+import postProductReviews from "./post-store-reviews";
 import postClaim from "./post-claim";
 import updateFinishedOrder from "./update-finished-order";
 import { getListClaim } from "./get-list-claim";
@@ -37,6 +39,8 @@ import { getMessagesTickets } from "./tickets/get-data-messages-ticket";
 import binancepay_webhook from "./binancepay_webhook";
 import getListSerialCodes from "./serial-codes/get-list-serial-codes";
 import deleteCart from "./cart/delete-cart";
+import updateReview from "./update-review";
+import deleteReview from "./delete-review";
 
 // Initialize a custom router
 const router = Router();
@@ -45,6 +49,24 @@ export function attachStoreRoutes(storeRouter: Router) {
   // Attach our router to a custom path on the store router
   storeRouter.use("/", router, json());
   // Define a GET endpoint on the root route of our custom path
+
+  // ----------------------EndPoinst for product reviws and stars------------------------
+  // router.get("/products/:id/reviews", wrapHandler(getProductAllReviews));
+  // router.get("/products/:id/stars", wrapHandler(getStarsProduct));
+
+  router.get(
+    "/store-order/:store_order_id/reviews",
+    wrapHandler(getValidateReview)
+  );
+  //create new review
+  router.post("/reviews/store-order", wrapHandler(postProductReviews));
+
+  //update new review
+  router.post("/reviews/:id", wrapHandler(updateReview));
+
+  router.delete("/reviews/:id", wrapHandler(deleteReview));
+
+  // -----------------------------------------------------------------------------
 
   // ---------------------------------Test Endpoins-------------------------------
   //create a store for customer -- admin
