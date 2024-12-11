@@ -103,7 +103,7 @@ const TableSeller: React.FC<TableProps> = ({
                         <p className="text-xs font-normal text-gray-500">
                           <span className="font-bold">
                             {seller.parameters?.rating
-                              ? `${seller.parameters?.rating}% Comentarios positivos`
+                              ? `${seller.parameters?.rating.toFixed(2)}% Comentarios positivos`
                               : "Sin compras"}
                           </span>{" "}
                         </p>

@@ -12,6 +12,7 @@ import { Input, Button } from "@nextui-org/react"
 import { useCart } from "medusa-react"
 
 import { useCartGudfy } from "@lib/context/cart-gudfy"
+import Link from "next/link"
 
 type ProductVariantTemplateProps = {
   product: storeProductVariant
@@ -165,10 +166,15 @@ const ProductTemplate: React.FC<ProductVariantTemplateProps> = ({
           <Button
             disabled={amount ? false : true}
             onPress={handlerAddCart}
-            className="bg-[#402e72] hover:bg-blue-gf text-white rounded-[5px] mb-[120px] "
+            className="bg-[#402e72] hover:bg-blue-gf text-white rounded-[5px] mb-[10px] "
           >
             Añadir al Carrito
           </Button>
+          <Link href={"/cart"} className="w-full flex justify-end  ">
+            <Button className="bg-[#402e72] hover:bg-blue-gf text-white rounded-[5px]  ">
+              Ir al Carrito
+            </Button>
+          </Link>
 
           {/* <a className ="mb-[80px]" href="#list-sellers">
             <span className="text-[#402e72] text-sm font-bold">

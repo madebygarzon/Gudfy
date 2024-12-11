@@ -48,11 +48,10 @@ class CustomerService extends MedusaCustomerService {
     if (customer.store_id) return;
 
     const storeRepo = this.manager_.withRepository(this.storeRepository_);
-    let newStore = storeRepo.create();
-    newStore = await storeRepo.save({
-      ...newStore,
+    let newStore = storeRepo.create({
       name: generateRandomStoreName(),
     });
+    newStore = await storeRepo.save(newStore);
 
     const updateData: UpdateCustomerInput = {
       ...customer,
