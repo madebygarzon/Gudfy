@@ -1,19 +1,21 @@
-import React from 'react'
+import React from 'react';
 
-const loader = () => {
+interface LoaderProps {
+  size?: number; 
+}
+
+const Loader: React.FC<LoaderProps> = ({ size = 20 }) => {
   return (
-    <div>
     <div className="flex-col gap-4 w-full flex items-center justify-center">
       <div
-        className="w-20 h-20 border-4 border-transparent text-blue-400 text-4xl animate-spin flex items-center justify-center border-t-blue-400 rounded-full"
+        className={`w-${size} h-${size} border-4 border-transparent text-blue-400 text-4xl animate-spin flex items-center justify-center border-t-blue-400 rounded-full`}
       >
         <div
-          className="w-16 h-16 border-4 border-transparent text-red-400 text-2xl animate-spin flex items-center justify-center border-t-red-400 rounded-full"
+          className={`w-${size * 0.8} h-${size * 0.8} border-4 border-transparent text-red-400 text-2xl animate-spin flex items-center justify-center border-t-red-400 rounded-full`}
         ></div>
       </div>
     </div>
-    </div>
-  )
-}
+  );
+};
 
-export default loader
+export default Loader;
