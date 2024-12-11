@@ -50,14 +50,14 @@ export default function EditProduct({
   setReset,
   onClose,
 }: props) {
-  const [edit, setEdet] = useState<boolean>()
+  const [Error, setError] = useState<boolean>(false)
   const [addResult, setAddResult] = useState<CodesResult[]>([])
   useEffect(() => {
-    setEdet(false)
+    setError(false)
   }, [])
 
   const onSubmit = () => {
-    setEdet(true)
+    setError(true)
     const code = addResult.find(
       (data) => data.variantID === productData.storexvariantid
     )?.codes
@@ -86,6 +86,7 @@ export default function EditProduct({
             <ModalBody className="flex overflow-auto py-10 px-40">
               <h4 className="font-bold">Subir nuevos productos</h4>
               <FileUploader
+                setError2={setError}
                 variantID={productData.storexvariantid}
                 setAddResult={setAddResult}
               />
@@ -94,7 +95,11 @@ export default function EditProduct({
               <Button color="danger" variant="light" onPress={onClose}>
                 Cancelar
               </Button>
-              <Button color="primary" isDisabled={edit} onPress={onSubmit}>
+              <Button
+                color="primary"
+                isDisabled={!addResult.length || Error}
+                onPress={onSubmit}
+              >
                 Guardar
               </Button>
             </ModalFooter>

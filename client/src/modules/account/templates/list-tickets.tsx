@@ -101,7 +101,6 @@ const TicketTable: React.FC = () => {
   } = useDisclosure()
 
   const handlerSelectTicket = (ticketSelect: Ticket) => {
-    console.log("datos de la selleccion:", ticketSelect)
     setTicket(ticketSelect)
     onOpen2()
   }
@@ -237,7 +236,13 @@ const TicketTable: React.FC = () => {
                   </tr>
                 ))
               ) : (
-                <>Cargando...</>
+                <div className="flex flex-col my-[10%] w-full text-center">
+                  <h2 className="text-xl font-bold">
+                    {" "}
+                    ¿Tienes algun problema o duda?{" "}
+                  </h2>
+                  <p> Crea un nuevo ticket y cuentanos tu inconveniente </p>
+                </div>
               )}
             </tbody>
           </table>
@@ -271,7 +276,6 @@ const ModalViewTicket = ({
   onOpen,
   onOpenChange,
 }: propsModal) => {
-  console.log("estos son losdatos del view", ticketId)
   const handleReset = () => {}
   return (
     <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
