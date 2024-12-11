@@ -284,7 +284,7 @@ export default function ProductsTable() {
             </p>
           </div>
         ) : (
-          <Spinner size="32" />
+          <Spinner size={32} />
         )}
       </div>
       <div className="flex justify-between p-4 mt-6">
