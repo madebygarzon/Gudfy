@@ -138,15 +138,39 @@ const SellerRequestPerson = ({ onClose, handlerReset }: props) => {
     arrayValue: [],
   })
 
+  const [error, setErrors] = useState({
+    valueInputOptionsLinks: false,
+    valueInputOptions: false,
+    supplierDocuments: false,
+    fileFrontDocument: false,
+    fileRevertDocument: false,
+    fileAddressProod: false,
+  })
+  const validateFiles = () => {
+    const newErrors = {
+      supplierDocuments: !supplierDocuments,
+      fileFrontDocument: !fileFrontDocument,
+      fileRevertDocument: !fileRevertDocument,
+      fileAddressProod: !fileAddressProod,
+      valueInputOptionsLinks: valueInputOptionsLinks.arrayValue.length
+        ? false
+        : true,
+      valueInputOptions: valueInputOptions.arrayValue.length ? false : true,
+    }
+
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      ...newErrors,
+    }))
+
+    // Si alguno de los errores es `true`, devuelve `false`.
+    return !Object.values(newErrors).some((value) => value)
+  }
+
   const onSubmit = handleSubmit(async () => {
     //Enviar solicitud después de completar todos los pasos
-    if (
-      !fileFrontDocument ||
-      !fileRevertDocument ||
-      !fileAddressProod ||
-      !supplierDocuments
-    )
-      return
+    const isValid = validateFiles()
+    if (!isValid) return
     formData.example_product = valueInputOptions.arrayValue.join(", ")
     formData.current_stock_distribution =
       valueInputOptionsLinks.arrayValue.join(", ")
@@ -371,7 +395,9 @@ const SellerRequestPerson = ({ onClose, handlerReset }: props) => {
             setFile={setSuplierDocuments}
           />
         </div>
-
+        <p className="text-base my-3 font-bold text-red-600">
+          {error.supplierDocuments ? "** Sube un documento ** " : ""}
+        </p>
         <p className="font-semibold text-gray-800 text-sm text-center">
           ¿Que venderas?
         </p>
@@ -392,6 +418,7 @@ const SellerRequestPerson = ({ onClose, handlerReset }: props) => {
             <AutocompleteItem key={item.value}>{item.label}</AutocompleteItem>
           )}
         </Autocomplete>
+
         <p className="font-semibold text-gray-800 text-sm text-center">
           Dános ejemplos de productos que venderas
         </p>
@@ -423,6 +450,10 @@ const SellerRequestPerson = ({ onClose, handlerReset }: props) => {
             )}
           </p>
         </div>
+
+        <p className="text-base my-3 font-bold text-red-600">
+          {error.valueInputOptions ? "** Ingresa un valor **" : ""}
+        </p>
         {/* <Input
           label="Ejemplos"
           {...register("example_product", {
@@ -449,6 +480,7 @@ const SellerRequestPerson = ({ onClose, handlerReset }: props) => {
             <AutocompleteItem key={item.value}>{item.label}</AutocompleteItem>
           )}
         </Autocomplete>
+
         <p className="font-semibold text-gray-800 text-sm text-center">
           ¿Donde distribuyes actualmente tu stock? Si es posible, proporciona
           enlaces a tus perfiles en otras plataformas.
@@ -481,6 +513,9 @@ const SellerRequestPerson = ({ onClose, handlerReset }: props) => {
             )}
           </p>
         </div>
+        <p className="text-base my-3 font-bold text-red-600">
+          {error.valueInputOptionsLinks ? "** Ingresa un valor **" : ""}
+        </p>
         <p className="font-semibold text-gray-800 text-sm text-center">
           Verificación comercial
         </p>
@@ -492,6 +527,9 @@ const SellerRequestPerson = ({ onClose, handlerReset }: props) => {
             file={fileFrontDocument}
             setFile={setFileFrontDocumet}
           />
+          <p className="text-base my-3 font-bold text-red-600">
+            {error.fileFrontDocument ? "** Sube un documento **" : ""}
+          </p>
           <InputFile
             label="Documento de identidad parte posterior "
             //errors={errors}
@@ -499,6 +537,9 @@ const SellerRequestPerson = ({ onClose, handlerReset }: props) => {
             file={fileRevertDocument}
             setFile={setFileRevertDocument}
           />
+          <p className="text-base my-3 font-bold text-red-600">
+            {error.fileRevertDocument ? "** Sube un documento **" : ""}
+          </p>
           <InputFile
             label="Comprobante de domicilio"
             alt="FileAddressProod"
@@ -506,6 +547,9 @@ const SellerRequestPerson = ({ onClose, handlerReset }: props) => {
             file={fileAddressProod}
             setFile={setFileAddressProod}
           />
+          <p className="text-base my-3 font-bold text-red-600">
+            {error.fileAddressProod ? "** Sube un documento **" : ""}
+          </p>
         </div>
         <p className="font-semibold text-gray-800 text-sm text-center">
           Métodos de pago
@@ -528,7 +572,16 @@ const SellerRequestPerson = ({ onClose, handlerReset }: props) => {
           //errors={errors}
           onChange={handleInputChange}
         />
-
+        <p className="text-base my-3 font-bold text-red-600">
+          {error.fileAddressProod ||
+          error.fileFrontDocument ||
+          error.fileRevertDocument ||
+          error.valueInputOptions ||
+          error.valueInputOptionsLinks ||
+          error.supplierDocuments
+            ? " ** Tienes datos sin completar **"
+            : ""}
+        </p>
         <ButtonMedusa
           className="mt-4 mb-4 rounded-[5px]"
           type="submit"

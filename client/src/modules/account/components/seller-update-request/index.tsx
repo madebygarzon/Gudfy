@@ -129,9 +129,33 @@ const SellerUpdateRequest = ({ onClose, handlerReset, data }: props) => {
     }
   }, [data])
 
+  const [error, setErrors] = useState({
+    valueInputOptionsLinks: false,
+    valueInputOptions: false,
+    supplierDocuments: false,
+    fileFrontDocument: false,
+    fileRevertDocument: false,
+    fileAddressProod: false,
+  })
+
+  const validateFiles = () => {
+    const newErrors = {
+      valueInputOptionsLinks: valueInputOptionsLinks.arrayValue.length
+        ? false
+        : true,
+      valueInputOptions: valueInputOptions.arrayValue.length ? false : true,
+    }
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      ...newErrors,
+    }))
+    return !Object.values(newErrors).some((value) => value)
+  }
+
   const onSubmit = handleSubmit(async () => {
     //Enviar solicitud después de completar todos los pasos
-
+    const isValid = validateFiles()
+    if (!isValid) return
     formData.id = data?.id || ""
     formData.example_product = valueInputOptions.arrayValue.join(", ")
     formData.current_stock_distribution =
@@ -342,7 +366,9 @@ const SellerUpdateRequest = ({ onClose, handlerReset, data }: props) => {
             setFile={setSuplierDocuments}
           />
         </div>
-
+        <p className="text-base my-3 font-bold text-red-600">
+          {error.supplierDocuments ? "** Sube un documento ** " : ""}
+        </p>
         <p className="font-semibold text-gray-800 text-sm text-center">
           ¿Que venderas?
         </p>
@@ -393,6 +419,9 @@ const SellerUpdateRequest = ({ onClose, handlerReset, data }: props) => {
             )}
           </p>
         </div>
+        <p className="text-base my-3 font-bold text-red-600">
+          {error.valueInputOptions ? "** Ingresa un valor **" : ""}
+        </p>
         {/* <Input
           label="Ejemplos"
           {...register("example_product", {
@@ -450,6 +479,9 @@ const SellerUpdateRequest = ({ onClose, handlerReset, data }: props) => {
             )}
           </p>
         </div>
+        <p className="text-base my-3 font-bold text-red-600">
+          {error.valueInputOptionsLinks ? "** Ingresa un valor **" : ""}
+        </p>
         <p className="font-semibold text-gray-800 text-sm text-center">
           Verificación comercial
         </p>
@@ -462,6 +494,9 @@ const SellerUpdateRequest = ({ onClose, handlerReset, data }: props) => {
             file={fileFrontDocument}
             setFile={setFileFrontDocumet}
           />
+          <p className="text-base my-3 font-bold text-red-600">
+            {error.fileFrontDocument ? "** Sube un documento **" : ""}
+          </p>
           <InputFile
             label="Documento de identidad parte posterior "
             //errors={errors}
@@ -470,6 +505,9 @@ const SellerUpdateRequest = ({ onClose, handlerReset, data }: props) => {
             file={fileRevertDocument}
             setFile={setFileRevertDocument}
           />
+          <p className="text-base my-3 font-bold text-red-600">
+            {error.fileRevertDocument ? "** Sube un documento **" : ""}
+          </p>
           <InputFile
             label="Comprobante de domicilio"
             alt="FileAddressProod"
@@ -478,6 +516,9 @@ const SellerUpdateRequest = ({ onClose, handlerReset, data }: props) => {
             file={fileAddressProod}
             setFile={setFileAddressProod}
           />
+          <p className="text-base my-3 font-bold text-red-600">
+            {error.fileAddressProod ? "** Sube un documento **" : ""}
+          </p>
         </div>
         <p className="font-semibold text-gray-800 text-sm text-center">
           Métodos de pago
@@ -498,7 +539,16 @@ const SellerUpdateRequest = ({ onClose, handlerReset, data }: props) => {
           //errors={errors}
           onChange={handleInputChange}
         />
-
+        <p className="text-base my-3 font-bold text-red-600">
+          {error.fileAddressProod ||
+          error.fileFrontDocument ||
+          error.fileRevertDocument ||
+          error.valueInputOptions ||
+          error.valueInputOptionsLinks ||
+          error.supplierDocuments
+            ? " ** Tienes datos sin completar **"
+            : ""}
+        </p>
         <ButtonMedusa
           className="mt-4 mb-4 rounded-[5px]"
           type="submit"
