@@ -21,12 +21,14 @@ export async function actionGetSellerApplication() {
 
 export async function actionCreateSellerApplication(
   data: SellerCredentials,
-  fileFront: File,
-  fileRevers: File,
-  fileAddress: File,
-  supplierDocuments: File
+  fileFront: File | undefined,
+  fileRevers: File | undefined,
+  fileAddress: File | undefined,
+  supplierDocuments: File | undefined
 ) {
   try {
+    if (!fileFront || !fileRevers || !fileAddress || !supplierDocuments) return
+
     const formData = new FormData()
     formData.append("applicationData", JSON.stringify(data))
     formData.append("frontDocument", fileFront)
