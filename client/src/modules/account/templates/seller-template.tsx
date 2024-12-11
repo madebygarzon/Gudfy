@@ -56,7 +56,7 @@ const SupplierTemplate: React.FC = () => {
 
   return isloading ? (
     <div className="w-full h-full flex justify-center items-center">
-      <Spinner size="32" />
+      <Spinner size={32} />
     </div>
   ) : (
     <>
@@ -65,7 +65,7 @@ const SupplierTemplate: React.FC = () => {
         (storeSeller ? (
           <SellerStore {...storeSeller} />
         ) : (
-          <Spinner size="32" />
+          <Spinner size={32} />
         ))}
       {(isSeller?.state === "pendiente" || isSeller?.state === "corregido") && (
         <PendingRequest />
