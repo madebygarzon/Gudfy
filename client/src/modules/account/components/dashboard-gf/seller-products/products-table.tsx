@@ -89,18 +89,18 @@ export default function ProductsTable() {
   }
   //------------------------------------------
   const handlerGetListProduct = async () => {
-    const dataProduct = await getSellerProduct()
-
-    if (dataProduct) {
-      setPagetotal(Math.ceil(dataProduct[1] / rowsPerPages))
-      setDataProducts({
-        dataProduct: dataProduct,
-        dataFilter: dataProduct,
-        dataPreview: handlerPreviewProducts(dataProduct, 1),
-        count: dataProduct.length,
-      })
-    }
-    setLoading(false)
+    const dataProduct = await getSellerProduct().then((e) => {
+      if (e) {
+        setPagetotal(Math.ceil(e[1] / rowsPerPages))
+        setDataProducts({
+          dataProduct: e,
+          dataFilter: e,
+          dataPreview: handlerPreviewProducts(e, 1),
+          count: e.length,
+        })
+      }
+      setLoading(false)
+    })
   }
 
   const handlerNextPage = (action: any) => {
@@ -276,15 +276,20 @@ export default function ProductsTable() {
               </tbody>
             </table>
           </>
-        ) : isLoading && !dataProducts.dataPreview.length ? (
-          <div className="flex justify-center items-center py-10">
-            <p>
-              <XMark /> No tienes productos en tu tienda, por favor agrega tus
-              productos
+        ) : !isLoading && !dataProducts.dataPreview.length ? (
+          <div className="flex flex-col justify-center items-center py-10 bg-gray-100 rounded-lg shadow-md">
+            <div className="flex items-center gap-2 text-red-600">
+              <XMark className="h-6 w-6" />
+              <p className="text-lg font-semibold">
+                No tienes productos en tu tienda
+              </p>
+            </div>
+            <p className="text-gray-600 mt-2 text-center">
+              Por favor, agrega tus productos para comenzar a vender.
             </p>
           </div>
         ) : (
-          <Spinner size="32" />
+          <Spinner />
         )}
       </div>
       <div className="flex justify-between p-4 mt-6">

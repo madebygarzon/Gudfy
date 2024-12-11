@@ -11,11 +11,16 @@ interface CodesResult {
   duplicates: { [key: string]: number } | number
 }
 interface CodesArray {
+  setError2?: React.Dispatch<React.SetStateAction<boolean>>
   variantID: string
   setAddResult: React.Dispatch<React.SetStateAction<CodesResult[]>>
 }
 
-const FileUploader: React.FC<CodesArray> = ({ variantID, setAddResult }) => {
+const FileUploader: React.FC<CodesArray> = ({
+  variantID,
+  setAddResult,
+  setError2,
+}) => {
   const [result, setResult] = useState<CodesResult | null>(null)
   const [filePlane, setFilePlane] = useState<File>()
   const [error, setError] = useState<string | null>(null)
@@ -39,9 +44,13 @@ const FileUploader: React.FC<CodesArray> = ({ variantID, setAddResult }) => {
       )
 
       if (!isValid) {
-        throw new Error(
+        setAddResult([])
+        setError(
           "El formato de los códigos es incorrecto, por favor verifique e intente denuevo"
         )
+        if (setError2) setError2(true)
+      } else {
+        if (setError2) setError2(false)
       }
 
       const codesCount: { [key: string]: number } = {}
@@ -79,6 +88,7 @@ const FileUploader: React.FC<CodesArray> = ({ variantID, setAddResult }) => {
   }
   useEffect(() => {
     if (!result) {
+      setError(null)
       setAddResult((old) =>
         old.filter((result) => result.variantID != variantID)
       )
@@ -120,16 +130,20 @@ const FileUploader: React.FC<CodesArray> = ({ variantID, setAddResult }) => {
         </Tooltip>
         {result && (
           <div className=" text-xs ">
-            <div>
-              <span className="pl-1 pt-1">{`Codigos: ${result.quantity} `}</span>
-              {Object.keys(result.duplicates).length > 0 && (
-                <>
-                  <span>{`Duplicados: ${
-                    Object.keys(result.duplicates).length
-                  }`}</span>
-                </>
-              )}
-            </div>
+            {error ? (
+              <p className="pl-1 pt-1 text-red-500">{error}</p>
+            ) : (
+              <div>
+                <span className="pl-1 pt-1">{`Codigos: ${result.quantity} `}</span>
+                {Object.keys(result.duplicates).length > 0 && (
+                  <>
+                    <span>{`Duplicados: ${
+                      Object.keys(result.duplicates).length
+                    }`}</span>
+                  </>
+                )}
+              </div>
+            )}
           </div>
         )}
       </div>
