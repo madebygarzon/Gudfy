@@ -202,7 +202,8 @@ const TicketTable: React.FC = () => {
                     </td>
                     <td className="px-4 py-2 text-center">
                       {(order.state_order === "Completado" ||
-                        order.state_order === "Finalizado") && (
+                        order.state_order === "Finalizado" ||
+                        order.state_order === "Pendiente de pago") && (
                         <ButtonMedusa
                           id="btn-view-order"
                           className="bg-[#1f0146cf] border-none shadow-none hover:bg-blue-gf hover:text-white text-slate-200 rounded-[5px]"
@@ -219,7 +220,9 @@ const TicketTable: React.FC = () => {
                   </tr>
                 ))
               ) : (
-                <div className="p-6"><Loader/></div>
+                <div className="p-6">
+                  <Loader />
+                </div>
               )}
             </tbody>
           </table>

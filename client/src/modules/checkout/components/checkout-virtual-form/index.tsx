@@ -1,13 +1,9 @@
-import { CheckoutFormValues } from "@lib/context/checkout-context"
-import ConnectForm from "@modules/common/components/connect-form"
 import Input from "@modules/common/components/input"
-import CountrySelect from "../country-select"
-import clsx from "clsx"
-import { useForm, FieldValues } from "react-hook-form"
+import { useForm } from "react-hook-form"
 import { useMeCustomer } from "medusa-react"
-import StepContainer from "../step-container"
 import React, { Dispatch, SetStateAction, useEffect, useState } from "react"
 import { orderDataForm } from "@lib/context/order-context"
+import Country from "@modules/common/components/select_country/selectCountry"
 
 type CompleteForm = {
   form: boolean
@@ -46,6 +42,16 @@ const CheckautVirtualForm: React.FC<props> = ({
       return newData
     })
   }
+  const handlerSelectCountry = (e: string) => {
+    setDataForm((prevData) => {
+      const newData = { ...prevData, contry: e }
+      const completed = handlerCompletedForm(newData)
+      if (completed) setCompleteForm((com) => ({ ...com, form: true }))
+      else setCompleteForm((com) => ({ ...com, form: false }))
+      return newData
+    })
+  }
+  const [codeflag, setcodeFlag] = useState<number>(57)
 
   const handlerCompletedForm = (object: orderDataForm) => {
     Object.values(object).forEach((valor) => {
@@ -63,6 +69,8 @@ const CheckautVirtualForm: React.FC<props> = ({
       name: customer?.first_name || "",
       last_name: customer?.last_name || "",
       email: customer?.email || "",
+      phone: customer?.phone || "",
+      contry: "Colombia",
     }))
   }, [customer])
 
@@ -99,17 +107,10 @@ const CheckautVirtualForm: React.FC<props> = ({
         onChange={handleInputChange}
       />
       <div className="grid grid-cols-2 gap-x-2">
-        <Input
-          value={dataForm.contry}
-          label="Pais"
-          {...register("contry", {
-            required: "contry is required",
-          })}
-          autoComplete="country"
-          errors={errors}
-          onChange={handleInputChange}
+        <Country
+          setCodeFlag={setcodeFlag}
+          setSelectCountry={handlerSelectCountry}
         />
-
         <Input
           value={dataForm.city}
           label="Ciudad"
@@ -122,12 +123,21 @@ const CheckautVirtualForm: React.FC<props> = ({
         />
       </div>
       <Input
+        type="number"
+        contentStar={`(+${codeflag})`}
+        label="Telefono"
+        {...register("phone")}
+        autoComplete="phone"
+        errors={errors}
+        required={false}
+      />
+      {/* <Input
         label="Telefono"
         {...register("phone")}
         autoComplete="tel"
         errors={errors}
         onChange={handleInputChange}
-      />
+      /> */}
     </div>
   )
 }

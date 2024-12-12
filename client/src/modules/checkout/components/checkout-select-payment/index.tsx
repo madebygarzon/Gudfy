@@ -123,15 +123,17 @@ const CheckoutSelectPayment: React.FC<CheckoutDetailsProps> = ({
                 </div>
               </AccordionItem>
               <AccordionItem
+                disabled
                 key="manual_binance_pay"
-                aria-label="Binance Pay Entrega Manual Pay ID 202554183"
-                title="Binance Pay Entrega Manual Pay ID 202554183"
+                aria-label="Binance Pay Entrega Manual - "
+                title="Binance Pay Entrega Manual - "
                 className="font-medium"
                 startContent={
-                  <Checkbox
-                    radius="full"
-                    isSelected={checkbox == methodPayment[1]}
-                  />
+                  // <Checkbox
+                  //   radius="full"
+                  //   isSelected={checkbox == methodPayment[1]}
+                  // />
+                  <p>Deshabilitado</p>
                 }
               >
                 <div className="font-normal px-12 text-sm pb-5">
@@ -152,15 +154,18 @@ const CheckoutSelectPayment: React.FC<CheckoutDetailsProps> = ({
                 </div>
               </AccordionItem>
               <AccordionItem
+                disabled
                 key="usdt_trc20_entrega_manual"
-                aria-label="USDT-TRC20 Entrega Manual"
-                title="USDT-TRC20 Entrega Manual"
+                aria-label="USDT-TRC20 Entrega Manual "
+                title="USDT-TRC20 Entrega Manual "
                 className="font-medium"
                 startContent={
-                  <Checkbox
-                    radius="full"
-                    isSelected={checkbox == methodPayment[3]}
-                  />
+                  // <Checkbox
+                  //   disabled
+                  //   radius="full"
+                  //   isSelected={checkbox == methodPayment[3]}
+                  // />
+                  <p>Deshabilitado</p>
                 }
               >
                 <div className="font-normal px-12 text-sm pb-5">
@@ -172,15 +177,18 @@ const CheckoutSelectPayment: React.FC<CheckoutDetailsProps> = ({
                 </div>
               </AccordionItem>
               <AccordionItem
+                disabled
                 key="bitcoin_ethereum_litecoin_entrega_automatica"
-                aria-label=" Bitcoin - Ethereum - Litecoin - Entrega Automática"
-                title="Bitcoin - Ethereum - Litecoin - Entrega Automática"
+                aria-label=" Bitcoin - Ethereum - Litecoin - Entrega Automática "
+                title="Bitcoin - Ethereum - Litecoin - Entrega Automática "
                 className="font-medium"
                 startContent={
-                  <Checkbox
-                    radius="full"
-                    isSelected={checkbox == methodPayment[2]}
-                  />
+                  // <Checkbox
+                  //   disabled
+                  //   radius="full"
+                  //   isSelected={checkbox == methodPayment[2]}
+                  // />
+                  <p>Deshabilitado</p>
                 }
               >
                 <div className="font-normal px-12 text-sm pb-5">
