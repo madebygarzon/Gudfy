@@ -6,10 +6,8 @@ import {
   DropdownMenu,
   DropdownItem,
   Button,
-  Spinner,
 } from "@nextui-org/react"
 import { getContries } from "@modules/account/actions/get-data-contryes"
-import { use } from "chai"
 
 interface CountryData {
   name: string
@@ -18,9 +16,13 @@ interface CountryData {
 }
 interface PropsChildren {
   setCodeFlag: React.Dispatch<SetStateAction<number>>
+  setSelectCountry: (e: string) => void
 }
 
-const Country: React.FC<PropsChildren> = ({ setCodeFlag }) => {
+const NumberCountry: React.FC<PropsChildren> = ({
+  setCodeFlag,
+  setSelectCountry,
+}) => {
   const [dataCuntries, setDataCountres] = useState<Array<CountryData>>()
   const [dataFlag, setDataFlag] = useState<CountryData>({
     name: "Colombia",
@@ -34,8 +36,8 @@ const Country: React.FC<PropsChildren> = ({ setCodeFlag }) => {
   return (
     <>
       <Dropdown>
-        <DropdownTrigger>
-          <Button variant="flat" className="flex bg-white px-0 gap-0">
+        <DropdownTrigger className="justify-start border rounded-[50px] py-[22px]  px-5">
+          <Button variant="flat" className="flex bg-white gap-0">
             <Image src={dataFlag.flags} alt="" width={40} height={35} />
             <svg
               className=" h-5 w-5 text-blue-gf"
@@ -50,10 +52,11 @@ const Country: React.FC<PropsChildren> = ({ setCodeFlag }) => {
                 clipRule="evenodd"
               />
             </svg>
+            {dataFlag.name}
           </Button>
         </DropdownTrigger>
         <DropdownMenu
-          className="h-[250px] max-w-[300px] overflow-y-auto "
+          className="h-[450px] max-w-[300px] overflow-y-auto justify-start "
           aria-label="Action event example"
         >
           {dataCuntries ? (
@@ -63,6 +66,7 @@ const Country: React.FC<PropsChildren> = ({ setCodeFlag }) => {
                 onPress={(e) => {
                   setDataFlag(coun)
                   setCodeFlag(parseInt(coun.callingCodes))
+                  setSelectCountry(coun.name)
                 }}
                 textValue={coun.name}
               >
@@ -87,4 +91,4 @@ const Country: React.FC<PropsChildren> = ({ setCodeFlag }) => {
   )
 }
 
-export default Country
+export default NumberCountry
