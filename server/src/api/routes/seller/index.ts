@@ -19,6 +19,7 @@ import { postAddCodesStoreVariant } from "./post-add-codes-store-variant";
 import getDataReviews from "./get-data-reviews";
 import getStoreReviews from "./get-store-reviews";
 import { updateNameStore } from "./update-name-store";
+import { updateSellerAvatar } from "./update-seller-avatar";
 const router = Router();
 
 export function attachSellerRoutes(customerRouter: Router) {
@@ -50,4 +51,5 @@ export function attachSellerRoutes(customerRouter: Router) {
 
   //----Store--------------
   router.post("/edit-name-store", wrapHandler(updateNameStore));
+  router.post("/edit-seller-avatar", wrapHandler(updateSellerAvatar));
 }
