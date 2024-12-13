@@ -12,7 +12,7 @@ import {
   Input,
   Tooltip,
 } from "@nextui-org/react"
-import ButtonLigth from "@modules/common/components/button_light"
+import ButtonGF from "@modules/common/components/button"
 import Cart from "@modules/common/icons/cart"
 import Edit from "@modules/common/icons/edit"
 import Product from "@modules/common/icons/package"
@@ -27,10 +27,18 @@ import handlerformatDate from "@lib/util/formatDate"
 import { getStoreReviews } from "@modules/account/actions/reviews/get-store-revioews"
 import clsx from "clsx"
 import { updateStoreName } from "@modules/account/actions/seller/update-name-store"
+import { Select, SelectItem } from "@nextui-org/react"
+import { adjectives, animals } from "@lib/util/list-name-store"
+import { Alert } from "@nextui-org/react"
+import { Popover, PopoverTrigger, PopoverContent } from "@nextui-org/react"
+import { listSellersAvatar } from "@lib/util/list-sellers-avatar"
+import { updateSellerAvatar } from "@modules/account/actions/seller/update-seller-avatar"
 
 type store = {
   id: string
   name: string
+  change_name: boolean
+  avatar: string
   parameters: {
     numberSales: number
     productCount: number
@@ -42,7 +50,7 @@ const CustomerStore: React.FC<store> = (store) => {
   return (
     <div className="w-full pb-5">
       <div className="text-xl-semi flex justify-between items-start ">
-        <span>¡Bienvenido a tu tienda: {store.name}!</span>
+        <span>¡Bienvenido a tu tienda!</span>
         <span className="text-small-regular text-gray-700"></span>
       </div>
       <div className="flex min-h-[230px] my-4 gap-2">
@@ -175,7 +183,9 @@ const CardReviewProductDashboard: React.FC = () => {
       </div>
       <div className="pt-4 w-full">
         <div className="text-center">
-          <h3 className="text-4xl font-bold -mb-2 ">{dataReview?.rating}%</h3>
+          <h3 className="text-4xl font-bold -mb-2 ">
+            {dataReview?.rating.toFixed(2)}%
+          </h3>
           <p className="text-sm " onClick={() => {}}>
             Valoraciones Positivas
           </p>
@@ -230,34 +240,218 @@ const CardPrefileDashboard: React.FC<CardPrefileDashboard> = ({
   customer,
   store,
 }) => {
+  const [nameEdit, setNameEdit] = useState<{
+    stateEdit: boolean
+    storeName: string
+    adjective: string
+    animal: string
+    change: boolean
+  }>({
+    stateEdit: false,
+    storeName: store.name,
+    adjective: "",
+    animal: "",
+    change: store.change_name,
+  })
+  const [selectedAvatar, setSelectedAvatar] = useState<{
+    name: string
+    src: string
+  }>({
+    name: "",
+    src: store.avatar || "/account/avatars/avatar_aguila.png",
+  })
+  const [isOpen, setIsOpen] = React.useState(false)
+
+  const handlerEditNameStore = () => {
+    updateStoreName(nameEdit.adjective + " " + nameEdit.animal).then(() => {
+      setNameEdit((old) => ({
+        ...old,
+        stateEdit: false,
+        storeName: old.adjective + " " + old.animal,
+        change: true,
+      }))
+    })
+  }
+
+  const handlerUpdateAvatar = () => {
+    updateSellerAvatar(selectedAvatar.src).then(() => {
+      setIsOpen((open) => !isOpen)
+    })
+  }
+
   return (
-    <div className="flex flex-col w-full  py-5 px-2  h-full shadow-card rounded-[10px] items-center  justify-center">
+    <div className=" relative flex flex-col w-full  py-5 px-2  h-full shadow-card rounded-[10px] items-center  justify-center">
       <Avatar
-        size="md"
-        name={store.name
-          .trim()
-          .split(/\s+/)
-          .map((word) => word[0])
-          .join("")}
-        className=" w-[100px]  bg-white h-[100px] border-solid border-5 border-[#9B48ED] text-3xl text-lila-gf font-extrabold"
+        size="lg"
+        src={selectedAvatar.src}
+        className=" w-[180px] h-[180px] border-solid border-5 border-[#9B48ED] text-3xl text-lila-gf font-extrabold"
       />
-      <div className="flex">
-        <p className=" text-xl-semi capitalize">{store.name}</p>{" "}
-        <Tooltip
-          className="mb-5 w-[350px]"
-          content={
-            <div className="px-1 py-2">Editar el nombre de la tienda</div>
-          }
-        ></Tooltip>
+      <div className="absolute top-10 right-10 z-20">
+        <div>
+          <Popover
+            placement={"right"}
+            isOpen={isOpen}
+            onOpenChange={(open) => {
+              setSelectedAvatar({
+                name: "",
+                src: store.avatar || "/account/avatars/avatar_aguila.png",
+              })
+              setIsOpen(open)
+            }}
+          >
+            <PopoverTrigger>
+              <Button className="bg-transparent">
+                <Edit color="#9b48ed" className={"cursor-pointer"} size={30} />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent>
+              <div className="p-4">
+                <h2 className="text-center text-lg font-bold mb-4">
+                  Selecciona un Avatar
+                </h2>
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                  {listSellersAvatar.map((avatar, i) => (
+                    <div
+                      key={i}
+                      onClick={() => setSelectedAvatar(avatar)}
+                      className={`relative cursor-pointer border-2 rounded-lg overflow-hidden ${
+                        selectedAvatar.name === avatar.name
+                          ? "border-lila-gf"
+                          : "border-transparent"
+                      }`}
+                    >
+                      <Image
+                        alt={avatar.name}
+                        src={avatar.src}
+                        width={80}
+                        height={80}
+                      />
+                      <span
+                        className={`absolute bottom-0 left-0 w-full text-center text-white bg-black/50 py-1 ${
+                          selectedAvatar.name === avatar.name
+                            ? "bg-blue-500/80"
+                            : ""
+                        }`}
+                      >
+                        {avatar.name}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+                <div className="mt-4 text-center w-full flex justify-end">
+                  <ButtonGF
+                    color="primary"
+                    onClick={() => {
+                      handlerUpdateAvatar()
+                    }}
+                  >
+                    Guardar
+                  </ButtonGF>
+                </div>
+              </div>
+            </PopoverContent>
+          </Popover>
+        </div>
       </div>
-      <span className="font-semibold text-gray-500">{customer?.email}</span>
+
+      <div className="flex">
+        {nameEdit.stateEdit ? (
+          <div className="flex-col justify-center w-full">
+            <div className="flex w-full justify-center gap-4 pt-2 ">
+              <Select
+                className="w-[45%] border-lila-gf border rounded-[9px] text-lila-gf"
+                placeholder="Select an adjective"
+                size="sm"
+                onChange={(e) => {
+                  setNameEdit((old) => ({ ...old, adjective: e.target.value }))
+                }}
+              >
+                {adjectives.map((adjective) => (
+                  <SelectItem key={adjective.key}>{adjective.label}</SelectItem>
+                ))}
+              </Select>
+              <Select
+                className="w-[45%] border-lila-gf border rounded-[9px] text-lila-gf"
+                placeholder="Primer Nombre"
+                size="sm"
+                onChange={(e) => {
+                  setNameEdit((old) => ({ ...old, animal: e.target.value }))
+                }}
+              >
+                {animals.map((animal) => (
+                  <SelectItem key={animal.key}>{animal.label}</SelectItem>
+                ))}
+              </Select>
+            </div>
+            <div className="flex items-center justify-center w-full my-2 p-2 text-sm">
+              <Alert
+                color="secondary"
+                closeButton
+                description={" Podras cambiar de nombre una sola vez"}
+                title={<h3 className="font-bold">Cambio de Nombre</h3>}
+                endContent={
+                  <div className="h-full my-auto ml-2 ">
+                    <Button
+                      isDisabled={!(nameEdit.adjective && nameEdit.animal)}
+                      color="secondary"
+                      size="sm"
+                      variant="flat"
+                      onPress={handlerEditNameStore}
+                    >
+                      Guardar
+                    </Button>
+                    <Button
+                      className="ml-1"
+                      color="danger"
+                      size="sm"
+                      variant="flat"
+                      onPress={() => {
+                        setNameEdit((old) => ({ ...old, stateEdit: false }))
+                      }}
+                    >
+                      Cancelar
+                    </Button>
+                  </div>
+                }
+                variant="faded"
+              />
+            </div>
+          </div>
+        ) : (
+          <div className="flex">
+            <p className=" text-xl-semi capitalize">{nameEdit.storeName}</p>{" "}
+            {!nameEdit.change ? (
+              <Tooltip
+                className="mb-5 w-[350px]"
+                content={
+                  <div className="px-1 py-2">Editar el nombre de la tienda</div>
+                }
+              >
+                <div>
+                  <Edit
+                    color="#9b48ed"
+                    className={"cursor-pointer ml-2"}
+                    size={20}
+                    onClick={() =>
+                      setNameEdit((old) => ({ ...old, stateEdit: true }))
+                    }
+                  />
+                </div>
+              </Tooltip>
+            ) : (
+              <></>
+            )}
+          </div>
+        )}
+      </div>
+      {/* <span className="font-semibold text-gray-500">{customer?.email}</span> */}
       <div className="flex gap-2 my-4">
         <div className="flex text-gray-400 text-xs ">
-          <Cart size={16} />{" "}
+          <Cart size={16} color="#9b48ed" />{" "}
           <p className="text-[10px]">{`(${store.parameters.numberSales}) Ventas`}</p>
         </div>
         <div className="flex text-gray-400 text-xs ">
-          <Product size={16} />{" "}
+          <Product size={16} color="#9b48ed" />{" "}
           <p className="text-[10px]">{`(${store.parameters.productCount}) Productos`}</p>
         </div>
       </div>
@@ -333,6 +527,29 @@ const ModalReviews = ({ isOpen, onOpenChange, onClose }: ModalProps) => {
                 )}
               </div>
             </ModalBody>
+          </>
+        )}
+      </ModalContent>
+    </Modal>
+  )
+}
+
+const ModalEditAvatar = ({ isOpen, onOpenChange, onClose }: ModalProps) => {
+  const [nextPage, setNextPage] = useState<number>(1)
+  const [reviews, setReviews] = useState<dataReview[]>([])
+
+  useEffect(() => {}, [isOpen])
+  return (
+    <Modal
+      isOpen={isOpen}
+      onOpenChange={onOpenChange}
+      onClose={onClose}
+      size="5xl"
+    >
+      <ModalContent>
+        {(onClose) => (
+          <>
+            <ModalBody></ModalBody>
           </>
         )}
       </ModalContent>

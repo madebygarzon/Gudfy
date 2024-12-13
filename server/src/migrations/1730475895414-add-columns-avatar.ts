@@ -2,32 +2,38 @@ import { MigrationInterface, QueryRunner, TableColumn } from "typeorm";
 
 export class AddColumnSerialCode1730475895414 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
-    // Agregar el campo "avatar" a la tabla "customer"
     await queryRunner.addColumn(
       "customer",
       new TableColumn({
         name: "avatar",
-        type: "varchar", // O 'string' dependiendo del dialecto SQL
-        isNullable: true, // Permite valores nulos
+        type: "varchar",
+        isNullable: true,
       })
     );
 
-    // Agregar el campo "avatar" a la tabla "store"
     await queryRunner.addColumn(
       "store",
       new TableColumn({
         name: "avatar",
-        type: "varchar", // O 'string' dependiendo del dialecto SQL
-        isNullable: true, // Permite valores nulos
+        type: "varchar",
+        isNullable: true,
+      })
+    );
+
+    await queryRunner.addColumn(
+      "store",
+      new TableColumn({
+        name: "change_name",
+        type: "boolean",
+        isNullable: false,
+        default: false,
       })
     );
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    // Eliminar el campo "avatar" de la tabla "customer"
     await queryRunner.dropColumn("customer", "avatar");
-
-    // Eliminar el campo "avatar" de la tabla "store"
     await queryRunner.dropColumn("store", "avatar");
+    await queryRunner.dropColumn("store", "change_name");
   }
 }

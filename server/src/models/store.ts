@@ -8,6 +8,9 @@ import { OrderPayments } from "./order-payments";
 
 @Entity()
 export class Store extends MedusaStore {
+  @Column({ type: "boolean" })
+  change_name?: boolean;
+
   @Column({ type: "varchar", nullable: true })
   avatar?: string;
 

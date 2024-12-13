@@ -73,7 +73,8 @@ class StoreService extends MedusaStoreService {
     const id = this.loggedInCustomer_.store_id;
 
     const update = await repoStore.update(id, {
-      name: newName.includes("GF-") ? newName : `GF-${newName}`,
+      name: newName + " " + "Store",
+      change_name: true,
     });
     return true;
   }
