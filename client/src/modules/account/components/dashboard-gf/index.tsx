@@ -24,40 +24,47 @@ type Config = {
 const Dashboard = ({ orders, customer }: DashboardProps) => {
   const { t } = useTranslation("common")
   return (
-    <div className="w-full sectionFull ">
-      <div className="panel_admin w-full grid grid-cols-3 gap-2 py-1  justify-center">
-        <div className="bg-[#1F0054] row-span-2 rounded-[10px] text-white">
-          <div className=" flex flex-col relative p-5 h-full shadow-card items-center justify-center rounded-[10px] ">
-            <div className="flex  absolute top-2 right-2 items-end gap-x-2 ">
-              <span className="text-xs leading-none text-white ">
+    <div className="w-full  flex items-center justify-center ">
+      <div className="w-full grid grid-cols-2 ">
+        <div id="sct_per" className="p-6">
+          <div className="bg-[#1F0054] h-52 w-full flex flex-col items-center justify-center shadow-card rounded-[10px] aspect-square">
+            <div className="flex items-end ">
+              <span className="ml-7 text-xs leading-none text-white">
                 {`${getProfileCompletion(customer)}%`} {t("acc_ind_completed")}
               </span>
             </div>
-            <div className="relative group">
-              <Avatar
-                color="secondary"
-                size="lg"
-                className="w-40 h-40 text-5xl border-solid border-5 border-[#ffffff] opacity-100 group-hover:opacity-50 transition-opacity duration-300 cursor-pointer"
-                name={
-                  customer
-                    ? customer?.first_name.charAt(0) +
-                      customer?.last_name.charAt(0)
-                    : " "
-                }
-              />
-              <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                <span className="text-sm leading-none text-white uppercase">
-                  {`${getProfileCompletion(customer)}%`}{" "}
-                  {t("acc_ind_completed")}
+            <div className="flex items-center gap-10">
+              <div className="relative group mb-4">
+                <Avatar
+                  color="secondary"
+                  size="lg"
+                  className="w-28 h-28 text-5xl border-solid border-5 border-[#ffffff] opacity-100 group-hover:opacity-50 transition-opacity duration-300 cursor-pointer"
+                  name={
+                    customer
+                      ? customer?.first_name.charAt(0) +
+                        customer?.last_name.charAt(0)
+                      : " "
+                  }
+                />
+                <div className="absolute inset-0 flex items-center justify-center  opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  <span className="text-xs leading-none text-white ">
+                    {`${getProfileCompletion(customer)}%`}{" "}
+                    {t("acc_ind_completed")}
+                  </span>
+                </div>
+              </div>
+
+              <div>
+                <p className="text-white text-xl-semi capitalize mb-1">
+                  {customer?.first_name} {customer?.last_name}
+                </p>
+                <span className="font-semibold text-white mb-3">
+                  {customer?.email}
                 </span>
               </div>
             </div>
-            <p className="text-xl-semi capitalize">
-              {customer?.first_name} {customer?.last_name}
-            </p>
-            <span className="font-semibold text-white">{customer?.email}</span>
-            <div className="flex text-white text-xs mt-[10%]">
-              <Cart size={16} />{" "}
+            <div className="ml-4 flex items-center text-white text-xs">
+              <Cart size={16} className="mr-1" />
               <span>
                 {t("acc_ind_purchases")}
                 {`: ${orders?.length}`}
@@ -65,8 +72,9 @@ const Dashboard = ({ orders, customer }: DashboardProps) => {
             </div>
           </div>
         </div>
-        <div id="sct_per" className="my-6 sm:my-0 min-h-[200px] p-1">
-          <div className=" py-5 px-1  h-full shadow-card rounded-[10px] items-center  justify-center">
+
+        <div id="sct_per" className="p-6">
+          <div className="bg-white h-52 w-full flex flex-col items-center justify-center shadow-card rounded-[10px] aspect-square">
             <div className="flex justify-center">
               <Image
                 alt="user_gudfy"
@@ -91,8 +99,9 @@ const Dashboard = ({ orders, customer }: DashboardProps) => {
             </div>
           </div>
         </div>
-        <div id="sct_buy" className="my-6 sm:my-0 min-h-[200px] p-1">
-          <div className=" py-5 px-1  h-full shadow-card rounded-[10px] items-center  justify-center">
+
+        <div id="sct_buy" className="p-6">
+          <div className="bg-white h-52 w-full flex flex-col items-center justify-center shadow-card rounded-[10px] aspect-square">
             <div className="flex items-center justify-center">
               <Image
                 alt="sales_gudfy"
@@ -120,8 +129,8 @@ const Dashboard = ({ orders, customer }: DashboardProps) => {
             </div>
           </div>
         </div>
-        <div id="sct_spp" className="my-6 sm:my-0 min-h-[200px] p-1">
-          <div className=" py-5 px-1  h-full shadow-card rounded-[10px] items-center  justify-center">
+        <div id="sct_spp" className="p-6">
+          <div className="bg-white h-52 w-full flex flex-col items-center justify-center shadow-card rounded-[10px] aspect-square">
             <div className="flex justify-center">
               <Image
                 alt="support_gudfy"
@@ -145,34 +154,6 @@ const Dashboard = ({ orders, customer }: DashboardProps) => {
             </div>
           </div>
         </div>
-
-        {/* <div id="sct_wal" className="min-h-[200px] p-1">
-          <div className=" py-5 px-1  h-full shadow-card rounded-[10px] items-center  justify-center">
-            <div className="flex justify-center">
-              <Image
-                alt="wallet_gudfy"
-                src="/account/wallet.svg"
-                width={70}
-                height={70}
-              />
-            </div>
-            <div className="flex flex-col items-center">
-              <h3 className="text-2xl font-bold ">{t('acc_wallet_title')}</h3>
-              <p className="text-sm text-center">
-                {t('acc_wallet_subtitle')}
-              </p>
-              <Link href={"/account/wallet"}>
-                <ButtonLigth
-                  name="perfil"
-                  variant="tertiary"
-                  className="bg-[#9B48ED] hover:bg-[#7b39c4] text-white mt-3"
-                >
-                  {t('acc_btn_wallet')}
-                </ButtonLigth>
-              </Link>
-            </div>
-          </div>
-        </div> */}
       </div>
     </div>
   )
