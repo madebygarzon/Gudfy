@@ -339,7 +339,7 @@ const CardPrefileDashboard: React.FC<CardPrefileDashboard> = ({
                       <span
                         className={`absolute bottom-0 left-0 w-full text-center text-white bg-black/50 py-1 ${
                           selectedAvatar.name === avatar.name
-                            ? "bg-blue-500/80"
+                            ? "bg-lila-gf/80"
                             : ""
                         }`}
                       >

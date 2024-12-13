@@ -144,28 +144,21 @@ const ModalOrderComplete = ({
           <div className=" flex gap-5">
             <Button
               className="bg-green-600 text-white"
-              onClick={handlerFinishedOrder}
+              onPress={handlerFinishedOrder}
             >
               {" "}
               Finalizar Compra{" "}
             </Button>
-            <Button className="bg-orange-600 text-white" onClick={onOpen}>
+            <Button className="bg-orange-600 text-white" onPress={onOpen}>
               {" "}
               Presentar Reclamo{" "}
             </Button>
           </div>
           <div>
             A partir de ahora, tiene un plazo de 10 días para presentar
-            cualquier reclamo{" "}
-            <Link
-              className="text-[#402e72] font-bold hover:text-[#2c1f57]"
-              href={"/account/support"}
-            >
-              aquí.
-            </Link>{" "}
-            Si no recibimos ningún reclamo dentro de este período,
-            consideraremos que ha recibido su compra con éxito y su orden pasara
-            a Finalizada.
+            cualquier reclamo, Si no recibimos ningún reclamo dentro de este
+            período, consideraremos que ha recibido su compra con éxito y su
+            orden pasara a Finalizada.
           </div>
         </div>
       </ModalFooter>
