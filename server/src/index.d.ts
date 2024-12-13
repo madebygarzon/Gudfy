@@ -2,6 +2,7 @@ import { LineItem } from "@medusajs/medusa";
 
 export declare module "@medusajs/medusa/dist/models/store" {
   declare interface Store {
+    change_name?: boolean;
     avatar?: string;
     members?: Customer[];
     store_x_variant?: StoreXVariant[];
