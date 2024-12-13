@@ -169,65 +169,75 @@ const CardReviewProductDashboard: React.FC = () => {
 
   return (
     <div className=" min-h-[200px] w-full flex flex-col py-2 px-2  h-full shadow-card rounded-[10px] items-center  justify-center">
-      <div className="flex items-center justify-between border-b-1 w-full border-b-[#9B48ED] p-4 ">
-        <h3 className="text-xl font-bold">Mis Valoraciones</h3>
-        <p className="text-ms text-[#9B48ED]">
-          Reviews: {dataReview.totalReviews}{" "}
-        </p>
-        <p
-          className="text-ms text-[#9B48ED] cursor-pointer"
-          onClick={() => onOpen()}
-        >
-          Ver mas reviews
-        </p>
-      </div>
-      <div className="pt-4 w-full">
-        <div className="text-center">
-          <h3 className="text-4xl font-bold -mb-2 ">
-            {dataReview?.rating.toFixed(2)}%
-          </h3>
-          <p className="text-sm " onClick={() => {}}>
-            Valoraciones Positivas
-          </p>
-        </div>
-        <div className="flex w-[100%]  justify-center mt-2">
-          <div className={`w-[${dataReview?.rating}%] z-20`}>
-            <Progress color={"secondary"} value={dataReview?.rating} />
-          </div>
-        </div>
-      </div>
-      <div className=" flex w-full  justify-center px-2 mt-4">
-        {dataReview?.latestComment ? (
-          <div
-            key={dataReview?.latestComment?.id}
-            className="p-2 bg-white rounded-md shadow-sm border w-[70%]"
-          >
-            <div className="flex  relative justify-between items-center mb-2">
-              <div>
-                <p className="font-semibold text-sm mr-4">
-                  {dataReview?.latestComment.customer_name}
-                </p>
-                <p className="text-gray-300 text-xs">
-                  {handlerformatDate(dataReview?.latestComment.created_at)}
-                </p>
-              </div>
-              <p className="text-yellow-500 font-bold text-xs absolute top-0 right-0">
-                Valor : {dataReview?.latestComment.rating}
-              </p>
-            </div>
-            <p className="text-gray-700 text-sm font-sans">
-              "{dataReview?.latestComment.content}"
+      {!(
+        dataReview.rating ||
+        dataReview.totalReviews ||
+        dataReview.latestComment
+      ) ? (
+        <h3 className="text-xl font-bold">Aun no tienes valoraciones</h3>
+      ) : (
+        <>
+          <div className="flex items-center justify-between border-b-1 w-full border-b-[#9B48ED] p-4 ">
+            <h3 className="text-xl font-bold">Mis Valoraciones</h3>
+            <p className="text-ms text-[#9B48ED]">
+              Reviews: {dataReview.totalReviews}{" "}
+            </p>
+            <p
+              className="text-ms text-[#9B48ED] cursor-pointer"
+              onClick={() => onOpen()}
+            >
+              Ver mas reviews
             </p>
           </div>
-        ) : (
-          <></>
-        )}
-      </div>
-      <ModalReviews
-        isOpen={isOpen}
-        onClose={onClose}
-        onOpenChange={onOpenChange}
-      />
+          <div className="pt-4 w-full">
+            <div className="text-center">
+              <h3 className="text-4xl font-bold -mb-2 ">
+                {dataReview?.rating.toFixed(2)}%
+              </h3>
+              <p className="text-sm " onClick={() => {}}>
+                Valoraciones Positivas
+              </p>
+            </div>
+            <div className="flex w-[100%]  justify-center mt-2">
+              <div className={`w-[${dataReview?.rating}%] z-20`}>
+                <Progress color={"secondary"} value={dataReview?.rating} />
+              </div>
+            </div>
+          </div>
+          <div className=" flex w-full  justify-center px-2 mt-4">
+            {dataReview?.latestComment ? (
+              <div
+                key={dataReview?.latestComment?.id}
+                className="p-2 bg-white rounded-md shadow-sm border w-[70%]"
+              >
+                <div className="flex  relative justify-between items-center mb-2">
+                  <div>
+                    <p className="font-semibold text-sm mr-4">
+                      {dataReview?.latestComment.customer_name}
+                    </p>
+                    <p className="text-gray-300 text-xs">
+                      {handlerformatDate(dataReview?.latestComment.created_at)}
+                    </p>
+                  </div>
+                  <p className="text-yellow-500 font-bold text-xs absolute top-0 right-0">
+                    Valor : {dataReview?.latestComment.rating}
+                  </p>
+                </div>
+                <p className="text-gray-700 text-sm font-sans">
+                  "{dataReview?.latestComment.content}"
+                </p>
+              </div>
+            ) : (
+              <></>
+            )}
+          </div>
+          <ModalReviews
+            isOpen={isOpen}
+            onClose={onClose}
+            onOpenChange={onOpenChange}
+          />
+        </>
+      )}
     </div>
   )
 }

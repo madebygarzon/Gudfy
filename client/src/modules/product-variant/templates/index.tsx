@@ -170,7 +170,7 @@ const ProductTemplate: React.FC<ProductVariantTemplateProps> = ({
           >
             Añadir al Carrito
           </Button>
-          <Link href={"/cart"} className="w-full flex justify-end  ">
+          <Link href="/cart" passHref className="w-full flex justify-end  ">
             <Button className="bg-[#402e72] hover:bg-blue-gf text-white rounded-[5px]  ">
               Ir al Carrito
             </Button>
