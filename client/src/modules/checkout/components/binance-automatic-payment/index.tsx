@@ -72,7 +72,9 @@ const BinanceAutomaticPayment: React.FC<TransactionDetailsProps> = ({
         <div className="p-8 bg-white rounded-lg shadow-lg w-full text-gray-800">
           <div className="flex  mb-1 gap-14 w-full">
             <div>
-              <p className="text-sm  text-gray-500">NÚMERO DEL PEDIDO:</p>
+              <p className="text-sm  text-gray-500">NÚMERO DE PEDIDO:</p>
+              <strong>{currentOrder?.id}</strong>
+              <p className="text-sm  text-gray-500">REFERENCIA DE PAGO:</p>
               <strong>{prepayId}</strong>
             </div>
 
