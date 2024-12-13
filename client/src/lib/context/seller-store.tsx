@@ -39,6 +39,8 @@ export type SellerOrder = {
 type store = {
   id: string
   name: string
+  change_name: boolean
+  avatar: string
   parameters: {
     numberSales: number
     productCount: number
