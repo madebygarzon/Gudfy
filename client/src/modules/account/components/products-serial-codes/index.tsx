@@ -8,6 +8,7 @@ import { updateCancelStoreOrder } from "@modules/account/actions/update-cancel-s
 import { getListSerialCode } from "@modules/account/actions/serial-code/get-list-serial-code"
 import Image from "next/image"
 import Loader from "@lib/loader"
+import DownloadButton from "@modules/common/components/download-button"
 
 type SerialCodes = {
   store_variant_order: string
@@ -64,8 +65,8 @@ const SerialCodeTable: React.FC = () => {
                 <th className="px-4 py-2  bg-gray-100 text-left">
                   Nombre de la tienda
                 </th>
-                <th className="px-4 py-2  bg-gray-100 text-left">Cantidad</th>
                 <th className="px-4 py-2  bg-gray-100 text-left">Codigos</th>
+                <th className="px-4 py-2  bg-gray-100 text-left">Descargar</th>
               </tr>
             </thead>
             <tbody>
@@ -88,7 +89,7 @@ const SerialCodeTable: React.FC = () => {
                       {handlerOrderNumber(code.order_number)}
                     </td>
                     <td className="px-4 py-2 ">{code.store_name}</td>
-                    <td>{code.quantity}</td>
+
                     <td className="px-4 py-2  text-center">
                       <Accordion
                         showDivider={false}
@@ -115,10 +116,18 @@ const SerialCodeTable: React.FC = () => {
                         </AccordionItem>
                       </Accordion>
                     </td>
+                    <td className="text-center">
+                      <DownloadButton
+                        data={code.serial_codes}
+                        filename={code.product_name}
+                      />
+                    </td>
                   </tr>
                 ))
               ) : (
-                <div className="p-6"><Loader/></div>
+                <div className="p-6">
+                  <Loader />
+                </div>
               )}
             </tbody>
           </table>
