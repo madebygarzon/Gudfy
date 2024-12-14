@@ -29,6 +29,8 @@ import ModalOrderPending from "../order-status/pay-pending"
 import ModalOrderCancel from "../order-status/cancel"
 import ModalOrderFinished from "../order-status/finished"
 import { SellerOrder, useSellerStoreGudfy } from "@lib/context/seller-store"
+import { EyeSeeIcon } from "@lib/util/icons"
+import Loader from "@lib/loader"
 
 interface Ticket {
   id: number
@@ -93,18 +95,18 @@ const SellerOrderTable: React.FC = () => {
 
   return (
     <div className="w-full">
-      <div className="mb-8 flex flex-col gap-y-4 ">
-        <h1 className="text-2xl-semi">Mis Ordenes</h1>
-      </div>
       <div className="flex flex-col gap-y-8 w-full">
-        <div className="flex justify-between mb-4">
-          <div>
-            <label htmlFor="status-filter" className="mr-2 font-semibold ">
+        <div className="w-96 flex flex-wrap items-center justify-between gap-4  bg-gray-50 p-4 rounded-lg shadow-sm">
+          <div className="flex items-center">
+            <label
+              htmlFor="status-filter"
+              className="mr-4 font-semibold text-gray-700 text-sm lg:text-base"
+            >
               Filtrar por estado:
             </label>
             <select
               id="status-filter"
-              className="p-2 shadow-sm border-x-neutral-500 rounded"
+              className="p-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm lg:text-base bg-white"
               value={filterStatus}
               onChange={(e) =>
                 setFilterStatus(
@@ -118,41 +120,25 @@ const SellerOrderTable: React.FC = () => {
               }
             >
               <option value="all">Todos</option>
-              <option value="Cancelado">Cancelado</option>
-              <option value="Por pagar">Por pagar</option>
-              <option value="Completado">Completado</option>
+              <option value="Cancelada">Cancelada</option>
+              <option value="Pendiente de pago">Pendiente de pago</option>
+              <option value="Finalizado">Finalizado</option>
+              <option value="En discusión">En discusión</option>
             </select>
           </div>
-          <div className="">
-            ¿Necesitas ayuda? Crea un ticket:
-            <div className="flex justify-center mt-5">
-              <ButtonMedusa
-                className="text-white bg-[#402e72]  hover:bg-[#2c1f57] rounded-[5px]"
-                onClick={onOpen}
-              >
-                <FaPlus />
-                Nuevo ticket
-              </ButtonMedusa>
-            </div>
-          </div>
         </div>
+
         <div className="overflow-x-auto">
           <table className="min-w-full bg-white  rounded-lg shadow-md">
             <thead>
               <tr>
-                <th className="px-4 py-2  bg-gray-100 text-left">
-                  Estado de la Orden
-                </th>
-                <th className="px-4 py-2  bg-gray-100 text-left">
-                  Numero de Orden
-                </th>
-                <th className="px-4 py-2  bg-gray-100 text-left">
+                <th className="px-4 py-2 text-left">Estado de la Orden</th>
+                <th className="px-4 py-2 text-left">Numero de Orden</th>
+                <th className="px-4 py-2 text-left">
                   Fecha y hora de Creación
                 </th>
-                <th className="px-4 py-2  bg-gray-100 text-left">
-                  Tiempo a Pagar
-                </th>
-                <th className="px-4 py-2  bg-gray-100 text-left"></th>
+                <th className="px-4 py-2 text-left">Tiempo a Pagar</th>
+                <th className="px-4 py-2 text-left">Detalle de la orden</th>
               </tr>
             </thead>
             <tbody>
@@ -175,7 +161,7 @@ const SellerOrderTable: React.FC = () => {
                     <td className="px-4 py-2 ">
                       {handlerformatDate(order.created_at)}
                     </td>
-                    <td>
+                    <td >
                       {order.state_order === "Pendiente de pago" ? (
                         <Timer creationTime={order.created_at} />
                       ) : order.state_order === "Cancelado" ? (
@@ -191,8 +177,15 @@ const SellerOrderTable: React.FC = () => {
                         <></>
                       )}
                     </td>
-                    <td className="px-4 py-2  text-center">
-                      <ButtonMedusa
+                    <td className="flex items-center justify-center px-4 py-2  text-center">
+                      <EyeSeeIcon
+                        onClick={() => {
+                          setSelectOrderData(order)
+                          onOpen()
+                        }}
+                      />
+
+                      {/* <ButtonMedusa
                         className=" bg-ui-button-neutral border-ui-button-neutral hover:bg-ui-button-neutral-hover rounded-[5px] text-[#402e72]"
                         onClick={() => {
                           setSelectOrderData(order)
@@ -201,12 +194,12 @@ const SellerOrderTable: React.FC = () => {
                       >
                         <FaEye />
                         Ver detalle de la orden
-                      </ButtonMedusa>
+                      </ButtonMedusa> */}
                     </td>
                   </tr>
                 ))
               ) : (
-                <>Cargando...</>
+                <Loader />
               )}
             </tbody>
           </table>
