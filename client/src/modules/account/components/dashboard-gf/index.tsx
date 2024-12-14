@@ -27,10 +27,11 @@ const Dashboard = ({ orders, customer }: DashboardProps) => {
     <div className="w-full  flex items-center justify-center ">
       <div className="w-full grid grid-cols-2 ">
         <div id="sct_per" className="p-6">
-          <div className="bg-[#1F0054] h-52 w-full flex flex-col items-center justify-center shadow-card rounded-[10px] aspect-square">
+          <div className=" h-52 w-full flex flex-col items-center justify-center shadow-card rounded-[10px] aspect-square">
             <div className="flex items-end ">
-              <span className="ml-7 text-xs leading-none text-white">
-                {`${getProfileCompletion(customer)}%`} {t("acc_ind_completed")}
+              <span className="ml-16 text-xs leading-none ">
+                Perfil {`${getProfileCompletion(customer)}%`} completado
+                {/* {t("acc_ind_completed")} */}
               </span>
             </div>
             <div className="flex items-center gap-10">
@@ -47,7 +48,7 @@ const Dashboard = ({ orders, customer }: DashboardProps) => {
                   }
                 />
                 <div className="absolute inset-0 flex items-center justify-center  opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                  <span className="text-xs leading-none text-white ">
+                  <span className="text-xs leading-none  ">
                     {`${getProfileCompletion(customer)}%`}{" "}
                     {t("acc_ind_completed")}
                   </span>
@@ -55,15 +56,15 @@ const Dashboard = ({ orders, customer }: DashboardProps) => {
               </div>
 
               <div>
-                <p className="text-white text-xl-semi capitalize mb-1">
+                <p className=" text-xl-semi capitalize mb-1">
                   {customer?.first_name} {customer?.last_name}
                 </p>
-                <span className="font-semibold text-white mb-3">
+                <span className="font-semibold  mb-3">
                   {customer?.email}
                 </span>
               </div>
             </div>
-            <div className="ml-4 flex items-center text-white text-xs">
+            <div className="ml-4 flex items-center  text-xs">
               <Cart size={16} className="mr-1" />
               <span>
                 {t("acc_ind_purchases")}

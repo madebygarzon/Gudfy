@@ -16,6 +16,7 @@ import { getListProductVariant } from "../../../actions/get-list-product-variant
 import { AddProductsVariant } from "../../../actions/post-add-product-variant"
 import Image from "next/image"
 import FileUploader from "./file-uploader-txt"
+import ButtonLigth from "@modules/common/components/button_light"
 
 type Reset = {
   setReset: React.Dispatch<React.SetStateAction<boolean>>
@@ -193,23 +194,22 @@ export default function AddProducts({ setReset }: Reset) {
 
   return (
     <>
-      <ButtonM
-        variant="transparent"
-        className=" bg-white hover:bg-gray-100 text-gray-600 border-gray-300 border rounded-[5px]"
+      <ButtonLigth
+        className="bg-[#9B48ED] hover:bg-[#7b39c4] text-white border-none"
         onClick={onOpen}
       >
         Agregar producto
         <Plus />
-      </ButtonM>
+      </ButtonLigth>
 
       <Modal isOpen={isOpen} onOpenChange={onOpenChange} size="full">
         <ModalContent>
           {(onClose) => (
             <>
-              <ModalHeader className="flex flex-col gap-1 px-20">
-                Agregar Productos
+              <ModalHeader className="flex items-center mt-6 flex-col gap-1 px-20">
+                Agregar productos
               </ModalHeader>
-              <ModalBody className="py-2 px-20 ">
+              <ModalBody className="m-6 border-1 rounded-xl shadow-md border-gray-200 p-12 ">
                 <div className=" flex w-full">
                   <div className="w-[30%]">
                     <Input
@@ -271,7 +271,7 @@ export default function AddProducts({ setReset }: Reset) {
                       </div>
                     ) : (
                       <div className="py-10">
-                        <h4>No hay mas productos</h4>
+                        <h4>No hay más productos</h4>
                       </div>
                     )}
                   </div>
@@ -343,7 +343,7 @@ export default function AddProducts({ setReset }: Reset) {
                       </table>
                     ) : (
                       <div className="felx justify-center text-center">
-                        Agrega un producto de la lista de productos
+                        Agrega un producto de la lista de disponibles
                       </div>
                     )}
                     {susccessful && (
@@ -359,7 +359,7 @@ export default function AddProducts({ setReset }: Reset) {
                   {!erros.codes ? (
                     <div>
                       <p className="text-red-600">
-                        ** No se an insertado los codigos de algun producto **
+                        ** No se han insertado códigos a ningún producto **
                       </p>
                     </div>
                   ) : (
@@ -367,24 +367,24 @@ export default function AddProducts({ setReset }: Reset) {
                   )}
                   {!erros.price ? (
                     <div>
-                      <p className="text-red-600">
-                        ** No se an insertado el precio de algun producto **
+                      <p className="text-red-600 mb-4">
+                        ** No se ha asignado precio a ningún producto **
                       </p>
                     </div>
                   ) : (
                     <div></div>
                   )}
-                  <div className="flex justify-center">
-                    <ButtonM
-                      variant="transparent"
-                      className="text-red-700 border border-red-700"
+                  <div className="flex justify-center gap-2">
+                    <ButtonLigth
+                      // variant="transparent"
+                      className="bg-[#E74C3C] hover:bg-[#C0392B] text-white border-none"
                       onClick={onClose}
                     >
                       Cancelar
-                    </ButtonM>
-                    <ButtonM
-                      variant="transparent"
-                      className="text-blue-700  border border-blue-700"
+                    </ButtonLigth>
+                    <ButtonLigth
+                      // variant="transparent"
+                      className="bg-[#28A745] hover:bg-[#218838] text-white border-none"
                       onClick={onSubmit}
                     >
                       {isloadingPV ? (
@@ -392,7 +392,7 @@ export default function AddProducts({ setReset }: Reset) {
                       ) : (
                         "Guardar productos"
                       )}
-                    </ButtonM>
+                    </ButtonLigth>
                   </div>
                 </div>
               </ModalFooter>
