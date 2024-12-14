@@ -5,6 +5,7 @@ import ProductVariantPreview from "@modules/product-variant/components/product-v
 import { categoryContext } from "@lib/context/category-context"
 import SelectedProducts from "@modules/home/components/slector-products"
 import { ProductCategory } from "@medusajs/medusa"
+import Loader from "@lib/loader"
 
 type RefinementListProps = {
   refinementList: StoreGetProductsParams
@@ -17,7 +18,7 @@ const RefinementList = ({
 }: RefinementListProps) => {
   const { collections, isLoading } = useCollections()
 
-  const [price, setPrice] = useState<number>(refinementList.price || 0)
+  // const [price, setPrice] = useState<number>(refinementList.price || 0)
 
   const handleCollectionChange = (
     e: ChangeEvent<HTMLInputElement>,
@@ -53,10 +54,10 @@ const RefinementList = ({
 
   const handlePriceChange = (event: ChangeEvent<HTMLInputElement>) => {
     const newPrice = Number(event.target.value)
-    setPrice(newPrice)
+    // setPrice(newPrice)
     setRefinementList({
       ...refinementList,
-      price: newPrice,
+      // price: newPrice,
     })
   }
   return (
@@ -84,16 +85,16 @@ const RefinementList = ({
 
           {/* Filtro de Precio  no*/}
           <div className="border border-solid border-gray-200 p-5 rounded-[5px] shadow-lg mt-4 mr-4">
-            <label htmlFor="price-slider" className="">
+            {/* <label htmlFor="price-slider" className="">
               Filtrar por precio: <span className="font-bold">${price}</span>
-            </label>
+            </label> */}
 
             <input
               id="price-slider"
               type="range"
               min="0"
               max="1000"
-              value={price}
+              // value={price}
               onChange={handlePriceChange}
               className="w-full accent-[#1F0046] cursor-pointer mt-2"
             />
@@ -128,7 +129,7 @@ const RefinementList = ({
                   : "loading.."}
               </div>
             ) : (
-              <>loading...</>
+              <Loader />
             )}
           </div>
         </div>
