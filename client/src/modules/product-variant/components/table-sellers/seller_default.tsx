@@ -12,6 +12,7 @@ interface Seller {
   email: string
   quantity: number
   price: number
+  avatar: string
   parameters: {
     rating: number
     sales: number
@@ -69,11 +70,7 @@ const TableSellerDefault: React.FC<TableProps> = ({
               size="md"
               color="secondary"
               className=""
-              name={sellerWithLowestPrice.store_name
-                .trim()
-                .split(/\s+/)
-                .map((word) => word[0])
-                .join("")}
+              src={sellerWithLowestPrice.avatar}
             />
           </div>
           <div>

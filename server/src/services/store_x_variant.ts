@@ -56,6 +56,7 @@ class StoreXVariantService extends TransactionBaseService {
           "p.thumbnail AS thumbnail",
           "p.description AS description",
           "s.id AS store_id",
+          "s.avatar AS avatar",
           "s.name AS store_name",
           "c.email AS customer_email",
         ])
@@ -79,6 +80,7 @@ class StoreXVariantService extends TransactionBaseService {
                 email: variant.customer_email,
                 quantity: variant.quantity,
                 price: variant.price,
+                avatar: variant.avatar,
                 parameters: {
                   rating: await this.getSellerRating(variant.store_id),
                   sales: await this.getNumberOfSales(variant.store_id),
@@ -94,6 +96,7 @@ class StoreXVariantService extends TransactionBaseService {
             email: variant.customer_email,
             quantity: variant.quantity,
             price: variant.price,
+            avatar: variant.avatar,
             parameters: {
               rating: await this.getSellerRating(variant.store_id),
               sales: await this.getNumberOfSales(variant.store_id),

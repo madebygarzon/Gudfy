@@ -50,6 +50,7 @@ class CustomerService extends MedusaCustomerService {
     const storeRepo = this.manager_.withRepository(this.storeRepository_);
     let newStore = storeRepo.create({
       name: generateRandomStoreName(),
+      avatar: "/account/avatars/avatar_aguila.png",
     });
     newStore = await storeRepo.save(newStore);
 
