@@ -13,6 +13,7 @@ import { getListOrders } from "@modules/account/actions/get-list-orders"
 import { getCurrentOrder } from "@modules/account/actions/get-current-order"
 import { useMeCustomer } from "medusa-react"
 import { Cart } from "@medusajs/medusa"
+import { updateCancelStoreOrder } from "@modules/account/actions/update-cancel-store-order"
 
 export type order = {
   id: string
@@ -90,6 +91,7 @@ interface orderContext {
   isLoadingCurrentOrder: boolean
   handlerListOrder: () => void
   handlerCurrentOrder: () => void
+  handlerOrderCancel: (orederId: string) => Promise<boolean>
   handlersubmitPaymentMethod: (
     checkbox: string,
     cart: Cart | undefined,
@@ -143,6 +145,11 @@ export const OrderGudfyProvider = ({
       .catch((error) => {
         console.log("error el la recuperacion de la orden")
       })
+  }
+
+  const handlerOrderCancel = async (orederId: string) => {
+    await updateCancelStoreOrder(orederId)
+    return true
   }
 
   const handlerUpdateDataLastOrder = async (dataForm: orderDataForm) => {
@@ -247,6 +254,7 @@ export const OrderGudfyProvider = ({
         isLoadingCurrentOrder,
         handlerListOrder,
         handlerCurrentOrder,
+        handlerOrderCancel,
         currentOrder,
         handlersubmitPaymentMethod,
         listOrder,

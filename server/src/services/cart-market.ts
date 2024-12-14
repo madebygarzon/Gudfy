@@ -61,6 +61,7 @@ class CartMarketService extends TransactionBaseService {
         .select([
           "sxv.id AS id",
           "s.name as store_name",
+          "s.avatar AS avatar",
           "c.email AS seller_email",
         ])
         .getRawMany();
@@ -69,6 +70,7 @@ class CartMarketService extends TransactionBaseService {
 
       storesWithCustomers.forEach((store) => {
         storeMap.set(store.id, {
+          avatar: store.avatar,
           store_name: store.store_name,
           email: store.seller_email,
         });

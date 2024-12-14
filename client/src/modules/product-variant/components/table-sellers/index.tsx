@@ -14,6 +14,7 @@ interface Seller {
   email: string
   quantity: number
   price: number
+  avatar: string
   parameters: {
     rating: number
     sales: number
@@ -86,11 +87,7 @@ const TableSeller: React.FC<TableProps> = ({
                           size="md"
                           color="secondary"
                           className=""
-                          name={seller.store_name
-                            .trim()
-                            .split(/\s+/)
-                            .map((word) => word[0])
-                            .join("")}
+                          src={seller.avatar}
                         />
                       </div>
                       <div>
@@ -103,7 +100,9 @@ const TableSeller: React.FC<TableProps> = ({
                         <p className="text-xs font-normal text-gray-500">
                           <span className="font-bold">
                             {seller.parameters?.rating
-                              ? `${seller.parameters?.rating.toFixed(2)}% Comentarios positivos`
+                              ? `${seller.parameters?.rating.toFixed(
+                                  2
+                                )}% Comentarios positivos`
                               : "Sin compras"}
                           </span>{" "}
                         </p>
