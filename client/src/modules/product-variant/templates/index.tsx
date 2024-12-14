@@ -24,6 +24,7 @@ interface Seller {
   email: string
   quantity: number
   price: number
+  avatar: string
   parameters: {
     rating: number
     sales: number

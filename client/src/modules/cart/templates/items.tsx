@@ -19,8 +19,7 @@ interface lineItem
     "beforeInsert" | "beforeUpdate" | "afterUpdateOrLoad"
   > {
   store_variant_id: string
-
-  store: { store_name: string; customer_email: string }
+  store: { store_name: string; customer_email: string; avatar: string }
 }
 type ItemsTemplateProps = {
   items?: lineItem[]
@@ -83,10 +82,11 @@ const ItemsTemplate = ({ items, modifyProduct }: ItemsTemplateProps) => {
                                 </h3>
                                 <div className=" flex first-line:text-slate-400 gap-2 rounded-[5px]  mt-4">
                                   <Avatar
+                                    isBordered
                                     size="sm"
                                     color="secondary"
                                     className=""
-                                    name={item.store.store_name.charAt(0)}
+                                    src={item.store.avatar}
                                   />{" "}
                                   <div>
                                     <p className="text-base font-semibold">
