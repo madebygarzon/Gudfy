@@ -49,52 +49,50 @@ const CustomerStore: React.FC<store> = (store) => {
   const { customer } = useMeCustomer()
   return (
     <div className="w-full pb-5">
-      <div className="text-xl-semi flex justify-between items-start ">
-        <span>¡Bienvenido a tu tienda!</span>
-        <span className="text-small-regular text-gray-700"></span>
-      </div>
-      <div className="flex min-h-[230px] my-4 gap-2">
-        <div className="w-[40%] flex justify-center ">
-          <CardPrefileDashboard customer={customer} store={store} />
-        </div>
-        <div className=" w-[60%] flex justify-center ">
-          <CardReviewProductDashboard />
-        </div>
-      </div>
-      <div className=" w-full grid grid-cols-4 gap-2 py-1   ">
-        <CardItemsDashboard
-          image="/account/product.svg"
-          title="Productos"
-          description=" Crea, edita y gestiona tus productos"
-          href="/account/seller/products"
-          store={store}
-        />
-
-        <CardItemsDashboard
-          image="/account/metricas.svg"
-          title="Ordenes"
-          description=" Mira el proseso de tus ordenes"
-          href="/account/seller/orders"
-          store={store}
-        />
-
-        <CardItemsDashboard
-          image="/account/cart.svg"
-          title="Ventas"
-          description="Gestiona y analisa tus ventas"
-          href="/account/profile"
-          store={store}
-        />
-
-        <CardItemsDashboard
-          image="/account/wallet.svg"
-          title="Tu Billetera"
-          description="¡Ten el control de tus ingresos!"
-          href="/account/seller/wallet"
-          store={store}
-        />
-      </div>
+  <div className="text-xl-semi flex flex-col md:flex-row justify-between items-start ">
+    <span>¡Bienvenido a tu tienda!</span>
+    <span className="text-small-regular text-gray-700"></span>
+  </div>
+  <div className="flex flex-col md:flex-row min-h-[230px] my-4 gap-2">
+    <div className="w-full md:w-[40%] flex justify-center ">
+      <CardPrefileDashboard customer={customer} store={store} />
     </div>
+    <div className="w-full md:w-[60%] flex justify-center ">
+      <CardReviewProductDashboard />
+    </div>
+  </div>
+  <div className="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2 py-1">
+    <CardItemsDashboard
+      image="/account/product.svg"
+      title="Productos"
+      description="Crea, edita y gestiona tus productos"
+      href="/account/seller/products"
+      store={store}
+    />
+    <CardItemsDashboard
+      image="/account/metricas.svg"
+      title="Ordenes"
+      description="Mira el proceso de tus ordenes"
+      href="/account/seller/orders"
+      store={store}
+    />
+    <CardItemsDashboard
+      image="/account/cart.svg"
+      title="Ventas"
+      description="Gestiona y analiza tus ventas"
+      href="/account/profile"
+      store={store}
+    />
+    <CardItemsDashboard
+      image="/account/wallet.svg"
+      title="Tu Billetera"
+      description="¡Ten el control de tus ingresos!"
+      href="/account/seller/wallet"
+      store={store}
+    />
+  </div>
+</div>
+
   )
 }
 
@@ -174,11 +172,20 @@ const CardReviewProductDashboard: React.FC = () => {
         dataReview.totalReviews ||
         dataReview.latestComment
       ) ? (
-        <h3 className="text-xl font-bold">Aun no tienes valoraciones</h3>
+        <div className="flex items-center justify-center gap-2"> 
+          <Image
+          alt="user_gudfy"
+          src="/account/comments.svg"
+          title="Ordenes"
+          width={80}
+          height={80}
+          />
+          <h3 className="text-xl font-bold">Aún no tienes valoraciones</h3>
+        </div>
       ) : (
         <>
           <div className="flex items-center justify-between border-b-1 w-full border-b-[#9B48ED] p-4 ">
-            <h3 className="text-xl font-bold">Mis Valoraciones</h3>
+            <h3 className="text-xl font-bold">Mis valoraciones</h3>
             <p className="text-ms text-[#9B48ED]">
               Reviews: {dataReview.totalReviews}{" "}
             </p>
@@ -186,7 +193,7 @@ const CardReviewProductDashboard: React.FC = () => {
               className="text-ms text-[#9B48ED] cursor-pointer"
               onClick={() => onOpen()}
             >
-              Ver mas reviews
+              Ver más reviews
             </p>
           </div>
           <div className="pt-4 w-full">
@@ -195,7 +202,7 @@ const CardReviewProductDashboard: React.FC = () => {
                 {dataReview?.rating.toFixed(2)}%
               </h3>
               <p className="text-sm " onClick={() => {}}>
-                Valoraciones Positivas
+                Valoraciones positivas
               </p>
             </div>
             <div className="flex w-[100%]  justify-center mt-2">
@@ -368,21 +375,10 @@ const CardPrefileDashboard: React.FC<CardPrefileDashboard> = ({
         {nameEdit.stateEdit ? (
           <div className="flex-col justify-center w-full">
             <div className="flex w-full justify-center gap-4 pt-2 ">
+              
               <Select
                 className="w-[45%] border-lila-gf border rounded-[9px] text-lila-gf"
-                placeholder="Select an adjective"
-                size="sm"
-                onChange={(e) => {
-                  setNameEdit((old) => ({ ...old, adjective: e.target.value }))
-                }}
-              >
-                {adjectives.map((adjective) => (
-                  <SelectItem key={adjective.key}>{adjective.label}</SelectItem>
-                ))}
-              </Select>
-              <Select
-                className="w-[45%] border-lila-gf border rounded-[9px] text-lila-gf"
-                placeholder="Primer Nombre"
+                placeholder="Selecciona un animal"
                 size="sm"
                 onChange={(e) => {
                   setNameEdit((old) => ({ ...old, animal: e.target.value }))
@@ -392,16 +388,29 @@ const CardPrefileDashboard: React.FC<CardPrefileDashboard> = ({
                   <SelectItem key={animal.key}>{animal.label}</SelectItem>
                 ))}
               </Select>
+              <Select
+                className="w-[45%] border-lila-gf border rounded-[9px] text-lila-gf"
+                placeholder="Selecciona un adjetivo"
+                size="sm"
+                onChange={(e) => {
+                  setNameEdit((old) => ({ ...old, adjective: e.target.value }))
+                }}
+              >
+                {adjectives.map((adjective) => (
+                  <SelectItem key={adjective.key}>{adjective.label}</SelectItem>
+                ))}
+              </Select>
             </div>
             <div className="flex items-center justify-center w-full my-2 p-2 text-sm">
               <Alert
                 color="secondary"
                 closeButton
-                description={" Podras cambiar de nombre una sola vez"}
-                title={<h3 className="font-bold">Cambio de Nombre</h3>}
+                description={"Ten en cuenta que solo podrás modificar el nombre una única vez."}
+                title={<h3 className="font-bold">Actualiza el nombre de tu tienda</h3>}
                 endContent={
                   <div className="h-full my-auto ml-2 ">
                     <Button
+                     className="ml-1 mb-1 w-full"
                       isDisabled={!(nameEdit.adjective && nameEdit.animal)}
                       color="secondary"
                       size="sm"
@@ -411,7 +420,7 @@ const CardPrefileDashboard: React.FC<CardPrefileDashboard> = ({
                       Guardar
                     </Button>
                     <Button
-                      className="ml-1"
+                      className="ml-1 w-full"
                       color="danger"
                       size="sm"
                       variant="flat"
@@ -432,9 +441,9 @@ const CardPrefileDashboard: React.FC<CardPrefileDashboard> = ({
             <p className=" text-xl-semi capitalize">{nameEdit.storeName}</p>{" "}
             {!nameEdit.change ? (
               <Tooltip
-                className="mb-5 w-[350px]"
+                className="mt-5 border-2 border-lila-gf w-[350px]"
                 content={
-                  <div className="px-1 py-2">Editar el nombre de la tienda</div>
+                  <div className="px-1 py-2 ">Cambia aquí el nombre de tu tienda</div>
                 }
               >
                 <div>
