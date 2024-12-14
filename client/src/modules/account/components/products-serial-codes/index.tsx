@@ -58,14 +58,14 @@ const SerialCodeTable: React.FC = () => {
           <table className="min-w-full bg-white  rounded-lg shadow-md">
             <thead>
               <tr>
-                <th className="px-4 py-2  bg-gray-100 text-left">Producto</th>
+                <th className="flex items-center px-4 py-2  bg-gray-100 text-left">Producto</th>
                 <th className="px-4 py-2  bg-gray-100 text-left">
                   Numero orden
                 </th>
                 <th className="px-4 py-2  bg-gray-100 text-left">
                   Nombre de la tienda
                 </th>
-                <th className="px-4 py-2  bg-gray-100 text-left">Codigos</th>
+                <th className="px-4 py-2  bg-gray-100 text-left">Items</th>
                 <th className="px-4 py-2  bg-gray-100 text-left">Descargar</th>
               </tr>
             </thead>
@@ -83,7 +83,7 @@ const SerialCodeTable: React.FC = () => {
                         height={150}
                         width={100}
                       />
-                      <p className="text-red-600">{code.product_name}</p>
+                      <p className="text-black font-bold">{code.product_name}</p>
                     </td>
                     <td className="px-4 py-2 ">
                       {handlerOrderNumber(code.order_number)}
@@ -99,16 +99,16 @@ const SerialCodeTable: React.FC = () => {
                       >
                         <AccordionItem
                           key={i}
-                          aria-label="Lista de codigos"
+                          aria-label="Items"
                           startContent={<FaEye className="text-lila-gf" />}
                           subtitle={
                             <p className="flex">
                               {code.serial_codes.length}
-                              {" Codigos - "}
+                              {" Items - "}
                               <span className="text-lila-gf ml-1">Ver más</span>
                             </p>
                           }
-                          title="Lista de codigos"
+                          title="Listado de ítems"
                         >
                           {code.serial_codes.map((code) => (
                             <Snippet color="default">{code}</Snippet>
