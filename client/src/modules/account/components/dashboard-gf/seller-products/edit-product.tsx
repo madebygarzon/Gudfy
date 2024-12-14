@@ -12,6 +12,7 @@ import {
 } from "@nextui-org/react"
 import FileUploader from "./file-uploader-txt"
 import { postAddCodesProduct } from "@modules/account/actions/serial-code/post-add-codes-store-variant"
+import ButtonLigth from "@modules/common/components/button_light"
 
 type props = {
   productData: StoreProducVariant
@@ -76,7 +77,7 @@ export default function EditProduct({
       <ModalContent>
         {(onClose) => (
           <>
-            <ModalHeader className="flex flex-col gap-1 px-40">
+            <ModalHeader className="text-2xl flex flex-col gap-1 px-40">
               Editar Producto: {productData.productvarianttitle}
               <div className="text-xs ">
                 <p>Codigos en inventario: {productData.quantity} </p>
@@ -84,7 +85,7 @@ export default function EditProduct({
               </div>
             </ModalHeader>
             <ModalBody className="flex overflow-auto py-10 px-40">
-              <h4 className="font-bold">Subir nuevos productos</h4>
+              <h4 className="font-bold">Agregar ítems</h4>
               <FileUploader
                 setError2={setError}
                 variantID={productData.storexvariantid}
@@ -92,16 +93,17 @@ export default function EditProduct({
               />
             </ModalBody>
             <ModalFooter>
-              <Button color="danger" variant="light" onPress={onClose}>
+              <ButtonLigth className="bg-[#E74C3C] hover:bg-[#C0392B] text-white border-none" onClick={onClose}>
                 Cancelar
-              </Button>
-              <Button
+              </ButtonLigth>
+              <ButtonLigth
                 color="primary"
-                isDisabled={!addResult.length || Error}
-                onPress={onSubmit}
+                className="bg-[#28A745] hover:bg-[#218838] text-white border-none"
+                // isDisabled={!addResult.length || Error}
+                onClick={onSubmit}
               >
                 Guardar
-              </Button>
+              </ButtonLigth>
             </ModalFooter>
           </>
         )}
