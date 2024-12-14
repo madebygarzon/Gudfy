@@ -12,7 +12,7 @@ export const listSellersAvatar = [
   { name: "Bear", src: "/account/avatars/avatar_oso.png" },
   { name: "Penguin", src: "/account/avatars/avatar_pinguino.png" },
   { name: "Frog", src: "/account/avatars/avatar_rana.png" },
-  { name: "Mouse", src: "/account/avatars/avatar_raton.png" },
+  { name: "Lion", src: "/account/avatars/avatar_leon.png" },
   { name: "Snake", src: "/account/avatars/avatar_serpiente.png" },
   { name: "Shark", src: "/account/avatars/avatar_tiburon.png" },
   { name: "Tiger", src: "/account/avatars/avatar_tigre.png" },
