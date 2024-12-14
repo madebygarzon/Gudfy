@@ -23,6 +23,7 @@ import getAllCategories from "@modules/account/actions/get-data-categories"
 import { ProductCategory } from "@medusajs/medusa"
 import ProductOptionVariant from "./product-option-variant"
 import ProductVariat from "./product-variatn"
+import ButtonLigth from "@modules/common/components/button_light"
 
 type Reset = {
   setReset: React.Dispatch<React.SetStateAction<boolean>>
@@ -275,21 +276,20 @@ export default function RequestProduct({ setReset }: Reset) {
   }
   return (
     <>
-      <ButtonM
-        variant="transparent"
-        className="  bg-white hover:bg-gray-100 text-gray-600 border-gray-300 border rounded-[5px]"
+      <ButtonLigth
+        className="bg-[#9B48ED] hover:bg-[#7b39c4] text-white border-none"
         onClick={onOpen}
       >
         Solicitar producto
         <Plus />
-      </ButtonM>
+      </ButtonLigth>
 
       <Modal isOpen={isOpen} onOpenChange={onOpenChange} size="full">
         <ModalContent>
           {(onClose) => (
             <>
-              <ModalHeader className="flex flex-col gap-1 px-40">
-                Crear Producto
+              <ModalHeader className="flex items-center mt-6 flex-col gap-1 px-40">
+                Crear producto
               </ModalHeader>
               <ModalBody className="flex overflow-auto py-10 px-40">
                 <Accordion
@@ -519,13 +519,19 @@ export default function RequestProduct({ setReset }: Reset) {
                   </AccordionItem>
                 </Accordion>
               </ModalBody>
-              <ModalFooter>
-                <Button color="danger" variant="light" onPress={onClose}>
+              <ModalFooter className="mb-6 flex justify-center">
+                <ButtonLigth
+                  className="bg-[#E74C3C] hover:bg-[#C0392B] text-white border-none"
+                  onClick={onClose}
+                >
                   Cancelar
-                </Button>
-                <Button color="primary" onPress={onSubmit}>
+                </ButtonLigth>
+                <ButtonLigth
+                  className="bg-[#28A745] hover:bg-[#218838] text-white border-none"
+                  onClick={onSubmit}
+                >
                   Guardar producto
-                </Button>
+                </ButtonLigth>
               </ModalFooter>
             </>
           )}
