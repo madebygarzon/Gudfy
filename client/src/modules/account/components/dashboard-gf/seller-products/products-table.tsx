@@ -17,7 +17,7 @@ import Link from "next/link"
 import { Variant } from "types/medusa"
 import ImagePlaceholderIcon from "@modules/common/icons/defaultIcon"
 import getAllCategories from "@modules/account/actions/get-data-categories"
-
+import { PencilEditIcon } from "@lib/util/icons"
 import { useDisclosure } from "@nextui-org/react"
 
 type StoreProducVariant = {
@@ -207,19 +207,19 @@ export default function ProductsTable() {
   return (
     <div className=" bg-white p-8 border border-gray-200 rounded-lg">
       <div className="w-full h-full ">
-        <h1 className=" text-xl font-bold">Tus productos</h1>
+        <h1 className=" text-xl font-bold">Productos de la tienda</h1>
         <div className="mt-2 flex justify-between">
           <div className="flex gap-5 h-full items-end py-4">
             <div className="w-[170px] ">
               <Input
-                className="bg-white hover:bg-gray-100 text-gray-600 border border-gray-300 "
+                className="flex items-center justify-center bg-white h-[48px] hover:bg-gray-100 text-gray-600 text-sm border border-gray-300 "
                 placeholder="Buscar"
                 id="search-input"
                 type="search"
                 onChange={(e) => handlerSearcherbar(e.target.value)}
               />
             </div>
-            <div className="w-[250px]"></div>
+            
           </div>
 
           <div className="flex itmes-end py-4 gap-x-3">
@@ -232,7 +232,7 @@ export default function ProductsTable() {
             <table className="table w-full">
               <thead className="heade_table rounded text-left border-1 border-gray-200">
                 <tr className="table_header  shadow-sm border-[15px] border-white">
-                  <th className="my-8">Nombre</th>
+                  <th className="my-8">Producto</th>
                   <th>Precio</th>
                   <th>Inventario</th>
                   <th>Categorias</th>
@@ -264,10 +264,14 @@ export default function ProductsTable() {
                       </td>
                       <td> $ {data.price} USD</td>
                       <td>{data.quantity} Codigos</td>
-                      <td>GifCards</td>
-                      <td className="flex gap-x-2 items-center">
-                        <IconButton onClick={() => onOpen()}>
-                          <PencilSquare className="text-ui-fg-subtle" />
+                      <td>GifCars</td>
+                      <td>
+                        <IconButton
+                          className="hover:bg-white hover:text-white hover:scale-110 transition-all"
+                          variant="transparent"
+                          onClick={() => onOpen()}
+                        >
+                          <PencilEditIcon />
                         </IconButton>
                       </td>
                     </tr>
@@ -278,7 +282,7 @@ export default function ProductsTable() {
           </>
         ) : !isLoading && !dataProducts.dataPreview.length ? (
           <div className="flex flex-col justify-center items-center py-10 bg-gray-100 rounded-lg shadow-md">
-            <div className="flex items-center gap-2 text-red-600">
+            <div className="flex items-center gap-2">
               <XMark className="h-6 w-6" />
               <p className="text-lg font-semibold">
                 No tienes productos en tu tienda
@@ -297,7 +301,7 @@ export default function ProductsTable() {
         <div>
           {`${dataProducts.dataFilter.length} Productos`}{" "}
           <Select onValueChange={handlerFilterRows} size="small">
-            <Select.Trigger className="bg-white text-[#C2C2C2] text-gra-200">
+            <Select.Trigger className="bg-white mt-4 text-[#C2C2C2] text-gra-200">
               <Select.Value placeholder="10" />
             </Select.Trigger>
             <Select.Content>
@@ -311,7 +315,7 @@ export default function ProductsTable() {
         </div>
         <div className="flex gap-5">
           <>
-            {page} of {pageTotal}
+            {page} de {pageTotal}
           </>
           <button
             disabled={page == 1 ? true : false}

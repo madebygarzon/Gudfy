@@ -52,19 +52,15 @@ interface SellerRole {
 const SellerOrdersTemplate = () => {
   const { notifications } = useNotificationContext()
   return (
-    <div className="w-full">
+    <div className="w-full p-8 border border-gray-200 rounded-lg ">
       <div className="mb-8 flex flex-col gap-y-4">
-        <h1 className="text-2xl-semi"> Gestiona tus ventas y reclamos</h1>
-        <p className="text-base-regular">
-          Vea sus pedidos mas recientes y sus estados. También puedes
-          interactuar con las ordenes o reclamos
-        </p>
+       <h1 className="text-xl font-bold">Ordenes</h1>
       </div>
       <div>
-        <div className="flex w-full flex-col">
-          <Tabs aria-label="Options">
-            <Tab key="Orders" title="Ordenes">
-              <Card>
+        <div className="flex w-full flex-col ">
+          <Tabs className="text-2xl" aria-label="Options">
+            <Tab className="" key="Orders" title="Ordenes de la tienda">
+              <Card className="shadow-white shadow-lg">
                 <CardBody>
                   <div className="flex w-full flex-col">
                     <SellerOrderTable />
@@ -76,7 +72,7 @@ const SellerOrdersTemplate = () => {
               key="Reclamos"
               title={
                 <div className="relative -m-1">
-                  Reclamos
+                  Reclamos de ordenes 
                   {notifications.map((n) => {
                     if (n.notification_type_id === "NOTI_CLAIM_SELLER_ID") {
                       return <Notification />
@@ -87,7 +83,7 @@ const SellerOrdersTemplate = () => {
               className="relative"
             >
               <Card>
-                <CardBody>
+                <CardBody className="border-none">
                   <ClaimSellerTable />
                 </CardBody>
               </Card>
