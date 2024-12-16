@@ -54,12 +54,12 @@ const SellerOrdersTemplate = () => {
   return (
     <div className="w-full p-8 border border-gray-200 rounded-lg ">
       <div className="mb-8 flex flex-col gap-y-4">
-       <h1 className="text-xl font-bold">Ordenes</h1>
+       <h1 className="text-xl font-bold">Ordenes de la tienda</h1>
       </div>
       <div>
         <div className="flex w-full flex-col ">
           <Tabs className="text-2xl" aria-label="Options">
-            <Tab className="" key="Orders" title="Ordenes de la tienda">
+            <Tab className="" key="Orders" title="Listado de ordenes">
               <Card className="shadow-white shadow-lg">
                 <CardBody>
                   <div className="flex w-full flex-col">
@@ -82,7 +82,7 @@ const SellerOrdersTemplate = () => {
               }
               className="relative"
             >
-              <Card>
+              <Card className="shadow-white shadow-lg">
                 <CardBody className="border-none">
                   <ClaimSellerTable />
                 </CardBody>
