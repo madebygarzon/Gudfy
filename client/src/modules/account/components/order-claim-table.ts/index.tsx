@@ -26,6 +26,9 @@ import { updateStateNotification } from "@modules/account/actions/update-state-n
 import { hasPassed48Hours } from "@lib/util/date-for-escalation-admin"
 import io, { Socket } from "socket.io-client"
 import Loader from "@lib/loader"
+import { ChatIcon } from "@lib/util/icons"
+import ButtonLigth from "@modules/common/components/button_light"
+import { SendIcon } from "@lib/util/icons"
 
 type orders = {
   orders: order[]
@@ -68,9 +71,6 @@ const ClaimTable: React.FC = () => {
 
   return (
     <div className="w-full p-6">
-      <div className="mb-8 flex flex-col gap-y-4 ">
-        <h1 className="text-2xl-semi">Mis Reclamos</h1>
-      </div>
       <div className="flex flex-col gap-y-8 w-full">
         {/* <div className="flex justify-between mb-4">
           <div></div>
@@ -91,19 +91,11 @@ const ClaimTable: React.FC = () => {
           <table className="min-w-full bg-white  rounded-lg shadow-md">
             <thead>
               <tr>
-                <th className="px-4 py-2  bg-gray-100 text-left">
-                  Estado del reclamo
-                </th>
-                <th className="px-4 py-2  bg-gray-100 text-left">
-                  Numero de Orden
-                </th>
-                <th className="px-4 py-2  bg-gray-100 text-left">
-                  Detalles del Producto
-                </th>
-                <th className="px-4 py-2  bg-gray-100 text-left">
-                  Fecha y hora de Creación
-                </th>
-                <th className="px-4 py-2  bg-gray-100 text-left"></th>
+                <th className="py-2 text-left">Estado del reclamo</th>
+                <th className="py-2 text-left">Orden número</th>
+                <th className="py-2 text-left">Detalles del producto</th>
+                <th className="py-2 text-left">Fecha y hora de creación</th>
+                <th className="py-2 text-left">Chat</th>
               </tr>
             </thead>
             <tbody>
@@ -144,6 +136,7 @@ const ClaimTable: React.FC = () => {
                     <td className=" py-2">
                       {handlerformatDate(claim.created_at)}
                     </td>
+
                     <td className=" p4-2">
                       <div className="relative">
                         {notifications.map((n) => {
@@ -156,20 +149,19 @@ const ClaimTable: React.FC = () => {
                           }
                         })}
                       </div>
-                      <ButtonMedusa
-                        className="bg-[#1f0146cf] border-none shadow-none hover:bg-blue-gf hover:text-white text-slate-200 rounded-[5px]"
+                      <ChatIcon
+                        className="cursor-pointer hover:scale-110 transition-all"
                         onClick={() => {
                           handlerSelectClaimOrder(claim)
                         }}
-                      >
-                        <ChatBubble />{" "}
-                      </ButtonMedusa>
+                      />{" "}
                     </td>
                   </tr>
                 ))
               ) : (
-                <div className="p-6"><Loader/></div>
-                
+                <div className="p-6">
+                  <Loader />
+                </div>
               )}
             </tbody>
           </table>
@@ -302,95 +294,89 @@ const ModalClaimComment = ({
       isOpen={isOpen}
       onOpenChange={onOpenChange}
       scrollBehavior={"inside"}
-      size="3xl"
+      size="xl"
+      className="rounded-2xl overflow-hidden shadow-lg"
     >
-      <ModalContent>
+      <ModalContent className="rounded-2xl">
         {(onClose) => (
           <>
-            <ModalHeader className="flex flex-col gap-1">
-              Conversación con la tienda de {claim?.store_name}
+            <ModalHeader className="flex flex-col gap-1 border-b border-slate-200 bg-gray-50 py-3 px-4 rounded-t-2xl">
+              <h2 className="text-center text-lg font-semibold">
+               Resolución de reclamos 
+              </h2>
             </ModalHeader>
-            <ModalBody className=" justify-end  min-h-[400px] ">
-              {comments?.map((comment) => (
-                <div
-                  className={`flex w-full   ${
-                    comment.comment_owner_id === "COMMENT_CUSTOMER_ID"
-                      ? "justify-end"
-                      : "justify-start"
-                  }`}
-                >
-                  <div className="my-1 px-3 py-1 bg-slate-200 border rounded-[10px]">
-                    <p className="text-xs">
-                      {comment.comment_owner_id === "COMMENT_CUSTOMER_ID"
-                        ? "Yo"
-                        : comment.comment_owner_id === "COMMENT_ADMIN_ID"
-                        ? "Admin Gudfy"
-                        : "Tienda"}
-                    </p>
-                    {comment.comment}
+            <ModalBody className="bg-gray-100 px-8 py-4 overflow-y-auto h-[60vh]">
+              <div className="flex flex-col gap-2">
+                {comments?.map((comment) => (
+                  <div
+                    key={comment.id}
+                    className={`flex w-full transition-transform duration-300 ease-in-out ${
+                      comment.comment_owner_id === "COMMENT_CUSTOMER_ID"
+                        ? "justify-end"
+                        : "justify-start"
+                    }`}
+                  >
+                    <div
+                      className={`max-w-[75%] px-4 py-2 shadow-md text-sm ${
+                        comment.comment_owner_id === "COMMENT_CUSTOMER_ID"
+                          ? "bg-blue-400 text-white rounded-bl-xl rounded-tr-xl rounded-tl-xl"
+                          : "bg-gray-200 text-gray-900 rounded-br-xl rounded-tr-xl rounded-tl-xl"
+                      }`}
+                    >
+                      <p className="mb-1 text-xs font-bold">
+                        {comment.comment_owner_id === "COMMENT_CUSTOMER_ID"
+                          ? "Yo"
+                          : comment.comment_owner_id === "COMMENT_ADMIN_ID"
+                          ? "Admin Gudfy"
+                          : claim?.store_name}
+                      </p>
+                      <p>{comment.comment}</p>
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </ModalBody>
-            <ModalFooter>
+            <ModalFooter className="border-t border-slate-200 bg-gray-50 py-3 px-4 rounded-b-2xl">
               <div className="w-full">
-                <div className=" flex w-full">
+                <div className="flex items-center w-full gap-2 bg-white px-3 py-2 rounded-full shadow-md">
                   <Input
                     value={newComment}
                     size="sm"
-                    className="border rounded-[10px]"
                     radius="sm"
-                    endContent={
-                      <ButtonMedusa
-                        onClick={handlerSubmitComment}
-                        variant="transparent"
-                        className="rounded-full border border-blue-gf bg-transparent hover:bg-slate-300"
-                      >
-                        <PlayMiniSolid color="#1f0046" />
-                      </ButtonMedusa>
-                    }
+                    className="flex-1 text-sm focus:outline-none focus:ring-0 border-none placeholder-gray-400"
+                    placeholder="Escribe un mensaje..."
                     onValueChange={setNewComment}
-                  />{" "}
+                  />
+                  <SendIcon
+                    onClick={handlerSubmitComment}
+                    className="cursor-pointer p-1 flex items-center justify-center w-10 h-8 rounded-full bg-blue-500 hover:bg-blue-600 text-white shadow-md transition-all duration-200"
+                  >
+                    <PlayMiniSolid color="#FFFFFF" />
+                  </SendIcon>
                 </div>
-                <div className="my-4 mx-2">
-                  <p className="text-sm">
-                    {" "}
-                    Estimado cliente, tiene varias opciones disponibles para
-                    proceder con su reclamación. Por favor, actúe según su
-                    preferencia para avanzar en el proceso.
-                  </p>
-                  <div className="flex gap-2  mt-2">
-                    {/* <Button
-                      className="bg-green-600 text-white"
-                      onClick={() => handlerStatusClaim("SOLVED")}
-                      isLoading={isLoadingStatus.solved}
-                    >
-                      Resolver
-                    </Button> */}
-                    <Button
-                      className="bg-green-600 text-white"
+                <div className="mt-4 px-6 text-xs text-gray-600">
+                  *Estimado cliente, le informamos que dispone de varias opciones para gestionar su reclamación. Le invitamos a elegir la alternativa que mejor se ajuste a sus necesidades.*
+                  <div className="flex items-center justify-center gap-2 mt-2">
+                    <ButtonLigth
+                      color="primary"
+                      className="bg-[#28A745] px-3 hover:bg-[#218838] text-white border-none w-full sm:w-auto"
                       onClick={() => handlerStatusClaim("CANCEL")}
                       isLoading={isLoadingStatus.cancel}
                     >
-                      Cerrar Reclamo
-                    </Button>
-                    <Button
-                      className="bg-orange-600 text-white"
+                      Cerrar reclamo
+                    </ButtonLigth>
+
+                    <ButtonLigth
+                      className="bg-[#E74C3C] px-3 hover:bg-[#C0392B] text-white border-none w-full sm:w-auto"
                       onClick={() => handlerStatusClaim("UNSOLVED")}
                       isLoading={isLoadingStatus.unsolved}
                       disabled={!hasPassed48Hours(claim?.created_at)}
                     >
-                      Escalar a administrador
-                    </Button>
+                      Escalar con un administrador
+                    </ButtonLigth>                  
                   </div>
                 </div>
               </div>
-              {/* <Button color="danger" variant="light" onPress={onClose}>
-                Close
-              </Button>
-              <Button color="primary" onPress={onClose}>
-                Action
-              </Button> */}
             </ModalFooter>
           </>
         )}
