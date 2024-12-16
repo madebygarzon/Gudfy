@@ -117,7 +117,7 @@ const FileUploader: React.FC<CodesArray> = ({
           }
         >
           <b>
-            <InputFile              
+            <InputFile
               type="Plane"
               onChange={handleFileUpload}
               setResult={setResult}
