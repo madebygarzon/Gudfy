@@ -132,13 +132,13 @@ const SellerOrderTable: React.FC = () => {
           <table className="min-w-full bg-white  rounded-lg shadow-md">
             <thead>
               <tr>
-                <th className="px-4 py-2 text-left">Estado de la Orden</th>
-                <th className="px-4 py-2 text-left">Numero de Orden</th>
-                <th className="px-4 py-2 text-left">
+                <th className="py-2 text-left">Estado de la Orden</th>
+                <th className="py-2 text-left">Numero de Orden</th>
+                <th className="py-2 text-left">
                   Fecha y hora de Creación
                 </th>
-                <th className="px-4 py-2 text-left">Tiempo a Pagar</th>
-                <th className="px-4 py-2 text-left">Detalle de la orden</th>
+                <th className="py-2 text-left">Tiempo a Pagar</th>
+                <th className="py-2 text-left">Detalle de la orden</th>
               </tr>
             </thead>
             <tbody>
@@ -177,8 +177,9 @@ const SellerOrderTable: React.FC = () => {
                         <></>
                       )}
                     </td>
-                    <td className="flex items-center justify-center px-4 py-2  text-center">
+                    <td className="px-4 py-2">
                       <EyeSeeIcon
+                        className="cursor-pointer hover:scale-110 transition-all"
                         onClick={() => {
                           setSelectOrderData(order)
                           onOpen()

@@ -24,6 +24,7 @@ import { ProductCategory } from "@medusajs/medusa"
 import ProductOptionVariant from "./product-option-variant"
 import ProductVariat from "./product-variatn"
 import ButtonLigth from "@modules/common/components/button_light"
+import { TrashIcon } from "@lib/util/icons"
 
 type Reset = {
   setReset: React.Dispatch<React.SetStateAction<boolean>>
@@ -155,7 +156,7 @@ export default function RequestProduct({ setReset }: Reset) {
       error = true
       setError((data) => ({
         ...data,
-        categoriesError: "Selecciona una categoria",
+        categoriesError: "Selecciona una categoría",
       }))
     }
     if (!optionVariant.length) {
@@ -288,7 +289,7 @@ export default function RequestProduct({ setReset }: Reset) {
         <ModalContent>
           {(onClose) => (
             <>
-              <ModalHeader className="flex items-center mt-6 flex-col gap-1 px-40">
+              <ModalHeader className="text-xl font-bold flex items-center mt-6 flex-col gap-1 px-40">
                 Crear producto
               </ModalHeader>
               <ModalBody className="flex overflow-auto py-10 px-40">
@@ -436,10 +437,10 @@ export default function RequestProduct({ setReset }: Reset) {
                   >
                     <ButtonM
                       variant="transparent"
-                      className=" border rounded-[5px] mb-5"
+                      className="text-slate-700 hover:text-gray-100 border rounded-[5px] mb-8"
                       onClick={handlerAddOption}
                     >
-                      Agregar opciones de variacion
+                      Agregar opciones de variación
                       <Plus />
                     </ButtonM>
                     {Errors.optionVariant && (
@@ -478,12 +479,11 @@ export default function RequestProduct({ setReset }: Reset) {
                             variant={v}
                             optionVariant={optionVariant}
                           />
-                          <IconButton
-                            onClick={() => handlerTrash(v.index)}
-                            className="text-red-700"
-                          >
-                            <Trash />
-                          </IconButton>
+                             <TrashIcon 
+                             className="transition-colors duration-200 ease-in-out hover:scale-110 cursor-pointer"
+                              onClick={() => handlerTrash(v.index)}                              
+                            />
+                         
                         </div>
                       ))
                     ) : (
@@ -507,11 +507,11 @@ export default function RequestProduct({ setReset }: Reset) {
                     {optionVariant.length ? (
                       <ButtonM
                         variant="transparent"
-                        className=" border rounded-[5px] mb-5"
+                        className="text-slate-700 hover:text-gray-100 border rounded-[5px] mb-5"
                         onClick={handlerAddVariant}
-                      >
+                      >                        
+                        Agregar variacion
                         <Plus />
-                        Agegar variacion
                       </ButtonM>
                     ) : (
                       <></>
