@@ -74,40 +74,47 @@ export default function EditProduct({
 
   return (
     <Modal isOpen={isOpen} onOpenChange={onOpenChange} size="2xl">
-      <ModalContent>
-        {(onClose) => (
-          <>
-            <ModalHeader className="text-2xl flex flex-col gap-1 px-40">
-              Editar Producto: {productData.productvarianttitle}
-              <div className="text-xs ">
-                <p>Codigos en inventario: {productData.quantity} </p>
-                <p>Codigos vendidos: {productData.serialCodeCount}</p>
-              </div>
-            </ModalHeader>
-            <ModalBody className="flex overflow-auto py-10 px-40">
-              <h4 className="font-bold">Agregar ítems</h4>
-              <FileUploader
-                setError2={setError}
-                variantID={productData.storexvariantid}
-                setAddResult={setAddResult}
-              />
-            </ModalBody>
-            <ModalFooter>
-              <ButtonLigth className="bg-[#E74C3C] hover:bg-[#C0392B] text-white border-none" onClick={onClose}>
-                Cancelar
-              </ButtonLigth>
-              <ButtonLigth
-                color="primary"
-                className="bg-[#28A745] hover:bg-[#218838] text-white border-none"
-                // isDisabled={!addResult.length || Error}
-                onClick={onSubmit}
-              >
-                Guardar
-              </ButtonLigth>
-            </ModalFooter>
-          </>
-        )}
-      </ModalContent>
-    </Modal>
+  <ModalContent className="rounded-lg shadow-lg">
+    {(onClose) => (
+      <>
+        {/* Header */}
+        <ModalHeader className="text-2xl font-semibold flex flex-col gap-2 pt-6 px-6 sm:px-10">
+          Editar Producto: {productData.productvarianttitle}
+          <div className="text-sm text-gray-600">
+            <p>Códigos en inventario: {productData.quantity}</p>
+            <p>Códigos vendidos: {productData.serialCodeCount}</p>
+          </div>
+        </ModalHeader>
+
+        {/* Body */}
+        <ModalBody className="flex flex-col overflow-auto py-6 px-6 sm:px-10">
+          <h4 className="font-bold text-lg mb-4">Agregar ítems</h4>
+          <FileUploader
+            setError2={setError}
+            variantID={productData.storexvariantid}
+            setAddResult={setAddResult}
+          />
+        </ModalBody>
+
+        {/* Footer */}
+        <ModalFooter className="flex flex-col sm:flex-row justify-center items-center gap-4 py-4 px-6 sm:px-10">
+          <ButtonLigth
+            className="bg-[#E74C3C] hover:bg-[#C0392B] text-white border-none w-full sm:w-auto"
+            onClick={onClose}
+          >
+            Cancelar
+          </ButtonLigth>
+          <ButtonLigth
+            color="primary"
+            className="bg-[#28A745] hover:bg-[#218838] text-white border-none w-full sm:w-auto"
+            onClick={onSubmit}
+          >
+            Guardar
+          </ButtonLigth>
+        </ModalFooter>
+      </>
+    )}
+  </ModalContent>
+</Modal>
   )
 }
