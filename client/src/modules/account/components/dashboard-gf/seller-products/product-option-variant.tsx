@@ -3,6 +3,7 @@ import { Input } from "@nextui-org/react"
 import { objetOptionVariant } from "./request-product"
 import { XCircleSolid, Trash } from "@medusajs/icons"
 import { IconButton } from "@medusajs/ui"
+import { TrashIcon } from "@lib/util/icons"
 
 type props = {
   setOptionVariant: React.Dispatch<
@@ -104,7 +105,7 @@ const ProductOptionVariant: React.FC<props> = ({
         <div>
           <Input
             labelPlacement="outside"
-            label={`Preciona "Enter" o "," para agregar la variacion`}
+            label={`Presiona "Enter" o "," para agregar una variación`}
             size="sm"
             placeholder="Color/tamaño/tiempo"
             value={valueVariant}
@@ -128,9 +129,11 @@ const ProductOptionVariant: React.FC<props> = ({
             }
           />
         </div>
-        <IconButton onClick={handlerTrash} className="text-red-700">
-          <Trash />
-        </IconButton>
+
+        <TrashIcon
+          className="transition-colors duration-200 ease-in-out hover:scale-110 cursor-pointer"
+          onClick={handlerTrash}
+        />
       </div>
     </div>
   )

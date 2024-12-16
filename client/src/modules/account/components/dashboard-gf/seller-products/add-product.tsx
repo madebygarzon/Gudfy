@@ -198,7 +198,7 @@ export default function AddProducts({ setReset }: Reset) {
         className="bg-[#9B48ED] hover:bg-[#7b39c4] text-white border-none"
         onClick={onOpen}
       >
-        Agregar producto
+        Agregar productos
         <Plus />
       </ButtonLigth>
 
@@ -206,7 +206,7 @@ export default function AddProducts({ setReset }: Reset) {
         <ModalContent>
           {(onClose) => (
             <>
-              <ModalHeader className="flex items-center mt-6 flex-col gap-1 px-20">
+              <ModalHeader className="text-xl font-bold flex items-center mt-6 flex-col gap-1 px-20">
                 Agregar productos
               </ModalHeader>
               <ModalBody className="m-6 border-1 rounded-xl shadow-md border-gray-200 p-12 ">
