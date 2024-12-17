@@ -29,24 +29,15 @@ const WalletTemplate = () => {
     balance_paid: 0,
   })
   return (
-    <div className="w-full">
+    <div className="w-full p-8 border border-gray-200 rounded-lg">
       <div className="mb-8 flex flex-col gap-y-4">
-        <h1 className="text-2xl-semi">
-          {customer?.first_name} esta es tu Billetera
-        </h1>
-        <p className="text-base-regular">
-          "En esta billetera digital, podrás visualizar el historial completo de
-          tus transacciones, incluyendo tu saldo disponible, saldo pendiente y
-          las cantidades retiradas. Además, tendrás un desglose detallado de los
-          productos que ya han sido pagados y aquellos que aún están en proceso
-          de pago, brindándote un control total sobre tu actividad financiera."
-        </p>
+       <h1 className="text-xl font-bold">Billetera de la tienda</h1>
       </div>
       <div>
         <div className="flex w-full flex-col">
           <Tabs aria-label="Options">
-            <Tab key="Historico" title="Historico">
-              <Card>
+            <Tab key="Historico" title="Historico de transacciones">
+              <Card className="shadow-white shadow-lg">
                 <CardBody>
                   <div className="flex w-full flex-col">
                     <WalletTable wallet={wallet} setWallet={setWallet} />
@@ -55,7 +46,7 @@ const WalletTemplate = () => {
               </Card>
             </Tab>
             <Tab key="Pagos" title="Pagos" className="relative">
-              <Card>
+              <Card className="shadow-white shadow-lg">
                 <CardBody>
                   <PayingTable wallet={wallet} setWallet={setWallet} />
                 </CardBody>
