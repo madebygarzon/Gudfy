@@ -88,11 +88,11 @@ const SellerOrdersTemplate = () => {
                 </CardBody>
               </Card>
             </Tab>
-            <Tab key="Compras" title="Compras">
+            {/* <Tab key="Compras" title="Compras">
               <Card>
                 <CardBody>Listado de Compras</CardBody>
               </Card>
-            </Tab>
+            </Tab> */}
           </Tabs>
         </div>
       </div>

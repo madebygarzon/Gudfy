@@ -61,7 +61,7 @@ const CustomerStore: React.FC<store> = (store) => {
       <CardReviewProductDashboard />
     </div>
   </div>
-  <div className="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2 py-1">
+  <div className="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 py-1">
     <CardItemsDashboard
       image="/account/product.svg"
       title="Productos"
@@ -72,17 +72,17 @@ const CustomerStore: React.FC<store> = (store) => {
     <CardItemsDashboard
       image="/account/metricas.svg"
       title="Ordenes"
-      description="Mira el proceso de tus ordenes"
+      description="Mira el proceso de tus ordenes y ventas"
       href="/account/seller/orders"
       store={store}
     />
-    <CardItemsDashboard
+    {/* <CardItemsDashboard
       image="/account/cart.svg"
       title="Ventas"
       description="Gestiona y analiza tus ventas"
       href="/account/profile"
       store={store}
-    />
+    /> */}
     <CardItemsDashboard
       image="/account/wallet.svg"
       title="Tu Billetera"
