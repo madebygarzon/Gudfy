@@ -41,6 +41,8 @@ import getListSerialCodes from "./serial-codes/get-list-serial-codes";
 import deleteCart from "./cart/delete-cart";
 import updateReview from "./update-review";
 import deleteReview from "./delete-review";
+import { getSellerStoreData } from "./seller-store/get-seller-store-data";
+import { getSellerStoreReviews } from "./seller-store/get-selller-store-reviews";
 
 // Initialize a custom router
 const router = Router();
@@ -159,4 +161,8 @@ export function attachStoreRoutes(storeRouter: Router) {
 
   //-----------------------------serialCodes---------------------------
   router.get("/account/list-serial-codes", wrapHandler(getListSerialCodes));
+
+  //-------------------------seller stores----------------------------
+  router.get("/seller-store/:id", wrapHandler(getSellerStoreData));
+  router.get("/seller-store-reviews", wrapHandler(getSellerStoreReviews));
 }
