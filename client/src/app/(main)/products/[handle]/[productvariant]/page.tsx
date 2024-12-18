@@ -5,6 +5,7 @@ import { Metadata } from "next"
 
 type Props = {
   params: { productvariant: string }
+  searchParams: { id?: string }
 }
 
 async function getProducts(productvariant: string) {
@@ -32,8 +33,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 }
 
-export default async function CollectionPage({ params }: Props) {
+export default async function CollectionPage({ params, searchParams }: Props) {
   const product = await getProducts(params.productvariant)
 
-  return <ProductTemplate product={product} />
+  const id = searchParams.id
+
+  return <ProductTemplate product={product} storeId={id} />
 }
