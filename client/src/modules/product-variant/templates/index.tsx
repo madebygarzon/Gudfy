@@ -16,6 +16,7 @@ import Link from "next/link"
 
 type ProductVariantTemplateProps = {
   product: storeProductVariant
+  storeId?: string
 }
 interface Seller {
   store_variant_id: string
@@ -33,11 +34,14 @@ interface Seller {
 
 const ProductTemplate: React.FC<ProductVariantTemplateProps> = ({
   product,
+  storeId,
 }) => {
   const { addItem, existingVariant } = useCartGudfy()
-
+  const storeReference = storeId
+    ? product.sellers.find((seller) => seller.store_id == storeId)
+    : product.sellers[0]
   const [selectedSeller, setSelectedSeller] = useState<Seller>(
-    product.sellers[0]
+    storeReference || product.sellers[0]
   )
   const [price, setPrice] = useState<number>()
   const [amount, setAmount] = useState<number>(1)

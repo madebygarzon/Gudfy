@@ -121,7 +121,15 @@ const OrderDetails = ({ orderData, onClose }: props) => {
                       <br />
                     </div>
                     <div className="text-sm font-light">
-                      <p>Vendido por: {p.store_name}</p>
+                      <p>
+                        Vendido por:{" "}
+                        <Link
+                          className="text-lila-gf capitalize"
+                          href={`/seller/store/${p.store_id}`}
+                        >
+                          {p.store_name}
+                        </Link>
+                      </p>
                       {orderData.state_order === "Finalizado" ? (
                         <>
                           {!loading ? (
