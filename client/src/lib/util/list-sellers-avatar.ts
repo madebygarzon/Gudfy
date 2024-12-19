@@ -1,7 +1,7 @@
 export const listSellersAvatar = [
   { name: "Eagle", src: "/account/avatars/avatar_aguila.png" },
   { name: "Owl", src: "/account/avatars/avatar_buho.png" },
-  { name: "Donkey", src: "/account/avatars/avatar_burro.png" },
+  { name: "Monkey", src: "/account/avatars/avatar_mono.png" },
   { name: "Horse", src: "/account/avatars/avatar_caballo.png" },
   { name: "Kangaroo", src: "/account/avatars/avatar_canguro.png" },
   { name: "Rabbit", src: "/account/avatars/avatar_conejo.png" },
