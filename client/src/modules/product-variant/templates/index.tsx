@@ -13,6 +13,7 @@ import { useCart } from "medusa-react"
 
 import { useCartGudfy } from "@lib/context/cart-gudfy"
 import Link from "next/link"
+import { useCartDropdown } from "@lib/context/cart-dropdown-context"
 
 type ProductVariantTemplateProps = {
   product: storeProductVariant
@@ -45,6 +46,8 @@ const ProductTemplate: React.FC<ProductVariantTemplateProps> = ({
   )
   const [price, setPrice] = useState<number>()
   const [amount, setAmount] = useState<number>(1)
+
+  const { open } = useCartDropdown()
 
   const handlerPrice = (amountvalue: number) => {
     setPrice(
@@ -85,7 +88,9 @@ const ProductTemplate: React.FC<ProductVariantTemplateProps> = ({
       },
       amount,
       selectedSeller.store_variant_id
-    )
+    ).then(() => {
+      open()
+    })
   }
   useEffect(() => {
     setAmount(1)

@@ -358,7 +358,11 @@ export default function RequestProduct({ setReset }: Reset) {
                             height={100}
                           />
                         )}
-                        {/* <InputFile setFile={setFile} alt={""} /> */}
+                        <InputFile
+                          label="Subir imagen"
+                          setFile={setFile}
+                          alt={""}
+                        />
                       </div>
                     </div>
                     <div className="w-[60%] text-zinc-500 py-5">
@@ -479,11 +483,10 @@ export default function RequestProduct({ setReset }: Reset) {
                             variant={v}
                             optionVariant={optionVariant}
                           />
-                             <TrashIcon 
-                             className="transition-colors duration-200 ease-in-out hover:scale-110 cursor-pointer"
-                              onClick={() => handlerTrash(v.index)}                              
-                            />
-                         
+                          <TrashIcon
+                            className="transition-colors duration-200 ease-in-out hover:scale-110 cursor-pointer"
+                            onClick={() => handlerTrash(v.index)}
+                          />
                         </div>
                       ))
                     ) : (
@@ -509,7 +512,7 @@ export default function RequestProduct({ setReset }: Reset) {
                         variant="transparent"
                         className="text-slate-700 hover:text-gray-100 border rounded-[5px] mb-5"
                         onClick={handlerAddVariant}
-                      >                        
+                      >
                         Agregar variacion
                         <Plus />
                       </ButtonM>

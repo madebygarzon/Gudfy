@@ -243,9 +243,6 @@ export default class SellerApplicationService extends TransactionBaseService {
           state_application_id: "A",
         }
       );
-
-      // se crea una tienda solamente si la solicitud esta aprovada.
-      //createStore() tiene una validacion la cual retorna si ya tiene una tienda asociada
       await this.customerService_.createStore(customer_id);
       await ApprovedEmailSellerApplication({
         name: customer.name,
