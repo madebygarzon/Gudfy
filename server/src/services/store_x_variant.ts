@@ -2,19 +2,16 @@ import { Lifetime } from "awilix";
 import { TransactionBaseService, Customer } from "@medusajs/medusa";
 import SerialCodeRepository from "../repositories/serial-code";
 import StoreXVariantRepository from "../repositories/store-x-variant";
-import ProductRepository from "@medusajs/medusa/dist/repositories/product";
-import ProductVariantRepository from "@medusajs/medusa/dist/repositories/product-variant";
 import { StoreReviewRepository } from "../repositories/store-review";
-import StoreService from "./store";
-import { map } from "zod";
 import { IsNull, Not } from "typeorm";
-import handler from "src/jobs/timerOrder";
+import StoreService from "./store";
 
 class StoreXVariantService extends TransactionBaseService {
   static LIFE_TIME = Lifetime.SCOPED;
   protected readonly storeReviewRepository_: typeof StoreReviewRepository;
   protected readonly serialCodeRepository_: typeof SerialCodeRepository;
   protected readonly storeXVariantRepository_: typeof StoreXVariantRepository;
+  protected readonly storeService_: StoreService;
   protected readonly loggedInCustomer_: Customer | null;
 
   constructor(container, options) {
@@ -22,6 +19,7 @@ class StoreXVariantService extends TransactionBaseService {
     super(...arguments);
 
     try {
+      this.storeService_ = container.storeService;
       this.storeReviewRepository_ = container.storeReviewRepository;
       this.loggedInCustomer_ = container.loggedInCustomer || "";
       this.storeXVariantRepository_ = container.storeXVariantRepository;
@@ -82,7 +80,9 @@ class StoreXVariantService extends TransactionBaseService {
                 price: variant.price,
                 avatar: variant.avatar,
                 parameters: {
-                  rating: await this.getSellerRating(variant.store_id),
+                  rating: await this.storeService_.getSellerRating(
+                    variant.store_id
+                  ),
                   sales: await this.getNumberOfSales(variant.store_id),
                 },
               },
@@ -98,7 +98,9 @@ class StoreXVariantService extends TransactionBaseService {
             price: variant.price,
             avatar: variant.avatar,
             parameters: {
-              rating: await this.getSellerRating(variant.store_id),
+              rating: await this.storeService_.getSellerRating(
+                variant.store_id
+              ),
               sales: await this.getNumberOfSales(variant.store_id),
             },
           });
@@ -246,25 +248,26 @@ class StoreXVariantService extends TransactionBaseService {
     }
   }
 
-  async getSellerRating(store_id) {
-    const repoStoreReview = this.activeManager_.withRepository(
-      this.storeReviewRepository_
-    );
+  // async getSellerRating(store_id) {
+  //   const repoStoreReview = this.activeManager_.withRepository(
+  //     this.storeReviewRepository_
+  //   );
 
-    const reviews = await repoStoreReview.find({
-      where: {
-        store_id: store_id,
-      },
-    });
+  //   const reviews = await repoStoreReview.find({
+  //     where: {
+  //       store_id: store_id,
+  //       approved
+  //     },
+  //   });
 
-    if (!reviews.length) return 0;
+  //   if (!reviews.length) return 0;
 
-    const sum = reviews.reduce((sum, review) => {
-      return sum + review.rating;
-    }, 0);
+  //   const sum = reviews.reduce((sum, review) => {
+  //     return sum + review.rating;
+  //   }, 0);
 
-    return ((sum / reviews.length) * 100) / 5;
-  }
+  //   return ((sum / reviews.length) * 100) / 5;
+  // }
 
   async getNumberOfSales(store_id) {
     const productV = this.manager_.withRepository(
