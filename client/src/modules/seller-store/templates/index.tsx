@@ -31,17 +31,11 @@ const SellerStore: React.FC<{ store: StoreData }> = ({ store }) => {
   const router = useRouter()
   return (
     <div className="my-10 mx-20  ">
-      <ButtonLigth
-        className="gap-x-2 border-white"
-        onClick={() => router.back()}
-      >
-        <BsFillArrowLeftCircleFill color="#9B48ED" />
-        Volver
-      </ButtonLigth>
+      
 
       <div className="flex flex-col md:flex-row p-4 rounded-lg  ">
         {/* Sección de la Información del Vendedor */}
-        <div className="w-[20%] bg-white p-4 rounded-lg shadow-lg border flex flex-col items-center  justify-center text-center">
+        <div className="w-[20%] bg-white p-4 rounded-lg shadow-2xl flex flex-col items-center  justify-center text-center">
           <SellerProfile store={store} />
         </div>
 

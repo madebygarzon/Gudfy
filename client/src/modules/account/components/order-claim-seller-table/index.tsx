@@ -40,7 +40,7 @@ import Notification from "@modules/common/components/notification"
 import { updateStateNotification } from "@modules/account/actions/update-state-notification"
 import io, { Socket } from "socket.io-client"
 import Loader from "@lib/loader"
-import { ChatIcon } from "@lib/util/icons"
+import { ChatIcon, SendIcon } from "@lib/util/icons"
 import ButtonLigth from "@modules/common/components/button_light"
 
 type orders = {
@@ -82,6 +82,7 @@ const ClaimSellerTable: React.FC = () => {
     }
     getListClaimComments(claim?.id).then((e) => {
       setComments(e)
+      setSelectOrderClaim(claim) 
       onOpen()
     })
   }
@@ -195,6 +196,7 @@ const ClaimSellerTable: React.FC = () => {
         handleReset={handleReset}
         isOpen={isOpen}
         onOpenChange={onOpenChange}
+        claim={selectOrderClaim}
       />
     </div>
   )
@@ -206,6 +208,9 @@ type ClaimComments = {
   order_claim_id?: string
   customer_id?: string
   created_at?: string
+  customer_name?: string 
+  customer_last_name?: string 
+  store_name?: string 
 }
 
 interface ModalClaimComment {
@@ -214,6 +219,7 @@ interface ModalClaimComment {
   isOpen: boolean
   onOpenChange: () => void
   handleReset: () => void
+  claim?: orderClaim 
 }
 
 const ModalClaimComment = ({
@@ -222,11 +228,13 @@ const ModalClaimComment = ({
   isOpen,
   onOpenChange,
   handleReset,
+  claim,
 }: ModalClaimComment) => {
   const [newComment, setNewComment] = useState<string>()
   const [socket, setSocket] = useState<Socket | null>(null)
   const [isLoadingStatus, setIsLoadingStatus] = useState<boolean>(false)
   const { customer } = useMeCustomer()
+  
   const handlerSubmitComment = () => {
     const dataComment = {
       comment: newComment,
@@ -235,10 +243,9 @@ const ModalClaimComment = ({
       comment_owner_id: "COMMENT_STORE_ID",
     }
 
-    postAddComment(dataComment).then((e) => {
+    postAddComment(dataComment).then(() => {
       setNewComment("")
       setComments((old) => {
-        // se debe de arreglar un un reset
         return old?.length
           ? [
               ...old,
@@ -268,8 +275,6 @@ const ModalClaimComment = ({
     const socketIo = io(process.env.PORT_SOKET || "http://localhost:3001")
 
     socketIo.on("new_comment", (data: { order_claim_id: string }) => {
-      // Si la notificación es para el cliente correcto, agregarla a la lista
-
       if (data.order_claim_id === comments?.[0].order_claim_id)
         getListClaimComments(comments?.[0].order_claim_id).then((e) => {
           setComments(e)
@@ -279,9 +284,14 @@ const ModalClaimComment = ({
     setSocket(socketIo)
 
     return () => {
-      socketIo.disconnect() // Desconectar el socket cuando el componente se desmonta
+      socketIo.disconnect()
     }
   }, [comments?.[0].order_claim_id])
+
+  const customerName = `${claim?.customer_name || "Cliente"} ${
+    claim?.customer_last_name || ""
+  }`
+  const storeName = claim?.store_name || "Tienda"
 
   return (
     <Modal
@@ -295,7 +305,9 @@ const ModalClaimComment = ({
         {(onClose) => (
           <>
             <ModalHeader className="flex flex-col gap-1 border-b border-slate-200 bg-gray-50 py-3 px-4 rounded-t-2xl">
-              <h2 className="text-center text-lg font-semibold">Resolución de reclamos</h2>
+              <h2 className="text-center text-lg font-semibold">
+                Resolución de reclamos
+              </h2>              
             </ModalHeader>
             <ModalBody className="bg-gray-100 px-8 py-4 overflow-y-auto h-[60vh]">
               <div className="flex flex-col gap-2">
@@ -317,10 +329,10 @@ const ModalClaimComment = ({
                     >
                       <p className="mb-1 text-xs font-bold">
                         {comment.comment_owner_id === "COMMENT_CUSTOMER_ID"
-                          ? "Cliente"
+                          ? customerName
                           : comment.comment_owner_id === "COMMENT_ADMIN_ID"
                           ? "Admin Gudfy"
-                          : "Tienda"}
+                          : storeName}
                       </p>
                       <p>{comment.comment}</p>
                     </div>
@@ -339,28 +351,16 @@ const ModalClaimComment = ({
                     placeholder="Escribe un mensaje..."
                     onValueChange={setNewComment}
                   />
-                  <button
+                  <SendIcon
                     onClick={handlerSubmitComment}
-                    className="flex items-center justify-center w-8 h-8 rounded-full bg-blue-500 hover:bg-blue-600 text-white shadow-md transition-all duration-200"
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      strokeWidth={2}
-                      stroke="currentColor"
-                      className="w-5 h-5"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M3 10h11M3 14h7m-7 4h11m-4 4l6-8m-6 8l-6-8"
-                      />
-                    </svg>
-                  </button>
+                    className="cursor-pointer p-1 flex items-center justify-center w-10 h-8 rounded-full bg-blue-500 hover:bg-blue-600 text-white shadow-md transition-all duration-200"
+                  />
+                
+                  
                 </div>
-                <div className="mt-4 text-xs text-gray-600">
-                  *Si encuentras que este asunto no puede ser resuelto por ti, tienes la posibilidad de escalarlo al administrador.*
+                <div className="mt-4 px-6 text-xs text-gray-600">
+                  *Si encuentras que este asunto no puede ser resuelto por ti,
+                  tienes la posibilidad de escalarlo al administrador.*
                   <div className="flex justify-center gap-2 mt-2">
                     <ButtonLigth
                       className="bg-[#E74C3C] hover:bg-[#C0392B] text-white border-none w-full sm:w-auto"
@@ -379,5 +379,6 @@ const ModalClaimComment = ({
     </Modal>
   )
 }
+
 
 export default ClaimSellerTable

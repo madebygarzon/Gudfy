@@ -12,6 +12,7 @@ import {
 } from "@nextui-org/react"
 import { getSellerStoreReviews } from "@modules/seller-store/actions/get-seller-store-reviews"
 import clsx from "clsx"
+import Image from "next/image"
 
 interface ModalProps {
   store_id: string
@@ -50,27 +51,29 @@ const ModalSellerStoreReviews = ({
       isOpen={isOpen}
       onOpenChange={onOpenChange}
       onClose={onClose}
-      size="5xl"
+      size="2xl"
     >
       <ModalContent>
         {(onClose) => (
           <>
             <ModalBody>
-              <div className="p-6 bg-gray-50 rounded-md shadow-md">
-                <h2 className="text-2xl font-bold mb-4">Reseñas</h2>
+              <div className="p-4 py-8 bg-white rounded-lg ">
+                <h2 className="text-center text-2xl font-bold text-gray-800 mb-6">
+                  Reseñas
+                </h2>
                 {reviews.length > 0 ? (
-                  <div className="space-y-4">
+                  <div className="space-y-4 max-h-[300px] overflow-y-auto   ">
                     {reviews.map((review) => (
                       <div
                         key={review.id}
-                        className="p-4 bg-white rounded-md shadow-sm border"
+                        className="p-4 bg-gray-50 rounded-lg shadow-md border border-gray-200"
                       >
-                        <div className="flex justify-between items-center mb-2">
+                        <div className="flex justify-between items-center mb-3">
                           <div>
-                            <p className="font-semibold">
+                            <p className="font-medium text-gray-800">
                               {review.customer_name}
                             </p>
-                            <p className="text-gray-500 text-sm">
+                            <p className="text-sm text-gray-500">
                               {review.created_at}
                             </p>
                           </div>
@@ -81,18 +84,31 @@ const ModalSellerStoreReviews = ({
                                 "text-green-500": review.rating == 5,
                                 "text-red-500": review.rating == 1,
                               },
-                              " font-bold"
+                              "text-lg font-bold"
                             )}
                           >
-                            Rating: {review.rating}
+                            {review.rating}★
                           </p>
                         </div>
-                        <p className="text-gray-700">{review.content}</p>
+                        <p className="text-gray-700 leading-relaxed">
+                          {review.content}
+                        </p>
                       </div>
                     ))}
                   </div>
                 ) : (
-                  <p className="text-gray-500">No hay reseñas disponibles.</p>
+                  <div className="flex items-center justify-center gap-2">
+                    <Image
+                      alt="user_gudfy"
+                      src="/account/comments.svg"
+                      title="Ordenes"
+                      width={80}
+                      height={80}
+                    />
+                    <h3 className="text-xl font-semibold">
+                      Esta tienda aún no tiene reseñas.
+                    </h3>
+                  </div>
                 )}
               </div>
             </ModalBody>

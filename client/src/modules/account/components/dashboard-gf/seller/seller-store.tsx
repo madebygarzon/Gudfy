@@ -49,50 +49,49 @@ const CustomerStore: React.FC<store> = (store) => {
   const { customer } = useMeCustomer()
   return (
     <div className="w-full pb-5">
-  <div className="text-xl-semi flex flex-col md:flex-row justify-between items-start ">
-    <span>¡Bienvenido a tu tienda!</span>
-    <span className="text-small-regular text-gray-700"></span>
-  </div>
-  <div className="flex flex-col md:flex-row min-h-[230px] my-4 gap-2">
-    <div className="w-full md:w-[40%] flex justify-center ">
-      <CardPrefileDashboard customer={customer} store={store} />
-    </div>
-    <div className="w-full md:w-[60%] flex justify-center ">
-      <CardReviewProductDashboard />
-    </div>
-  </div>
-  <div className="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2 py-1">
-    <CardItemsDashboard
-      image="/account/product.svg"
-      title="Productos"
-      description="Crea, edita y gestiona tus productos"
-      href="/account/seller/products"
-      store={store}
-    />
-    <CardItemsDashboard
-      image="/account/metricas.svg"
-      title="Ordenes"
-      description="Mira el proceso de tus ordenes"
-      href="/account/seller/orders"
-      store={store}
-    />
-    <CardItemsDashboard
+      <div className="text-xl-semi flex flex-col md:flex-row justify-between items-start ">
+        <span>¡Bienvenido a tu tienda!</span>
+        <span className="text-small-regular text-gray-700"></span>
+      </div>
+      <div className="flex flex-col md:flex-row min-h-[230px] my-4 gap-2">
+        <div className="w-full md:w-[40%] flex justify-center ">
+          <CardPrefileDashboard customer={customer} store={store} />
+        </div>
+        <div className="w-full md:w-[60%] flex justify-center ">
+          <CardReviewProductDashboard />
+        </div>
+      </div>
+      <div className="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 py-1">
+        <CardItemsDashboard
+          image="/account/product.svg"
+          title="Productos"
+          description="Crea, edita y gestiona tus productos"
+          href="/account/seller/products"
+          store={store}
+        />
+        <CardItemsDashboard
+          image="/account/metricas.svg"
+          title="Ordenes"
+          description="Mira el proceso de tus ordenes y ventas"
+          href="/account/seller/orders"
+          store={store}
+        />
+        {/* <CardItemsDashboard
       image="/account/cart.svg"
       title="Ventas"
       description="Gestiona y analiza tus ventas"
       href="/account/profile"
       store={store}
-    />
-    <CardItemsDashboard
-      image="/account/wallet.svg"
-      title="Tu Billetera"
-      description="¡Ten el control de tus ingresos!"
-      href="/account/seller/wallet"
-      store={store}
-    />
-  </div>
-</div>
-
+    /> */}
+        <CardItemsDashboard
+          image="/account/wallet.svg"
+          title="Tu Billetera"
+          description="¡Ten el control de tus ingresos!"
+          href="/account/seller/wallet"
+          store={store}
+        />
+      </div>
+    </div>
   )
 }
 
@@ -172,13 +171,13 @@ const CardReviewProductDashboard: React.FC = () => {
         dataReview.totalReviews ||
         dataReview.latestComment
       ) ? (
-        <div className="flex items-center justify-center gap-2"> 
+        <div className="flex items-center justify-center gap-2">
           <Image
-          alt="user_gudfy"
-          src="/account/comments.svg"
-          title="Ordenes"
-          width={80}
-          height={80}
+            alt="user_gudfy"
+            src="/account/comments.svg"
+            title="Ordenes"
+            width={80}
+            height={80}
           />
           <h3 className="text-xl font-bold">Aún no tienes valoraciones</h3>
         </div>
@@ -276,7 +275,19 @@ const CardPrefileDashboard: React.FC<CardPrefileDashboard> = ({
   }>({
     name: "",
     src: store.avatar || "/account/avatars/avatar_aguila.png",
-  })
+  });
+
+  useEffect(() => {
+    if (nameEdit.animal) {
+      const avatar = listSellersAvatar.find(
+        (item) => item.name.toLowerCase() === nameEdit.animal.toLowerCase()
+      );
+      if (avatar) {
+        setSelectedAvatar(avatar);
+      }
+    }
+  }, [nameEdit.animal]);
+
   const [isOpen, setIsOpen] = React.useState(false)
 
   const handlerEditNameStore = () => {
@@ -290,11 +301,11 @@ const CardPrefileDashboard: React.FC<CardPrefileDashboard> = ({
     })
   }
 
-  const handlerUpdateAvatar = () => {
-    updateSellerAvatar(selectedAvatar.src).then(() => {
-      setIsOpen((open) => !isOpen)
-    })
-  }
+  // const handlerUpdateAvatar = () => {
+  //   updateSellerAvatar(selectedAvatar.src).then(() => {
+  //     setIsOpen((open) => !isOpen)
+  //   })
+  // }
 
   return (
     <div className=" relative flex flex-col w-full  py-5 px-2  h-full shadow-card rounded-[10px] items-center  justify-center">
@@ -303,7 +314,7 @@ const CardPrefileDashboard: React.FC<CardPrefileDashboard> = ({
         src={selectedAvatar.src}
         className=" w-[180px] h-[180px] border-solid border-5 border-[#9B48ED] text-3xl text-lila-gf font-extrabold"
       />
-      <div className="absolute top-10 right-10 z-20">
+      {/* <div className="absolute top-10 right-10 z-20">
         <div>
           <Popover
             placement={"right"}
@@ -369,13 +380,25 @@ const CardPrefileDashboard: React.FC<CardPrefileDashboard> = ({
             </PopoverContent>
           </Popover>
         </div>
-      </div>
+      </div> */}
 
       <div className="flex">
         {nameEdit.stateEdit ? (
           <div className="flex-col justify-center w-full">
             <div className="flex w-full justify-center gap-4 pt-2 ">
-              
+            <Select
+                className="w-[45%] border-lila-gf border rounded-[9px] text-lila-gf"
+                placeholder="Selecciona un adjetivo"
+                size="sm"
+                onChange={(e) => {
+                  setNameEdit((old) => ({ ...old, adjective: e.target.value }))
+                }}
+              >
+                {adjectives.map((adjective) => (
+                  <SelectItem key={adjective.key}>{adjective.label}</SelectItem>
+                ))}
+              </Select>
+
               <Select
                 className="w-[45%] border-lila-gf border rounded-[9px] text-lila-gf"
                 placeholder="Selecciona un animal"
@@ -388,42 +411,38 @@ const CardPrefileDashboard: React.FC<CardPrefileDashboard> = ({
                   <SelectItem key={animal.key}>{animal.label}</SelectItem>
                 ))}
               </Select>
-              <Select
-                className="w-[45%] border-lila-gf border rounded-[9px] text-lila-gf"
-                placeholder="Selecciona un adjetivo"
-                size="sm"
-                onChange={(e) => {
-                  setNameEdit((old) => ({ ...old, adjective: e.target.value }))
-                }}
-              >
-                {adjectives.map((adjective) => (
-                  <SelectItem key={adjective.key}>{adjective.label}</SelectItem>
-                ))}
-              </Select>
+
+              
             </div>
             <div className="flex items-center justify-center w-full my-2 p-2 text-sm">
               <Alert
-                color="secondary"
+                color="secondary"                
                 closeButton
-                description={"Ten en cuenta que solo podrás modificar el nombre una única vez."}
-                title={<h3 className="font-bold">Actualiza el nombre de tu tienda</h3>}
+                description={
+                  "Ten en cuenta que solo podrás modificar el nombre una única vez."
+                }
+                title={
+                  <h3 className="font-bold">
+                    Actualiza el nombre de tu tienda
+                  </h3>
+                }
                 endContent={
                   <div className="h-full my-auto ml-2 ">
                     <Button
-                     className="ml-1 mb-1 w-full"
+                      className="bg-[#28A745] hover:bg-[#218838] text-white rounded-md border-none w-full"
                       isDisabled={!(nameEdit.adjective && nameEdit.animal)}
-                      color="secondary"
-                      size="sm"
-                      variant="flat"
+                      // color="secondary"
+                      // size="sm"
+                      // variant="flat"
                       onPress={handlerEditNameStore}
                     >
                       Guardar
                     </Button>
                     <Button
-                      className="ml-1 w-full"
-                      color="danger"
-                      size="sm"
-                      variant="flat"
+                      className="mt-1 bg-[#E74C3C] hover:bg-[#C0392B] text-white rounded-md border-none w-full"
+                      // color="danger"
+                      // size="sm"
+                      // variant="flat"
                       onPress={() => {
                         setNameEdit((old) => ({ ...old, stateEdit: false }))
                       }}
@@ -443,7 +462,9 @@ const CardPrefileDashboard: React.FC<CardPrefileDashboard> = ({
               <Tooltip
                 className="mt-5 border-2 border-lila-gf w-[350px]"
                 content={
-                  <div className="px-1 py-2 ">Cambia aquí el nombre de tu tienda</div>
+                  <div className="px-1 py-2 ">
+                    Cambia aquí el nombre de tu tienda
+                  </div>
                 }
               >
                 <div>
@@ -461,7 +482,7 @@ const CardPrefileDashboard: React.FC<CardPrefileDashboard> = ({
               <></>
             )}
           </div>
-        )}
+        )} 
       </div>
       {/* <span className="font-semibold text-gray-500">{customer?.email}</span> */}
       <div className="flex gap-2 my-4">
