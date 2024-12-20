@@ -8,6 +8,7 @@ import { Button } from "@nextui-org/react"
 import { Input } from "@nextui-org/react"
 import Link from "next/link"
 import { Tooltip } from "@nextui-org/tooltip"
+import { BlankIcon } from "@lib/util/icons"
 
 interface Seller {
   store_variant_id: string
@@ -63,7 +64,7 @@ const TableSeller: React.FC<TableProps> = ({
       className=" bg-white p-8 border border-gray-200 rounded-lg shadow-lg"
       id="list-sellers"
     >
-      <h3 className="mt-[-45px] bg-white text-center font-normal  text-gray-600 w-[50%] mb-4">
+      <h3 className="mt-[-45px] bg-white text-center font-semibold w-[50%] mb-4">
         {" "}
         Más vendedores para este producto{" "}
       </h3>
@@ -80,8 +81,8 @@ const TableSeller: React.FC<TableProps> = ({
                       : "bg-white hover:bg-gray-100"
                   }`}
                 >
-                  <td className="w-[40%] p-4">
-                    <Tooltip content="Ver tienda del vendedor">
+                  <td className="w-[40%] p-4 ">
+                    <Tooltip className="border border-[#7b39c4]" content={`ver la tienda de ${seller.store_name}`}>
                       <Link href={`/seller/store/${seller.store_id}`}>
                         <div className="flex gap-2">
                           <div className="flex items-center">
@@ -94,9 +95,14 @@ const TableSeller: React.FC<TableProps> = ({
                             />
                           </div>
                           <div>
+                            <div className="flex items-center gap-2">
                             <h3 className="text-sm font-bold">
-                              {seller.store_name}
+                              {seller.store_name} 
                             </h3>
+                            <BlankIcon width={15} />
+                            </div>
+                           
+
                             <p className="text-xs font-normal text-gray-500">
                               Vendedor excelente
                             </p>
@@ -108,7 +114,7 @@ const TableSeller: React.FC<TableProps> = ({
                                     : `${seller.parameters?.rating.toFixed(
                                         2
                                       )}% Comentarios positivos`
-                                  : "Sin compras"}
+                                  : "Sin ventas"}
                               </span>{" "}
                             </p>
                           </div>
