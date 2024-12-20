@@ -87,7 +87,7 @@ const SellerProductTable: React.FC<{ store: StoreData }> = ({ store }) => {
                         <div className="w-[122px]">
                           <Thumbnail
                             thumbnail={variant.thumbnail}
-                            size="full"
+                            size="bsmall"
                           />
                         </div>
                         <div>
