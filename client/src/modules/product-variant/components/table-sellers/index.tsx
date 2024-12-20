@@ -82,7 +82,10 @@ const TableSeller: React.FC<TableProps> = ({
                   }`}
                 >
                   <td className="w-[40%] p-4 ">
-                    <Tooltip className="border border-[#7b39c4]" content={`ver la tienda de ${seller.store_name}`}>
+                    <Tooltip
+                      className="border border-[#7b39c4]"
+                      content={`ver la tienda de ${seller.store_name}`}
+                    >
                       <Link href={`/seller/store/${seller.store_id}`}>
                         <div className="flex gap-2">
                           <div className="flex items-center">
@@ -96,12 +99,11 @@ const TableSeller: React.FC<TableProps> = ({
                           </div>
                           <div>
                             <div className="flex items-center gap-2">
-                            <h3 className="text-sm font-bold">
-                              {seller.store_name} 
-                            </h3>
-                            <BlankIcon width={15} />
+                              <h3 className="text-sm font-bold">
+                                {seller.store_name}
+                              </h3>
+                              <BlankIcon width={15} />
                             </div>
-                           
 
                             <p className="text-xs font-normal text-gray-500">
                               Vendedor excelente
