@@ -30,7 +30,6 @@ class StoreOrderService extends TransactionBaseService {
       const repoStoreOrder = this.activeManager_.withRepository(
         this.storeOrderRepository_
       );
-      console.log("recuperacion de la orden servicio activado");
       const listOrder = await repoStoreOrder
         .createQueryBuilder("so")
         .innerJoinAndSelect("so.order_status", "sso")
@@ -346,27 +345,31 @@ class StoreOrderService extends TransactionBaseService {
   }
 
   async updateStatus(orderId, order_status) {
-    const repoStoreOrder = this.activeManager_.withRepository(
-      this.storeOrderRepository_
-    );
-    const storeVariantOrder = this.activeManager_.withRepository(
-      this.storeVariantOrderRepository_
-    );
-    const cancelOrder = await repoStoreOrder.update(orderId, {
-      order_status_id: order_status,
-    });
-    if (order_status === "Finished_ID") {
-      const updateVariantOrder = await storeVariantOrder.update(
-        {
-          store_order_id: orderId,
-        },
-        {
-          variant_order_status_id: "Finished_ID",
-        }
+    try {
+      const repoStoreOrder = this.activeManager_.withRepository(
+        this.storeOrderRepository_
       );
-    }
+      const storeVariantOrder = this.activeManager_.withRepository(
+        this.storeVariantOrderRepository_
+      );
+      const cancelOrder = await repoStoreOrder.update(orderId, {
+        order_status_id: order_status,
+      });
+      if (order_status === "Finished_ID") {
+        const updateVariantOrder = await storeVariantOrder.update(
+          {
+            store_order_id: orderId,
+          },
+          {
+            variant_order_status_id: "Finished_ID",
+          }
+        );
+      }
 
-    return cancelOrder;
+      return cancelOrder;
+    } catch (error) {
+      console.log("Error al cambiar la orden de estado a discuccion", error);
+    }
   }
 
   async updateCancelStoreOrder(orderId) {

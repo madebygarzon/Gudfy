@@ -32,53 +32,57 @@ class OrderClaimService extends TransactionBaseService {
   }
 
   async addClaim(claim, idCustoemr) {
-    const repoOrderClaim = this.activeManager_.withRepository(
-      this.orderClaimRepository_
-    );
-    const repoStoreVariantOrder = this.activeManager_.withRepository(
-      this.storeVariantOrderRepository_
-    );
-    const repoNotification = this.activeManager_.withRepository(
-      this.notificationGudfyRepository_
-    );
+    try {
+      const repoOrderClaim = this.activeManager_.withRepository(
+        this.orderClaimRepository_
+      );
+      const repoStoreVariantOrder = this.activeManager_.withRepository(
+        this.storeVariantOrderRepository_
+      );
+      const repoNotification = this.activeManager_.withRepository(
+        this.notificationGudfyRepository_
+      );
 
-    const add = await repoOrderClaim.create({
-      store_variant_order_id: claim.store_variant_order_id,
-      customer_id: idCustoemr,
-      status_order_claim_id: "OPEN_ID",
-    });
-    const claimSave = await repoOrderClaim.save(add);
-
-    await this.addComment({
-      comment: claim.comment,
-      comment_owner_id: "COMMENT_CUSTOMER_ID",
-      order_claim_id: claimSave.id,
-      customer_id: idCustoemr,
-    });
-
-    const selecSeller = await repoStoreVariantOrder
-      .createQueryBuilder("svo")
-      .leftJoinAndSelect("svo.store_variant", "sxv")
-      .leftJoinAndSelect("sxv.store", "s")
-      .leftJoinAndSelect("s.members", "c")
-      .where("svo.id = :store_variant_order_id", {
+      const add = await repoOrderClaim.create({
         store_variant_order_id: claim.store_variant_order_id,
-      })
-      .select(["c.id AS seller_id"])
-      .getRawMany();
+        customer_id: idCustoemr,
+        status_order_claim_id: "OPEN_ID",
+      });
+      const claimSave = await repoOrderClaim.save(add);
 
-    const newNotification = await repoNotification.create({
-      order_claim_id: claimSave.id,
-      customer_id: selecSeller[0].seller_id,
-      notification_type_id: "NOTI_CLAIM_SELLER_ID",
-      seen_status: true,
-    });
-    await repoNotification.save(newNotification);
+      await this.addComment({
+        comment: claim.comment,
+        comment_owner_id: "COMMENT_CUSTOMER_ID",
+        order_claim_id: claimSave.id,
+        customer_id: idCustoemr,
+      });
 
-    io.emit("new_notification", {
-      customer_id: selecSeller[0].seller_id,
-      notification: repoNotification,
-    });
+      const selecSeller = await repoStoreVariantOrder
+        .createQueryBuilder("svo")
+        .leftJoinAndSelect("svo.store_variant", "sxv")
+        .leftJoinAndSelect("sxv.store", "s")
+        .leftJoinAndSelect("s.members", "c")
+        .where("svo.id = :store_variant_order_id", {
+          store_variant_order_id: claim.store_variant_order_id,
+        })
+        .select(["c.id AS seller_id"])
+        .getRawMany();
+
+      const newNotification = await repoNotification.create({
+        order_claim_id: claimSave.id,
+        customer_id: selecSeller[0].seller_id,
+        notification_type_id: "NOTI_CLAIM_SELLER_ID",
+        seen_status: true,
+      });
+      const saveNoti = await repoNotification.save(newNotification);
+
+      io.emit("new_notification", {
+        customer_id: selecSeller[0].seller_id,
+        notification: saveNoti,
+      });
+    } catch (error) {
+      console.log("error en la addicion de la reclamacion", error);
+    }
   }
 
   async retriverListClaimAdmin() {
