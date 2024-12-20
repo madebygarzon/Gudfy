@@ -85,20 +85,9 @@ const TableSellerDefault: React.FC<TableProps> = ({
             </h3>
             <p className="text-xs font-normal text-gray-500">
               <span className="font-bold">
-                {(selectedSeller ?? sellerWithLowestPrice).parameters?.rating
-                  ? Number.isInteger(
-                      (selectedSeller ?? sellerWithLowestPrice).parameters
-                        ?.rating
-                    )
-                    ? `${
-                        (selectedSeller ?? sellerWithLowestPrice).parameters
-                          ?.rating
-                      }% Comentarios positivos`
-                    : `${(
-                        (selectedSeller ?? sellerWithLowestPrice).parameters
-                          ?.rating ?? 0
-                      ).toFixed(2)}% Comentarios positivos`
-                  : "Sin ventas"}
+                {sellerWithLowestPrice.parameters?.rating
+                  ? `${sellerWithLowestPrice.parameters?.rating}% Comentarios positivos`
+                  : "Sin compras"}
               </span>
             </p>
           </div>

@@ -12,7 +12,8 @@ export class NotificationType1725069175332 implements MigrationInterface {
     await queryRunner.createPrimaryKey("notification_type", ["id"]);
     await queryRunner.query(
       `INSERT INTO "notification_type" ("id", "type", "description") VALUES
-                  ('NOTI_CLAIM_ID','RECLAMO','Notificación relacionada a un reclamo')`
+                  ('NOTI_CLAIM_CUSTOMER_ID','RECLAMO_A_CLIENTE','Notificacion que va dirigida al cleinte'),
+                  ('NOTI_CLAIM_SELLER_ID','RECLAMO_A_VENDEDOR','Notificación relacionada a un reclamo para el vendedor')`
     );
   }
 

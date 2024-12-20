@@ -16,6 +16,8 @@ import Image from "next/image"
 
 interface ModalProps {
   store_id: string
+  store_name: string 
+  store_avatar: string
   isOpen: boolean
   onOpenChange: () => void
   onClose: () => void
@@ -36,6 +38,8 @@ const ModalSellerStoreReviews = ({
   onOpenChange,
   onClose,
   store_id,
+  store_name,
+  store_avatar,
 }: ModalProps) => {
   const [nextPage, setNextPage] = useState<number>(1)
   const [reviews, setReviews] = useState<dataReview[]>([])
@@ -57,12 +61,24 @@ const ModalSellerStoreReviews = ({
         {(onClose) => (
           <>
             <ModalBody>
-              <div className="p-4 py-8 bg-white rounded-lg ">
-                <h2 className="text-center text-2xl font-bold text-gray-800 mb-6">
-                  Reseñas
-                </h2>
+              <div className=" flex py-3 bg-white rounded-lg px-2 ">
+                <div className="w-60 flex flex-col items-center justify-center">   
+                  <Avatar
+                    size="lg"
+                    src={store_avatar || " "}
+                    className=" w-[100px] h-[100px] border-solid border-3 border-[#9B48ED] text-3xl text-lila-gf font-extrabold"
+                  />               
+                    <h3 className="text-xl font-bold text-gray-700">
+                      {store_name}
+                    </h3>     
+                    <p className="text-sm font-bold text-gray-800">
+                      Reseñas
+                    </p>             
+                </div>
+                <div className="ml-6 w-full ">
+               
                 {reviews.length > 0 ? (
-                  <div className="space-y-4 max-h-[300px] overflow-y-auto   ">
+                  <div className=" max-h-[300px] space-y-4 overflow-y-auto   ">
                     {reviews.map((review) => (
                       <div
                         key={review.id}
@@ -70,7 +86,7 @@ const ModalSellerStoreReviews = ({
                       >
                         <div className="flex justify-between items-center mb-3">
                           <div>
-                            <p className="font-medium text-gray-800">
+                            <p className="font-bold text-gray-800">
                               {review.customer_name}
                             </p>
                             <p className="text-sm text-gray-500">
@@ -110,6 +126,7 @@ const ModalSellerStoreReviews = ({
                     </h3>
                   </div>
                 )}
+                </div>
               </div>
             </ModalBody>
           </>

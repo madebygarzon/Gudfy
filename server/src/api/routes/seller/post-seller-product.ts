@@ -9,6 +9,7 @@ export async function CreateSellerProduct(
     const imagenPath = req.file.path;
 
     const productService = req.scope.resolve("productService");
+
     const dataProduct = {
       title: productData.product.title,
       subtitle: productData.product.subtitle,
