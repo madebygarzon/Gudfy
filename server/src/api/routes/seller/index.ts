@@ -33,6 +33,7 @@ export function attachSellerRoutes(customerRouter: Router) {
   );
 
   //-------Endpoints seller dashboard-------------------------------
+
   //------Orders---------
   router.get("/account/:id/orders", wrapHandler(getListSellerOrders));
   router.get("/:id/orders/payments", wrapHandler(getListOrderPayments));
@@ -41,7 +42,13 @@ export function attachSellerRoutes(customerRouter: Router) {
   router.get("/wallet", wrapHandler(getWallet));
   router.get("/wallet/orders", wrapHandler(getListSellerPayOrders));
 
-  //---serial-codes--------
+  //-------Product - Serial-codes--------
+  router.post(
+    "/create-product",
+    upload.single("image"),
+    authenticateCustomer(),
+    wrapHandler(CreateSellerProduct)
+  );
   router.post(
     "/add-codes-store-variant",
     wrapHandler(postAddCodesStoreVariant)
