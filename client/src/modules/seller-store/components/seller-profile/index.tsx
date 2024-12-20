@@ -10,7 +10,7 @@ const SellerProfile: React.FC<{ store: StoreData }> = ({ store }) => {
   const router = useRouter()
   const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure()
   return (
-    <div>      
+    <div>
       <Avatar
         size="lg"
         src={store.avatar || " "}
@@ -31,15 +31,19 @@ const SellerProfile: React.FC<{ store: StoreData }> = ({ store }) => {
           <BsCart color={"#9B48ED"} /> {store.store_number_sales.numberSales}
         </p>
       </div>
+
       <div>
         <p onClick={onOpen} className="text-lila-gf cursor-pointer mt-5">
-          Ver comentarios
+          Ver reseñas
         </p>
+
         <ModalSellerStoreReviews
           isOpen={isOpen}
           onClose={onClose}
           onOpenChange={onOpenChange}
           store_id={store.store_id}
+          store_name={store.store_name}
+          store_avatar={store.avatar}
         />
       </div>
     </div>
