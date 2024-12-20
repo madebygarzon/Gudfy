@@ -78,6 +78,7 @@ class StoreService extends MedusaStoreService {
     const reviews = await repoStoreReview.find({
       where: {
         store_id: store_id,
+        approved: true,
       },
     });
 
@@ -87,7 +88,8 @@ class StoreService extends MedusaStoreService {
       return sum + review.rating;
     }, 0);
 
-    return ((sum / reviews.length) * 100) / 5;
+    const rating = ((sum / reviews.length) * 100) / 5;
+    return Number.isInteger(rating) ? rating : rating.toFixed(2);
   }
 
   async updateNameStore(newName) {

@@ -6,6 +6,8 @@ import Cart from "@modules/common/icons/cart"
 import Image from "next/image"
 import { useTranslation } from "react-i18next"
 import { driver } from "driver.js"
+import { useNotificationContext } from "@lib/context/notification-context"
+import Notification from "@modules/common/components/notification"
 import "driver.js/dist/driver.css"
 
 type DashboardProps = {
@@ -23,6 +25,7 @@ type Config = {
 
 const Dashboard = ({ orders, customer }: DashboardProps) => {
   const { t } = useTranslation("common")
+  const { notifications } = useNotificationContext()
   return (
     <div className="w-full  flex items-center justify-center ">
       <div className="w-full grid grid-cols-2 ">
@@ -59,9 +62,7 @@ const Dashboard = ({ orders, customer }: DashboardProps) => {
                 <p className=" text-xl-semi capitalize mb-1">
                   {customer?.first_name} {customer?.last_name}
                 </p>
-                <span className="font-semibold  mb-3">
-                  {customer?.email}
-                </span>
+                <span className="font-semibold  mb-3">{customer?.email}</span>
               </div>
             </div>
             <div className="ml-4 flex items-center  text-xs">
@@ -92,7 +93,7 @@ const Dashboard = ({ orders, customer }: DashboardProps) => {
                 <ButtonLigth
                   name="perfil"
                   variant="tertiary"
-                  className="bg-[#9B48ED] hover:bg-[#7b39c4] text-white mt-3"
+                  className="bg-[#9B48ED] hover:bg-[#7b39c4] text-white mt-3 relative"
                 >
                   {t("acc_btn_profile")}
                 </ButtonLigth>
@@ -122,8 +123,13 @@ const Dashboard = ({ orders, customer }: DashboardProps) => {
                 <ButtonLigth
                   name="perfil"
                   variant="tertiary"
-                  className="bg-[#9B48ED] hover:bg-[#7b39c4] text-white mt-3"
+                  className="bg-[#9B48ED] hover:bg-[#7b39c4] text-white mt-3 relative"
                 >
+                  {notifications.map((n) => {
+                    if (n.notification_type_id === "NOTI_CLAIM_CUSTOMER_ID") {
+                      return <Notification />
+                    }
+                  })}
                   {t("acc_btn_subtitle")}
                 </ButtonLigth>
               </Link>
