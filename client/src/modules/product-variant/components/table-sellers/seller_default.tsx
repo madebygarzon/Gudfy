@@ -24,7 +24,9 @@ interface TableProps {
   selectedSeller: Seller | null
   setSelectedSeller: React.Dispatch<React.SetStateAction<Seller>>
 }
-const dataSelecterPAge = [10, 20, 30]
+
+const dataSelecterPage = [10, 20, 30]
+
 const TableSellerDefault: React.FC<TableProps> = ({
   sellers,
   selectedSeller,
@@ -49,19 +51,24 @@ const TableSellerDefault: React.FC<TableProps> = ({
   }
 
   const sellerWithLowestPrice = useMemo(() => {
-    if (selectedSeller) return selectedSeller
     return sellers.reduce(
       (minSeller, currentSeller) =>
         currentSeller.price < minSeller.price ? currentSeller : minSeller,
       sellers[0]
     )
-  }, [selectedSeller])
+  }, [sellers])
+
+  const isLowestPrice = useMemo(() => {
+    return selectedSeller?.store_id === sellerWithLowestPrice.store_id
+  }, [selectedSeller, sellerWithLowestPrice])
 
   return (
     <div className="">
-      <h3 className="mt-[-33px] text-center font-normal bg-white text-gray-600 w-[50%] ">
-        Mejor oferta
-      </h3>
+      {isLowestPrice && (
+        <h3 className="mt-[-33px] mb-6 text-center text-sm py-1 bg-[#E74C3C] text-white rounded-md w-[50%] ">
+          ¡Mejor oferta!
+        </h3>
+      )}
       <div className="">
         <div className="flex gap-4 my-2">
           <div className="flex items-center">
@@ -69,35 +76,41 @@ const TableSellerDefault: React.FC<TableProps> = ({
               isBordered
               size="md"
               color="secondary"
-              className=""
-              src={sellerWithLowestPrice.avatar}
+              src={(selectedSeller ?? sellerWithLowestPrice).avatar}
             />
           </div>
           <div>
             <h3 className="text-sm font-bold">
-              {sellerWithLowestPrice.store_name}
+              {(selectedSeller ?? sellerWithLowestPrice).store_name}
             </h3>
             <p className="text-xs font-normal text-gray-500">
               <span className="font-bold">
-                {sellerWithLowestPrice.parameters?.rating
-                  ? Number.isInteger(sellerWithLowestPrice.parameters?.rating)
-                    ? `${sellerWithLowestPrice.parameters?.rating}% Comentarios positivos`
-                    : `${sellerWithLowestPrice.parameters?.rating.toFixed(
-                        2
-                      )}% Comentarios positivos`
-                  : "Sin compras"}
+                {(selectedSeller ?? sellerWithLowestPrice).parameters?.rating
+                  ? Number.isInteger(
+                      (selectedSeller ?? sellerWithLowestPrice).parameters
+                        ?.rating
+                    )
+                    ? `${
+                        (selectedSeller ?? sellerWithLowestPrice).parameters
+                          ?.rating
+                      }% Comentarios positivos`
+                    : `${(
+                        (selectedSeller ?? sellerWithLowestPrice).parameters
+                          ?.rating ?? 0
+                      ).toFixed(2)}% Comentarios positivos`
+                  : "Sin ventas"}
               </span>
             </p>
           </div>
           <div className="flex mt-4 items-center gap-2">
             | <HiOutlineShoppingCart size={15} />{" "}
-            {sellerWithLowestPrice.parameters?.sales ?? 0}
+            {(selectedSeller ?? sellerWithLowestPrice).parameters?.sales ?? 0}
           </div>
         </div>
         <div className="ml-[-13px] mb-4 ">
-          {sellerWithLowestPrice.quantity ? (
+          {(selectedSeller ?? sellerWithLowestPrice).quantity ? (
             <Badge className="bg-white border-2 border-white" color="green">
-              Con Stock: {sellerWithLowestPrice.quantity}
+              Con Stock: {(selectedSeller ?? sellerWithLowestPrice).quantity}
             </Badge>
           ) : (
             <Badge className="bg-white" color="red">
