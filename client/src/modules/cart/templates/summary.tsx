@@ -52,35 +52,43 @@ const Summary = ({ items, setModifyProduct }: ItemsTemplateProps) => {
     }
   }
   return (
-    <div className="grid grid-cols-1 gap-y-6">
-      <div className="text-small-regular text-gray-700">
-        <div className="flex items-center justify-between text-base-regular text-gray-900 mb-2">
-          <span>Subtotal: {handlerTotalPrice()}</span>
-          <span></span>
+    <div className="grid grid-cols-1 gap-y-6 p-6">
+      <div className="text-gray-800">
+        <h3 className="text-2xl font-semibold text-gray-900 mb-4">
+          Total del carrito
+        </h3>
+        <div className="flex items-center justify-between text-lg text-gray-700 mb-4">
+          <span>Subtotal:</span>
+          <span className="font-medium text-gray-900">
+            {handlerTotalPrice()}
+          </span>
         </div>
-        <div className="flex flex-col gap-y-1">
-          <div className="h-px w-full border-b border-gray-200 border-dashed my-4" />
-          <div className="flex items-center justify-between text-base-regular text-gray-900 mb-2">
-            <span>Total: {handlerTotalPrice()}</span>
-            <span></span>
-          </div>
+        <div className="flex items-center justify-between text-lg text-gray-700 mb-4">
+          <span>Comisión de la pasarela de pago:</span>
+          <span className="font-medium text-gray-900">
+            {handlerTotalPrice()}
+          </span>
         </div>
-        {/* <CartTotals cart={cart} /> */}
-        <Button
-          className="rounded-3xl"
-          onClick={handlerAddOrder}
-          disabled={!customer}
-        >
-          Ir a pagar
-        </Button>
 
+        <div className="h-px w-full border-t border-gray-300 my-4"></div>
+        <div className="flex items-center justify-between text-lg text-gray-700">
+          <span className="font-medium ">Total:</span>
+          <span className="text-lg font-semibold">{handlerTotalPrice()}</span>
+        </div>
+        <div className="mt-6">
+          <Button
+            className="w-full rounded-3xl"
+            onClick={handlerAddOrder}
+            disabled={!customer}
+          >
+            Ir a pagar
+          </Button>
+        </div>
         {success && !success.success && success.data.length ? (
-          <div className="text-center text-sm text-slate-400 mt-5">
+          <div className="text-center text-sm text-red-500 mt-5">
             Algunos productos no tienen stock suficiente
           </div>
-        ) : (
-          <></>
-        )}
+        ) : null}
       </div>
     </div>
   )
