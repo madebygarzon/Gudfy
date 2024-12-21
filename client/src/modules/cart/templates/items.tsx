@@ -53,7 +53,7 @@ const ItemsTemplate = ({ items, modifyProduct }: ItemsTemplateProps) => {
   return (
     <div>
       <div className="border-b border-gray-200 pb-3 flex items-center">
-        <h1 className="text-xl-semi">Tu carrito</h1>
+        <h3 className="text-xl-semi">Tu carrito</h3>
       </div>
       <div className="grid grid-cols-1 gap-y-8 py-8">
         {items?.length ? (
@@ -68,16 +68,16 @@ const ItemsTemplate = ({ items, modifyProduct }: ItemsTemplateProps) => {
                     <div className="flex relative w-full justify-between ">
                       <div className="flex items-center gap-4" key={item.id}>
                         <div className="w-[122px]">
-                          <Thumbnail thumbnail={item.thumbnail} size="full" />
+                          <Thumbnail thumbnail={item.thumbnail} size="bsmall" />
                         </div>
                         <div className="flex flex-col justify-between flex-1">
                           <div className="flex flex-col flex-1">
                             <div className="flex items-start justify-between">
                               <div>
-                                <h3 className="text-xl font-bold  whitespace-nowrap mr-4 ">
+                                <h3 className="text-lg font-bold  whitespace-nowrap mr-4 ">
                                   {item.title}
                                 </h3>
-                                <div className=" flex first-line:text-slate-400 gap-2 rounded-[5px]  mt-4">
+                                <div className=" flex first-line:text-slate-400 gap-2 rounded-[5px]  mt-1">
                                   <Avatar
                                     isBordered
                                     size="sm"
@@ -178,7 +178,7 @@ const ItemsTemplate = ({ items, modifyProduct }: ItemsTemplateProps) => {
         ) : (
           <div>
             <div className="flex py-16 flex-col gap-y-4 items-center justify-center">
-              <div className="bg-gray-900 text-small-regular flex items-center justify-center w-6 h-6 rounded-full text-white">
+              <div className=" text-small-regular flex items-center justify-center w-6 h-6 rounded-full text-white">
                 <span>0</span>
               </div>
               <span>Tu carrito está vacio.</span>
