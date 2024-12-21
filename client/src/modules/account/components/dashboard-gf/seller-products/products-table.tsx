@@ -220,7 +220,6 @@ export default function ProductsTable() {
                 onChange={(e) => handlerSearcherbar(e.target.value)}
               />
             </div>
-            
           </div>
 
           <div className="flex itmes-end py-4 gap-x-3">
@@ -250,23 +249,22 @@ export default function ProductsTable() {
                     >
                       <td>
                         <div className="flex gap-3 items-center">
-                          {data.thumbnail ? (                           
+                          {data.thumbnail ? (
                             <Thumbnail
-                            thumbnail={data.thumbnail}
-                           size="bsmall"                            
-                          />
+                              thumbnail={data.thumbnail}
+                              size="bsmall"
+                            />
                           ) : (
                             <ImagePlaceholderIcon />
                           )}
                           <div className="ml-4 gap-4">
                             <h3 className="text-xl font-bold  whitespace-nowrap mr-4 ">
-                              {` ${data.productvarianttitle} `}                         
-                            </h3> 
+                              {` ${data.productvarianttitle} `}
+                            </h3>
                             <p className="font-medium text-gray-800">
                               {` ${data.producttitle} `}
                             </p>
                           </div>
-                                                   
                         </div>
                       </td>
                       <td> $ {data.price} USD</td>
@@ -301,7 +299,6 @@ export default function ProductsTable() {
           </div>
         ) : (
           <Spinner />
-
         )}
       </div>
       <div className="flex justify-between p-4 mt-6">
