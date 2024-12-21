@@ -13,6 +13,7 @@ import {
 import FileUploader from "./file-uploader-txt"
 import { postAddCodesProduct } from "@modules/account/actions/serial-code/post-add-codes-store-variant"
 import ButtonLigth from "@modules/common/components/button_light"
+import Thumbnail from "@modules/products/components/thumbnail"
 
 type props = {
   productData: StoreProducVariant
@@ -74,47 +75,62 @@ export default function EditProduct({
 
   return (
     <Modal isOpen={isOpen} onOpenChange={onOpenChange} size="2xl">
-  <ModalContent className="rounded-lg shadow-lg">
-    {(onClose) => (
-      <>
-        {/* Header */}
-        <ModalHeader className="text-2xl font-semibold flex flex-col gap-2 pt-6 px-6 sm:px-10">
-          Editar Producto: {productData.productvarianttitle}
-          <div className="text-sm text-gray-600">
-            <p>Códigos en inventario: {productData.quantity}</p>
-            <p>Códigos vendidos: {productData.serialCodeCount}</p>
-          </div>
-        </ModalHeader>
+      <ModalContent className="rounded-lg shadow-lg">
+        {(onClose) => (
+          <>
+            {/* Header */}
+            <ModalHeader className="text-2xl text-center font-semibold flex flex-col gap-2 pt-6 px-6 sm:px-10">
+              Editar Producto: {productData.productvarianttitle}
+            </ModalHeader>
 
-        {/* Body */}
-        <ModalBody className="flex flex-col overflow-auto py-6 px-6 sm:px-10">
-          <h4 className="font-bold text-lg mb-4">Agregar ítems</h4>
-          <FileUploader
-            setError2={setError}
-            variantID={productData.storexvariantid}
-            setAddResult={setAddResult}
-          />
-        </ModalBody>
+            {/* Body */}
 
-        {/* Footer */}
-        <ModalFooter className="flex flex-col sm:flex-row justify-center items-center gap-4 py-4 px-6 sm:px-10">
-          <ButtonLigth
-            className="bg-[#E74C3C] hover:bg-[#C0392B] text-white border-none w-full sm:w-auto"
-            onClick={onClose}
-          >
-            Cancelar
-          </ButtonLigth>
-          <ButtonLigth
-            color="primary"
-            className="bg-[#28A745] hover:bg-[#218838] text-white border-none w-full sm:w-auto"
-            onClick={onSubmit}
-          >
-            Guardar
-          </ButtonLigth>
-        </ModalFooter>
-      </>
-    )}
-  </ModalContent>
-</Modal>
+            <ModalBody className="flex overflow-auto py-2 px-6 sm:px-10">
+              <div className="flex justify-center items-center">
+                <div>
+                  <Thumbnail thumbnail={productData.thumbnail} size="small" />
+                </div>
+
+                <div className="text-sm text-gray-600">
+                  <div className="">
+                    <p>
+                      <span className="font-bold">Códigos en inventario:</span>{" "}
+                      {productData.quantity}
+                    </p>
+                    <p>
+                      <span className="font-bold">Códigos vendidos:</span>{" "}
+                      {productData.serialCodeCount}
+                    </p>
+                  </div>
+                  <h4 className="font-bold mt-8 text-lg mb-1">Agregar ítems</h4>
+                  <FileUploader
+                    setError2={setError}
+                    variantID={productData.storexvariantid}
+                    setAddResult={setAddResult}
+                  />
+                </div>
+              </div>
+            </ModalBody>
+
+            {/* Footer */}
+            <ModalFooter className="flex flex-col sm:flex-row justify-center items-center mt-6 gap-4 py-4 px-6 sm:px-10">
+              <ButtonLigth
+                className="bg-[#E74C3C] hover:bg-[#C0392B] text-white border-none w-full sm:w-auto"
+                onClick={onClose}
+              >
+                Cancelar
+              </ButtonLigth>
+              <ButtonLigth
+                color="primary"
+                className="bg-[#28A745] hover:bg-[#218838] text-white border-none w-full sm:w-auto"
+                onClick={onSubmit}
+              >
+                Guardar
+              </ButtonLigth>
+            </ModalFooter>
+          </>
+        )}
+      </ModalContent>
+    </Modal>
   )
 }

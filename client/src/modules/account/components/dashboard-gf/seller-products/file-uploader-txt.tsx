@@ -102,11 +102,11 @@ const FileUploader: React.FC<CodesArray> = ({
           content={
             <div className="px-1 py-2 ">
               <div className="  text-small font-bold">
-                ¿ Qué Archivo a subir ?
+                ¿ Qué archivo a subir ?
               </div>
               <div className="text-tiny">
                 Un archivo de texto que contiene claves de licencia, solo una
-                clave separado por linea "Enter". Ejemplo: A1Bc2xxxxx
+                clave separada por linea "Enter". Ejemplo: A1Bc2xxxxx
                 <br />
                 A1Bc2xxxxx
                 <br />
@@ -124,7 +124,7 @@ const FileUploader: React.FC<CodesArray> = ({
               setFile={setFilePlane}
               file={filePlane}
               alt="Selecciona"
-              label="Seleccionar Archivo .txt"
+              label="Seleccionar archivo .txt"
             />
           </b>
         </Tooltip>
