@@ -84,7 +84,7 @@ const ProfileName: React.FC<MyInformationProps> = ({ customer }) => {
       <AccountInfo
         label="Contraseña"
         currentInfo={
-          <span>La contraseña no se muestra por motivos de seguridad.</span>
+          <span className="font-extrabold">********</span>
         }
         isLoading={isLoading}
         isSuccess={isSuccess}

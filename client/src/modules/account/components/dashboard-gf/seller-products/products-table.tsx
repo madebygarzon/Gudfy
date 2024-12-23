@@ -208,7 +208,7 @@ export default function ProductsTable() {
   return (
     <div className=" bg-white p-8 border border-gray-200 rounded-lg">
       <div className="w-full h-full ">
-        <h1 className=" text-xl font-bold">Productos de la tienda</h1>
+        <h2 className="text-2xl mt-2 font-bold text-gray-700 ">Productos de la tienda</h2>
         <div className="mt-2 flex justify-between">
           <div className="flex gap-5 h-full items-end py-4">
             <div className="w-[170px] ">
@@ -258,10 +258,10 @@ export default function ProductsTable() {
                             <ImagePlaceholderIcon />
                           )}
                           <div className="ml-4 gap-4">
-                            <h3 className="text-xl font-bold  whitespace-nowrap mr-4 ">
+                            <h3 className="text-xl font-bold text-gray-700 whitespace-nowrap mr-4 ">
                               {` ${data.productvarianttitle} `}
                             </h3>
-                            <p className="font-medium text-gray-800">
+                            <p className="font-medium text-gray-700">
                               {` ${data.producttitle} `}
                             </p>
                           </div>
