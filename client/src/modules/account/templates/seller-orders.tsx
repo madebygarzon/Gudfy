@@ -52,9 +52,9 @@ interface SellerRole {
 const SellerOrdersTemplate = () => {
   const { notifications } = useNotificationContext()
   return (
-    <div className="w-full p-8 border border-gray-200 rounded-lg ">
+    <div className="w-full p-8 border border-gray-200 rounded-lg shadow-2xl">
       <div className="mb-8 flex flex-col gap-y-4">
-       <h1 className="text-xl font-bold">Ordenes de la tienda</h1>
+       <h1 className="text-2xl mt-2 font-bold text-gray-700">Ordenes de la tienda</h1>
       </div>
       <div>
         <div className="flex w-full flex-col ">

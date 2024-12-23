@@ -76,7 +76,7 @@ const AccountInfo = ({
           )}
         >
           <div className="bg-green-100 text-green-500 p-4 my-4">
-            <span>{label} Actualizada con éxito</span>
+            <span className="text-sm">¡{label} actualizado con éxito!</span>
           </div>
         </Disclosure.Panel>
       </Disclosure>
@@ -94,7 +94,7 @@ const AccountInfo = ({
           )}
         >
           <div className="bg-rose-100 text-rose-500 p-4 mt-4">
-            <span>{errorMessage}</span>
+            <span className="text-sm">{errorMessage}</span>
           </div>
         </Disclosure.Panel>
       </Disclosure>
@@ -115,7 +115,7 @@ const AccountInfo = ({
             <div className="flex items-center justify-end mt-2">
               <Button
                 isLoading={isLoading}
-                className="w-full small:max-w-[140px]"
+                className="w-full small:max-w-[240px]"
                 type="submit"
               >
                 Guardar cambios

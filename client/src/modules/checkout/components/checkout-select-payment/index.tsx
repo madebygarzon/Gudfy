@@ -70,18 +70,24 @@ const CheckoutSelectPayment: React.FC<CheckoutDetailsProps> = ({
   return (
     <div>
       <form>
-        <div className="w-full grid grid-cols-1 gap-y-8">
-          <div className="bg-white p-10">
+        <div className="px-2 w-full flex gap-x-4 justify-between  ">
+          <div className="w-1/2 ml-8 mr-4 bg-white p-5">
             <h2 className="font-bold text-2xl text-center my-3">
-              Fromulario de compra
+              Formulario de compra
             </h2>
             <CheckautVirtualForm
               setCompleteForm={setCompleteForm}
               dataForm={dataForm}
               setDataForm={setDataForm}
             />
+            <p className="p-6 text-xs">
+              *Tus datos personales se utilizarán para procesar tu pedido,
+              respaldar tu experiencia en este sitio web y para otros fines
+              descritos en nuestra política de privacidad.*
+            </p>
           </div>
-          <div className="bg-white p-5">
+
+          <div className="w-1/2 mr-8 ml-4 bg-white p-5">
             <h2 className="text-2xl font-bold text-center my-3">
               Forma de pago
             </h2>
@@ -122,7 +128,7 @@ const CheckoutSelectPayment: React.FC<CheckoutDetailsProps> = ({
                   </p>
                 </div>
               </AccordionItem>
-              <AccordionItem
+              {/* <AccordionItem
                 disabled
                 key="manual_binance_pay"
                 aria-label="Binance Pay Entrega Manual - "
@@ -152,8 +158,8 @@ const CheckoutSelectPayment: React.FC<CheckoutDetailsProps> = ({
                     </div>
                   </p>
                 </div>
-              </AccordionItem>
-              <AccordionItem
+              </AccordionItem> */}
+              {/* <AccordionItem
                 disabled
                 key="usdt_trc20_entrega_manual"
                 aria-label="USDT-TRC20 Entrega Manual "
@@ -175,8 +181,8 @@ const CheckoutSelectPayment: React.FC<CheckoutDetailsProps> = ({
                     captura. Wallet: THUCrw23pHkB2KW5EoFhgfd8g6YKKyMPHD
                   </p>
                 </div>
-              </AccordionItem>
-              <AccordionItem
+              </AccordionItem> */}
+              {/* <AccordionItem
                 disabled
                 key="bitcoin_ethereum_litecoin_entrega_automatica"
                 aria-label=" Bitcoin - Ethereum - Litecoin - Entrega Automática "
@@ -205,45 +211,45 @@ const CheckoutSelectPayment: React.FC<CheckoutDetailsProps> = ({
                     </Select>
                   </div>
                 </div>
-              </AccordionItem>
-            </Accordion>
+              </AccordionItem> */}
+            </Accordion> 
+            <div className="pl-2 flex my-5">
+              <Checkbox
+                radius="none"
+                size="sm"
+                onChangeCapture={() =>
+                  setCompleteForm((com) => ({
+                    ...com,
+                    TermsConditions: !com.TermsConditions,
+                  }))
+                }
+              />
+              <p className="text-sm font-semibold">
+                He leído y estoy de acuerdo con los{" "}
+                <Link href="/terminos-y-condiciones" className="text-sky-600 underline">
+                  términos y condiciones de la web
+                </Link>
+                *
+              </p>
+            </div>
+            <div className="flex justify-center ">
+              <Button
+              className="w-full"
+                onClick={() => handlersubmit(dataForm)}
+                disabled={
+                  !(
+                    completedForm.TermsConditions &&
+                    completedForm.form &&
+                    completedForm.payment
+                  )
+                }
+              >
+                Ir al pago
+              </Button>
+            </div>
           </div>
-          Tus datos personales se utilizarán para procesar tu pedido, respaldar
-          tu experiencia en este sitio web y para otros fines descritos en
-          nuestra política de privacidad.
-        </div>
-        <div className="flex my-5">
-          <Checkbox
-            radius="none"
-            size="sm"
-            onChangeCapture={() =>
-              setCompleteForm((com) => ({
-                ...com,
-                TermsConditions: !com.TermsConditions,
-              }))
-            }
-          />
-          <b>
-            He leido y estoy de acuerdo con los{" "}
-            <Link className={" text-sky-600"} href={""}>
-              terminos y condiciones de la web
-            </Link>
-            *
-          </b>
         </div>
       </form>
-      <Button
-        onClick={() => handlersubmit(dataForm)}
-        disabled={
-          !(
-            completedForm.TermsConditions &&
-            completedForm.form &&
-            completedForm.payment
-          )
-        }
-      >
-        Ir al pago
-      </Button>
     </div>
   )
 }
