@@ -31,6 +31,7 @@ import ModalOrderCancel from "../order-status/cancel"
 import ModalOrderFinished from "../order-status/finished"
 import ModalOrderClaim from "../order-status/claim"
 import Loader from "@lib/loader"
+import { EyeSeeIcon } from "@lib/util/icons"
 
 type orders = {
   orders: order[]
@@ -102,18 +103,18 @@ const TicketTable: React.FC = () => {
 
   return (
     <div className="w-full p-6">
-      <div className="mb-8 flex flex-col gap-y-4 ">
-        <h1 className="text-2xl-semi">Mis Ordenes</h1>
-      </div>
       <div className="flex flex-col gap-y-8 w-full">
         <div className="flex justify-between mb-4">
           <div>
-            <label htmlFor="status-filter" className="mr-2 font-semibold ">
+            <label
+              htmlFor="status-filter"
+              className="mr-4 font-semibold text-gray-700 text-sm lg:text-base"
+            >
               Filtrar por estado:
             </label>
             <select
               id="status-filter"
-              className="p-2 shadow-sm border-x-neutral-500 rounded"
+              className="p-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm lg:text-base bg-white"
               value={filterStatus}
               onChange={(e) =>
                 setFilterStatus(
@@ -127,9 +128,10 @@ const TicketTable: React.FC = () => {
               }
             >
               <option value="all">Todos</option>
-              <option value="Cancelado">Cancelado</option>
-              <option value="Por pagar">Por pagar</option>
-              <option value="Completado">Completado</option>
+              <option value="Cancelada">Cancelada</option>
+              <option value="Pendiente de pago">Pendiente de pago</option>
+              <option value="Finalizado">Finalizado</option>
+              <option value="En discusión">En discusión</option>
             </select>
           </div>
           {/* <div className="">
@@ -149,19 +151,13 @@ const TicketTable: React.FC = () => {
           <table className="min-w-full bg-white  rounded-lg shadow-md">
             <thead>
               <tr>
-                <th className="px-4 py-2  bg-gray-100 text-left">
-                  Estado de la orden
-                </th>
-                <th className="px-4 py-2  bg-gray-100 text-left">
-                  Numero de orden
-                </th>
-                <th className="px-4 py-2  bg-gray-100 text-left">
+                <th className="px-4 py-2 text-left">Estado de la orden</th>
+                <th className="px-4 py-2 text-left">Numero de orden</th>
+                <th className="px-4 py-2 100 text-left">
                   Fecha y hora de creación
                 </th>
-                <th className="px-4 py-2  bg-gray-100 text-left">
-                  Tiempo a pagar
-                </th>
-                <th className="px-4 py-2  bg-gray-100 text-left"></th>
+                <th className="px-4 py-2 text-left">Tiempo a pagar</th>
+                <th className="px-4 py-2 text-left">Detalle de la orden</th>
               </tr>
             </thead>
             <tbody>
@@ -204,17 +200,26 @@ const TicketTable: React.FC = () => {
                       {(order.state_order === "Completado" ||
                         order.state_order === "Finalizado" ||
                         order.state_order === "Pendiente de pago") && (
-                        <ButtonMedusa
-                          id="btn-view-order"
-                          className="bg-[#1f0146cf] border-none shadow-none hover:bg-blue-gf hover:text-white text-slate-200 rounded-[5px]"
+                        // <EyeSeeIcon />
+                        <EyeSeeIcon
+                          className="cursor-pointer hover:scale-110 transition-all"
                           onClick={() => {
                             setTelectOrderData(order)
                             onOpen()
                           }}
-                        >
-                          <FaEye />
-                          Ver detalle de la orden
-                        </ButtonMedusa>
+                        ></EyeSeeIcon>
+
+                        // <ButtonMedusa
+                        //   id="btn-view-order"
+                        //   className="bg-[#1f0146cf] border-none shadow-none hover:bg-blue-gf hover:text-white text-slate-200 rounded-[5px]"
+                        //   onClick={() => {
+                        //     setTelectOrderData(order)
+                        //     onOpen()
+                        //   }}
+                        // >
+                        //   <FaEye />
+                        //   Ver detalle de la orden
+                        // </ButtonMedusa>
                       )}
                     </td>
                   </tr>

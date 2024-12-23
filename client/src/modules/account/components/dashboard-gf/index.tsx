@@ -29,8 +29,8 @@ const Dashboard = ({ orders, customer }: DashboardProps) => {
   return (
     <div className="w-full  flex items-center justify-center ">
       <div className="w-full grid grid-cols-2 ">
-        <div id="sct_per" className="p-6">
-          <div className=" h-52 w-full flex flex-col items-center justify-center shadow-card rounded-[10px] aspect-square">
+        <div id="sct_per" className="m-2 rounded-lg shadow-2xl p-6">
+          <div className=" h-52 w-full flex flex-col items-center justify-center ">
             <div className="flex items-end ">
               <span className="ml-16 text-xs leading-none ">
                 Perfil {`${getProfileCompletion(customer)}%`} completado
@@ -59,10 +59,10 @@ const Dashboard = ({ orders, customer }: DashboardProps) => {
               </div>
 
               <div>
-                <p className=" text-xl-semi capitalize mb-1">
+                <p className="text-2xl font-bold text-gray-700 capitalize mb-1">
                   {customer?.first_name} {customer?.last_name}
                 </p>
-                <span className="font-semibold  mb-3">{customer?.email}</span>
+                <span className="font-semibold text-gray-700 mb-3">{customer?.email}</span>
               </div>
             </div>
             <div className="ml-4 flex items-center  text-xs">
@@ -75,8 +75,8 @@ const Dashboard = ({ orders, customer }: DashboardProps) => {
           </div>
         </div>
 
-        <div id="sct_per" className="p-6">
-          <div className="bg-white h-52 w-full flex flex-col items-center justify-center shadow-card rounded-[10px] aspect-square">
+        <div id="sct_per" className="m-2 rounded-lg shadow-2xl p-6">
+          <div className="bg-white h-52 w-full flex flex-col items-center justify-center aspect-square">
             <div className="flex justify-center">
               <Image
                 alt="user_gudfy"
@@ -86,7 +86,7 @@ const Dashboard = ({ orders, customer }: DashboardProps) => {
               />
             </div>
             <div className="flex flex-col items-center">
-              <h3 className="text-2xl font-bold ">{t("acc_profile_title")}</h3>
+              <h3 className="text-2xl text-gray-700 font-bold ">{t("acc_profile_title")}</h3>
 
               <p className="text-sm text-center">{t("acc_profile_subtitle")}</p>
               <Link href={"/account/profile"}>
@@ -102,8 +102,8 @@ const Dashboard = ({ orders, customer }: DashboardProps) => {
           </div>
         </div>
 
-        <div id="sct_buy" className="p-6">
-          <div className="bg-white h-52 w-full flex flex-col items-center justify-center shadow-card rounded-[10px] aspect-square">
+        <div id="sct_buy" className="m-2 rounded-lg shadow-2xl p-6">
+          <div className="bg-white h-52 w-full flex flex-col items-center justify-center  aspect-square">
             <div className="flex items-center justify-center">
               <Image
                 alt="sales_gudfy"
@@ -113,7 +113,7 @@ const Dashboard = ({ orders, customer }: DashboardProps) => {
               />
             </div>
             <div className="flex flex-col items-center">
-              <h3 className="text-2xl font-bold ">
+              <h3 className="text-2xl text-gray-700 font-bold ">
                 {t("acc_purchases_title")}
               </h3>
               <p className="text-sm text-center">
@@ -136,8 +136,8 @@ const Dashboard = ({ orders, customer }: DashboardProps) => {
             </div>
           </div>
         </div>
-        <div id="sct_spp" className="p-6">
-          <div className="bg-white h-52 w-full flex flex-col items-center justify-center shadow-card rounded-[10px] aspect-square">
+        <div id="sct_spp" className="m-2 rounded-lg shadow-2xl p-6">
+          <div className="bg-white h-52 w-full flex flex-col items-center justify-center  aspect-square">
             <div className="flex justify-center">
               <Image
                 alt="support_gudfy"
@@ -147,7 +147,7 @@ const Dashboard = ({ orders, customer }: DashboardProps) => {
               />
             </div>
             <div className="flex flex-col items-center">
-              <h3 className="text-2xl font-bold ">{t("acc_support_title")}</h3>
+              <h3 className="text-2xl text-gray-700 font-bold ">{t("acc_support_title")}</h3>
               <p className="text-sm text-center">{t("acc_support_subtitle")}</p>
               <Link href={"/account/tickets"}>
                 <ButtonLigth
