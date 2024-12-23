@@ -45,7 +45,7 @@ const WalletTemplate = () => {
                 </CardBody>
               </Card>
             </Tab>
-            <Tab key="Pagos" title="Pagos" className="relative">
+            <Tab key="Pagos" title="Historico de pagos" className="relative">
               <Card className="shadow-white shadow-lg">
                 <CardBody>
                   <PayingTable wallet={wallet} setWallet={setWallet} />
