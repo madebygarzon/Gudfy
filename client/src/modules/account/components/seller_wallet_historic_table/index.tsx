@@ -18,7 +18,7 @@ export type orderData = {
   customer_last_name: string
   created_date: string
   total_price_for_product: number
-  state: "Cancelado" | "Pendiente de pago" | "Completado"
+  state: "Cancelado" | "Pendiente de pago" | "Completado" | "Finalizado"
 }
 
 type dataWallet = {
@@ -40,11 +40,13 @@ const WalletTable = ({ wallet, setWallet }: props) => {
     // handlerGetListSellerOrder()
   }
   const [filterStatus, setFilterStatus] = useState<
-    "Cancelado" | "Pendiente de pago" | "Completado" | "all"
+    "Cancelado" | "Pendiente de pago" | "Completado" | "Finalizado" | "all"
   >("all")
   // const [selectOrderData, setSelectOrderData] = useState<orderData>()
 
-  const getStatusColor = (status: "Cancelado" | "Pendiente de pago" | "Completado"): string => {
+  const getStatusColor = (
+    status: "Cancelado" | "Pendiente de pago" | "Completado" | "Finalizado"
+  ): string => {
     switch (status) {
       case "Cancelado":
         return "bg-red-200"
@@ -74,10 +76,21 @@ const WalletTable = ({ wallet, setWallet }: props) => {
     handlerGetDataWallet()
   }, [])
 
+
+  // Calculate totals
+  const totalOutstandingBalance = listOrders
+    ?.filter((order) => filterStatus === "all" || order.state === filterStatus)
+    .reduce((total, order) => total + (order.state === "Pendiente de pago" ? order.total_price_for_product : 0), 0) || 0;
+
+  const totalBalancePaid = listOrders
+    ?.filter((order) => filterStatus === "all" || order.state === filterStatus)
+    .reduce((total, order) => total + (order.state === "Completado" ? order.total_price_for_product : 0), 0) || 0;
+
+    
   return (
     <div className="w-full">
       <div className="flex flex-col gap-y-8 w-full">
-        <div className="flex flex-wrap items-center justify-between gap-4  bg-gray-50 p-4 rounded-lg shadow-sm">
+        <div className="flex flex-wrap items-center justify-between gap-4 p-4 rounded-lg shadow-sm">
           <div>
             <label
               htmlFor="status-filter"
@@ -95,6 +108,7 @@ const WalletTable = ({ wallet, setWallet }: props) => {
                     | "Cancelado"
                     | "Pendiente de pago"
                     | "Completado"
+                    | "Finalizado"
                     | "all"
                 )
               }
@@ -103,71 +117,84 @@ const WalletTable = ({ wallet, setWallet }: props) => {
               <option value="Cancelado">Cancelado</option>
               <option value="Pendiente de pago">Pendiente de pago</option>
               <option value="Completado">Completado</option>
+              <option value="Finalizado">Finalizado</option>
             </select>
           </div>
-
           <div>
-            Saldo Pendiente:{" "}
-            <span className="text-yellow-600  text-lg">
-              {" "}
+            Saldo pendiente:{" "}
+            <span className="text-yellow-600 text-lg">
               $ {wallet.outstanding_balance}
             </span>
           </div>
           <div>
-            Saldo Pagado:{" "}
-            <span className="text-gray-400-600 text-lg">
-              $ {wallet.balance_paid}{" "}
+            Saldo pagado:{" "}
+            <span className="text-gray-600 text-lg">
+              $ {wallet.balance_paid}
             </span>
-          </div>         
+          </div>
         </div>
         <div className="overflow-x-auto">
-          <table className="min-w-full bg-white  rounded-lg shadow-md">
-            <thead>
+          <table className="min-w-full bg-white rounded-lg shadow-md table-auto">
+            <thead className="border-b border-slate-100">
               <tr>
-                <th className="py-2 text-left">Producto</th>
-                <th className="py-2 text-left">Cantidad</th>
-                <th className="py-2 text-left">Valor</th>
-                <th className="py-2 text-left">Comisión</th>
-                <th className="py-2 text-left">Numero de pedido</th>
-                <th className="py-2 text-left">Neto</th>
-                <th className="py-2 text-left">Cliente</th>
-                <th className="py-2 text-left">Fecha</th>
-                <th className="py-2 text-left">Estado</th>
+                <th className="px-4 py-2 w-[20%] text-left">Producto</th>
+                <th className="px-4 py-2 w-[10%] text-left">Cantidad</th>
+                <th className="px-4 py-2 w-[10%] text-left">Valor</th>
+                <th className="px-4 py-2 w-[10%] text-left">Comisión</th>
+                <th className="px-4 py-2 w-[15%] text-left">
+                  Número de pedido
+                </th>
+                <th className="px-4 py-2 w-[10%] text-left">Neto</th>
+                <th className="px-4 py-2 w-[15%] text-left">Cliente</th>
+                <th className="px-4 py-2 w-[10%] text-left">Fecha</th>
+                <th className="px-4 py-2 w-[10%] text-left">Estado</th>
               </tr>
             </thead>
             <tbody>
               {listOrders?.length ? (
                 listOrders
-                .filter((order) => filterStatus === "all" || order.state === filterStatus)
-                .map((order, i) => (
-                  <tr key={i} className="hover:bg-gray-50">
-                    <td className="px-4 py-2">{order.produc_title}</td>
-                    <td className="px-4 py-2">{order.quantity}</td>
-                    <td className="px-4 py-2">$ {order.unit_price}</td>
-                    <td className="px-4 py-2">
-                      $ {(order.total_price_for_product * 0.1).toFixed(2)}
-                    </td>
-                    <td className="px-4 py-2">{handlerOrderNumber(order.number_order)}</td>
-                    <td className="px-4 py-2">
-                      {order.unit_price * order.quantity -
-                        order.total_price_for_product * 0.1}
-                    </td>
-                    <td className="px-4 py-2">
-                      {order.customer_name + " " + order.customer_last_name}
-                    </td>
-                    <td className="px-4 py-2">{handlerformatDate(order.created_date)}</td>
-                    <td className="py-2">
-                      <p className={`${getStatusColor(order.state)} px-4 py-2 rounded-lg`}>
-                        {order.state}
-                      </p>
-                    </td>
-                  </tr>
-                ))
+                  .filter(
+                    (order) =>
+                      filterStatus === "all" || order.state === filterStatus
+                  )
+                  .map((order, i) => (
+                    <tr key={i} className="hover:bg-gray-50">
+                      <td className="px-4 py-2 whitespace-normal">
+                        {order.produc_title}
+                      </td>
+                      <td className="px-4 py-2">{order.quantity}</td>
+                      <td className="px-4 py-2">$ {order.unit_price}</td>
+                      <td className="px-4 py-2">
+                        $ {(order.total_price_for_product * 0.1).toFixed(2)}
+                      </td>
+                      <td className="px-4 py-2">
+                        {handlerOrderNumber(order.number_order)}
+                      </td>
+                      <td className="px-4 py-2">
+                        {order.unit_price * order.quantity -
+                          order.total_price_for_product * 0.1}
+                      </td>
+                      <td className="px-4 py-2">
+                        {order.customer_name + " " + order.customer_last_name}
+                      </td>
+                      <td className="px-4 py-2">
+                        {handlerformatDate(order.created_date)}
+                      </td>
+                      <td className="px-4 py-2 text-center">
+                        <p
+                          className={`${getStatusColor(
+                            order.state
+                          )} px-4 py-1 rounded-lg`}
+                        >
+                          {order.state}
+                        </p>
+                      </td>
+                    </tr>
+                  ))
               ) : (
                 <Loader />
               )}
             </tbody>
-
           </table>
         </div>
       </div>
