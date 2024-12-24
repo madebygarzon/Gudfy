@@ -14,6 +14,8 @@ import handlerformatDate from "@lib/util/formatDate"
 import { Customer } from "@medusajs/medusa"
 import { addClaim } from "@modules/account/actions/post-add-claim"
 import { updateFinishedOrder } from "@modules/account/actions/update-finished-order"
+import ButtonLigth from "@modules/common/components/button_light"
+import Loader from "@lib/loader"
 
 interface ModalOrderProps {
   orderData?: order
@@ -47,38 +49,28 @@ const ModalOrderComplete = ({
       <ModalHeader className="flex flex-col gap-1"></ModalHeader>
       <ModalBody>
         {orderData ? (
-          <div className="container mx-auto px-4 py-1 -mb-2">
+          <div className="container mx-auto px-4 py-1 ">
+            <h2 className="text-center text-2xl mt-2 font-bold text-gray-700">
+              Detalles del pedido
+            </h2>
+
             <div className="mb-8">
-              <p className="text-base">
-                El pedido <span className="font-bold">#{orderData.id}</span> se
-                realizó el{" "}
-                <span className="font-bold">
-                  {handlerformatDate(orderData.created_at)}
-                </span>{" "}
-                y está actualmente{" "}
-                <span className={"text-blue-500"}>{orderData.state_order}</span>
-                .
-              </p>
-            </div>
-            <p className="font-bold text-sm">
-              {`Orden por: ${customer?.first_name} ${customer?.last_name} correo: ${customer?.email}`}{" "}
-            </p>
-            <div className="mb-8">
-              <h2 className="text-xl font-semibold mb-4">
-                Detalles del pedido
-              </h2>
-              <table className="min-w-full border border-gray-200">
-                <thead className="bg-gray-100">
+              <table className="mt-6 min-w-full rounded-lg shadow-2xl p-8">
+                <thead className="">
                   <tr>
-                    <th className="py-2 px-4 border-b">Producto</th>
-                    <th className="py-2 px-4 border-b">Total</th>
+                    <th className="py-2 px-4 border-b text-gray-700 border-gray-200">
+                      Producto
+                    </th>
+                    <th className="py-2 px-4 border-b text-gray-700 border-gray-200">
+                      Subtotal
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
                   {orderData.store_variant.map((p, i) => (
                     <>
-                      <tr className="border-b">
-                        <td className="py-2 px-4 border-r  ">
+                      <tr className="border-b border-gray-200">
+                        <td className="py-2 px-4 border-r border-gray-200  ">
                           <div className="flex justify-between">
                             <div>
                               {p.produc_title} – ${p.price} USD x {p.quantity}
@@ -104,34 +96,40 @@ const ModalOrderComplete = ({
                             ))}
                           </div>
                         </td>
-                        <td className="py-2 px-4 border-b ">
+                        <td className="py-2 px-4 border-b border-gray-200 ">
                           ${p.total_price_for_product} USD
                         </td>
                       </tr>
                     </>
                   ))}
-                  <tr className="border-b">
-                    <td className="py-2 px-4 border-r">Subtotal:</td>
-                    <td className="py-2 px-4 border-r">
+                  <tr className="border-b border-gray-200">
+                    <td className="py-2 px-4 border-r border-gray-200">
+                      Subtotal:
+                    </td>
+                    <td className="py-2 px-4 border-r border-gray-200">
                       ${handlerSubTotal()}
                       USD
                     </td>
                   </tr>
-                  <tr className="border-b">
-                    <td className="py-2 px-4 border-r ">
+                  <tr className="border-b border-gray-200">
+                    <td className="py-2 px-4 border-r border-gray-200 ">
                       Comisión de la pasarela de pago:
                     </td>
                     <td className="py-2 px-4 ">${handlerSubTotal() * 0.01}</td>
                   </tr>
-                  <tr className="border-b">
-                    <td className="py-2 px-4 border-r">Método de pago:</td>
+                  <tr className="border-b border-gray-200">
+                    <td className="py-2 px-4 border-r border-gray-200">
+                      Método de pago:
+                    </td>
                     <td className="py-2 px-4 ">
                       Binance Pay Entrega Automática
                     </td>
                   </tr>
-                  <tr className="border-b">
-                    <td className="py-2 px-4 border-r">Total:</td>
-                    <td className="py-2 px-4 border-b">
+                  <tr className="border-b border-gray-200">
+                    <td className="py-2 px-4 border-r border-gray-200">
+                      Total:
+                    </td>
+                    <td className="py-2 px-4 border-b border-gray-200">
                       $
                       {orderData.store_variant.reduce((sum, p) => {
                         return sum + parseFloat(p.total_price_for_product)
@@ -142,31 +140,55 @@ const ModalOrderComplete = ({
               </table>
             </div>
             <div className="w-full"></div>
+
+            <div className="ml-4">
+              <p className="mt-6 text-sm">
+                El pedido <span className="font-bold">#{orderData.id}</span> se
+                realizó el{" "}
+                <span className="font-bold">
+                  {handlerformatDate(orderData.created_at)}
+                </span>{" "}
+                y está actualmente en estado{" "}
+                <span className={"text-gray-700 font-extrabold"}>
+                  {orderData.state_order}
+                </span>
+                .
+              </p>
+              <p className="text-sm">
+                {`Orden por: ${customer?.first_name} ${customer?.last_name} correo: ${customer?.email}`}{" "}
+              </p>
+            </div>
           </div>
         ) : (
-          <>CARGANDO...</>
+          <Loader />
         )}
       </ModalBody>
       <ModalFooter>
         <div className="flex flex-col gap-2 px-4">
-          <div className=" flex gap-5">
-            <Button
-              className="bg-green-600 text-white"
-              onPress={handlerFinishedOrder}
+          <div className="m-4">
+            <p className="text-xs">
+              * A partir de este momento, dispones de un plazo de 10 días para
+              presentar cualquier reclamo. En caso de no recibir ningún reclamo
+              dentro de este período, asumiremos que has recibido tu compra
+              satisfactoriamente y tu orden será marcada como Finalizada.*
+            </p>
+          </div>
+
+          <div className="flex justify-center gap-2">
+            <ButtonLigth
+              className="bg-[#28A745] hover:bg-[#218838] text-white border-none"
+              onClick={handlerFinishedOrder}
             >
               {" "}
-              Finalizar Compra{" "}
-            </Button>
-            <Button className="bg-orange-600 text-white" onPress={onOpen}>
+              Finalizar compra{" "}
+            </ButtonLigth>
+            <ButtonLigth
+              className="bg-[#E74C3C] hover:bg-[#C0392B] text-white border-none"
+              onClick={onOpen}
+            >
               {" "}
-              Presentar Reclamo{" "}
-            </Button>
-          </div>
-          <div>
-            A partir de ahora, tiene un plazo de 10 días para presentar
-            cualquier reclamo, Si no recibimos ningún reclamo dentro de este
-            período, consideraremos que ha recibido su compra con éxito y su
-            orden pasara a Finalizada.
+              Presentar reclamo{" "}
+            </ButtonLigth>
           </div>
         </div>
       </ModalFooter>
@@ -242,7 +264,9 @@ const ModalQualify = ({
           <>
             <ModalHeader>
               {" "}
-              <h1>Presentar Reclamos</h1>
+              <h2 className="block mx-auto text-2xl mt-2 font-bold text-gray-700">
+                Presentar reclamos
+              </h2>
             </ModalHeader>
             <ModalBody>
               {viewComment ? (
@@ -265,9 +289,9 @@ const ModalQualify = ({
                     </div>
                     <label
                       htmlFor="claimReason"
-                      className="block text-gray-700 font-medium mb-2"
+                      className="mt-4 block text-gray-700 font-medium mb-2"
                     >
-                      Por favor, escriba el motivo de su reclamo:
+                      Por favor, escribe el motivo de tu reclamo:
                     </label>
                     <textarea
                       id="claimReason"
@@ -277,30 +301,41 @@ const ModalQualify = ({
                       placeholder="Escriba su motivo aquí..."
                     />
                   </div>
-                  <Button
+
+                  <div className="flex justify-center gap-2">
+                  <ButtonLigth
                     className={`${
                       !comment.length
-                        ? "bg-slate-500"
-                        : " bg-blue-gf text-white"
+                        ? "bg-[#28A745] hover:bg-[#218838] text-white border-none"
+                        : "bg-[#28A745] hover:bg-[#218838] text-white border-none"
                     }`}
                     onClick={() => handlerAddClaim()}
                     disabled={!comment.length}
                   >
-                    Presentar Reclamo
-                  </Button>
-                  <Button
-                    className=" ml-4"
+                    Presentar reclamo
+                  </ButtonLigth>
+                  <ButtonLigth
+                    className="bg-[#E74C3C] hover:bg-[#C0392B] text-white border-none"
                     onClick={() => {
                       setViewComment(false)
                     }}
                   >
                     Atrás
-                  </Button>
+                  </ButtonLigth>
+                  </div>
+                 
+
+
+
+                  
+
+
+
                 </div>
               ) : (
                 <div className="p-4 flex flex-wrap justify-start gap-4 h-auto overflow-y-auto ">
                   {dataProducts?.map((product) => (
-                    <div className="border rounded-lg shadow-lg p-4 w-[40%]  bg-white ">
+                    <div className="rounded-lg shadow-2xl p-8 ">
                       <h4 className="text-lg font-bold text-gray-800 ">
                         {product.produc_title}
                       </h4>
@@ -313,9 +348,10 @@ const ModalQualify = ({
                       <p className="text-gray-900 font-bold text-sm">
                         Total Precio: ${product.total_price_for_product}
                       </p>
-                      <div className="flex justify-center w-full mt-2">
-                        <Button
-                          className=""
+
+                      <div className="mt-6">
+                        <ButtonLigth
+                          className="bg-[#28A745] hover:bg-[#218838] text-white border-none"
                           onClick={() => {
                             setViewComment(true)
                             setProductSelect(product)
@@ -328,8 +364,8 @@ const ModalQualify = ({
                             product.store_variant_order_id
                           )
                             ? "¡Hecho!"
-                            : "Presentar Reclamo"}
-                        </Button>
+                            : "Presentar reclamo"}
+                        </ButtonLigth>
                       </div>
                     </div>
                   ))}
@@ -338,9 +374,14 @@ const ModalQualify = ({
             </ModalBody>
 
             <ModalFooter>
-              Una vez selecciones uno de los productos y agrege un comentario,
-              estos abrirán un ticket de reclamo, el cual puedes ver en la
-              sección de compras y pestaña reclamos.
+              <div className="m-4">
+                <p className="text-xs">
+                  * Al seleccionar un producto y agregar un comentario, se
+                  generará automáticamente un ticket de reclamo, el cual estará
+                  disponible para su visualización en la sección de compras,
+                  bajo la pestaña de mis reclamos. *
+                </p>
+              </div>
             </ModalFooter>
           </>
         )}

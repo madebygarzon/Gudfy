@@ -38,6 +38,28 @@ const ClaimTable: React.FC = () => {
   const { listOrderClaim, handlerListOrderClaim, isLoadingClaim } =
     useOrderGudfy()
   const [selectOrderClaim, setSelectOrderClaim] = useState<orderClaim>()
+
+  const [filterStatus, setFilterStatus] = useState<"CERRADA" | "ABIERTA" | "RESUELTA" | "SIN RESOLVER" | "all">("all");
+
+  const filteredOrderClaims =
+    filterStatus === "all"
+      ? listOrderClaim
+      : listOrderClaim?.filter((claim) => {
+          switch (filterStatus) {
+            case "CERRADA":
+              return claim.status_order_claim_id === "CANCEL_ID";
+            case "ABIERTA":
+              return claim.status_order_claim_id === "OPEN_ID";
+            case "RESUELTA":
+              return claim.status_order_claim_id === "SOLVED_ID";
+            case "SIN RESOLVER":
+              return claim.status_order_claim_id === "UNSOLVED_ID";
+            default:
+              return true;
+          }
+        });
+
+
   const handleReset = () => {
     handlerListOrderClaim()
   }
@@ -72,21 +94,33 @@ const ClaimTable: React.FC = () => {
   return (
     <div className="w-full p-6">
       <div className="flex flex-col gap-y-8 w-full">
-        {/* <div className="flex justify-between mb-4">
-          <div></div>
-          <div className="">
-            ¿Necesitas ayuda? Crea un ticket:
-            <div className="flex justify-center mt-5">
-              <ButtonMedusa
-                className="text-white bg-[#402e72]  hover:bg-[#2c1f57] rounded-[5px]"
-                onClick={onOpen}
-              >
-                <FaPlus />
-                Nuevo ticket
-              </ButtonMedusa>
-            </div>
+        <div className="flex justify-between mb-4">
+          <div>
+            <label
+              htmlFor="status-filter"
+              className="mr-4 font-semibold text-gray-700 text-sm lg:text-base"
+            >
+              Filtrar por estado:
+            </label>
+            <select
+              id="status-filter"
+              className="p-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm lg:text-base bg-white"
+              value={filterStatus}
+              onChange={(e) =>
+                setFilterStatus(
+                  e.target.value as "CERRADA" | "ABIERTA" | "RESUELTA" | "SIN RESOLVER" | "all"
+                )
+              }
+            >
+              <option value="all">Todos</option>
+              <option value="CERRADA">Cerrada</option>
+              <option value="ABIERTA">Abierta</option>
+              <option value="RESUELTA">Resuelta</option>
+              <option value="SIN RESOLVER">Escalada al administrador</option>
+            </select>
           </div>
-        </div> */}
+        </div>
+        
         <div className="overflow-x-auto">
           <table className="min-w-full bg-white  rounded-lg shadow-md">
             <thead>
@@ -100,12 +134,12 @@ const ClaimTable: React.FC = () => {
             </thead>
             <tbody>
               {!isLoadingClaim ? (
-                listOrderClaim?.map((claim) => (
+                filteredOrderClaims?.map((claim) => (
                   <tr key={claim.id} className="hover:bg-gray-50">
                     <td>
                       {claim.status_order_claim_id === "OPEN_ID" ? (
                         <div className="mx-1 p-3 bg-blue-200 rounded-md">
-                          En proceso
+                          Abierta
                         </div>
                       ) : claim.status_order_claim_id === "CANCEL_ID" ? (
                         <div className="mx-1 p-3 bg-green-200 rounded-md">
@@ -113,12 +147,12 @@ const ClaimTable: React.FC = () => {
                         </div>
                       ) : claim.status_order_claim_id === "UNSOLVED_ID" ? (
                         <div className="mx-1 p-3 bg-orange-200 rounded-md">
-                          Escalada al Administrador
+                          Escalada al administrador
                         </div>
                       ) : (
                         claim.status_order_claim_id === "SOLVED_ID" && (
                           <div className="mx-1 p-2 bg-green-200 rounded-md">
-                            Cerrada
+                            Resuelta
                           </div>
                         )
                       )}
