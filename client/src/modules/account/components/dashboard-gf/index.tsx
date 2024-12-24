@@ -27,7 +27,7 @@ const Dashboard = ({ orders, customer }: DashboardProps) => {
   const { t } = useTranslation("common")
   const { notifications } = useNotificationContext()
   return (
-    <div className="w-full  flex items-center justify-center ">
+    <div className="w-full mt-8 flex items-center justify-center ">
       <div className="w-full grid grid-cols-2 ">
         <div id="sct_per" className="m-2 rounded-lg shadow-2xl p-6">
           <div className=" h-52 w-full flex flex-col items-center justify-center ">

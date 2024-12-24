@@ -46,7 +46,7 @@ const OrdersTemplate = () => {
   return (
     <div className="w-full p-8 border border-gray-200 shadow-2xl rounded-lg">
       <div className="mb-8 flex flex-col gap-y-4">
-       <h1 className="text-2xl mt-2 font-bold text-gray-700">Gestión de pedidos</h1>
+       <h2 className="text-2xl mt-2 font-bold text-gray-700">Gestión de pedidos</h2>
       </div>     
       <div>
         <div className="flex w-full flex-col">
