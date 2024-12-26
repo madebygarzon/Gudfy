@@ -81,7 +81,7 @@ const ProfileName: React.FC<MyInformationProps> = ({ customer }) => {
       >
         <div className="grid grid-cols-2 gap-x-4">
           <Input
-            label="Primer Nombre"
+            label="Primer nombre"
             {...register("first_name", {
               required: true,
             })}
@@ -89,7 +89,7 @@ const ProfileName: React.FC<MyInformationProps> = ({ customer }) => {
             errors={errors}
           />
           <Input
-            label="Segundo Nombre"
+            label="Segundo nombre"
             {...register("last_name", { required: true })}
             defaultValue={lastName}
             errors={errors}

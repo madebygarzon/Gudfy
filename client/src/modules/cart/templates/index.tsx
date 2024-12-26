@@ -45,13 +45,13 @@ const CartTemplate = () => {
 
       <div className="content-container pt-12">
         {items?.length ? (
-          <div className="grid grid-cols-1 small:grid-cols-[1fr_360px] gap-x-8 ">
+          <div className="grid grid-cols-1 small:grid-cols-[1fr_460px] gap-x-8 ">
             <div className="flex flex-col bg-white p-6 gap-y-6 max-w-[80%]">
               {!customer && <SignInPrompt />}
               <ItemsTemplate items={items} modifyProduct={modifyProduct} />
             </div>
-            <div className="relative">
-              <div className="flex flex-col gap-y-8 sticky top-12">
+            <div className="w relative">
+              <div className="flex flex-col gap-y-8 sticky top-36 mr-8">
                 <div className="bg-white p-6">
                   <Summary items={items} setModifyProduct={setModifyProduct} />
                 </div>

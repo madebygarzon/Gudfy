@@ -70,12 +70,12 @@ const CartDropdown = () => {
             static
             className="hidden small:block absolute top-[calc(100%+30px)] right-0 bg-white border-x border-b border-gray-200 w-[382px] text-gray-900"
           >
-            <div className="p-4 flex items-center justify-center">
-              <h3 className="text-large-semi">{t("cart_shopping_cart")}</h3>
+            <div className="p-4 flex justify-center border-b border-gray-200">
+              <h3 className="text-xl text-large-semi">{t("cart_shopping_cart")}</h3>
             </div>
             {items?.length ? (
               <>
-                <div className="overflow-y-scroll max-h-[402px] px-4 grid grid-cols-1 gap-y-8 no-scrollbar">
+                <div className="mt-2 overflow-y-scroll max-h-[402px] px-4 grid grid-cols-1 gap-y-8 no-scrollbar">
                   {items
                     .sort((a, b) => {
                       return a.created_at > b.created_at ? -1 : 1
@@ -150,7 +150,7 @@ const CartDropdown = () => {
                     <span className="text-gray-700 font-semibold">
                       {t("cart_subtotal")}: {parseFloat(subTotal.toFixed(2))}
                       <span className="font-normal">
-                        ({t("cart_taxes_included")})
+                        {" "}({t("cart_taxes_included")})
                       </span>
                     </span>
                     <span className="text-large-semi">
@@ -162,7 +162,7 @@ const CartDropdown = () => {
                     </span>
                   </div>
                   <Link href="/cart" passHref>
-                    <Button className="rounded-30">
+                    <Button className="w-full rounded-30">
                       {t("cart_go_to_checkout")}
                     </Button>
                   </Link>

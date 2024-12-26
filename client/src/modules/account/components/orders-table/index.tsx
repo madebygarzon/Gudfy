@@ -31,17 +31,18 @@ import ModalOrderCancel from "../order-status/cancel"
 import ModalOrderFinished from "../order-status/finished"
 import ModalOrderClaim from "../order-status/claim"
 import Loader from "@lib/loader"
+import { EyeSeeIcon } from "@lib/util/icons"
 
 type orders = {
   orders: order[]
 }
 
-interface Ticket {
-  id: number
-  status: "" | "Por pagar" | "Completado"
-  orderNumber: string
-  createdAt: string
-}
+// interface Ticket {
+//   id: number
+//   status: "" | "Por pagar" | "Completado"
+//   orderNumber: string
+//   createdAt: string
+// }
 
 const TicketTable: React.FC = () => {
   const { listOrder, handlerListOrder, isLoading } = useOrderGudfy()
@@ -53,45 +54,36 @@ const TicketTable: React.FC = () => {
     onOpenChange()
   }
 
-  const [filterStatus, setFilterStatus] = useState<
-    | "Completado"
-    | "Cancelado"
-    | "Pendiente de pago"
-    | "Finalizado"
-    | "En discusión"
-    | "all"
-  >("all")
+  const [filterStatus, setFilterStatus] = useState<"Cancelada" | "Completado" | "En discusión" | "Finalizado" | "Pagado" | "Pendiente de pago" | "all">("all");
+
   const [selectOrderData, setTelectOrderData] = useState<order>()
 
   const filteredOrder =
-    filterStatus === "all"
-      ? listOrder
-      : listOrder?.filter((order) => order.state_order === filterStatus)
+  filterStatus === "all"
+    ? listOrder
+    : listOrder?.filter((order) => order.state_order === filterStatus);
 
-  const getStatusColor = (
-    status:
-      | "Completado"
-      | "Cancelado"
-      | "Pendiente de pago"
-      | "Finalizado"
-      | "En discusión"
-  ): string => {
-    switch (status) {
-      case "Completado":
-        return "bg-blue-200"
-      case "Cancelado":
-        return "bg-red-200"
-      case "Pendiente de pago":
-        return "bg-yellow-200"
-      case "Finalizado":
-        return "bg-green-200"
-      case "En discusión":
-        return "bg-orange-300"
-      default:
-        return ""
-    }
-  }
-
+    const getStatusColor = (
+      status: "Cancelado" | "Completado" | "En discusión" | "Finalizado" | "Pagado" | "Pendiente de pago"
+    ): string => {
+      switch (status) {
+        case "Completado":
+          return "bg-blue-500 text-white"; 
+        case "Cancelado":
+          return "bg-red-500"; 
+        case "Pendiente de pago":
+          return "bg-yellow-400 text-white"; 
+        case "Finalizado":
+          return "bg-green-500 text-white"; 
+        case "Pagado":
+          return "bg-teal-500 text-white"; 
+        case "En discusión":
+          return "bg-orange-500 text-white"; 
+        default:
+          return "bg-gray-300"; 
+      }
+    };
+    
   function handlerOrderNumber(numberOrder: string) {
     return numberOrder.replace("store_order_id_", "")
   }
@@ -102,34 +94,38 @@ const TicketTable: React.FC = () => {
 
   return (
     <div className="w-full p-6">
-      <div className="mb-8 flex flex-col gap-y-4 ">
-        <h1 className="text-2xl-semi">Mis Ordenes</h1>
-      </div>
       <div className="flex flex-col gap-y-8 w-full">
         <div className="flex justify-between mb-4">
           <div>
-            <label htmlFor="status-filter" className="mr-2 font-semibold ">
+            <label
+              htmlFor="status-filter"
+              className="mr-4 font-semibold text-gray-700 text-sm lg:text-base"
+            >
               Filtrar por estado:
             </label>
             <select
               id="status-filter"
-              className="p-2 shadow-sm border-x-neutral-500 rounded"
+              className="p-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm lg:text-base bg-white"
               value={filterStatus}
               onChange={(e) =>
                 setFilterStatus(
                   e.target.value as
-                    | "Cancelado"
-                    | "Pendiente de pago"
-                    | "Finalizado"
-                    | "En discusión"
-                    | "all"
+                  | "Cancelada"
+                  | "Completado"
+                  | "En discusión"
+                  | "Finalizado"
+                  | "Pagado"
+                  | "Pendiente de pago"
                 )
               }
             >
               <option value="all">Todos</option>
-              <option value="Cancelado">Cancelado</option>
-              <option value="Por pagar">Por pagar</option>
+              <option value="Cancelada">Cancelada</option>
+              <option value="Pendiente de pago">Pendiente de pago</option>
               <option value="Completado">Completado</option>
+              <option value="Finalizado">Finalizado</option>
+              <option value="En discusión">En discusión</option>
+              <option value="Pagado">Pagado</option>
             </select>
           </div>
           {/* <div className="">
@@ -149,19 +145,13 @@ const TicketTable: React.FC = () => {
           <table className="min-w-full bg-white  rounded-lg shadow-md">
             <thead>
               <tr>
-                <th className="px-4 py-2  bg-gray-100 text-left">
-                  Estado de la orden
-                </th>
-                <th className="px-4 py-2  bg-gray-100 text-left">
-                  Numero de orden
-                </th>
-                <th className="px-4 py-2  bg-gray-100 text-left">
+                <th className="px-4 py-2 text-left">Estado de la orden</th>
+                <th className="px-4 py-2 text-left">Numero de orden</th>
+                <th className="px-4 py-2 100 text-left">
                   Fecha y hora de creación
                 </th>
-                <th className="px-4 py-2  bg-gray-100 text-left">
-                  Tiempo a pagar
-                </th>
-                <th className="px-4 py-2  bg-gray-100 text-left"></th>
+                <th className="px-4 py-2 text-left">Tiempo a pagar</th>
+                <th className="px-4 py-2 text-left">Detalle de la orden</th>
               </tr>
             </thead>
             <tbody>
@@ -188,13 +178,8 @@ const TicketTable: React.FC = () => {
                       {order.state_order === "Pendiente de pago" ? (
                         <Timer creationTime={order.created_at} />
                       ) : order.state_order === "Cancelado" ? (
-                        // <XMarkMini className="text-red-600" />
                         <p className="text-red-600">Expirado</p>
-                      ) : order.state_order === "Completado" ? (
-                        <CheckMini className="text-green-600" />
-                      ) : order.state_order === "Finalizado" ? (
-                        <CheckMini className="text-green-600" />
-                      ) : order.state_order === "En discusión" ? (
+                      ) : ["Completado", "Finalizado", "En discusión"].includes(order.state_order) ? (
                         <CheckMini className="text-green-600" />
                       ) : (
                         <></>
@@ -204,17 +189,26 @@ const TicketTable: React.FC = () => {
                       {(order.state_order === "Completado" ||
                         order.state_order === "Finalizado" ||
                         order.state_order === "Pendiente de pago") && (
-                        <ButtonMedusa
-                          id="btn-view-order"
-                          className="bg-[#1f0146cf] border-none shadow-none hover:bg-blue-gf hover:text-white text-slate-200 rounded-[5px]"
+                        // <EyeSeeIcon />
+                        <EyeSeeIcon
+                          className="cursor-pointer hover:scale-110 transition-all"
                           onClick={() => {
                             setTelectOrderData(order)
                             onOpen()
                           }}
-                        >
-                          <FaEye />
-                          Ver detalle de la orden
-                        </ButtonMedusa>
+                        ></EyeSeeIcon>
+
+                        // <ButtonMedusa
+                        //   id="btn-view-order"
+                        //   className="bg-[#1f0146cf] border-none shadow-none hover:bg-blue-gf hover:text-white text-slate-200 rounded-[5px]"
+                        //   onClick={() => {
+                        //     setTelectOrderData(order)
+                        //     onOpen()
+                        //   }}
+                        // >
+                        //   <FaEye />
+                        //   Ver detalle de la orden
+                        // </ButtonMedusa>
                       )}
                     </td>
                   </tr>

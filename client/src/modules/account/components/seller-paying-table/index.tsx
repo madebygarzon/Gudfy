@@ -19,6 +19,7 @@ import handlerformatDate from "@lib/util/formatDate"
 import { getListOrderPayments } from "@modules/account/actions/get-list-order-payments"
 import { useStore } from "@lib/context/store-context"
 import { useSellerStoreGudfy } from "@lib/context/seller-store"
+import Loader from "@lib/loader"
 
 export type OrderPaymentData = {
   payment_id: string
@@ -101,27 +102,24 @@ const WalletTable = ({ wallet, setWallet }: props) => {
 
   return (
     <div className="w-full">
-      <div className="mb-8 flex flex-col gap-y-4 ">
-        <h1 className="text-2xl-semi">Historico de transacciones</h1>
-      </div>
       <div className="flex flex-col gap-y-8 w-full">
         <div className="flex justify-between mb-4">
           <div className="flex w-auto gap-7 mr-4 font-bold">
             <div>
-              Saldo Pendiente:{" "}
-              <span className="text-yellow-600  text-lg">
+              Saldo pendiente:{" "}
+              <span className="text-yellow-600  ">
                 $ {wallet.outstanding_balance}{" "}
               </span>
             </div>
             <div>
-              Saldo Disponible:{" "}
-              <span className="text-green-600 text-lg">
+              Saldo disponible:{" "}
+              <span className="text-green-600 ">
                 $ {wallet.aviable_balance}{" "}
               </span>
             </div>
             <div>
-              Saldo Pagado:{" "}
-              <span className="text-gray-400-600 text-lg">
+              Saldo pagado:{" "}
+              <span className="text-gray-400-600 ">
                 $ {wallet.balance_paid}{" "}
               </span>
             </div>
@@ -131,14 +129,14 @@ const WalletTable = ({ wallet, setWallet }: props) => {
           <table className="min-w-full bg-white  rounded-lg shadow-md">
             <thead>
               <tr>
-                <th className="px-4 py-2  bg-gray-100 text-left">Fecha</th>
-                <th className="px-4 py-2  bg-gray-100 text-left">
+                <th className="px-4 py-2 text-left">Fecha</th>
+                <th className="px-4 py-2 text-left">
                   Numero de Pago
                 </th>
-                <th className="px-4 py-2  bg-gray-100 text-left">
+                <th className="px-4 py-2 text-left">
                   Monto Pagado
                 </th>
-                <th className="px-4 py-2  bg-gray-100 text-left">
+                <th className="px-4 py-2 text-left">
                   Detalle del pago
                 </th>
               </tr>
@@ -172,7 +170,10 @@ const WalletTable = ({ wallet, setWallet }: props) => {
                   </tr>
                 ))
               ) : (
-                <>Cargando...</>
+                <div className="mt-2">
+                  <Loader />
+                </div>
+                
               )}
             </tbody>
           </table>
