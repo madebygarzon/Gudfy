@@ -19,6 +19,7 @@ import ImagePlaceholderIcon from "@modules/common/icons/defaultIcon"
 import getAllCategories from "@modules/account/actions/get-data-categories"
 import { PencilEditIcon } from "@lib/util/icons"
 import { useDisclosure } from "@nextui-org/react"
+import Thumbnail from "@modules/products/components/thumbnail"
 
 type StoreProducVariant = {
   description: string
@@ -207,7 +208,7 @@ export default function ProductsTable() {
   return (
     <div className=" bg-white p-8 border border-gray-200 rounded-lg">
       <div className="w-full h-full ">
-        <h1 className=" text-xl font-bold">Productos de la tienda</h1>
+        <h2 className="text-2xl mt-2 font-bold text-gray-700 ">Productos de la tienda</h2>
         <div className="mt-2 flex justify-between">
           <div className="flex gap-5 h-full items-end py-4">
             <div className="w-[170px] ">
@@ -231,7 +232,7 @@ export default function ProductsTable() {
             <table className="table w-full">
               <thead className="heade_table rounded text-left border-1 border-gray-200">
                 <tr className="table_header  shadow-sm border-[15px] border-white">
-                  <th className="my-8">Producto</th>
+                  <th className="my-8">Productos</th>
                   <th>Precio</th>
                   <th>Inventario</th>
                   <th>Categorias</th>
@@ -249,16 +250,21 @@ export default function ProductsTable() {
                       <td>
                         <div className="flex gap-3 items-center">
                           {data.thumbnail ? (
-                            <Image
-                              src={data.thumbnail}
-                              width={28}
-                              height={38}
-                              alt={data.producttitle}
+                            <Thumbnail
+                              thumbnail={data.thumbnail}
+                              size="bsmall"
                             />
                           ) : (
                             <ImagePlaceholderIcon />
                           )}
-                          {` ${data.productvarianttitle} `}
+                          <div className="ml-4 gap-4">
+                            <h3 className="text-xl font-bold text-gray-700 whitespace-nowrap mr-4 ">
+                              {` ${data.productvarianttitle} `}
+                            </h3>
+                            <p className="font-medium text-gray-700">
+                              {` ${data.producttitle} `}
+                            </p>
+                          </div>
                         </div>
                       </td>
                       <td> $ {data.price} USD</td>

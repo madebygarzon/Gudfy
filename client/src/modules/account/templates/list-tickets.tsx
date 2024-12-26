@@ -24,6 +24,7 @@ import { getListTickets } from "../actions/tikets/get-list-tikets"
 import { IconButton } from "@medusajs/ui"
 import Eye from "@modules/common/icons/eye"
 import ViewTicket from "../components/view-ticket"
+import { EyeSeeIcon } from "@lib/util/icons"
 
 interface Ticket {
   id: string
@@ -147,19 +148,19 @@ const TicketTable: React.FC = () => {
   }, [])
 
   return (
-    <div className="w-full">
+    <div className="w-full p-8 border border-gray-200 shadow-2xl rounded-lg">
       <div className="mb-8 flex flex-col gap-y-4">
-        <h1 className="text-2xl-semi">Mis tickets</h1>
+        <h2 className="text-2xl mt-2 font-bold text-gray-700">Mis tickets</h2>
       </div>
       <div className="flex flex-col gap-y-8 w-full">
         <div className="flex justify-between mb-4">
           <div>
-            <label htmlFor="status-filter" className="mr-2 font-semibold">
+            <label htmlFor="status-filter"  className="mr-4 font-semibold text-gray-700 text-sm lg:text-base">
               Filtrar por estado:
             </label>
             <select
               id="status-filter"
-              className="p-2 shadow-sm border-x-neutral-500 rounded"
+              className="p-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm lg:text-base bg-white"
               value={filterStatus}
               onChange={(e) =>
                 setFilterStatus(
@@ -203,9 +204,9 @@ const TicketTable: React.FC = () => {
           <table className="min-w-full bg-white  rounded-lg shadow-md">
             <thead>
               <tr>
-                <th className="px-4 py-2  bg-gray-100 text-left">Estado</th>
-                <th className="px-4 py-2  bg-gray-100 text-left">Asunto</th>
-                <th className="px-4 py-2  bg-gray-100 text-left">
+                <th className="px-4 py-2 text-left">Estado</th>
+                <th className="px-4 py-2 text-left">Asunto</th>
+                <th className="px-4 py-2 text-left">
                   Fecha de Creación
                 </th>
                 <th className="px-4 py-2  bg-gray-100 text-left"></th>
@@ -228,20 +229,17 @@ const TicketTable: React.FC = () => {
                     <td className="px-4 py-2 ">{ticket.subject}</td>
                     <td className="px-4 py-2 ">{ticket.created_at}</td>
                     <td className="px-4 py-2  text-center">
-                      <IconButton onClick={() => handlerSelectTicket(ticket)}>
-                        {" "}
-                        <Eye />
-                      </IconButton>
+                     
+                        <EyeSeeIcon 
+                        className="cursor-pointer hover:scale-110 transition-all"
+                        onClick={() => handlerSelectTicket(ticket)}/>
+                      
                     </td>
                   </tr>
                 ))
               ) : (
                 <div className="flex flex-col my-[10%] w-full text-center">
-                  <h2 className="text-xl font-bold">
-                    {" "}
-                    ¿Tienes algun problema o duda?{" "}
-                  </h2>
-                  <p> Crea un nuevo ticket y cuentanos tu inconveniente </p>
+                  
                 </div>
               )}
             </tbody>

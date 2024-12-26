@@ -53,15 +53,17 @@ const CustomerStore: React.FC<store> = (store) => {
         <span>¡Bienvenido a tu tienda!</span>
         <span className="text-small-regular text-gray-700"></span>
       </div>
+
       <div className="flex flex-col md:flex-row min-h-[230px] my-4 gap-2">
-        <div className="w-full md:w-[40%] flex justify-center ">
+        <div className="w-full md:w-[40%] flex justify-center rounded-lg shadow-2xl p-2">
           <CardPrefileDashboard customer={customer} store={store} />
         </div>
-        <div className="w-full md:w-[60%] flex justify-center ">
+        <div className="w-full md:w-[60%] flex justify-center rounded-lg shadow-2xl p-2">
           <CardReviewProductDashboard />
         </div>
       </div>
-      <div className="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 py-1">
+
+      <div className="rounded-lg shadow-2xl p-8 w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 py-1 ">
         <CardItemsDashboard
           image="/account/product.svg"
           title="Productos"
@@ -114,7 +116,7 @@ const CardItemsDashboard: React.FC<CardDasboard> = ({
   return (
     <div className="min-h-[230px] ">
       <Link href={href}>
-        <div className=" relative flex flex-col py-5 px-2  h-full shadow-card rounded-[10px] items-center  justify-center">
+        <div className=" relative flex flex-col py-5 px-2  h-full items-center  justify-center">
           <Image alt="user_gudfy" src={image} width={80} height={80} />
           {notifications.map((n) => {
             if (
@@ -165,7 +167,7 @@ const CardReviewProductDashboard: React.FC = () => {
   }, [])
 
   return (
-    <div className=" min-h-[200px] w-full flex flex-col py-2 px-2  h-full shadow-card rounded-[10px] items-center  justify-center">
+    <div className=" min-h-[200px] w-full flex flex-col py-2 px-2  h-full items-center  justify-center">
       {!(
         dataReview.rating ||
         dataReview.totalReviews ||
@@ -308,7 +310,7 @@ const CardPrefileDashboard: React.FC<CardPrefileDashboard> = ({
   // }
 
   return (
-    <div className=" relative flex flex-col w-full  py-5 px-2  h-full shadow-card rounded-[10px] items-center  justify-center">
+    <div className=" relative flex flex-col w-full  py-5 px-2  h-full items-center  justify-center">
       <Avatar
         size="lg"
         src={selectedAvatar.src}
@@ -527,14 +529,14 @@ const ModalReviews = ({ isOpen, onOpenChange, onClose }: ModalProps) => {
         {(onClose) => (
           <>
             <ModalBody>
-              <div className="p-6 bg-gray-50 rounded-md shadow-md">
+              <div className="p-6 bg-gray-50 ">
                 <h2 className="text-2xl font-bold mb-4">Reseñas</h2>
                 {reviews.length > 0 ? (
                   <div className="space-y-4">
                     {reviews.map((review) => (
                       <div
                         key={review.id}
-                        className="p-4 bg-white rounded-md shadow-sm border"
+                        className="p-4 bg-white"
                       >
                         <div className="flex justify-between items-center mb-2">
                           <div>

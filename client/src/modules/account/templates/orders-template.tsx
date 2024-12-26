@@ -44,19 +44,15 @@ export type order = {
 const OrdersTemplate = () => {
   const { notifications } = useNotificationContext()
   return (
-    <div className="w-full">
+    <div className="w-full p-8 border border-gray-200 shadow-2xl rounded-lg">
       <div className="mb-8 flex flex-col gap-y-4">
-        <h1 className="text-2xl-semi font-bold">Gestión de Pedidos</h1>
-        <p className="text-base-regular">
-          Vea sus pedidos anteriores y su estado. También puedes crear
-          devoluciones o cambios para sus pedidos si es necesario.
-        </p>
-      </div>
+       <h2 className="text-2xl mt-2 font-bold text-gray-700">Gestión de pedidos</h2>
+      </div>     
       <div>
         <div className="flex w-full flex-col">
           <Tabs aria-label="Options">
-            <Tab key="Orders" title="Mis Ordenes">
-              <Card>
+            <Tab key="Orders" title="Mis ordenes">
+              <Card className="shadow-white shadow-lg">
                 <CardBody>
                   <div className="flex w-full flex-col">
                     <TableOrder />
@@ -68,7 +64,7 @@ const OrdersTemplate = () => {
               key="Reclamos"
               title={
                 <div className="relative -m-1">
-                  Reclamos
+                  Mis reclamos
                   {notifications.map((n) => {
                     if (n.notification_type_id === "NOTI_CLAIM_CUSTOMER_ID") {
                       return <Notification />
@@ -77,14 +73,14 @@ const OrdersTemplate = () => {
                 </div>
               }
             >
-              <Card>
+              <Card className="shadow-white shadow-lg">
                 <CardBody>
                   <ClaimTable />
                 </CardBody>
               </Card>
             </Tab>
-            <Tab key="Compras" title="Compras">
-              <Card>
+            <Tab key="Compras" title="Mis compras">
+              <Card className="shadow-white shadow-lg">
                 <CardBody>
                   <SerialCodeTable />
                 </CardBody>

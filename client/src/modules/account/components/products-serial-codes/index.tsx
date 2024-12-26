@@ -9,6 +9,7 @@ import { getListSerialCode } from "@modules/account/actions/serial-code/get-list
 import Image from "next/image"
 import Loader from "@lib/loader"
 import DownloadButton from "@modules/common/components/download-button"
+import Thumbnail from "@modules/products/components/thumbnail"
 
 type SerialCodes = {
   store_variant_order: string
@@ -48,25 +49,19 @@ const SerialCodeTable: React.FC = () => {
   }, [])
 
   return (
-    <div className="w-full p-6">
-      <div className="mb-8 flex flex-col gap-y-4 ">
-        <h1 className="text-2xl-semi">Mis Ordenes</h1>
-      </div>
+    <div className="w-full">
       <div className="flex flex-col gap-y-8 w-full">
-        <div className="flex justify-between mb-4"></div>
         <div className="overflow-x-auto">
           <table className="min-w-full bg-white  rounded-lg shadow-md">
             <thead>
               <tr>
-                <th className="flex items-center px-4 py-2  bg-gray-100 text-left">Producto</th>
-                <th className="px-4 py-2  bg-gray-100 text-left">
-                  Numero orden
+                <th className="flex items-center px-4 py-2 text-left">
+                  Producto
                 </th>
-                <th className="px-4 py-2  bg-gray-100 text-left">
-                  Nombre de la tienda
-                </th>
-                <th className="px-4 py-2  bg-gray-100 text-left">Items</th>
-                <th className="px-4 py-2  bg-gray-100 text-left">Descargar</th>
+                <th className="px-4 py-2 text-left">Numero orden</th>
+                <th className="px-4 py-2 text-left">Nombre de la tienda</th>
+                <th className="px-4 py-2 text-left">Items</th>
+                <th className="px-4 py-2 text-left">Descargar</th>
               </tr>
             </thead>
             <tbody>
@@ -77,13 +72,11 @@ const SerialCodeTable: React.FC = () => {
                     className="hover:bg-gray-50"
                   >
                     <td className=" py-2 flex items-center justify-center">
-                      <Image
-                        src={code.thumbnail}
-                        alt={code.product_name}
-                        height={150}
-                        width={100}
-                      />
-                      <p className="text-black font-bold">{code.product_name}</p>
+                      <Thumbnail thumbnail={code.thumbnail} size="bsmall" />
+
+                      <p className="text-gray-700 font-bold">
+                        {code.product_name}
+                      </p>
                     </td>
                     <td className="px-4 py-2 ">
                       {handlerOrderNumber(code.order_number)}
