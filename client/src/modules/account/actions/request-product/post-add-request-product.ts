@@ -1,24 +1,14 @@
 import axios from "axios"
-import { ProductCategory } from "@medusajs/medusa"
-import {
-  objetOptionVariant,
-  variant,
-} from "../components/dashboard-gf/seller-products/request-product"
-import { BACKEND_URL } from "."
+import { BACKEND_URL } from ".."
 
 type data = {
-  product: {
-    title: string
-    subtitle: string
-    description: string
-    mid_code: string
-  }
-  categories: ProductCategory[] | undefined
-  optionVariant: objetOptionVariant[]
-  variant: variant[]
+  customer_id: string
+  product_title: string
+  description: string
+  variants: string
 }
 
-export const CreateProductInput = async (
+export const addRequestProduct = async (
   productData: data,
   fileImage: FormData
 ) => {
@@ -27,7 +17,7 @@ export const CreateProductInput = async (
     formData.append("productData", JSON.stringify(productData))
     formData.append("image", fileImage.get("image") as Blob)
     const product = await axios.post(
-      `${BACKEND_URL}/seller/store/create-product/`,
+      `${BACKEND_URL}/seller/store/create-request-product/`,
       formData,
       {
         withCredentials: true,

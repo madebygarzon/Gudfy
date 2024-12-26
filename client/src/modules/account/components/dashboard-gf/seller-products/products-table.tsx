@@ -9,7 +9,7 @@ import {
 import Spinner from "@modules/common/icons/spinner"
 import { getSellerProduct } from "@modules/account/actions/get-seller-product"
 import { ProductCategory } from "@medusajs/medusa"
-import RequestProduct from "./request-product"
+import RequestProduct from "./request-products"
 import AddProducts from "./add-product"
 import EditProduct from "./edit-product"
 import Image from "next/image"
@@ -219,12 +219,11 @@ export default function ProductsTable() {
                 onChange={(e) => handlerSearcherbar(e.target.value)}
               />
             </div>
-            
           </div>
 
           <div className="flex itmes-end py-4 gap-x-3">
             <AddProducts setReset={setReset} />
-            <RequestProduct setReset={setReset} />
+            {/* <RequestProduct setReset={setReset} /> */}
           </div>
         </div>
         {!isLoading && dataProducts.dataPreview.length ? (
@@ -294,7 +293,6 @@ export default function ProductsTable() {
           </div>
         ) : (
           <Spinner />
-
         )}
       </div>
       <div className="flex justify-between p-4 mt-6">
