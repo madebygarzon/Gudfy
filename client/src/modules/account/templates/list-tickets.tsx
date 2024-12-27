@@ -108,9 +108,12 @@ const TicketTable: React.FC = () => {
 
   const handleClose = () => {
     onClose()
+    handleReset()
   }
 
-  const handleReset = () => {}
+  const handleReset = () => {
+    handlerGetListTickets()
+  }
   const [filterStatus, setFilterStatus] = useState<
     "Cerrado" | "Abierto" | "Respondido" | "all"
   >("all")
