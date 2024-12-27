@@ -26,6 +26,7 @@ export declare module "@medusajs/medusa/dist/models/customer" {
 export declare module "@medusajs/medusa/dist/models/ProductVariant" {
   declare interface ProductVariant {
     store_x_variant?: StoreXVariant[];
+    approved?: boolean;
   }
 }
 

@@ -17,6 +17,8 @@ import { AddProductsVariant } from "../../../actions/post-add-product-variant"
 import Image from "next/image"
 import FileUploader from "./file-uploader-txt"
 import ButtonLigth from "@modules/common/components/button_light"
+import RequestProduct from "./request-products"
+import { FaBox } from "react-icons/fa6"
 
 type Reset = {
   setReset: React.Dispatch<React.SetStateAction<boolean>>
@@ -210,8 +212,8 @@ export default function AddProducts({ setReset }: Reset) {
                 Agregar productos
               </ModalHeader>
               <ModalBody className="m-6 border-1 rounded-xl shadow-md border-gray-200 p-12 ">
-                <div className=" flex w-full">
-                  <div className="w-[30%]">
+                <div className=" flex w-full h-full">
+                  <div className="w-[30%] h-full flex flex-col justify-between">
                     <Input
                       placeholder="Busca tu producto"
                       id="search-input"
@@ -270,10 +272,15 @@ export default function AddProducts({ setReset }: Reset) {
                         </table>
                       </div>
                     ) : (
-                      <div className="py-10">
+                      <div className="py-10 flex gap-2 w-full items-center justify-center">
+                        <FaBox size={50} />
                         <h4>No hay más productos</h4>
                       </div>
                     )}
+                    <div className="flex flex-col items-center">
+                      <p className="mb-2">¿No encuientras tu producto?</p>
+                      <RequestProduct setReset={setReset} />
+                    </div>
                   </div>
                   <div className="w-[70%] pt-8 pl-8">
                     <h2 className="font-bold text-base">

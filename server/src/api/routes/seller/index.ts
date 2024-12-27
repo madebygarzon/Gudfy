@@ -20,6 +20,9 @@ import getDataReviews from "./get-data-reviews";
 import getStoreReviews from "./get-store-reviews";
 import { updateNameStore } from "./update-name-store";
 import { updateSellerAvatar } from "./update-seller-avatar";
+import { addRequestProduct } from "./request-product/post-request-product";
+import { getListRequestProduct } from "./request-product/get-list-request-product-from-seller";
+
 const router = Router();
 
 export function attachSellerRoutes(customerRouter: Router) {
@@ -43,12 +46,7 @@ export function attachSellerRoutes(customerRouter: Router) {
   router.get("/wallet/orders", wrapHandler(getListSellerPayOrders));
 
   //-------Product - Serial-codes--------
-  router.post(
-    "/create-product",
-    upload.single("image"),
-    authenticateCustomer(),
-    wrapHandler(CreateSellerProduct)
-  );
+
   router.post(
     "/add-codes-store-variant",
     wrapHandler(postAddCodesStoreVariant)
@@ -59,4 +57,13 @@ export function attachSellerRoutes(customerRouter: Router) {
   //----Store--------------
   router.post("/edit-name-store", wrapHandler(updateNameStore));
   router.post("/edit-seller-avatar", wrapHandler(updateSellerAvatar));
+
+  //-----request-product---------------------------
+  router.post(
+    "/create-request-product",
+    upload.single("image"),
+    authenticateCustomer(),
+    wrapHandler(addRequestProduct)
+  );
+  router.get("/LIST-request-product/:id", wrapHandler(getListRequestProduct));
 }
