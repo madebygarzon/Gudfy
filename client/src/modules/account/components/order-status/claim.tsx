@@ -37,6 +37,9 @@ const ModalOrderClaim = ({
       <ModalBody>
         {orderData ? (
           <div className="container mx-auto px-4 py-1 -mb-2">
+            <h2 className="text-center text-2xl mt-2 font-bold text-gray-700">
+              Detalles del pedido
+            </h2>
             <div className="mb-8">
               <p className="text-base">
                 El pedido{" "}
@@ -137,7 +140,7 @@ const ModalOrderClaim = ({
           </div>
           <div>
             {" "}
-            Por ahora alguno de tus productos se encuentran en reclamacion, por
+            Por ahora alguno de tus productos se encuentra en estado de reclamación, por
             lo que puedes visualizarlos en la pestaña de Reclamos.
           </div>
         </div>

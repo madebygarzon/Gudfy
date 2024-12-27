@@ -6,6 +6,7 @@ import { orderDataForm, useOrderGudfy } from "@lib/context/order-context"
 import CheckoutSelectPayment from "../checkout-select-payment"
 import BinanceAutomaticPayment from "../binance-automatic-payment"
 import { useMeCustomer } from "medusa-react"
+import Loader from "@lib/loader"
 
 const methodPayment = [
   "automatic_binance_pay",
@@ -75,7 +76,7 @@ const CheckoutForm = () => {
   return (
     <div>
       {isLoadingCurrentOrder ? (
-        <>Cargando...</>
+        <><Loader /></>
       ) : dataPay ? (
         <div
           className="flex justify-center items-center"

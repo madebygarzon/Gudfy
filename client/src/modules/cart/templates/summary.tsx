@@ -64,10 +64,6 @@ const Summary = ({ items, setModifyProduct }: ItemsTemplateProps) => {
           </span>
         </div>
         <div className="flex items-center justify-between text-lg text-gray-700 mb-4">
-          <span>Comisión de la pasarela de pago:</span>
-          <span className="font-medium text-gray-900">
-            {handlerTotalPrice()}
-          </span>
         </div>
 
         <div className="h-px w-full border-t border-gray-300 my-4"></div>
