@@ -11,6 +11,7 @@ import Link from "next/link"
 import OrderRevie from "../order-review"
 import { updateCancelStoreOrder } from "@modules/account/actions/update-cancel-store-order"
 import type { order } from "../../templates/orders-template"
+import Loader from "@lib/loader"
 
 interface ModalOrderProps {
   orderData?: order
@@ -41,22 +42,24 @@ const ModalOrderCancel = ({
             handlerReset={handleReset}
           />
         ) : (
-          <>CARGANDO</>
+          <><Loader /></>
         )}
       </ModalBody>
       <ModalFooter>
-        <p>
-          A partir de ahora, tiene un plazo de 10 días para presentar cualquier
-          reclamo{" "}
-          <Link
-            className="text-[#402e72] font-bold hover:text-[#2c1f57]"
-            href={"/account/support"}
-          >
-            aquí.
-          </Link>{" "}
-          Si no recibimos ningún reclamo dentro de este período, consideraremos
-          que ha recibido su compra con éxito.
-        </p>
+      <div className="p-10">
+            <p className="text-xs">
+              * A partir de ahora, tiene un plazo de 10 días para presentar
+              cualquier reclamo{" "}
+              <Link
+                className="text-[#402e72] font-bold hover:text-[#2c1f57]"
+                href={"/account/tickets"}
+              >
+                aquí.
+              </Link>{" "}
+              Si no recibimos ningún reclamo dentro de este período,
+              consideraremos que ha recibido su compra con éxito.*
+            </p>
+          </div>
         {orderData?.state_order === "Pendiente de pago" && (
           <div className="w-full flex gap-2 justify-end">
             <Link href={"/checkout"}>
