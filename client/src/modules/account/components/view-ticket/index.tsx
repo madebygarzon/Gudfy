@@ -6,6 +6,7 @@ import InputFile from "@modules/common/components/input-file"
 import { getDataMessagesTicket } from "@modules/account/actions/tikets/get-data-messages-ticket"
 import Image from "next/image"
 import { addTicketMessage } from "@modules/account/actions/tikets/post-add-ticker-message"
+import ButtonLigth from "@modules/common/components/button_light"
 
 interface ContactFormValues {
   id_ticket: string
@@ -100,16 +101,20 @@ const ViewTicket = ({ onClose, handlerReset, ticketId, subject }: Props) => {
         />
         <InputFile
           alt="Image"
-          label="si lo requieres ingresa una imagen"
+          label="Adjuntar imagen"
           setFile={setImage}
-        />
-        <ButtonMedusa
-          className="mt-4 mb-4 rounded-[5px]"
-          type="submit"
-          color="primary"
-        >
-          Enviar
-        </ButtonMedusa>
+        />      
+        <div className="mt-4 flex items-center justify-center gap-2">
+          <ButtonLigth
+            color="primary"
+            className="bg-[#28A745] px-3 hover:bg-[#218838] text-white border-none w-full sm:w-auto"
+            type="submit"     
+          >
+            Enviar
+          </ButtonLigth>
+        </div>
+
+
       </div>
     </form>
   )
