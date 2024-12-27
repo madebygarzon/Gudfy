@@ -25,6 +25,8 @@ import { IconButton } from "@medusajs/ui"
 import Eye from "@modules/common/icons/eye"
 import ViewTicket from "../components/view-ticket"
 import { EyeSeeIcon } from "@lib/util/icons"
+import ButtonLigth from "@modules/common/components/button_light"
+import { Plus } from "@medusajs/icons"
 
 interface Ticket {
   id: string
@@ -155,7 +157,10 @@ const TicketTable: React.FC = () => {
       <div className="flex flex-col gap-y-8 w-full">
         <div className="flex justify-between mb-4">
           <div>
-            <label htmlFor="status-filter"  className="mr-4 font-semibold text-gray-700 text-sm lg:text-base">
+            <label
+              htmlFor="status-filter"
+              className="mr-4 font-semibold text-gray-700 text-sm lg:text-base"
+            >
               Filtrar por estado:
             </label>
             <select
@@ -175,18 +180,40 @@ const TicketTable: React.FC = () => {
             </select>
           </div>
           <div className="">
+
+
+          <ButtonLigth
+            className="bg-[#9B48ED] hover:bg-[#7b39c4] text-white border-none"
+            onClick={onOpen}
+          >
+            Nuevo ticket
+            <Plus />
+          </ButtonLigth>
+
+{/* 
             <Button
-              className="text-white bg-[#402e72] hover:bg-[#2c1f57] rounded-[5px]"
+              className="bg-[#9B48ED] hover:bg-[#7b39c4] text-white border-none"
               onPress={onOpen}
             >
-              <FaPlus />
               Nuevo ticket
-            </Button>
-            <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+              <FaPlus />
+            </Button> */}
+
+
+            <Modal
+              isOpen={isOpen}
+              onOpenChange={onOpenChange}
+              size="xl"
+              className="rounded-2xl overflow-hidden shadow-lg"
+            >
               <ModalContent>
                 {(onClose) => (
                   <>
-                    <ModalHeader className="flex flex-col gap-1"></ModalHeader>
+                    <ModalHeader className="flex flex-col gap-1 border-b border-slate-200 bg-gray-50 py-3 px-4 rounded-t-2xl">
+                      <h2 className="text-center text-lg font-semibold">
+                        Crear ticket
+                      </h2>
+                    </ModalHeader>
                     <ModalBody>
                       <TicketForm
                         onClose={handleClose}
@@ -206,10 +233,8 @@ const TicketTable: React.FC = () => {
               <tr>
                 <th className="px-4 py-2 text-left">Estado</th>
                 <th className="px-4 py-2 text-left">Asunto</th>
-                <th className="px-4 py-2 text-left">
-                  Fecha de Creación
-                </th>
-                <th className="px-4 py-2  bg-gray-100 text-left"></th>
+                <th className="px-4 py-2 text-left">Fecha de creación</th>
+                <th className="px-4 py-2 text-left">Detalles del ticket</th>
               </tr>
             </thead>
             <tbody>
@@ -229,18 +254,15 @@ const TicketTable: React.FC = () => {
                     <td className="px-4 py-2 ">{ticket.subject}</td>
                     <td className="px-4 py-2 ">{ticket.created_at}</td>
                     <td className="px-4 py-2  text-center">
-                     
-                        <EyeSeeIcon 
+                      <EyeSeeIcon
                         className="cursor-pointer hover:scale-110 transition-all"
-                        onClick={() => handlerSelectTicket(ticket)}/>
-                      
+                        onClick={() => handlerSelectTicket(ticket)}
+                      />
                     </td>
                   </tr>
                 ))
               ) : (
-                <div className="flex flex-col my-[10%] w-full text-center">
-                  
-                </div>
+                <div className="flex flex-col my-[10%] w-full text-center"></div>
               )}
             </tbody>
           </table>
