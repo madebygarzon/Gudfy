@@ -93,12 +93,12 @@ interface Ticket {
 const TicketTable: React.FC = () => {
   const [tickets, setTickets] = useState<Ticket[]>()
   const [ticket, setTicket] = useState<Ticket>()
-  const { isOpen, onOpen, onOpenChange } = useDisclosure()
+  const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure()
   const {
     isOpen: isOpen2,
     onOpen: onOpen2,
     onOpenChange: onOpenChange2,
-    onClose,
+    onClose: onClose2,
   } = useDisclosure()
 
   const handlerSelectTicket = (ticketSelect: Ticket) => {
@@ -107,12 +107,10 @@ const TicketTable: React.FC = () => {
   }
 
   const handleClose = () => {
-    console.log("Formulario cerrado")
+    onClose()
   }
 
-  const handleReset = () => {
-    console.log("Formulario reiniciado")
-  }
+  const handleReset = () => {}
   const [filterStatus, setFilterStatus] = useState<
     "Cerrado" | "Abierto" | "Respondido" | "all"
   >("all")
@@ -155,7 +153,10 @@ const TicketTable: React.FC = () => {
       <div className="flex flex-col gap-y-8 w-full">
         <div className="flex justify-between mb-4">
           <div>
-            <label htmlFor="status-filter"  className="mr-4 font-semibold text-gray-700 text-sm lg:text-base">
+            <label
+              htmlFor="status-filter"
+              className="mr-4 font-semibold text-gray-700 text-sm lg:text-base"
+            >
               Filtrar por estado:
             </label>
             <select
@@ -206,9 +207,7 @@ const TicketTable: React.FC = () => {
               <tr>
                 <th className="px-4 py-2 text-left">Estado</th>
                 <th className="px-4 py-2 text-left">Asunto</th>
-                <th className="px-4 py-2 text-left">
-                  Fecha de Creación
-                </th>
+                <th className="px-4 py-2 text-left">Fecha de Creación</th>
                 <th className="px-4 py-2  bg-gray-100 text-left"></th>
               </tr>
             </thead>
@@ -229,25 +228,22 @@ const TicketTable: React.FC = () => {
                     <td className="px-4 py-2 ">{ticket.subject}</td>
                     <td className="px-4 py-2 ">{ticket.created_at}</td>
                     <td className="px-4 py-2  text-center">
-                     
-                        <EyeSeeIcon 
+                      <EyeSeeIcon
                         className="cursor-pointer hover:scale-110 transition-all"
-                        onClick={() => handlerSelectTicket(ticket)}/>
-                      
+                        onClick={() => handlerSelectTicket(ticket)}
+                      />
                     </td>
                   </tr>
                 ))
               ) : (
-                <div className="flex flex-col my-[10%] w-full text-center">
-                  
-                </div>
+                <div className="flex flex-col my-[10%] w-full text-center"></div>
               )}
             </tbody>
           </table>
         </div>
         <ModalViewTicket
           isOpen={isOpen2}
-          onClose={onClose}
+          onClose={onClose2}
           onOpen={onOpen2}
           onOpenChange={onOpenChange2}
           subject={ticket?.subject || ""}
