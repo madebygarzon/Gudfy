@@ -78,7 +78,7 @@ const ModalSellerStoreReviews = ({
                 <div className="ml-6 w-full ">
                
                 {reviews.length > 0 ? (
-                  <div className=" max-h-[300px] space-y-4 overflow-y-auto   ">
+                  <div className=" max-h-[300px] space-y-4 overflow-y-auto">
                     {reviews.map((review) => (
                       <div
                         key={review.id}

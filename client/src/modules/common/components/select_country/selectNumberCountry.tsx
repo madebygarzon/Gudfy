@@ -10,6 +10,7 @@ import {
 } from "@nextui-org/react"
 import { getContries } from "@modules/account/actions/get-data-contryes"
 import { use } from "chai"
+import Loader from "@lib/loader"
 
 interface CountryData {
   name: string
@@ -79,7 +80,7 @@ const Country: React.FC<PropsChildren> = ({ setCodeFlag }) => {
               </DropdownItem>
             ))
           ) : (
-            <>Cargando..</>
+            <><Loader /></>
           )}
         </DropdownMenu>
       </Dropdown>

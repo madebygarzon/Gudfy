@@ -48,7 +48,7 @@ const ModalOrderPending = ({
       </ModalBody>
       <ModalFooter>
         <div>
-          <div className="m-4">
+          <div className="p-10">
             <p className="text-xs">
               * A partir de ahora, tiene un plazo de 10 días para presentar
               cualquier reclamo{" "}
