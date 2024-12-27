@@ -33,6 +33,7 @@ import { Alert } from "@nextui-org/react"
 import { Popover, PopoverTrigger, PopoverContent } from "@nextui-org/react"
 import { listSellersAvatar } from "@lib/util/list-sellers-avatar"
 import { updateSellerAvatar } from "@modules/account/actions/seller/update-seller-avatar"
+import { EyeSeeIcon } from "@lib/util/icons"
 
 type store = {
   id: string
@@ -185,45 +186,59 @@ const CardReviewProductDashboard: React.FC = () => {
         </div>
       ) : (
         <>
-          <div className="flex items-center justify-between border-b-1 w-full border-b-[#9B48ED] p-4 ">
-            <h3 className="text-xl font-bold">Mis valoraciones</h3>
-            <p className="text-ms text-[#9B48ED]">
-              Reviews: {dataReview.totalReviews}{" "}
-            </p>
-            <p
-              className="text-ms text-[#9B48ED] cursor-pointer"
-              onClick={() => onOpen()}
-            >
-              Ver más reviews
-            </p>
+          <div className="flex justify-center items-center rounded-lg w-full shadow-sm p-4 ">
+            <h2 className="text-2xl mt-2 font-bold">Mis valoraciones</h2>
           </div>
-          <div className="pt-4 w-full">
-            <div className="text-center">
+
+          <div className="w-full flex items-center pt-4">
+            <div className="w-2/6 text-center">
               <h3 className="text-4xl font-bold -mb-2 ">
-                {dataReview?.rating.toFixed(2)}%
+                {dataReview?.rating}%
               </h3>
-              <p className="text-sm " onClick={() => {}}>
+            </div>
+
+            <div className="block w-2/6">
+              <p className="text-left text-sm mt-2" onClick={() => {}}>
                 Valoraciones positivas
               </p>
-            </div>
-            <div className="flex w-[100%]  justify-center mt-2">
-              <div className={`w-[${dataReview?.rating}%] z-20`}>
-                <Progress color={"secondary"} value={dataReview?.rating} />
+              <div className="flex w-[100%]  justify-start mt-2">
+                <div className={`w-[${dataReview?.rating}%] z-20`}>
+                  <Progress color={"secondary"} value={dataReview?.rating} />
+                </div>
               </div>
+              <p className="text-sm text-[#9B48ED]">
+                Total valoraciones: {dataReview.totalReviews}{" "}
+              </p>
+            </div>
+
+            <div className="block w-2/6">
+              
+                
+                <p
+                  className="flex items-center gap-2 text-sm font-bold text-[#9B48ED] cursor-pointer"
+                  onClick={() => onOpen()}
+                >
+                  <EyeSeeIcon className="w-4" />
+                  Ver todas las valoraciones
+                </p>
+             
+              
             </div>
           </div>
-          <div className=" flex w-full  justify-center px-2 mt-4">
+
+          <div className="flex w-full justify-center gap-6 items-center px-2 mt-4">
+            <p className="text-start font-bold">Valoración más reciente: </p>
             {dataReview?.latestComment ? (
               <div
                 key={dataReview?.latestComment?.id}
-                className="p-2 bg-white rounded-md shadow-sm border w-[70%]"
+                className="p-6 bg-white rounded-md shadow-2xl w-[50%]"
               >
                 <div className="flex  relative justify-between items-center mb-2">
                   <div>
-                    <p className="font-semibold text-sm mr-4">
+                    <p className="font-semibold text-lg mr-4">
                       {dataReview?.latestComment.customer_name}
                     </p>
-                    <p className="text-gray-300 text-xs">
+                    <p className="text-gray-400 text-xs">
                       {handlerformatDate(dataReview?.latestComment.created_at)}
                     </p>
                   </div>
@@ -277,18 +292,18 @@ const CardPrefileDashboard: React.FC<CardPrefileDashboard> = ({
   }>({
     name: "",
     src: store.avatar || "/account/avatars/avatar_aguila.png",
-  });
+  })
 
   useEffect(() => {
     if (nameEdit.animal) {
       const avatar = listSellersAvatar.find(
         (item) => item.name.toLowerCase() === nameEdit.animal.toLowerCase()
-      );
+      )
       if (avatar) {
-        setSelectedAvatar(avatar);
+        setSelectedAvatar(avatar)
       }
     }
-  }, [nameEdit.animal]);
+  }, [nameEdit.animal])
 
   const [isOpen, setIsOpen] = React.useState(false)
 
@@ -388,7 +403,7 @@ const CardPrefileDashboard: React.FC<CardPrefileDashboard> = ({
         {nameEdit.stateEdit ? (
           <div className="flex-col justify-center w-full">
             <div className="flex w-full justify-center gap-4 pt-2 ">
-            <Select
+              <Select
                 className="w-[45%] border-lila-gf border rounded-[9px] text-lila-gf"
                 placeholder="Selecciona un adjetivo"
                 size="sm"
@@ -413,12 +428,10 @@ const CardPrefileDashboard: React.FC<CardPrefileDashboard> = ({
                   <SelectItem key={animal.key}>{animal.label}</SelectItem>
                 ))}
               </Select>
-
-              
             </div>
             <div className="flex items-center justify-center w-full my-2 p-2 text-sm">
               <Alert
-                color="secondary"                
+                color="secondary"
                 closeButton
                 description={
                   "Ten en cuenta que solo podrás modificar el nombre una única vez."
@@ -484,7 +497,7 @@ const CardPrefileDashboard: React.FC<CardPrefileDashboard> = ({
               <></>
             )}
           </div>
-        )} 
+        )}
       </div>
       {/* <span className="font-semibold text-gray-500">{customer?.email}</span> */}
       <div className="flex gap-2 my-4">
@@ -534,10 +547,7 @@ const ModalReviews = ({ isOpen, onOpenChange, onClose }: ModalProps) => {
                 {reviews.length > 0 ? (
                   <div className="space-y-4">
                     {reviews.map((review) => (
-                      <div
-                        key={review.id}
-                        className="p-4 bg-white"
-                      >
+                      <div key={review.id} className="p-4 bg-white">
                         <div className="flex justify-between items-center mb-2">
                           <div>
                             <p className="font-semibold">
