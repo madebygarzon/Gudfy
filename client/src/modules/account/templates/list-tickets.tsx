@@ -95,12 +95,12 @@ interface Ticket {
 const TicketTable: React.FC = () => {
   const [tickets, setTickets] = useState<Ticket[]>()
   const [ticket, setTicket] = useState<Ticket>()
-  const { isOpen, onOpen, onOpenChange } = useDisclosure()
+  const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure()
   const {
     isOpen: isOpen2,
     onOpen: onOpen2,
     onOpenChange: onOpenChange2,
-    onClose,
+    onClose: onClose2,
   } = useDisclosure()
 
   const handlerSelectTicket = (ticketSelect: Ticket) => {
@@ -109,11 +109,12 @@ const TicketTable: React.FC = () => {
   }
 
   const handleClose = () => {
-    console.log("Formulario cerrado")
+    onClose()
+    handleReset()
   }
 
   const handleReset = () => {
-    console.log("Formulario reiniciado")
+    handlerGetListTickets()
   }
   const [filterStatus, setFilterStatus] = useState<
     "Cerrado" | "Abierto" | "Respondido" | "all"
@@ -233,8 +234,8 @@ const TicketTable: React.FC = () => {
               <tr>
                 <th className="px-4 py-2 text-left">Estado</th>
                 <th className="px-4 py-2 text-left">Asunto</th>
-                <th className="px-4 py-2 text-left">Fecha de creación</th>
-                <th className="px-4 py-2 text-left">Detalles del ticket</th>
+                <th className="px-4 py-2 text-left">Fecha de Creación</th>
+                <th className="px-4 py-2  bg-gray-100 text-left"></th>
               </tr>
             </thead>
             <tbody>
@@ -269,7 +270,7 @@ const TicketTable: React.FC = () => {
         </div>
         <ModalViewTicket
           isOpen={isOpen2}
-          onClose={onClose}
+          onClose={onClose2}
           onOpen={onOpen2}
           onOpenChange={onOpenChange2}
           subject={ticket?.subject || ""}
