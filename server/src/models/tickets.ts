@@ -14,6 +14,7 @@ import {
 import { Customer } from "./customer";
 import { TicketStatus } from "./ticket-status";
 import { TicketMessages } from "./ticket-messages";
+import { generateTicketId } from "./utils/generateTicketId";
 
 @Entity()
 export class Ticket extends BaseEntity {
@@ -39,6 +40,6 @@ export class Ticket extends BaseEntity {
 
   @BeforeInsert()
   private beforeInsert(): void {
-    this.id = generateEntityId(this.id, "ticket_id_");
+    this.id = generateTicketId();
   }
 }
