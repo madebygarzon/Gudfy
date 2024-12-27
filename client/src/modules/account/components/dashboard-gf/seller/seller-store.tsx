@@ -182,12 +182,12 @@ const CardReviewProductDashboard: React.FC = () => {
             width={80}
             height={80}
           />
-          <h3 className="text-xl font-bold">Aún no tienes valoraciones</h3>
+          <h3 className="text-xl font-bold">Aún no tienes reseñas</h3>
         </div>
       ) : (
         <>
           <div className="flex justify-center items-center rounded-lg w-full shadow-sm p-4 ">
-            <h2 className="text-2xl mt-2 font-bold">Mis valoraciones</h2>
+            <h2 className="text-2xl mt-2 font-bold">Mis reseñas</h2>
           </div>
 
           <div className="w-full flex items-center pt-4">
@@ -207,27 +207,23 @@ const CardReviewProductDashboard: React.FC = () => {
                 </div>
               </div>
               <p className="text-sm text-[#9B48ED]">
-                Total valoraciones: {dataReview.totalReviews}{" "}
+                Total reseñas: {dataReview.totalReviews}{" "}
               </p>
             </div>
 
             <div className="block w-2/6">
-              
-                
-                <p
-                  className="flex items-center gap-2 text-sm font-bold text-[#9B48ED] cursor-pointer"
-                  onClick={() => onOpen()}
-                >
-                  <EyeSeeIcon className="w-4" />
-                  Ver todas las valoraciones
-                </p>
-             
-              
+              <p
+                className="flex items-center gap-2 text-sm font-bold text-[#9B48ED] cursor-pointer"
+                onClick={() => onOpen()}
+              >
+                <EyeSeeIcon className="w-4" />
+                Ver todas las reseñas
+              </p>
             </div>
           </div>
 
           <div className="flex w-full justify-center gap-6 items-center px-2 mt-4">
-            <p className="text-start font-bold">Valoración más reciente: </p>
+            <p className="text-start font-bold">Reseña más reciente: </p>
             {dataReview?.latestComment ? (
               <div
                 key={dataReview?.latestComment?.id}
@@ -536,47 +532,54 @@ const ModalReviews = ({ isOpen, onOpenChange, onClose }: ModalProps) => {
       isOpen={isOpen}
       onOpenChange={onOpenChange}
       onClose={onClose}
-      size="5xl"
+      size="2xl"
     >
       <ModalContent>
         {(onClose) => (
           <>
             <ModalBody>
-              <div className="p-6 bg-gray-50 ">
-                <h2 className="text-2xl font-bold mb-4">Reseñas</h2>
-                {reviews.length > 0 ? (
-                  <div className="space-y-4">
-                    {reviews.map((review) => (
-                      <div key={review.id} className="p-4 bg-white">
-                        <div className="flex justify-between items-center mb-2">
-                          <div>
-                            <p className="font-semibold">
-                              {review.customer_name}
-                            </p>
-                            <p className="text-gray-500 text-sm">
-                              {review.created_at}
+              <div className="flex gap-x-2 w-full p-4 ">
+                <div className=" w-4/12 flex items-center">
+                  <h2 className="text-2xl mt-2 font-bold text-gray-700">
+                    Reseñas:
+                  </h2>
+                </div>
+
+                <div className="w-8/12">
+                  {reviews.length > 0 ? (
+                    <div className="max-h-[300px] space-y-4 overflow-y-auto">
+                      {reviews.map((review) => (
+                        <div key={review.id} className="border border-gray-200 rounded-lg shadow-md p-4 bg-white">
+                          <div className="flex  justify-between items-center mb-2">
+                            <div>
+                              <p className="font-semibold">
+                                {review.customer_name}
+                              </p>
+                              <p className="text-gray-500 text-sm">
+                                {review.created_at}
+                              </p>
+                            </div>
+                            <p
+                              className={clsx(
+                                {
+                                  "text-yellow-500": review.rating == 3,
+                                  "text-green-500": review.rating == 5,
+                                  "text-red-500": review.rating == 1,
+                                },
+                                "text-lg font-bold"
+                              )}
+                            >
+                              {review.rating}★
                             </p>
                           </div>
-                          <p
-                            className={clsx(
-                              {
-                                "text-yellow-500": review.rating == 3,
-                                "text-green-500": review.rating == 5,
-                                "text-red-500": review.rating == 1,
-                              },
-                              " font-bold"
-                            )}
-                          >
-                            Rating: {review.rating}
-                          </p>
+                          <p className="text-gray-700">{review.content}</p>
                         </div>
-                        <p className="text-gray-700">{review.content}</p>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <p className="text-gray-500">No hay reseñas disponibles.</p>
-                )}
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-gray-500">No hay reseñas disponibles.</p>
+                  )}
+                </div>
               </div>
             </ModalBody>
           </>
