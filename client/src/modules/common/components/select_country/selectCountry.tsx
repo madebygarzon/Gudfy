@@ -8,6 +8,7 @@ import {
   Button,
 } from "@nextui-org/react"
 import { getContries } from "@modules/account/actions/get-data-contryes"
+import Loader from "@lib/loader"
 
 interface CountryData {
   name: string
@@ -83,7 +84,7 @@ const NumberCountry: React.FC<PropsChildren> = ({
               </DropdownItem>
             ))
           ) : (
-            <>Cargando..</>
+            <><Loader /></>
           )}
         </DropdownMenu>
       </Dropdown>

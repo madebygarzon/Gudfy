@@ -105,10 +105,12 @@ const OrderDetails = ({ orderData, onClose }: props) => {
                         <>
                           {!loading ? (
                             stores.includes(p.store_id) ? (
-                              <span className="text-lila-gf">¡Ya comentaste esta tienda!</span>
+                              <span className="text-lila-gf">
+                                ¡Ya comentaste esta tienda!
+                              </span>
                             ) : (
                               <button
-                                className="text-lila-gf flex justify-center items-center gap-2 text-sm bg-slate-200 px-4 rounded-2xl"
+                                className="text-lila-gf flex justify-center items-center gap-2 text-sm px-4"
                                 onClick={() => {
                                   onOpen()
                                   setStoreReviewData({
@@ -126,10 +128,8 @@ const OrderDetails = ({ orderData, onClose }: props) => {
                                 }}
                               >
                                 Califica esta tienda
-                                <BlankIcon 
-                                className="w-4"/>
+                                <BlankIcon className="w-4" />
                               </button>
-                              
                             )
                           ) : (
                             <Loader />
@@ -342,7 +342,7 @@ const ModalQualify = ({
                         storeReviewData?.content.trim() === ""
                       }
                     >
-                      Enviar Calificación
+                      Enviar calificación
                     </ButtonLigth>
                   </div>
                 </div>
@@ -352,7 +352,9 @@ const ModalQualify = ({
                 {" "}
                 <div className="w-full flex justify-center items-center ">
                   {" "}
-                  <div>Gracias por tu comentario</div>{" "}
+                  <h3 className="text-xl font-bold">
+                    ¡Gracias por tu comentario!
+                  </h3>{" "}
                 </div>
               </ModalBody>
             )}
