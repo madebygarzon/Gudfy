@@ -7,6 +7,7 @@ import { useMeCustomer } from "medusa-react"
 import axios from "axios"
 import { addTicket } from "@modules/account/actions/tikets/post-add-ticket"
 import InputFile from "@modules/common/components/input-file"
+import ButtonLigth from "@modules/common/components/button_light"
 
 interface ContactFormValues {
   subject: string
@@ -51,9 +52,7 @@ const TicketForm = ({ onClose, handlerReset }: Props) => {
 
   return (
     <form onSubmit={onSubmit} className="">
-      <div className="flex flex-col w-full gap-y-2 text-sm ml-auto">
-        <p className="mb-4 text-xl font-extrabold text-center">Crear ticket</p>
-
+      <div className="flex flex-col w-full  text-sm ml-auto">
         <Input
           value={formData.subject}
           label="Asunto"
@@ -72,16 +71,19 @@ const TicketForm = ({ onClose, handlerReset }: Props) => {
         />
         <InputFile
           alt="Image"
-          label="si lo requieres ingresa una imagen"
+          label="Adjuntar imagen"
           setFile={setImage}
         />
-        <ButtonMedusa
-          className="mt-4 mb-4 rounded-[5px]"
-          type="submit"
-          color="primary"
-        >
-          Enviar
-        </ButtonMedusa>
+        <div className="mt-4 flex items-center justify-center gap-2">
+          <ButtonLigth
+            color="primary"
+            className="bg-[#28A745] px-3 hover:bg-[#218838] text-white border-none w-full sm:w-auto"
+            type="submit"            
+          >
+            Crear ticket
+          </ButtonLigth>
+        </div>
+        
       </div>
     </form>
   )

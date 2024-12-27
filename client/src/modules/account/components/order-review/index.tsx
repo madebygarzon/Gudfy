@@ -17,9 +17,11 @@ import {
 import { useState } from "react"
 import { Button as ButtonIcon } from "@nextui-org/react"
 import { Button } from "@medusajs/ui"
-import { ThumbUp, ThumbDown, PauseSolid } from "@medusajs/icons"
+import { ThumbUp, ThumbDown, PauseSolid, Loader } from "@medusajs/icons"
 import { AddStoreReview } from "@modules/account/actions/post-add-store-review"
 import { validateComment } from "@modules/account/actions/get-validate-review"
+import ButtonLigth from "@modules/common/components/button_light"
+import { BlankIcon } from "@lib/util/icons"
 
 type props = {
   orderData: order
@@ -68,7 +70,113 @@ const OrderDetails = ({ orderData, onClose }: props) => {
 
   return (
     <div className="container mx-auto p-4">
-      <div className="mb-8">
+      <h2 className="text-center text-2xl mt-2 font-bold text-gray-700">
+        Detalles del pedido
+      </h2>
+
+      <div className="m-8">
+        <table className="min-w-full rounded-lg shadow-2xl p-8">
+          <thead className="bg-gray-100">
+            <tr>
+              <th className="py-2 px-4 border-b border-slate-200">Producto</th>
+              <th className="py-2 px-4 border-b border-slate-200">Subtotal</th>
+            </tr>
+          </thead>
+          <tbody>
+            {orderData.store_variant.map((p, i) => (
+              <>
+                <tr className="border-b border-slate-200">
+                  <td className="py-2 px-4 border-r border-slate-200 flex justify-between">
+                    <div>
+                      {p.produc_title} – ${p.price} USD x {p.quantity}
+                      <br />
+                    </div>
+                    <div className="text-sm font-light">
+                      <p>
+                        Vendido por:{" "}
+                        <Link
+                          className="text-lila-gf capitalize"
+                          href={`/seller/store/${p.store_id}`}
+                        >
+                          {p.store_name}
+                        </Link>
+                      </p>
+                      {orderData.state_order === "Finalizado" ? (
+                        <>
+                          {!loading ? (
+                            stores.includes(p.store_id) ? (
+                              <span className="text-lila-gf">¡Ya comentaste!</span>
+                            ) : (
+                              <button
+                                className="text-lila-gf flex justify-center items-center gap-2 text-sm bg-slate-200 px-4 rounded-2xl"
+                                onClick={() => {
+                                  onOpen()
+                                  setStoreReviewData({
+                                    store_name: p.store_name,
+                                    store_id: p.store_id,
+                                    store_order_id: orderData.id,
+                                    customer_name: customer
+                                      ? customer?.last_name +
+                                        customer?.first_name
+                                      : " ",
+                                    customer_id: customer?.id || " ",
+                                    content: "",
+                                    rating: 0,
+                                  })
+                                }}
+                              >
+                                Califica esta tienda
+                                <BlankIcon 
+                                className="w-4"/>
+                              </button>
+                              
+                            )
+                          ) : (
+                            <Loader />
+                          )}
+                        </>
+                      ) : (
+                        <></>
+                      )}
+                    </div>
+                  </td>
+                  <td className="py-2 px-4 border-b border-slate-200">
+                    ${p.total_price_for_product} USD
+                  </td>
+                </tr>
+              </>
+            ))}
+            <tr className="border-b border-slate-200">
+              <td className="py-2 px-4 border-r border-slate-200">Subtotal:</td>
+              <td className="py-2 px-4 border-r border-slate-200">
+                ${handlerSubTotal()} USD
+              </td>
+            </tr>
+            <tr className="border-b border-slate-200">
+              <td className="py-2 px-4 border-r border-slate-200">
+                Comisión de la pasarela de pago: 1%
+              </td>
+              <td className="py-2 px-4 ">${handlerSubTotal() * 0.01}</td>
+            </tr>
+            <tr className="border-b border-slate-200">
+              <td className="py-2 px-4 border-r border-slate-200">
+                Método de pago:
+              </td>
+              <td className="py-2 px-4 ">Binance Pay Entrega Automática</td>
+            </tr>
+            <tr className="border-b border-slate-200">
+              <td className="py-2 px-4 border-r border-slate-200">Total:</td>
+              <td className="py-2 px-4 border-b border-slate-200">
+                $
+                {orderData.store_variant.reduce((sum, p) => {
+                  return sum + parseFloat(p.total_price_for_product)
+                }, handlerSubTotal() * 0.01)}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div className="p-8">
         <p className="text-base">
           El pedido <span className="font-bold">#{orderData.id}</span> se
           realizó el{" "}
@@ -98,106 +206,11 @@ const OrderDetails = ({ orderData, onClose }: props) => {
             <></>
           )}
         </p>
+        <p className="font-bold">
+          {`Orden por: ${customer?.first_name} ${customer?.last_name} correo: ${customer?.email}`}{" "}
+        </p>
       </div>
-      <p className="font-bold text-sm">
-        {`Orden por: ${customer?.first_name} ${customer?.last_name} correo: ${customer?.email}`}{" "}
-      </p>
-      <div className="mb-8">
-        <h2 className="text-xl font-semibold mb-4">Detalles del pedido</h2>
-        <table className="min-w-full border border-gray-200">
-          <thead className="bg-gray-100">
-            <tr>
-              <th className="py-2 px-4 border-b">Producto</th>
-              <th className="py-2 px-4 border-b">Total</th>
-            </tr>
-          </thead>
-          <tbody>
-            {orderData.store_variant.map((p, i) => (
-              <>
-                <tr className="border-b">
-                  <td className="py-2 px-4 border-r  flex justify-between">
-                    <div>
-                      {p.produc_title} – ${p.price} USD x {p.quantity}
-                      <br />
-                    </div>
-                    <div className="text-sm font-light">
-                      <p>
-                        Vendido por:{" "}
-                        <Link
-                          className="text-lila-gf capitalize"
-                          href={`/seller/store/${p.store_id}`}
-                        >
-                          {p.store_name}
-                        </Link>
-                      </p>
-                      {orderData.state_order === "Finalizado" ? (
-                        <>
-                          {!loading ? (
-                            stores.includes(p.store_id) ? (
-                              <span>¡Ya comentaste!</span>
-                            ) : (
-                              <button
-                                className="text-indigo-600 text-sm"
-                                onClick={() => {
-                                  onOpen()
-                                  setStoreReviewData({
-                                    store_name: p.store_name,
-                                    store_id: p.store_id,
-                                    store_order_id: orderData.id,
-                                    customer_name: customer
-                                      ? customer?.last_name +
-                                        customer?.first_name
-                                      : " ",
-                                    customer_id: customer?.id || " ",
-                                    content: "",
-                                    rating: 0,
-                                  })
-                                }}
-                              >
-                                Califica esta tienda
-                              </button>
-                            )
-                          ) : (
-                            <></>
-                          )}
-                        </>
-                      ) : (
-                        <></>
-                      )}
-                    </div>
-                  </td>
-                  <td className="py-2 px-4 border-b ">
-                    ${p.total_price_for_product} USD
-                  </td>
-                </tr>
-              </>
-            ))}
-            <tr className="border-b">
-              <td className="py-2 px-4 border-r">Subtotal:</td>
-              <td className="py-2 px-4 border-r">${handlerSubTotal()} USD</td>
-            </tr>
-            <tr className="border-b">
-              <td className="py-2 px-4 border-r ">
-                Comisión de la pasarela de pago: 1%
-              </td>
-              <td className="py-2 px-4 ">${handlerSubTotal() * 0.01}</td>
-            </tr>
-            <tr className="border-b">
-              <td className="py-2 px-4 border-r">Método de pago:</td>
-              <td className="py-2 px-4 ">Binance Pay Entrega Automática</td>
-            </tr>
-            <tr className="border-b">
-              <td className="py-2 px-4 border-r">Total:</td>
-              <td className="py-2 px-4 border-b">
-                $
-                {orderData.store_variant.reduce((sum, p) => {
-                  return sum + parseFloat(p.total_price_for_product)
-                }, handlerSubTotal() * 0.01)}
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+
       <div className="z-30">
         <ModalQualify
           isOpen={isOpen}
@@ -262,38 +275,39 @@ const ModalQualify = ({
             <ModalHeader className="flex flex-col gap-1"></ModalHeader>
             {!success ? (
               <ModalBody>
-                <div className="w-auto mx-auto pt-4  rounded  bg-white">
-                  <h2 className="text-2xl font-semibold mb-4 text-blue-gf">
-                    Calificar a {storeReviewData?.store_name}
+                <div className="px-8 w-auto mx-auto rounded  bg-white">
+                  <h2 className="text-2xl mt-4 font-bold text-gray-700 text-center">
+                    Califica la tienda {storeReviewData?.store_name}
                   </h2>
                   <p className="py-4">
-                    En Gudfy, nos importa que tanto nuestros clientes como
-                    vendedores disfruten de una excelente experiencia de
-                    usuario. Por eso, te invitamos a calificar tu experiencia
-                    con el producto, dándole una valoración de Bueno, no tan
-                    Bueno o Neutral ¡Tu opinión es muy valiosa para nosotros!{" "}
+                    En Gudfy, nos esforzamos por garantizar una experiencia
+                    excepcional tanto para nuestros clientes como para nuestros
+                    vendedores. Por ello, te invitamos a compartir tu opinión
+                    sobre el producto calificándolo como Bueno, No tan bueno o
+                    Neutral. ¡Tu feedback es invaluable para nosotros y nos
+                    ayuda a mejorar continuamente!{" "}
                   </p>
-                  <div className="flex mb-4 gap-2">
+                  <div className="flex justify-center mb-4 gap-2">
                     <ButtonIcon
                       isIconOnly
-                      className={clsx("border border-blue-600", {
+                      className={clsx("border border-[#218838]", {
                         "bg-blue-200": storeReviewData?.rating === 5,
                         "bg-white": storeReviewData?.rating !== 5,
                       })}
                       onClick={() => handleRatingClick(5)}
                     >
-                      <ThumbUp color="#297dfa" />
+                      <ThumbUp color="#218838" />
                     </ButtonIcon>
                     <ButtonIcon
                       isIconOnly
-                      className={clsx("border border-red-600", {
+                      className={clsx("border border-[#C0392B]", {
                         "bg-red-200": storeReviewData?.rating === 1,
                         "bg-white": storeReviewData?.rating !== 1,
                       })}
                       onClick={() => handleRatingClick(1)}
                     >
                       {" "}
-                      <ThumbDown color="#bb1919" />
+                      <ThumbDown color="#C0392B" />
                     </ButtonIcon>
                     <ButtonIcon
                       isIconOnly
@@ -309,7 +323,7 @@ const ModalQualify = ({
                     </ButtonIcon>
                   </div>
                   <textarea
-                    className="w-full p-2 border rounded mb-4 focus:border-blue-gf focus:outline-none"
+                    className="w-full border-none p-2 rounded-lg shadow-2xl"
                     placeholder="Escribe un comentario..."
                     value={storeReviewData?.content}
                     onChange={(e) =>
@@ -319,16 +333,18 @@ const ModalQualify = ({
                       }))
                     }
                   />
-                  <Button
-                    onClick={handleSubmit}
-                    className="text-white bg-[#402e72]  hover:bg-[#2c1f57] rounded-[5px]"
-                    disabled={
-                      storeReviewData?.rating === 0 ||
-                      storeReviewData?.content.trim() === ""
-                    }
-                  >
-                    Enviar Calificación
-                  </Button>
+                  <div className="mt-6 flex justify-center">
+                    <ButtonLigth
+                      onClick={handleSubmit}
+                      className="bg-[#28A745] hover:bg-[#218838] text-white border-none"
+                      disabled={
+                        storeReviewData?.rating === 0 ||
+                        storeReviewData?.content.trim() === ""
+                      }
+                    >
+                      Enviar Calificación
+                    </ButtonLigth>
+                  </div>
                 </div>
               </ModalBody>
             ) : (

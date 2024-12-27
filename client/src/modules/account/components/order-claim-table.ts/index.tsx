@@ -336,7 +336,7 @@ const ModalClaimComment = ({
           <>
             <ModalHeader className="flex flex-col gap-1 border-b border-slate-200 bg-gray-50 py-3 px-4 rounded-t-2xl">
               <h2 className="text-center text-lg font-semibold">
-               Resolución de reclamos 
+               Resolución de reclamos
               </h2>
             </ModalHeader>
             <ModalBody className="bg-gray-100 px-8 py-4 overflow-y-auto h-[60vh]">
