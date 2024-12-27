@@ -23,6 +23,8 @@ import Image from "../../middlewares/images-tickests";
 import getSellerList from "./seller/get-seller-list";
 import UpdateSellerReview from "./seller/update-seller-review";
 import getSellersReviewsList from "./seller/get-seller-reviews-list";
+import getAllListRequestProduct from "./request-product/get-all-list-request-product";
+import updateRequestProduct from "./request-product/update-request-product";
 
 // Initialize a custom router
 const router = Router();
@@ -92,6 +94,13 @@ export function attachAdminRoutes(adminRouter: Router) {
   router.get("/sellers-list", wrapHandler(getSellerList));
   router.get("/sellers-reviews-list", wrapHandler(getSellersReviewsList));
   router.post("/update/seller-review", wrapHandler(UpdateSellerReview));
-  // Attach routes for onboarding experience, defined separately
+
+  //---------request-product----------
+  router.get(
+    "/all-list-request-product",
+    wrapHandler(getAllListRequestProduct)
+  );
+  router.post("/update-request-product", wrapHandler(updateRequestProduct));
+
   onboardingRoutes(adminRouter);
 }

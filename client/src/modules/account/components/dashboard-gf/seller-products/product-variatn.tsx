@@ -1,5 +1,5 @@
 import React from "react"
-import { variant, objetOptionVariant } from "./request-product"
+import { variant, objetOptionVariant } from "./request-products"
 import { Select as SelectNext, SelectItem } from "@nextui-org/react"
 import { Input, Spinner } from "@nextui-org/react"
 import { DotsIcon } from "@lib/util/icons"
@@ -30,7 +30,6 @@ const ProductVariat: React.FC<variantType> = ({ variant, optionVariant }) => {
         {optionVariant.map((obj, i) => (
           <div key={obj.titleOption} className="flex ">
             <SelectNext
-              label={obj.titleOption || "Vacío"}
               placeholder="Seleccione una variacion"
               className="w-[180px]"
               onChange={(e) => {

@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react"
 import { Input, Spinner, Textarea } from "@nextui-org/react"
 import Image from "next/image"
 import { useForm } from "react-hook-form"
-import { CreateProductInput } from "@modules/account/actions/post-seller-product"
+// import { addRequestProduct } from "@modules/account/actions/post-add-request-product"
 import { Accordion, AccordionItem } from "@nextui-org/react"
 import { Minus, Trash, Plus } from "@medusajs/icons"
 import { Button as ButtonM, FocusModal, IconButton } from "@medusajs/ui"
@@ -25,6 +25,7 @@ import ProductOptionVariant from "./product-option-variant"
 import ProductVariat from "./product-variatn"
 import ButtonLigth from "@modules/common/components/button_light"
 import { TrashIcon } from "@lib/util/icons"
+import { useMeCustomer } from "medusa-react"
 
 type Reset = {
   setReset: React.Dispatch<React.SetStateAction<boolean>>
@@ -70,8 +71,8 @@ type Errors = {
   variant_prices: string
 }
 export default function RequestProduct({ setReset }: Reset) {
-  // const [open, setOpen] = useState(false)
   const [file, setFile] = useState<File>()
+  const { customer } = useMeCustomer()
   const [product, setProduct] = useState({
     title: "",
     subtitle: "",
@@ -129,6 +130,7 @@ export default function RequestProduct({ setReset }: Reset) {
   useEffect(() => {
     setFile(undefined)
     categoriesOrder()
+    handlerAddOption()
   }, [open])
 
   const handlerError = () => {
@@ -168,11 +170,12 @@ export default function RequestProduct({ setReset }: Reset) {
     } else {
       optionVariant.forEach((v, i) => {
         if (!v.titleOption) {
-          error = true
-          setError((data) => ({
-            ...data,
-            optionVariantTitle: "Agrega un titulo para la opcion de variacion",
-          }))
+          v.titleOption = product.title
+          // error = true
+          // setError((data) => ({
+          //   ...data,
+          //   optionVariantTitle: "Agrega un titulo para la opcion de variacion",
+          // }))
         }
 
         if (!v.titleValueVariant?.length) {
@@ -220,21 +223,27 @@ export default function RequestProduct({ setReset }: Reset) {
   const onSubmit = () => {
     if (handlerError()) return
     if (!file) return
-    const productData = {
-      product,
-      categories: valuesSelectorCategory,
-      optionVariant,
-      variant,
-    }
+    // const productData =  {
+    //   customer_id:customer?.id ,
+    //   product_title: product.title
+    //   description: string;
+    //   variants: string;
+    //   approved: boolean;
+    // }
+    // console.log(
+    //   "INFORMACION QUE SE VA A ENVIAR",
+    //   productData,
+    //   transformImage(file)
+    // )
 
-    CreateProductInput(productData, transformImage(file))
-      .then(() => {
-        onOpenChange()
-        setReset((boolean) => !boolean)
-      })
-      .catch(() => {
-        alert("algo salio mal")
-      })
+    // addRequestProduct(productData, transformImage(file))
+    //   .then(() => {
+    //     onOpenChange()
+    //     setReset((boolean) => !boolean)
+    //   })
+    //   .catch(() => {
+    //     alert("algo salio mal")
+    //   })
   }
 
   const transformImage = (file: File) => {
@@ -248,13 +257,11 @@ export default function RequestProduct({ setReset }: Reset) {
       titleOption: "",
       titleValueVariant: [],
     }
-    setOptionVariant((optionV) =>
-      optionV.length ? [...optionV, objAux] : [objAux]
-    )
-    setIndex((indexOld) => ({
-      ...indexOld,
-      indexOption: indexOld.indexOption + 1,
-    }))
+    setOptionVariant([objAux])
+    // setIndex((indexOld) => ({
+    //   ...indexOld,
+    //   indexOption: indexOld.indexOption + 1,
+    // }))
   }
   const handlerAddVariant = () => {
     const objAux: variant = {
@@ -314,9 +321,9 @@ export default function RequestProduct({ setReset }: Reset) {
                           label="Titulo"
                           size="sm"
                           value={product.title}
-                          onChange={(e) =>
+                          onChange={(e) => {
                             setProduct({ ...product, title: e.target.value })
-                          }
+                          }}
                           required
                         />{" "}
                         <Input
@@ -439,14 +446,14 @@ export default function RequestProduct({ setReset }: Reset) {
                     }
                     title="Variaciones"
                   >
-                    <ButtonM
+                    {/* <ButtonM
                       variant="transparent"
                       className="text-slate-700 hover:text-gray-100 border rounded-[5px] mb-8"
                       onClick={handlerAddOption}
                     >
                       Agregar opciones de variación
                       <Plus />
-                    </ButtonM>
+                    </ButtonM> */}
                     {Errors.optionVariant && (
                       <p className="text-red-600 py-3">
                         {Errors.optionVariant}
@@ -476,7 +483,7 @@ export default function RequestProduct({ setReset }: Reset) {
                       </p>
                     )}
 
-                    {variant.length && optionVariant.length ? (
+                    {variant.length && optionVariant ? (
                       variant.map((v, i) => (
                         <div key={v.index} className="flex gap-2 items-center">
                           <ProductVariat
@@ -509,6 +516,10 @@ export default function RequestProduct({ setReset }: Reset) {
                     {/* {variant.length <= numberVariant && */}
                     {optionVariant.length ? (
                       <ButtonM
+                        disabled={
+                          variant.length ===
+                          optionVariant[0].titleValueVariant?.length
+                        }
                         variant="transparent"
                         className="text-slate-700 hover:text-gray-100 border rounded-[5px] mb-5"
                         onClick={handlerAddVariant}
