@@ -105,7 +105,7 @@ const OrderDetails = ({ orderData, onClose }: props) => {
                         <>
                           {!loading ? (
                             stores.includes(p.store_id) ? (
-                              <span className="text-lila-gf">¡Ya comentaste!</span>
+                              <span className="text-lila-gf">¡Ya comentaste esta tienda!</span>
                             ) : (
                               <button
                                 className="text-lila-gf flex justify-center items-center gap-2 text-sm bg-slate-200 px-4 rounded-2xl"
