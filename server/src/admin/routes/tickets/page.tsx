@@ -19,10 +19,11 @@ import { ModalComment } from "../../components/seller-application/modal-commet";
 import { RouteConfig } from "@medusajs/admin";
 import { getListTickets } from "../../actions/tickets/get-list-tickets";
 import ViewTicket from "../../components/view-ticket";
+import { updateTicketStatus } from "../../actions/tickets/update-ticket-status";
 
 interface Ticket {
   id: string;
-  status: "Cerrado" | "Abierto" | "Respondido";
+  status: "Cerrado" | "Abierto" | "Contestado";
   subject: string;
   last_name: string;
   first_name: string;
@@ -132,28 +133,27 @@ const TicketsListado = () => {
     });
   };
 
-  type StatusType = "Cerrado" | "Abierto" | "Respondido";
+  type StatusType = "Cerrado" | "Abierto" | "Contestado";
 
   const isValidStatus = (status: string): status is StatusType => {
-    return ["Cerrado", "Abierto", "Respondido"].includes(status);
+    return ["Cerrado", "Abierto", "Contestado"].includes(status);
   };
 
   const getStatusColor = (
-    status: "Cerrado" | "Abierto" | "Respondido"
+    status: "Cerrado" | "Abierto" | "Contestado"
   ): string => {
     switch (status) {
       case "Cerrado":
         return "bg-red-200";
       case "Abierto":
         return "bg-green-200";
-      case "Respondido":
+      case "Contestado":
         return "bg-blue-200";
       default:
         return "";
     }
   };
-
-  useEffect(() => {
+  const handlerGetListTickets = () => {
     getListTickets().then((e: Ticket[]) => {
       setDataTickets({
         dataTickets: e,
@@ -162,6 +162,9 @@ const TicketsListado = () => {
         count: e.length,
       });
     });
+  };
+  useEffect(() => {
+    handlerGetListTickets();
   }, []);
 
   return (
@@ -180,7 +183,7 @@ const TicketsListado = () => {
                     <Select.Item value="All">Todos</Select.Item>
                     <Select.Item value="Cerrado">Cerrado</Select.Item>
                     <Select.Item value="Abierto">Abierto</Select.Item>
-                    <Select.Item value="Respondido">Respondido</Select.Item>
+                    <Select.Item value="Contestado">Contestado</Select.Item>
                   </Select.Content>
                 </Select>
               </div>
@@ -235,7 +238,9 @@ const TicketsListado = () => {
                       <Table.Cell>{data.subject}</Table.Cell>
                       <Table.Cell className="flex gap-x-2 items-center">
                         <ModalViewTicket
+                          handlerReset={handlerGetListTickets}
                           subject={data.subject}
+                          status={data.status}
                           ticketId={data.id}
                         />
                       </Table.Cell>
@@ -319,27 +324,59 @@ export const config: RouteConfig = {
 };
 
 interface propsModal {
+  handlerReset: () => void;
   subject: string;
   ticketId: string;
+  status: "Cerrado" | "Abierto" | "Contestado";
 }
 
-const ModalViewTicket = ({ subject, ticketId }: propsModal) => {
-  const handleReset = () => {};
+const ModalViewTicket = ({
+  subject,
+  ticketId,
+  handlerReset,
+  status,
+}: propsModal) => {
+  const handlerUpdateTicket = async (statusid: "Answered_ID" | "Closed_ID") => {
+    updateTicketStatus(ticketId, statusid).then(() => {
+      handlerReset();
+    });
+  };
   return (
     <Drawer>
       <Drawer.Trigger asChild>
-        <Button>Edit Variant</Button>
+        <Button>Ver conversación </Button>
       </Drawer.Trigger>
-      <Drawer.Content>
+      <Drawer.Content className="w-[60%] right-0">
         <Drawer.Header className="flex flex-col gap-1"></Drawer.Header>
-        <Drawer.Body>
+        <Drawer.Body className="">
           <ViewTicket
-            handlerReset={handleReset}
+            handlerReset={handlerReset}
             subject={subject}
             ticketId={ticketId}
+            status={status}
           />
         </Drawer.Body>
-        <Drawer.Footer>
+        <Drawer.Footer className="justify-between px-5">
+          {status == "Cerrado" || status == "Contestado" ? (
+            <></>
+          ) : (
+            <div className="">
+              <Button
+                className="bg-red-500 hover:bg-red-600 mx-2"
+                onClick={() => handlerUpdateTicket("Closed_ID")}
+              >
+                {" "}
+                Cancelar Ticket
+              </Button>
+              <Button
+                className="bg-blue-500  hover:bg-blue-600 mx-2"
+                onClick={() => handlerUpdateTicket("Answered_ID")}
+              >
+                {" "}
+                Finalizar Ticket
+              </Button>
+            </div>
+          )}
           <Drawer.Close asChild>
             <Button variant="secondary">Cerrar</Button>
           </Drawer.Close>

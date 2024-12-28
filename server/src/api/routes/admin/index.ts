@@ -25,6 +25,7 @@ import UpdateSellerReview from "./seller/update-seller-review";
 import getSellersReviewsList from "./seller/get-seller-reviews-list";
 import getAllListRequestProduct from "./request-product/get-all-list-request-product";
 import updateRequestProduct from "./request-product/update-request-product";
+import { updateTicketStatus } from "./tickets/update-ticket-status";
 
 // Initialize a custom router
 const router = Router();
@@ -88,6 +89,7 @@ export function attachAdminRoutes(adminRouter: Router) {
     Image.single("image"),
     wrapHandler(postAddMessageTicket)
   );
+  router.post("/ticket/update-ticket-status", wrapHandler(updateTicketStatus));
 
   //------------seller---------
 

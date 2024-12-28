@@ -26,101 +26,10 @@ const FooterCTA = () => {
             </Link>
           </div>
           <div className="text-[#C7C7C7] font-[300] text-sm/[14px] grid grid-cols-1 gap-y-4">
-            <p className="ml-auto mr-auto mt-10 mb-16">
+            <p className="ml-auto mr-auto mt-10 ">
               Copyright © <CurrentYear /> | Powered by Gudfy
             </p>
-          </div>
-        </div>
-
-        <div className="hidden sm:grid grid-cols-4 gap-x-10">
-          <div className="flex flex-col gap-y-7">
-            <span className="text-[#FFFFFF] font-[500] text-[14px]">
-              Sobre Gudfy
-            </span>
-            <ul className="text-[#C7C7C7] font-[300] text-sm/[14px] grid grid-cols-1 gap-y-4">
-              <li>
-                <a
-                  href="https://gudfy.com/sobre-nosotros/"
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  Sobre nosotros
-                </a>
-              </li>
-              <li>
-                <a
-                  href="https://gudfy.com/contacto/"
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  Contáctanos
-                </a>
-              </li>
-            </ul>
-          </div>
-          <div className="flex flex-col gap-y-7">
-            <span className="text-[#FFFFFF] font-[500] text-[14px]">Ayuda</span>
-            <ul className="text-[#C7C7C7] font-[300] text-sm/[14px] grid grid-cols-1 gap-y-4">
-              <li>
-                <a
-                  href="https://gudfy.com/preguntas-frecuentes/"
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  FAQ
-                </a>
-              </li>
-              <li>
-                <a href="" target="_blank" rel="noreferrer">
-                  ¿Cómo comprar?
-                </a>
-              </li>
-              <li>
-                <a href="" target="_blank" rel="noreferrer">
-                  Sobre nuestra Wallet
-                </a>
-              </li>
-            </ul>
-          </div>
-          <div className="flex flex-col gap-y-7">
-            <span className="text-[#FFFFFF] font-[500] text-[14px]">
-              Comunidad
-            </span>
-            <ul className="text-[#C7C7C7] font-[300] text-sm/[14px] grid grid-cols-1 gap-y-4">
-              <li>
-                <a
-                  href="https://gudfy.com/blog/"
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  Blog
-                </a>
-              </li>
-              <li>
-                <a
-                  href="https://gudfy.com/crear-un-ticket/"
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  Crear un ticket
-                </a>
-              </li>
-              <li>
-                <a
-                  href="https://gudfy.com/sorteos/"
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  Sorteos
-                </a>
-              </li>
-            </ul>
-          </div>
-          <div className="flex flex-col gap-y-7">
-            <span className="text-[#FFFFFF] font-[500] text-[14px]">
-              Síguenos en Redes
-            </span>
-            <div className="flex justify-between w-28">
+            <div className="ml-auto mr-auto flex items-center justify-between w-28 mb-10">
               <Link
                 href="https://www.facebook.com/profile.php?id=100087656820749"
                 target="_blank"
@@ -164,13 +73,136 @@ const FooterCTA = () => {
               </Link>
             </div>
           </div>
+           
+        </div>
+
+        <div className="hidden sm:grid grid-cols-4 gap-x-10">
+          <div className="flex flex-col gap-y-7">
+            <span className="text-[#FFFFFF] font-[500] text-[14px]">
+              Sobre Gudfy P2P
+            </span>
+            <ul className="text-[#C7C7C7] font-[300] text-sm/[14px] grid grid-cols-1 gap-y-4">
+              <li>
+                <a
+                  href="https://gudfy.com/sobre-nosotros/"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  Sobre nosotros
+                </a>
+              </li>
+              <li>
+                <a
+                  href="https://gudfy.com/contacto/"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  Contáctanos
+                </a>
+              </li>
+              <li>
+                <a
+                  href="https://gudfy.com/contacto/"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  FQA
+                </a>
+              </li>
+            </ul>
+          </div>
+          <div className="flex flex-col gap-y-7">
+            <span className="text-[#FFFFFF] font-[500] text-[14px]">
+              Para compradores
+            </span>
+            <ul className="text-[#C7C7C7] font-[300] text-sm/[14px] grid grid-cols-1 gap-y-4">
+              <li>
+                <a
+                  href="https://gudfy.com/preguntas-frecuentes/"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  ¿Cómo comprar?
+                </a>
+              </li>
+              <li>
+                <a href="" target="_blank" rel="noreferrer">
+                  Ayuda al comprar
+                </a>
+              </li>
+              <li>
+                <a href="" target="_blank" rel="noreferrer">
+                  Tienda
+                </a>
+              </li>
+            </ul>
+          </div>
+          <div className="flex flex-col gap-y-7">
+            <span className="text-[#FFFFFF] font-[500] text-[14px]">
+              Para vendedores
+            </span>
+            <ul className="text-[#C7C7C7] font-[300] text-sm/[14px] grid grid-cols-1 gap-y-4">
+              <li>
+                <a
+                  href="https://gudfy.com/blog/"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  ¿Cómo vender?
+                </a>
+              </li>
+              <li>
+                <a
+                  href="https://gudfy.com/crear-un-ticket/"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  Ayúda al vender
+                </a>
+              </li>
+            </ul>
+          </div>
+          <div className="flex flex-col gap-y-7">
+            <span className="text-[#FFFFFF] font-[500] text-[14px]">
+              Comunidad
+            </span>
+            <ul className="text-[#C7C7C7] font-[300] text-sm/[14px] grid grid-cols-1 gap-y-4">
+              <li>
+                <a
+                  href="https://gudfy.com/blog/"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  Blog
+                </a>
+              </li>
+              <li>
+                <a
+                  href="https://gudfy.com/crear-un-ticket/"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  Sorteos
+                </a>
+              </li>
+              <li>
+                <a
+                  href="https://gudfy.com/crear-un-ticket/"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  Crea un ticket
+                </a>
+              </li>
+            </ul>
+          </div>
         </div>
 
         <div className="block sm:hidden mx-2">
           <div className="flex w-full">
             <div className="flex flex-col gap-y-7 w-1/2">
               <span className="text-[#FFFFFF] font-[500] text-[14px]">
-                Sobre Gudfy
+                Sobre Gudfy P2P
               </span>
               <ul className="text-[#C7C7C7] font-[300] text-sm/[14px] grid grid-cols-1 gap-y-4">
                 <li>
@@ -191,12 +223,21 @@ const FooterCTA = () => {
                     Contáctanos
                   </a>
                 </li>
+                <li>
+                  <a
+                    href="https://gudfy.com/contacto/"
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    FQA
+                  </a>
+                </li>
               </ul>
             </div>
 
             <div className="flex flex-col gap-y-7">
               <span className="text-[#FFFFFF] font-[500] text-[14px]">
-                Ayuda
+                Para compradores
               </span>
               <ul className="text-[#C7C7C7] font-[300] text-sm/[14px] grid grid-cols-1 gap-y-4">
                 <li>
@@ -205,17 +246,17 @@ const FooterCTA = () => {
                     target="_blank"
                     rel="noreferrer"
                   >
-                    FAQ
-                  </a>
-                </li>
-                <li>
-                  <a href="" target="_blank" rel="noreferrer">
                     ¿Cómo comprar?
                   </a>
                 </li>
                 <li>
                   <a href="" target="_blank" rel="noreferrer">
-                    Sobre nuestra Wallet
+                    Ayuda al comprar
+                  </a>
+                </li>
+                <li>
+                  <a href="" target="_blank" rel="noreferrer">
+                    Tienda
                   </a>
                 </li>
               </ul>
@@ -224,6 +265,32 @@ const FooterCTA = () => {
 
           <div className="flex w-full mt-20 mb-10">
             <div className="flex flex-col gap-y-7 w-1/2">
+              <span className="text-[#FFFFFF] font-[500] text-[14px]">
+                Para vendedores
+              </span>
+              <ul className="text-[#C7C7C7] font-[300] text-sm/[14px] grid grid-cols-1 gap-y-4">
+                <li>
+                  <a
+                    href="https://gudfy.com/blog/"
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    ¿Cómo vender?
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="https://gudfy.com/crear-un-ticket/"
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                   Ayuda al vender
+                  </a>
+                </li>
+              </ul>
+            </div>
+
+            <div className="flex flex-col gap-y-7">
               <span className="text-[#FFFFFF] font-[500] text-[14px]">
                 Comunidad
               </span>
@@ -243,26 +310,20 @@ const FooterCTA = () => {
                     target="_blank"
                     rel="noreferrer"
                   >
-                    Crear un ticket
+                   Sorteos
                   </a>
                 </li>
                 <li>
                   <a
-                    href="https://gudfy.com/sorteos/"
+                    href="https://gudfy.com/crear-un-ticket/"
                     target="_blank"
                     rel="noreferrer"
                   >
-                    Sorteos
+                   Crea un ticket
                   </a>
                 </li>
               </ul>
-            </div>
-
-            <div className="flex flex-col gap-y-7">
-              <span className="text-[#FFFFFF] font-[500] text-[14px]">
-                Síguenos en Redes
-              </span>
-              <div className="flex justify-between w-28">
+              {/* <div className="flex justify-between w-28">
                 <Link
                   href="https://www.facebook.com/profile.php?id=100087656820749"
                   target="_blank"
@@ -304,7 +365,7 @@ const FooterCTA = () => {
                     height={30}
                   />
                 </Link>
-              </div>
+              </div> */}
             </div>
           </div>
         </div>
