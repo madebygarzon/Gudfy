@@ -21,13 +21,19 @@ type Props = {
   handlerReset: () => void
   ticketId: string
   subject: string
+  status: "Cerrado" | "Abierto" | "Contestado" | undefined
 }
 
-const ViewTicket = ({ onClose, handlerReset, ticketId, subject }: Props) => {
+const ViewTicket = ({
+  onClose,
+  handlerReset,
+  ticketId,
+  subject,
+  status,
+}: Props) => {
   const [message, setMessage] = useState<string>("")
   const [data, setData] = useState<ContactFormValues[]>()
   const [image, setImage] = useState<File | undefined>()
-
   const {
     register,
     handleSubmit,
@@ -36,7 +42,6 @@ const ViewTicket = ({ onClose, handlerReset, ticketId, subject }: Props) => {
 
   const onSubmit = handleSubmit(async () => {
     try {
-      // agregar el comentario y cerrar el modal
       addTicketMessage({ ticketId, message }, image)
       onClose()
       handlerReset()
@@ -48,7 +53,6 @@ const ViewTicket = ({ onClose, handlerReset, ticketId, subject }: Props) => {
   useEffect(() => {
     if (ticketId)
       getDataMessagesTicket(ticketId).then((e) => {
-        console.log("data de los menssages", e)
         setData(e)
       })
   }, [ticketId])
@@ -128,6 +132,7 @@ const ViewTicket = ({ onClose, handlerReset, ticketId, subject }: Props) => {
             Enviar
              <SendIcon className="ml-2 w-4"/>
           </ButtonLigth>
+
       </div>
     </form>
   )
