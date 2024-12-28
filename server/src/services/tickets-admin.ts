@@ -39,20 +39,29 @@ export default class TicketsAdminService extends TransactionBaseService {
   }
 
   async addTicketMessage(ticket_id, owner_id, image, message) {
-    const TicketMessagesRepository = this.activeManager_.withRepository(
-      this.ticketMessagesRepository_
-    );
-    const addMessage = await TicketMessagesRepository.create({
-      image: image.path
-        ? `${process.env.BACKEND_URL ?? `http://localhost:9000`}/${image.path}`
-        : null,
-      message,
-      ticket_id,
-      owner_id,
-    });
-    const saveMessage = await TicketMessagesRepository.save(addMessage);
+    try {
+      const TicketMessagesRepository = this.activeManager_.withRepository(
+        this.ticketMessagesRepository_
+      );
+      const addMessage = await TicketMessagesRepository.create({
+        image: image?.path
+          ? `${process.env.BACKEND_URL ?? `http://localhost:9000`}/${
+              image.path
+            }`
+          : null,
+        message,
+        ticket_id,
+        owner_id,
+      });
+      const saveMessage = await TicketMessagesRepository.save(addMessage);
 
-    return saveMessage;
+      return saveMessage;
+    } catch (error) {
+      console.log(
+        "error al agregar el mensage al tikect de parte del admin",
+        error
+      );
+    }
   }
 
   async retriverTicketMessages(idTicket) {
@@ -67,5 +76,20 @@ export default class TicketsAdminService extends TransactionBaseService {
     });
 
     return listTiketsMessage;
+  }
+
+  async updateTikectStatus(ticket_id, status) {
+    try {
+      const TicketRepository = this.activeManager_.withRepository(
+        this.ticketsRepository_
+      );
+      const updateTicket = await TicketRepository.update(ticket_id, {
+        status_id: status,
+      });
+
+      return updateTicket;
+    } catch (error) {
+      console.log("error en la actualizacion del ticket", error);
+    }
   }
 }

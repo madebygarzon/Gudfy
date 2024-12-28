@@ -100,7 +100,7 @@ const TicketForm = ({ onClose, handlerReset }: Props) => {
               />
             ) : ( */}
             <InputFile
-              type="Plane"
+              type="Plane2"
               alt="Image"
               label="Adjuntar imagen"
               file={image}

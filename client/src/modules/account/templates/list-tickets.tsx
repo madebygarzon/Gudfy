@@ -30,7 +30,7 @@ import { Plus } from "@medusajs/icons"
 
 interface Ticket {
   id: string
-  status: "Cerrado" | "Abierto" | "Respondido"
+  status: "Cerrado" | "Abierto" | "Contestado"
   subject: string
   created_at: string
 }
@@ -117,7 +117,7 @@ const TicketTable: React.FC = () => {
     handlerGetListTickets()
   }
   const [filterStatus, setFilterStatus] = useState<
-    "Cerrado" | "Abierto" | "Respondido" | "all"
+    "Cerrado" | "Abierto" | "Contestado" | "all"
   >("all")
 
   const filteredTickets =
@@ -126,14 +126,14 @@ const TicketTable: React.FC = () => {
       : tickets?.filter((ticket) => ticket.status === filterStatus)
 
   const getStatusColor = (
-    status: "Cerrado" | "Abierto" | "Respondido"
+    status: "Cerrado" | "Abierto" | "Contestado"
   ): string => {
     switch (status) {
       case "Cerrado":
         return "bg-red-200"
       case "Abierto":
         return "bg-green-200"
-      case "Respondido":
+      case "Contestado":
         return "bg-blue-200"
       default:
         return ""
@@ -170,14 +170,14 @@ const TicketTable: React.FC = () => {
               value={filterStatus}
               onChange={(e) =>
                 setFilterStatus(
-                  e.target.value as "Cerrado" | "Abierto" | "Respondido" | "all"
+                  e.target.value as "Cerrado" | "Abierto" | "Contestado" | "all"
                 )
               }
             >
               <option value="all">Todos</option>
               <option value="Cerrado">Cerrado</option>
               <option value="Abierto">Abierto</option>
-              <option value="Respondido">Respondido</option>
+              <option value="Contestado">Contestado</option>
             </select>
           </div>
           <div className="">
@@ -266,6 +266,7 @@ const TicketTable: React.FC = () => {
           </table>
         </div>
         <ModalViewTicket
+          status={ticket?.status}
           isOpen={isOpen2}
           onClose={onClose2}
           onOpen={onOpen2}
@@ -279,6 +280,7 @@ const TicketTable: React.FC = () => {
 }
 
 interface propsModal {
+  status: "Cerrado" | "Abierto" | "Contestado" | undefined
   subject: string
   ticketId: string
   isOpen: boolean
@@ -288,6 +290,7 @@ interface propsModal {
 }
 
 const ModalViewTicket = ({
+  status,
   subject,
   ticketId,
   isOpen,
@@ -303,6 +306,7 @@ const ModalViewTicket = ({
             <ModalHeader className="flex flex-col gap-1"></ModalHeader>
             <ModalBody>
               <ViewTicket
+                status={status}
                 onClose={onClose}
                 handlerReset={handleReset}
                 subject={subject}
