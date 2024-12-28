@@ -301,7 +301,7 @@ const ReclamosListado = () => {
                   </Table.Row>
                 </Table.Header>
                 <Table.Body>
-                  {dataCustomer.dataPreview.map((data) => (
+                  {dataCustomer.dataPreview?.map((data) => (
                     <Table.Row key={data.id}>
                       <Table.Cell>
                         <p
@@ -324,7 +324,7 @@ const ReclamosListado = () => {
                       <Table.Cell className=" relativeflex gap-x-2 items-center">
                         <DropdownMenu>
                           <div className="relative">
-                            {notification.map((n) => {
+                            {notification?.map((n) => {
                               if (n.order_claim_id === data.id) {
                                 return <Notification />;
                               }

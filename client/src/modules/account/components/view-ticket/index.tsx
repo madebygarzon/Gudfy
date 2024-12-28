@@ -20,13 +20,19 @@ type Props = {
   handlerReset: () => void
   ticketId: string
   subject: string
+  status: "Cerrado" | "Abierto" | "Respondido" | undefined
 }
 
-const ViewTicket = ({ onClose, handlerReset, ticketId, subject }: Props) => {
+const ViewTicket = ({
+  onClose,
+  handlerReset,
+  ticketId,
+  subject,
+  status,
+}: Props) => {
   const [message, setMessage] = useState<string>("")
   const [data, setData] = useState<ContactFormValues[]>()
   const [image, setImage] = useState<File | undefined>()
-
   const {
     register,
     handleSubmit,
@@ -35,7 +41,6 @@ const ViewTicket = ({ onClose, handlerReset, ticketId, subject }: Props) => {
 
   const onSubmit = handleSubmit(async () => {
     try {
-      // agregar el comentario y cerrar el modal
       addTicketMessage({ ticketId, message }, image)
       onClose()
       handlerReset()
@@ -47,69 +52,84 @@ const ViewTicket = ({ onClose, handlerReset, ticketId, subject }: Props) => {
   useEffect(() => {
     if (ticketId)
       getDataMessagesTicket(ticketId).then((e) => {
-        console.log("data de los menssages", e)
         setData(e)
       })
   }, [ticketId])
 
   return (
     <form onSubmit={onSubmit} className="">
-      <div className="flex flex-col w-full gap-y-2 text-sm ml-auto">
+      <div className="flex flex-col w-full gap-y-2 text-sm ml-auto ">
         <p className="mb-4 text-xl font-extrabold text-center">{subject}</p>
         {ticketId}
-        {data?.map((message) => (
-          <div
-            className={`flex w-full   ${
-              message.owner_id === "COMMENT_CUSTOMER_ID"
-                ? "justify-end"
-                : "justify-start"
-            }`}
-          >
-            <div className="my-1 px-3 py-1 bg-slate-200 border rounded-[10px]">
-              <p className="text-xs">
-                {message.owner_id === "COMMENT_CUSTOMER_ID"
-                  ? "Yo"
-                  : message.owner_id === "COMMENT_ADMIN_ID"
-                  ? "Admin Gudfy"
-                  : ""}
-              </p>
-              {message.message}
+        <div className="w-full max-h-[400px] overflow-y-scroll">
+          {data?.map((message, i) => (
+            <div
+              key={i}
+              className={`flex w-full   ${
+                message.owner_id === "COMMENT_CUSTOMER_ID"
+                  ? "justify-end"
+                  : "justify-start"
+              }`}
+            >
+              <div className="my-1 px-3 py-1 bg-slate-200 border rounded-[10px]">
+                <p className="text-xs">
+                  {message.owner_id === "COMMENT_CUSTOMER_ID"
+                    ? "Yo"
+                    : message.owner_id === "COMMENT_ADMIN_ID"
+                    ? "Admin Gudfy"
+                    : ""}
+                </p>
+                {message.message}
 
-              {message.image ? (
-                <Image
-                  src={message.image}
-                  alt={"Image"}
-                  height={200}
-                  width={200}
-                />
-              ) : (
-                <></>
-              )}
+                {message.image ? (
+                  <Image
+                    src={message.image}
+                    alt={"Image"}
+                    height={200}
+                    width={200}
+                  />
+                ) : (
+                  <></>
+                )}
+              </div>
             </div>
-          </div>
-        ))}
-        <Input
-          value={message}
-          label="Mensaje"
-          placeholder="Mensaje"
-          {...register("message", { required: "Campo requerido" })}
-          className=" rounded  mt-2"
-          onChange={(e) => {
-            setMessage(e.target.value)
-          }}
-        />
-        <InputFile
-          alt="Image"
-          label="si lo requieres ingresa una imagen"
-          setFile={setImage}
-        />
-        <ButtonMedusa
-          className="mt-4 mb-4 rounded-[5px]"
-          type="submit"
-          color="primary"
-        >
-          Enviar
-        </ButtonMedusa>
+          ))}
+        </div>
+        {status == "Cerrado" || status == "Respondido" ? (
+          <>
+            {" "}
+            <p className="text-red-500 text-xs">
+              El ticket se encuentra Finalizado
+            </p>
+          </>
+        ) : (
+          <>
+            <Input
+              value={message}
+              label="Mensaje"
+              placeholder="Mensaje"
+              {...register("message", { required: "Campo requerido" })}
+              className=" rounded  mt-2"
+              onChange={(e) => {
+                setMessage(e.target.value)
+              }}
+            />
+            <InputFile
+              type="Plane2"
+              alt="Image"
+              label="si lo requieres ingresa una imagen"
+              file={image}
+              setFile={setImage}
+            />
+            <ButtonMedusa
+              className="mt-4 mb-4 rounded-[5px]"
+              type="submit"
+              color="primary"
+            >
+              Enviar
+            </ButtonMedusa>
+          </>
+        )}
       </div>
     </form>
   )
