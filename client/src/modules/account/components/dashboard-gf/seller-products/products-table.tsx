@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react"
-import { Table, DropdownMenu, IconButton, Input, Select } from "@medusajs/ui"
+import { IconButton, Input, Select } from "@medusajs/ui"
 import {
-  PencilSquare,
   XMark,
   ArrowLongRight,
   ArrowLongLeft,
@@ -9,17 +8,14 @@ import {
 import Spinner from "@modules/common/icons/spinner"
 import { getSellerProduct } from "@modules/account/actions/get-seller-product"
 import { ProductCategory } from "@medusajs/medusa"
-import RequestProduct from "./request-products"
 import AddProducts from "./add-product"
 import EditProduct from "./edit-product"
-import Image from "next/image"
-import Link from "next/link"
-import { Variant } from "types/medusa"
 import ImagePlaceholderIcon from "@modules/common/icons/defaultIcon"
 import getAllCategories from "@modules/account/actions/get-data-categories"
 import { PencilEditIcon } from "@lib/util/icons"
 import { useDisclosure } from "@nextui-org/react"
 import Thumbnail from "@modules/products/components/thumbnail"
+import RequestProductTable from "./table-request-products"
 
 type StoreProducVariant = {
   description: string
@@ -208,7 +204,9 @@ export default function ProductsTable() {
   return (
     <div className=" bg-white p-8 border border-gray-200 rounded-lg">
       <div className="w-full h-full ">
-        <h2 className="text-2xl mt-2 font-bold text-gray-700 ">Productos de la tienda</h2>
+        <h2 className="text-2xl mt-2 font-bold text-gray-700 ">
+          Productos de la tienda
+        </h2>
         <div className="mt-2 flex justify-between">
           <div className="flex gap-5 h-full items-end py-4">
             <div className="w-[170px] ">
@@ -224,6 +222,8 @@ export default function ProductsTable() {
 
           <div className="flex itmes-end py-4 gap-x-3">
             <AddProducts setReset={setReset} />
+            <RequestProductTable />
+
             {/* <RequestProduct setReset={setReset} /> */}
           </div>
         </div>
