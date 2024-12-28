@@ -1,11 +1,11 @@
 "use client"
 import React, { useState, useEffect } from "react"
-import { Input, Spinner, Textarea } from "@nextui-org/react"
+import { Input, Textarea } from "@nextui-org/react"
 import Image from "next/image"
 import { addRequestProduct } from "@modules/account/actions/request-product/post-add-request-product"
 import { Plus } from "@medusajs/icons"
 import InputFile from "@modules/common/components/input-file"
-import { XCircleSolid, Trash } from "@medusajs/icons"
+import { XCircleSolid } from "@medusajs/icons"
 import {
   Modal,
   ModalContent,
@@ -17,8 +17,6 @@ import {
 import { ProductCategory } from "@medusajs/medusa"
 import ButtonLigth from "@modules/common/components/button_light"
 import { useMeCustomer } from "medusa-react"
-import ProductTable from "./table-request-products"
-import RequestProductTable from "./table-request-products"
 
 type Reset = {
   setReset: React.Dispatch<React.SetStateAction<boolean>>
@@ -151,7 +149,7 @@ export default function RequestProduct({ setReset }: Reset) {
           {(onClose) => (
             <>
               <ModalHeader className=""></ModalHeader>
-              <ModalBody>
+              <ModalBody className="flex justify-center items-center">
                 <div className=" overflow-y-auto gap-x-10 flex flex-col">
                   <div className="flex overflow-auto py-2 px-40 justify-center items-center">
                     <div className="rounded-lg shadow-2xl p-8 flex w-full gap-10 ">
@@ -272,34 +270,9 @@ export default function RequestProduct({ setReset }: Reset) {
                       <p className="text-red-600">{Errors.productError}</p>
                     )}
                   </div>
-                  <div className="flex py-2 px-40 justify-center items-center">
-                    <div className="rounded-lg shadow-2xl p-8 w-full gap-10">
-                      <h2 className="text-2xl mt-2 mb-4 font-bold text-gray-700">
-                        Mis solicitudes de productos
-                      </h2>
-                      <div className="">
-                        <RequestProductTable />
-                      </div>
-                      
-                    </div>
-                  </div>
                 </div>
               </ModalBody>
-              <ModalFooter className="mb-6 flex justify-center">
-                <ButtonLigth
-                  className="bg-[#E74C3C] hover:bg-[#C0392B] text-white border-none"
-                  onClick={onClose}
-                >
-                  Cancelar
-                </ButtonLigth>
-                <ButtonLigth
-                  className="bg-[#28A745] hover:bg-[#218838] text-white border-none"
-                  onClick={onSubmit}
-                  isLoading={loading}
-                >
-                  Enviar solicitud
-                </ButtonLigth>
-              </ModalFooter>
+              <ModalFooter className="mb-6 flex justify-center"></ModalFooter>
             </>
           )}
         </ModalContent>

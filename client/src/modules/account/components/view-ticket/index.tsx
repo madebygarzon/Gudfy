@@ -7,7 +7,7 @@ import { getDataMessagesTicket } from "@modules/account/actions/tikets/get-data-
 import Image from "next/image"
 import { addTicketMessage } from "@modules/account/actions/tikets/post-add-ticker-message"
 import ButtonLigth from "@modules/common/components/button_light"
-
+import { SendIcon } from "@lib/util/icons"
 interface ContactFormValues {
   id_ticket: string
   owner_id: string
@@ -55,40 +55,54 @@ const ViewTicket = ({ onClose, handlerReset, ticketId, subject }: Props) => {
 
   return (
     <form onSubmit={onSubmit} className="">
+      <div className="border-b border-gray-200 p-8 -mt-10 mb-10">
+          <p className="text-center text-xs">
+            Asunto del ticket: <p className="text-lg font-bold text-center">{subject}</p>
+          </p>
+          <p className="text-center text-xs">
+            Ticket número: <span className="font-bold">{ticketId}</span>
+          </p>
+          
+        </div>
       <div className="flex flex-col w-full gap-y-2 text-sm ml-auto">
-        <p className="mb-4 text-xl font-extrabold text-center">{subject}</p>
-        {ticketId}
-        {data?.map((message) => (
-          <div
-            className={`flex w-full   ${
-              message.owner_id === "COMMENT_CUSTOMER_ID"
-                ? "justify-end"
-                : "justify-start"
-            }`}
-          >
-            <div className="my-1 px-3 py-1 bg-slate-200 border rounded-[10px]">
-              <p className="text-xs">
-                {message.owner_id === "COMMENT_CUSTOMER_ID"
-                  ? "Yo"
-                  : message.owner_id === "COMMENT_ADMIN_ID"
-                  ? "Admin Gudfy"
-                  : ""}
-              </p>
-              {message.message}
+        
+        
+      {data?.map((message) => (
+  <div
+    className={`flex w-full transition-transform duration-300 ease-in-out ${
+      message.owner_id === "COMMENT_CUSTOMER_ID"
+        ? "justify-end"
+        : "justify-start"
+    }`}
+  >
+    <div
+      className={`max-w-[75%] px-4 py-2 shadow-md text-sm ${
+        message.owner_id === "COMMENT_CUSTOMER_ID"
+          ? "bg-blue-400 text-white rounded-bl-xl rounded-tr-xl rounded-tl-xl"
+          : "bg-gray-200 text-gray-900 rounded-br-xl rounded-tr-xl rounded-tl-xl"
+      } my-1`}
+    >
+      <p className="mb-1 text-xs font-bold">
+        {message.owner_id === "COMMENT_CUSTOMER_ID"
+          ? "Yo"
+          : message.owner_id === "COMMENT_ADMIN_ID"
+          ? "Admin Gudfy"
+          : ""}
+      </p>
+      <p>{message.message}</p>
+      {message.image ? (
+        <Image
+          src={message.image}
+          alt={"Image"}
+          height={200}
+          width={200}
+          className="mt-2 rounded-md"
+        />
+      ) : null}
+    </div>
+  </div>
+))}
 
-              {message.image ? (
-                <Image
-                  src={message.image}
-                  alt={"Image"}
-                  height={200}
-                  width={200}
-                />
-              ) : (
-                <></>
-              )}
-            </div>
-          </div>
-        ))}
         <Input
           value={message}
           label="Mensaje"
@@ -99,22 +113,21 @@ const ViewTicket = ({ onClose, handlerReset, ticketId, subject }: Props) => {
             setMessage(e.target.value)
           }}
         />
-        <InputFile
-          alt="Image"
-          label="Adjuntar imagen"
-          setFile={setImage}
-        />      
-        <div className="mt-4 flex items-center justify-center gap-2">
+        <InputFile 
+          type="Plane"
+           alt="Image" 
+           label="Adjuntar imagen" 
+           file={image}
+           setFile={setImage} 
+        />        
           <ButtonLigth
             color="primary"
-            className="bg-[#28A745] px-3 hover:bg-[#218838] text-white border-none w-full sm:w-auto"
-            type="submit"     
+            className="w-full bg-[#28A745] px-3 hover:bg-[#218838] text-white border-none sm:w-auto"
+            type="submit"
           >
             Enviar
+             <SendIcon className="ml-2 w-4"/>
           </ButtonLigth>
-        </div>
-
-
       </div>
     </form>
   )
