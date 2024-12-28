@@ -34,10 +34,12 @@ export default function NotFound() {
             La pagina que buscas no existe o fue movida.
           </p>
         </div>
-        <div className="mt-8">
-          <ButtonLigth className="inline-flex items-center">
+        <div className="flex justify-center mt-8">
+        
+
+          <ButtonLigth className="bg-[#9B48ED] hover:bg-[#7b39c4] text-white border-none">
             <Link className="flex items-center" href="/">
-              <ArrowLeft className="mr-2 h-4 w-4" />
+              <ArrowLeft className="bg-white mr-2 h-4 w-4" />
               <p className="ml-2">Regresar al inicio</p>
             </Link>
           </ButtonLigth>
