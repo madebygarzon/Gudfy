@@ -150,14 +150,15 @@ export default function RequestProduct({ setReset }: Reset) {
         <ModalContent>
           {(onClose) => (
             <>
-              <ModalHeader className="text-2xl font-bold flex  mt-6 flex-col gap-1 px-40">
-                Solicitar un producto
-              </ModalHeader>
+              <ModalHeader className=""></ModalHeader>
               <ModalBody>
-                <div className="flex flex-col">
+                <div className=" overflow-y-auto gap-x-10 flex flex-col">
                   <div className="flex overflow-auto py-2 px-40 justify-center items-center">
-                    <div className="flex w-full gap-10 ">
+                    <div className="rounded-lg shadow-2xl p-8 flex w-full gap-10 ">
                       <div className="flex flex-col w-[50%] gap-y-5 ">
+                        <h2 className="text-2xl mt-2 font-bold text-gray-700">
+                          Solicitar un producto
+                        </h2>
                         <div>
                           <h3 className="text-base font-blod ">
                             Agrega un titulo sin variaciones, Ejemplo: Netflix
@@ -191,7 +192,7 @@ export default function RequestProduct({ setReset }: Reset) {
                         </div>
                         <div>
                           <h3 className="text-base font-blod ">
-                            Presiona "Enter" o "," para agregar una variación
+                            Presiona "," para agregar una variación
                           </h3>
 
                           <Input
@@ -223,30 +224,47 @@ export default function RequestProduct({ setReset }: Reset) {
                           />
                         </div>
                       </div>
-                      <div className="w-[50%] flex flex-col items-center">
-                        <h3 className="text-base font-blod ">
-                          Imagen Principal
-                        </h3>
-                        {file ? (
-                          <Image
-                            alt="ImagePreview"
-                            src={URL.createObjectURL(file)}
-                            width={100}
-                            height={100}
+                      <div className="w-[50%] flex justify-between  flex-col items-center">
+                        <div className="mt-14 flex flex-col items-center">
+                          <h3 className="text-base font-blod ">
+                            Imagen del producto
+                          </h3>
+                          {file ? (
+                            <Image
+                              alt="ImagePreview"
+                              src={URL.createObjectURL(file)}
+                              width={100}
+                              height={100}
+                            />
+                          ) : (
+                            <Image
+                              alt="ImagePreview"
+                              src="/product/image_default.svg"
+                              width={100}
+                              height={100}
+                            />
+                          )}
+                          <InputFile
+                            label="Subir imagen"
+                            setFile={setFile}
+                            alt={""}
                           />
-                        ) : (
-                          <Image
-                            alt="ImagePreview"
-                            src="/product/image_default.svg"
-                            width={100}
-                            height={100}
-                          />
-                        )}
-                        <InputFile
-                          label="Subir imagen"
-                          setFile={setFile}
-                          alt={""}
-                        />
+                        </div>
+                        <div className="flex gap-4 mt-4">
+                          <ButtonLigth
+                            className="bg-[#E74C3C] hover:bg-[#C0392B] text-white border-none"
+                            onClick={onClose}
+                          >
+                            Cancelar
+                          </ButtonLigth>
+                          <ButtonLigth
+                            className="bg-[#28A745] hover:bg-[#218838] text-white border-none"
+                            onClick={onSubmit}
+                            isLoading={loading}
+                          >
+                            Enviar solicitud
+                          </ButtonLigth>
+                        </div>
                       </div>
                     </div>
 
@@ -254,9 +272,16 @@ export default function RequestProduct({ setReset }: Reset) {
                       <p className="text-red-600">{Errors.productError}</p>
                     )}
                   </div>
-                  <div className="m-10">
-                    <h3>Lista de product solicitados</h3>
-                    <RequestProductTable />
+                  <div className="flex py-2 px-40 justify-center items-center">
+                    <div className="rounded-lg shadow-2xl p-8 w-full gap-10">
+                      <h2 className="text-2xl mt-2 mb-4 font-bold text-gray-700">
+                        Mis solicitudes de productos
+                      </h2>
+                      <div className="">
+                        <RequestProductTable />
+                      </div>
+                      
+                    </div>
                   </div>
                 </div>
               </ModalBody>
@@ -272,7 +297,7 @@ export default function RequestProduct({ setReset }: Reset) {
                   onClick={onSubmit}
                   isLoading={loading}
                 >
-                  Guardar producto
+                  Enviar solicitud
                 </ButtonLigth>
               </ModalFooter>
             </>

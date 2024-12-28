@@ -58,6 +58,13 @@ const InputFile: React.FC<InputProps> = ({
 
               <div className="font-medium"> Archivo cargado </div>
             </div>
+            <Image
+              alt={alt}
+              src={file ? URL.createObjectURL(file) : `${previewImage}`}
+              width={50}
+              height={50}
+              className="rounded w-[50px] h-[50Px]"
+            />
           </>
         ) : (
           <>
@@ -105,14 +112,6 @@ const InputFile: React.FC<InputProps> = ({
 
               <div className="font-medium"> Archivo cargado </div>
             </div>
-
-            <Image
-              alt={alt}
-              src={file ? URL.createObjectURL(file) : `${previewImage}`}
-              width={50}
-              height={50}
-              className="rounded w-[50px] h-[50Px]"
-            />
           </>
         ) : (
           <>
