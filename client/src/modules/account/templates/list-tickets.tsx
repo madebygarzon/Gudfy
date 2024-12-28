@@ -269,6 +269,7 @@ const TicketTable: React.FC = () => {
           </table>
         </div>
         <ModalViewTicket
+          status={ticket?.status}
           isOpen={isOpen2}
           onClose={onClose2}
           onOpen={onOpen2}
@@ -282,6 +283,7 @@ const TicketTable: React.FC = () => {
 }
 
 interface propsModal {
+  status: "Cerrado" | "Abierto" | "Respondido" | undefined
   subject: string
   ticketId: string
   isOpen: boolean
@@ -291,6 +293,7 @@ interface propsModal {
 }
 
 const ModalViewTicket = ({
+  status,
   subject,
   ticketId,
   isOpen,
@@ -306,6 +309,7 @@ const ModalViewTicket = ({
             <ModalHeader className="flex flex-col gap-1"></ModalHeader>
             <ModalBody>
               <ViewTicket
+                status={status}
                 onClose={onClose}
                 handlerReset={handleReset}
                 subject={subject}

@@ -43,6 +43,7 @@ import updateReview from "./update-review";
 import deleteReview from "./delete-review";
 import { getSellerStoreData } from "./seller-store/get-seller-store-data";
 import { getSellerStoreReviews } from "./seller-store/get-selller-store-reviews";
+import { postAddTicketsMessage } from "./tickets/post-add-ticket-message";
 
 // Initialize a custom router
 const router = Router();
@@ -149,7 +150,7 @@ export function attachStoreRoutes(storeRouter: Router) {
   router.post(
     "/account/add-ticket-message",
     Image.single("image"),
-    wrapHandler(postAddTickets)
+    wrapHandler(postAddTicketsMessage)
   );
 
   //-------------------------------webhoock-----------------------------
