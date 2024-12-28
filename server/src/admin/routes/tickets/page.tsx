@@ -23,7 +23,7 @@ import { updateTicketStatus } from "../../actions/tickets/update-ticket-status";
 
 interface Ticket {
   id: string;
-  status: "Cerrado" | "Abierto" | "Respondido";
+  status: "Cerrado" | "Abierto" | "Contestado";
   subject: string;
   last_name: string;
   first_name: string;
@@ -133,21 +133,21 @@ const TicketsListado = () => {
     });
   };
 
-  type StatusType = "Cerrado" | "Abierto" | "Respondido";
+  type StatusType = "Cerrado" | "Abierto" | "Contestado";
 
   const isValidStatus = (status: string): status is StatusType => {
-    return ["Cerrado", "Abierto", "Respondido"].includes(status);
+    return ["Cerrado", "Abierto", "Contestado"].includes(status);
   };
 
   const getStatusColor = (
-    status: "Cerrado" | "Abierto" | "Respondido"
+    status: "Cerrado" | "Abierto" | "Contestado"
   ): string => {
     switch (status) {
       case "Cerrado":
         return "bg-red-200";
       case "Abierto":
         return "bg-green-200";
-      case "Respondido":
+      case "Contestado":
         return "bg-blue-200";
       default:
         return "";
@@ -183,7 +183,7 @@ const TicketsListado = () => {
                     <Select.Item value="All">Todos</Select.Item>
                     <Select.Item value="Cerrado">Cerrado</Select.Item>
                     <Select.Item value="Abierto">Abierto</Select.Item>
-                    <Select.Item value="Respondido">Respondido</Select.Item>
+                    <Select.Item value="Contestado">Contestado</Select.Item>
                   </Select.Content>
                 </Select>
               </div>
@@ -327,7 +327,7 @@ interface propsModal {
   handlerReset: () => void;
   subject: string;
   ticketId: string;
-  status: "Cerrado" | "Abierto" | "Respondido";
+  status: "Cerrado" | "Abierto" | "Contestado";
 }
 
 const ModalViewTicket = ({
@@ -357,7 +357,7 @@ const ModalViewTicket = ({
           />
         </Drawer.Body>
         <Drawer.Footer className="justify-between px-5">
-          {status == "Cerrado" || status == "Respondido" ? (
+          {status == "Cerrado" || status == "Contestado" ? (
             <></>
           ) : (
             <div className="">
