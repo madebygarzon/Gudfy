@@ -17,9 +17,10 @@ type Props = {
   handlerReset: () => void;
   ticketId: string;
   subject: string;
+  status: "Cerrado" | "Abierto" | "Respondido";
 };
 
-const ViewTicket = ({ handlerReset, ticketId, subject }: Props) => {
+const ViewTicket = ({ handlerReset, ticketId, subject, status }: Props) => {
   const [message, setMessage] = useState<string>("");
   const [data, setData] = useState<ContactFormValues[]>([]);
   const [image, setImage] = useState<File | undefined>();
@@ -33,11 +34,12 @@ const ViewTicket = ({ handlerReset, ticketId, subject }: Props) => {
 
   const onSubmit = handleSubmit(async (formData) => {
     try {
-      // Enviar mensaje y restablecer
-      console.log({ message, image });
-      addTicketMessage({ ticketId, message: formData.message }, image);
-      reset();
-      handlerReset();
+      addTicketMessage({ ticketId, message: formData.message }, image).then(
+        () => {
+          reset();
+          handlerReset();
+        }
+      );
     } catch (error) {
       console.error("Error al crear el ticket:", error);
     }
@@ -92,22 +94,29 @@ const ViewTicket = ({ handlerReset, ticketId, subject }: Props) => {
             </div>
           ))}
         </div>
+        {status == "Cerrado" || status == "Respondido" ? (
+          <p className="text-red-500 text-xs">
+            El ticket se encuentra Finalizado
+          </p>
+        ) : (
+          <>
+            <Textarea
+              {...register("message", { required: true })}
+              placeholder="Escribe tu mensaje aquí..."
+              rows={3}
+              className="rounded-md"
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+            />
+            {errors.message && (
+              <p className="text-red-500 text-xs">El mensaje es requerido</p>
+            )}
 
-        <Textarea
-          {...register("message", { required: true })}
-          placeholder="Escribe tu mensaje aquí..."
-          rows={3}
-          className="rounded-md"
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-        />
-        {errors.message && (
-          <p className="text-red-500 text-xs">El mensaje es requerido</p>
+            <Button type="submit" color="primary" className="mt-4 w-full">
+              Enviar
+            </Button>
+          </>
         )}
-
-        <Button type="submit" color="primary" className="mt-4 w-full">
-          Enviar
-        </Button>
       </div>
     </form>
   );
