@@ -8,7 +8,8 @@ import axios from "axios"
 import { addTicket } from "@modules/account/actions/tikets/post-add-ticket"
 import InputFile from "@modules/common/components/input-file"
 import Image from "next/image"
-
+import ButtonLigth from "@modules/common/components/button_light"
+import { SendIcon } from "@lib/util/icons"
 interface ContactFormValues {
   subject: string
   message: string
@@ -73,11 +74,7 @@ const TicketForm = ({ onClose, handlerReset }: Props) => {
         </div>
       ) : (
         <form onSubmit={onSubmit} className="">
-          <div className="flex flex-col w-full gap-y-2 text-sm ml-auto">
-            <p className="mb-4 text-xl font-extrabold text-center">
-              Crear ticket
-            </p>
-
+          <div className="flex flex-col w-full gap-y-2 text-sm ml-auto">           
             <Input
               value={formData.subject}
               label="Asunto"
@@ -105,20 +102,20 @@ const TicketForm = ({ onClose, handlerReset }: Props) => {
             <InputFile
               type="Plane2"
               alt="Image"
-              label="si lo requieres ingresa una imagen"
+              label="Adjuntar imagen"
               file={image}
               setFile={setImage}
             />
-            {/* )} */}
-
-            <ButtonMedusa
+            {/* )} */}            
+            <ButtonLigth
               isLoading={loading}
-              className="mt-4 mb-4 rounded-[5px]"
+              className="bg-[#28A745] hover:bg-[#218838] text-white border-none"
               type="submit"
               color="primary"
             >
               Enviar
-            </ButtonMedusa>
+              <SendIcon className="ml-2 w-4"/>
+            </ButtonLigth>
           </div>
         </form>
       )}

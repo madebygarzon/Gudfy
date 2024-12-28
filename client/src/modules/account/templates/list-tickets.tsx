@@ -208,7 +208,7 @@ const TicketTable: React.FC = () => {
                 {(onClose) => (
                   <>
                     <ModalHeader className="flex flex-col gap-1 border-b border-slate-200 bg-gray-50 py-3 px-4 rounded-t-2xl">
-                      <h2 className="text-center text-lg font-semibold">
+                      <h2 className="text-center text-2xl mt-2 font-bold text-gray-700">
                         Crear ticket
                       </h2>
                     </ModalHeader>
@@ -231,8 +231,8 @@ const TicketTable: React.FC = () => {
               <tr>
                 <th className="px-4 py-2 text-left">Estado</th>
                 <th className="px-4 py-2 text-left">Asunto</th>
-                <th className="px-4 py-2 text-left">Fecha de Creación</th>
-                <th className="px-4 py-2  bg-gray-100 text-left"></th>
+                <th className="px-4 py-2 text-left">Fecha de creación</th>
+                <th className="px-4 py-2 text-left">Detalle del ticket</th>
               </tr>
             </thead>
             <tbody>
@@ -299,7 +299,7 @@ const ModalViewTicket = ({
 }: propsModal) => {
   const handleReset = () => {}
   return (
-    <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+    <Modal size="xl" isOpen={isOpen} onOpenChange={onOpenChange}>
       <ModalContent>
         {(onClose) => (
           <>
