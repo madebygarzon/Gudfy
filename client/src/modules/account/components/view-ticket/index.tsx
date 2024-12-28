@@ -21,7 +21,7 @@ type Props = {
   handlerReset: () => void
   ticketId: string
   subject: string
-  status: "Cerrado" | "Abierto" | "Respondido" | undefined
+  status: "Cerrado" | "Abierto" | "Contestado" | undefined
 }
 
 const ViewTicket = ({
@@ -96,7 +96,7 @@ const ViewTicket = ({
             </div>
           ))}
         </div>
-        {status == "Cerrado" || status == "Respondido" ? (
+        {status == "Cerrado" || status == "Contestado" ? (
           <>
             {" "}
             <p className="text-red-500 text-xs">
