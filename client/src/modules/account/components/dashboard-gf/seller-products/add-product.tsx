@@ -19,6 +19,7 @@ import FileUploader from "./file-uploader-txt"
 import ButtonLigth from "@modules/common/components/button_light"
 import RequestProduct from "./request-products"
 import { FaBox } from "react-icons/fa6"
+import RequestProductTable from "./table-request-products"
 
 type Reset = {
   setReset: React.Dispatch<React.SetStateAction<boolean>>
@@ -278,7 +279,7 @@ export default function AddProducts({ setReset }: Reset) {
                       </div>
                     )}
                     <div className="flex flex-col items-center">
-                      <p className="mb-2">¿No encuientras tu producto?</p>
+                      <p className="mb-2">¿No encuentras tu producto?</p>
                       <RequestProduct setReset={setReset} />
                     </div>
                   </div>
@@ -358,10 +359,14 @@ export default function AddProducts({ setReset }: Reset) {
                         Productos agregados correctamente{" "}
                       </div>
                     )}
+                    
                   </div>
+                  
                 </div>
+                
               </ModalBody>
               <ModalFooter className="mb-[2%] justify-center">
+             
                 <div>
                   {!erros.codes ? (
                     <div>
