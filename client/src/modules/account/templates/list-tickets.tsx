@@ -25,6 +25,8 @@ import { IconButton } from "@medusajs/ui"
 import Eye from "@modules/common/icons/eye"
 import ViewTicket from "../components/view-ticket"
 import { EyeSeeIcon } from "@lib/util/icons"
+import ButtonLigth from "@modules/common/components/button_light"
+import { Plus } from "@medusajs/icons"
 
 interface Ticket {
   id: string
@@ -179,18 +181,40 @@ const TicketTable: React.FC = () => {
             </select>
           </div>
           <div className="">
+
+
+          <ButtonLigth
+            className="bg-[#9B48ED] hover:bg-[#7b39c4] text-white border-none"
+            onClick={onOpen}
+          >
+            Nuevo ticket
+            <Plus />
+          </ButtonLigth>
+
+{/* 
             <Button
-              className="text-white bg-[#402e72] hover:bg-[#2c1f57] rounded-[5px]"
+              className="bg-[#9B48ED] hover:bg-[#7b39c4] text-white border-none"
               onPress={onOpen}
             >
-              <FaPlus />
               Nuevo ticket
-            </Button>
-            <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+              <FaPlus />
+            </Button> */}
+
+
+            <Modal
+              isOpen={isOpen}
+              onOpenChange={onOpenChange}
+              size="xl"
+              className="rounded-2xl overflow-hidden shadow-lg"
+            >
               <ModalContent>
                 {(onClose) => (
                   <>
-                    <ModalHeader className="flex flex-col gap-1"></ModalHeader>
+                    <ModalHeader className="flex flex-col gap-1 border-b border-slate-200 bg-gray-50 py-3 px-4 rounded-t-2xl">
+                      <h2 className="text-center text-lg font-semibold">
+                        Crear ticket
+                      </h2>
+                    </ModalHeader>
                     <ModalBody>
                       <TicketForm
                         onClose={handleClose}
