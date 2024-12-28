@@ -198,9 +198,11 @@ const OrderDetails = ({ orderData, onClose }: props) => {
           .
           {orderData.state_order === "Pendiente de pago" ||
           orderData.state_order === "Cancelado" ? (
-            <span className="flex text-sm gap-1">
+            <span className="flex gap-1">
               Cancelacion automatica:
-              <Timer creationTime={orderData.created_at} />
+              <div className="font-bold">
+                <Timer creationTime={orderData.created_at} />
+              </div>
             </span>
           ) : (
             <></>

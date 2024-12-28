@@ -1,14 +1,10 @@
 "use client"
-import clsx from "clsx"
-
 import Image from "next/image"
 import { XMarkMini } from "@medusajs/icons"
 import { GrDocumentPdf } from "react-icons/gr"
 import { IconButton } from "@medusajs/ui"
 import { useState } from "react"
-import { Tooltip } from "@nextui-org/react"
-import { CheckIcon } from "@lib/util/icons"
-
+import { CheckIcon, AddIcon } from "@lib/util/icons"
 interface CodesResult {
   variantID: string
   codes: string[]
@@ -42,7 +38,7 @@ const InputFile: React.FC<InputProps> = ({
       <div className="">
         {file || previewImage ? (
           <>
-            <div className="transition-fg relative inline-flex w-fit items-center justify-center overflow-hidden outline-none disabled:border-ui-border-base disabled:text-ui-fg-disabled disabled:after:hidden after:transition-fg after:absolute after:inset-0 after:content-[''] after:hidden bg-ui-button-transparent hover:bg-ui-button-transparent-hover active:bg-ui-button-transparent-pressed focus-visible:shadow-buttons-neutral-focus focus-visible:bg-ui-bg-base disabled:!bg-transparent disabled:!shadow-none txt-compact-small-plus gap-x-1.5 pl-2 pr-8 py-1.5 text-slate-700 hover:text-gray-100 border rounded-[5px] mb-5">
+            <div className="transition-fg relative inline-flex w-fit items-center justify-center overflow-hidden outline-none disabled:border-ui-border-base disabled:text-ui-fg-disabled disabled:after:hidden after:transition-fg after:absolute after:inset-0 after:content-[''] after:hidden bg-ui-button-transparent hover:bg-ui-button-transparent-hover active:bg-ui-button-transparent-pressed focus-visible:shadow-buttons-neutral-focus focus-visible:bg-ui-bg-base disabled:!bg-transparent disabled:!shadow-none txt-compact-small-plus gap-x-1.5 pl-2 pr-8 py-1.5 text-slate-700 hover:text-gray-100 rounded-[5px] mb-5">
               <CheckIcon />
               <IconButton
                 size="2xsmall"
@@ -70,7 +66,7 @@ const InputFile: React.FC<InputProps> = ({
           <>
             <label
               htmlFor={label}
-              className="cursor-pointer transition-fg relative inline-flex w-fit items-center justify-center overflow-hidden outline-none disabled:border-ui-border-base disabled:text-ui-fg-disabled disabled:after:hidden after:transition-fg after:absolute after:inset-0 after:content-[''] after:hidden bg-ui-button-transparent hover:bg-ui-button-transparent-hover active:bg-ui-button-transparent-pressed focus-visible:shadow-buttons-neutral-focus focus-visible:bg-ui-bg-base disabled:!bg-transparent disabled:!shadow-none txt-compact-small-plus gap-x-1.5 px-3 py-1.5 text-slate-700 hover:text-gray-100 border rounded-[5px] mb-5"
+              className="cursor-pointer transition-fg relative inline-flex w-fit items-center justify-center overflow-hidden outline-none disabled:border-ui-border-base disabled:text-ui-fg-disabled disabled:after:hidden after:transition-fg after:absolute after:inset-0 after:content-[''] after:hidden bg-ui-button-transparent hover:bg-ui-button-transparent-hover active:bg-ui-button-transparent-pressed focus-visible:shadow-buttons-neutral-focus focus-visible:bg-ui-bg-base disabled:!bg-transparent disabled:!shadow-none txt-compact-small-plus gap-x-1.5 px-3 py-1.5 text-slate-700 hover:text-gray-100 rounded-[5px] mb-5"
             >
               {" "}
               {label ?? "Seleccionar Archivo txt"}
@@ -96,7 +92,7 @@ const InputFile: React.FC<InputProps> = ({
       <div className="">
         {file || previewImage ? (
           <>
-            <div className="transition-fg relative inline-flex w-fit items-center justify-center overflow-hidden outline-none disabled:border-ui-border-base disabled:text-ui-fg-disabled disabled:after:hidden after:transition-fg after:absolute after:inset-0 after:content-[''] after:hidden bg-ui-button-transparent hover:bg-ui-button-transparent-hover active:bg-ui-button-transparent-pressed focus-visible:shadow-buttons-neutral-focus focus-visible:bg-ui-bg-base disabled:!bg-transparent disabled:!shadow-none txt-compact-small-plus gap-x-1.5 pl-2 pr-8 py-1.5 text-slate-700 hover:text-gray-100 border rounded-[5px] mb-5">
+            <div className="transition-fg relative inline-flex w-fit items-center justify-center overflow-hidden outline-none disabled:border-ui-border-base disabled:text-ui-fg-disabled disabled:after:hidden after:transition-fg after:absolute after:inset-0 after:content-[''] after:hidden bg-ui-button-transparent hover:bg-ui-button-transparent-hover active:bg-ui-button-transparent-pressed focus-visible:shadow-buttons-neutral-focus focus-visible:bg-ui-bg-base disabled:!bg-transparent disabled:!shadow-none txt-compact-small-plus gap-x-1.5 pl-2 pr-8 py-1.5 text-slate-700 hover:text-gray-100  rounded-[5px] mb-5">
               <CheckIcon />
               <IconButton
                 size="2xsmall"
@@ -106,7 +102,7 @@ const InputFile: React.FC<InputProps> = ({
                   setFile(undefined)
                   if (setResult) setResult(null)
                 }}
-              >
+              > 
                 <XMarkMini className="bg-white  text-zinc-400" />
               </IconButton>
 
@@ -117,8 +113,9 @@ const InputFile: React.FC<InputProps> = ({
           <>
             <label
               htmlFor={label}
-              className="cursor-pointer transition-fg relative inline-flex w-fit items-center justify-center overflow-hidden outline-none disabled:border-ui-border-base disabled:text-ui-fg-disabled disabled:after:hidden after:transition-fg after:absolute after:inset-0 after:content-[''] after:hidden bg-ui-button-transparent hover:bg-ui-button-transparent-hover active:bg-ui-button-transparent-pressed focus-visible:shadow-buttons-neutral-focus focus-visible:bg-ui-bg-base disabled:!bg-transparent disabled:!shadow-none txt-compact-small-plus gap-x-1.5 px-3 py-1.5 text-slate-700 hover:text-gray-100 border rounded-[5px] mb-5"
+              className="cursor-pointer transition-fg relative inline-flex w-fit items-center justify-center overflow-hidden outline-none disabled:border-ui-border-base disabled:text-ui-fg-disabled disabled:after:hidden after:transition-fg after:absolute after:inset-0 after:content-[''] after:hidden bg-ui-button-transparent hover:bg-ui-button-transparent-hover active:bg-ui-button-transparent-pressed focus-visible:shadow-buttons-neutral-focus focus-visible:bg-ui-bg-base disabled:!bg-transparent disabled:!shadow-none txt-compact-small-plus gap-x-1.5 px-3 py-1.5 text-slate-700 hover:text-gray-100 shadow-lg rounded-[5px] mb-5"
             >
+              <AddIcon className="w-5" />
               {" "}
               {label ?? "Seleccionar Archivo txt"}
             </label>
