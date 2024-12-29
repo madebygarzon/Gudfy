@@ -132,12 +132,10 @@ const SellerOrderTable: React.FC = () => {
           <table className="min-w-full bg-white  rounded-lg shadow-md">
             <thead>
               <tr>
-                <th className="py-2 text-left">Estado de la Orden</th>
-                <th className="py-2 text-left">Numero de Orden</th>
-                <th className="py-2 text-left">
-                  Fecha y hora de Creación
-                </th>
-                <th className="py-2 text-left">Tiempo a Pagar</th>
+                <th className="py-2 text-left">Estado de la orden</th>
+                <th className="py-2 text-left">Numero de orden</th>
+                <th className="py-2 text-left">Fecha y hora de creación</th>
+                <th className="py-2 text-left">Tiempo a pagar</th>
                 <th className="py-2 text-left">Detalle de la orden</th>
               </tr>
             </thead>
@@ -161,7 +159,7 @@ const SellerOrderTable: React.FC = () => {
                     <td className="px-4 py-2 ">
                       {handlerformatDate(order.created_at)}
                     </td>
-                    <td >
+                    <td>
                       {order.state_order === "Pendiente de pago" ? (
                         <Timer creationTime={order.created_at} />
                       ) : order.state_order === "Cancelado" ? (
