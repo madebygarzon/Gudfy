@@ -82,7 +82,7 @@ const ClaimSellerTable: React.FC = () => {
     }
     getListClaimComments(claim?.id).then((e) => {
       setComments(e)
-      setSelectOrderClaim(claim) 
+      setSelectOrderClaim(claim)
       onOpen()
     })
   }
@@ -208,9 +208,9 @@ type ClaimComments = {
   order_claim_id?: string
   customer_id?: string
   created_at?: string
-  customer_name?: string 
-  customer_last_name?: string 
-  store_name?: string 
+  customer_name?: string
+  customer_last_name?: string
+  store_name?: string
 }
 
 interface ModalClaimComment {
@@ -219,7 +219,7 @@ interface ModalClaimComment {
   isOpen: boolean
   onOpenChange: () => void
   handleReset: () => void
-  claim?: orderClaim 
+  claim?: orderClaim
 }
 
 const ModalClaimComment = ({
@@ -234,7 +234,7 @@ const ModalClaimComment = ({
   const [socket, setSocket] = useState<Socket | null>(null)
   const [isLoadingStatus, setIsLoadingStatus] = useState<boolean>(false)
   const { customer } = useMeCustomer()
-  
+
   const handlerSubmitComment = () => {
     const dataComment = {
       comment: newComment,
@@ -307,7 +307,7 @@ const ModalClaimComment = ({
             <ModalHeader className="flex flex-col gap-1 border-b border-slate-200 bg-gray-50 py-3 px-4 rounded-t-2xl">
               <h2 className="text-center text-lg font-semibold">
                 Resolución de reclamos
-              </h2>              
+              </h2>
             </ModalHeader>
             <ModalBody className="bg-gray-100 px-8 py-4 overflow-y-auto h-[60vh]">
               <div className="flex flex-col gap-2">
@@ -342,30 +342,45 @@ const ModalClaimComment = ({
             </ModalBody>
             <ModalFooter className="border-t border-slate-200 bg-gray-50 py-3 px-4 rounded-b-2xl">
               <div className="w-full">
-                <div className="flex items-center w-full gap-2 bg-white px-3 py-2 rounded-full shadow-md">
-                  <Input
-                    value={newComment}
-                    size="sm"
-                    radius="sm"
-                    className="flex-1 text-sm focus:outline-none focus:ring-0 border-none placeholder-gray-400"
-                    placeholder="Escribe un mensaje..."
-                    onValueChange={setNewComment}
-                  />
-                  <SendIcon
-                    onClick={handlerSubmitComment}
-                    className="cursor-pointer p-1 flex items-center justify-center w-10 h-8 rounded-full bg-blue-500 hover:bg-blue-600 text-white shadow-md transition-all duration-200"
-                  />
-                
-                  
-                </div>
+                {claim?.status_order_claim_id !== "CANCEL_ID" &&
+                  claim?.status_order_claim_id !== "UNSOLVED_ID" && (
+                    <div className="w-full">
+                      <div className="flex items-center w-full gap-2 bg-white px-3 py-2 rounded-full shadow-md">
+                        <Input
+                          value={newComment}
+                          size="sm"
+                          radius="sm"
+                          className="flex-1 text-sm focus:outline-none focus:ring-0 border-none placeholder-gray-400"
+                          placeholder="Escribe un mensaje..."
+                          onValueChange={setNewComment}
+                        />
+                        <SendIcon
+                          onClick={handlerSubmitComment}
+                          className="cursor-pointer p-1 flex items-center justify-center w-10 h-8 rounded-full bg-blue-500 hover:bg-blue-600 text-white shadow-md transition-all duration-200"
+                        />
+                      </div>
+                      <div className="mt-4 px-6 text-xs text-gray-600">
+                        *Si encuentras que este asunto no puede ser resuelto por
+                        ti, tienes la posibilidad de escalarlo al
+                        administrador.*
+                      </div>
+                    </div>
+                  )}
                 <div className="mt-4 px-6 text-xs text-gray-600">
-                  *Si encuentras que este asunto no puede ser resuelto por ti,
-                  tienes la posibilidad de escalarlo al administrador.*
                   <div className="flex justify-center gap-2 mt-2">
                     <ButtonLigth
-                      className="bg-[#E74C3C] hover:bg-[#C0392B] text-white border-none w-full sm:w-auto"
+                      className={`bg-[#E74C3C] hover:bg-[#C0392B] text-white border-none w-full sm:w-auto ${
+                        claim?.status_order_claim_id === "UNSOLVED_ID" ||
+                        claim?.status_order_claim_id === "CANCEL_ID"
+                          ? "opacity-50"
+                          : ""
+                      }`}
                       onClick={() => handlerStatusClaim("UNSOLVED")}
                       isLoading={isLoadingStatus}
+                      disabled={
+                        claim?.status_order_claim_id === "UNSOLVED_ID" ||
+                        claim?.status_order_claim_id === "CANCEL_ID"
+                      }
                     >
                       Escalar con un administrador
                     </ButtonLigth>
@@ -379,6 +394,5 @@ const ModalClaimComment = ({
     </Modal>
   )
 }
-
 
 export default ClaimSellerTable
