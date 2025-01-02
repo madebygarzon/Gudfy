@@ -39,7 +39,9 @@ const ClaimTable: React.FC = () => {
     useOrderGudfy()
   const [selectOrderClaim, setSelectOrderClaim] = useState<orderClaim>()
 
-  const [filterStatus, setFilterStatus] = useState<"CERRADA" | "ABIERTA" | "RESUELTA" | "SIN RESOLVER" | "all">("all");
+  const [filterStatus, setFilterStatus] = useState<
+    "CERRADA" | "ABIERTA" | "RESUELTA" | "SIN RESOLVER" | "all"
+  >("all")
 
   const filteredOrderClaims =
     filterStatus === "all"
@@ -47,18 +49,17 @@ const ClaimTable: React.FC = () => {
       : listOrderClaim?.filter((claim) => {
           switch (filterStatus) {
             case "CERRADA":
-              return claim.status_order_claim_id === "CANCEL_ID";
+              return claim.status_order_claim_id === "CANCEL_ID"
             case "ABIERTA":
-              return claim.status_order_claim_id === "OPEN_ID";
+              return claim.status_order_claim_id === "OPEN_ID"
             case "RESUELTA":
-              return claim.status_order_claim_id === "SOLVED_ID";
+              return claim.status_order_claim_id === "SOLVED_ID"
             case "SIN RESOLVER":
-              return claim.status_order_claim_id === "UNSOLVED_ID";
+              return claim.status_order_claim_id === "UNSOLVED_ID"
             default:
-              return true;
+              return true
           }
-        });
-
+        })
 
   const handleReset = () => {
     handlerListOrderClaim()
@@ -108,7 +109,12 @@ const ClaimTable: React.FC = () => {
               value={filterStatus}
               onChange={(e) =>
                 setFilterStatus(
-                  e.target.value as "CERRADA" | "ABIERTA" | "RESUELTA" | "SIN RESOLVER" | "all"
+                  e.target.value as
+                    | "CERRADA"
+                    | "ABIERTA"
+                    | "RESUELTA"
+                    | "SIN RESOLVER"
+                    | "all"
                 )
               }
             >
@@ -120,7 +126,7 @@ const ClaimTable: React.FC = () => {
             </select>
           </div>
         </div>
-        
+
         <div className="overflow-x-auto">
           <table className="min-w-full bg-white  rounded-lg shadow-md">
             <thead>
@@ -336,7 +342,7 @@ const ModalClaimComment = ({
           <>
             <ModalHeader className="flex flex-col gap-1 border-b border-slate-200 bg-gray-50 py-3 px-4 rounded-t-2xl">
               <h2 className="text-center text-lg font-semibold">
-               Resolución de reclamos
+                Resolución de reclamos
               </h2>
             </ModalHeader>
             <ModalBody className="bg-gray-100 px-8 py-4 overflow-y-auto h-[60vh]">
@@ -372,42 +378,56 @@ const ModalClaimComment = ({
             </ModalBody>
             <ModalFooter className="border-t border-slate-200 bg-gray-50 py-3 px-4 rounded-b-2xl">
               <div className="w-full">
-                <div className="flex items-center w-full gap-2 bg-white px-3 py-2 rounded-full shadow-md">
-                  <Input
-                    value={newComment}
-                    size="sm"
-                    radius="sm"
-                    className="flex-1 text-sm focus:outline-none focus:ring-0 border-none placeholder-gray-400"
-                    placeholder="Escribe un mensaje..."
-                    onValueChange={setNewComment}
-                  />
-                  <SendIcon
-                    onClick={handlerSubmitComment}
-                    className="cursor-pointer p-1 flex items-center justify-center w-10 h-8 rounded-full bg-blue-500 hover:bg-blue-600 text-white shadow-md transition-all duration-200"
-                  >
-                    <PlayMiniSolid color="#FFFFFF" />
-                  </SendIcon>
-                </div>
+                {claim?.status_order_claim_id !== "CANCEL_ID" && (
+                  <div className="w-full">
+                    <div className="flex items-center w-full gap-2 bg-white px-3 py-2 rounded-full shadow-md">
+                      <Input
+                        value={newComment}
+                        size="sm"
+                        radius="sm"
+                        className="flex-1 text-sm focus:outline-none focus:ring-0 border-none placeholder-gray-400"
+                        placeholder="Escribe un mensaje..."
+                        onValueChange={setNewComment}
+                      />
+                      <SendIcon
+                        onClick={handlerSubmitComment}
+                        className="cursor-pointer p-1 flex items-center justify-center w-10 h-8 rounded-full bg-blue-500 hover:bg-blue-600 text-white shadow-md transition-all duration-200"
+                      >
+                        <PlayMiniSolid color="#FFFFFF" />
+                      </SendIcon>
+                    </div>
+                    <div className="mt-4 px-6 text-xs text-gray-600">
+                      *Estimado cliente, le informamos que dispone de varias
+                      opciones para gestionar su reclamación. Le invitamos a
+                      elegir la alternativa que mejor se ajuste a sus
+                      necesidades.*
+                    </div>
+                  </div>
+                )}
                 <div className="mt-4 px-6 text-xs text-gray-600">
-                  *Estimado cliente, le informamos que dispone de varias opciones para gestionar su reclamación. Le invitamos a elegir la alternativa que mejor se ajuste a sus necesidades.*
                   <div className="flex items-center justify-center gap-2 mt-2">
                     <ButtonLigth
                       color="primary"
                       className="bg-[#28A745] px-3 hover:bg-[#218838] text-white border-none w-full sm:w-auto"
                       onClick={() => handlerStatusClaim("CANCEL")}
                       isLoading={isLoadingStatus.cancel}
+                      disabled={claim?.status_order_claim_id === "CANCEL_ID"}
                     >
                       Cerrar reclamo
                     </ButtonLigth>
 
                     <ButtonLigth
-                      className="bg-[#E74C3C] px-3 hover:bg-[#C0392B] text-white border-none w-full sm:w-auto"
+                      className="bg-[#E74C3C] px-3 hover:bg-[#C0392B] text-white border-none w-full sm:w-auto "
                       onClick={() => handlerStatusClaim("UNSOLVED")}
                       isLoading={isLoadingStatus.unsolved}
-                      disabled={!hasPassed48Hours(claim?.created_at)}
+                      disabled={
+                        claim?.status_order_claim_id === "CANCEL_ID" ||
+                        claim?.status_order_claim_id === "UNSOLVED_ID" ||
+                        !hasPassed48Hours(claim?.created_at)
+                      }
                     >
                       Escalar con un administrador
-                    </ButtonLigth>                  
+                    </ButtonLigth>
                   </div>
                 </div>
               </div>

@@ -1,13 +1,14 @@
 import React from "react"
 import Image from "next/image"
 import Button from "../button"
+import { BACKEND_URL } from "@modules/account/actions"
 
 const SocialButtons = () => {
   return (
     <div className="flex gap-4 pt-2 justify-center">
       <a
         type="button"
-        href="http://localhost:9000/store/auth/auth0/cb" // deberia de ser una variable de entorno
+        href={`${BACKEND_URL}/store/auth/auth0/cb `} // deberia de ser una variable de entorno
         className="text-white bg-[#343686] hover:bg-[#343686]/90 focus:ring-4 focus:outline-none focus:ring-[#4285F4]/50 font-medium rounded-[5px] text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-[#4285F4]/55 mr-2 mb-2 w-32 justify-center"
       >
         <Image
@@ -19,7 +20,7 @@ const SocialButtons = () => {
         />
       </a>
       <a
-        href="http://localhost:9000/store/auth/facebook" // deberia de ser una variable de entorno
+        href={`${BACKEND_URL}/store/auth/facebook`} // deberia de ser una variable de entorno
         type="button"
         className="text-white  bg-[#3b5998] hover:bg-[#3b5998]/90 focus:ring-4 focus:outline-none focus:ring-[#3b5998]/50 font-medium rounded-[5px] text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-[#3b5998]/55 mr-2 mb-2 w-32 justify-center"
       >
@@ -42,7 +43,7 @@ const SocialButtons = () => {
       </a>
       <a
         type="button"
-        href="http://localhost:9000/store/auth/google" // deberia de ser una variable de entorno
+        href={`${BACKEND_URL}/store/auth/google`} // deberia de ser una variable de entorno
         className="text-white bg-[#4285F4] hover:bg-[#4285F4]/90 focus:ring-4 focus:outline-none focus:ring-[#4285F4]/50 font-medium rounded-[5px] text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-[#4285F4]/55 mr-2 mb-2 w-32 justify-center"
       >
         <svg
@@ -63,7 +64,6 @@ const SocialButtons = () => {
         Google
       </a>
     </div>
-
   )
 }
 

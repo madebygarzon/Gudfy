@@ -18,3 +18,4 @@ export const updateTicketStatus = async (
     console.log("error al agregar el reclamo", error.message);
   }
 };
+

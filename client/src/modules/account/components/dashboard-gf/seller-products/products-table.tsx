@@ -1,10 +1,6 @@
 import React, { useState, useEffect } from "react"
 import { IconButton, Input, Select } from "@medusajs/ui"
-import {
-  XMark,
-  ArrowLongRight,
-  ArrowLongLeft,
-} from "@medusajs/icons"
+import { XMark, ArrowLongRight, ArrowLongLeft } from "@medusajs/icons"
 import Spinner from "@modules/common/icons/spinner"
 import { getSellerProduct } from "@modules/account/actions/get-seller-product"
 import { ProductCategory } from "@medusajs/medusa"
@@ -16,6 +12,8 @@ import { PencilEditIcon } from "@lib/util/icons"
 import { useDisclosure } from "@nextui-org/react"
 import Thumbnail from "@modules/products/components/thumbnail"
 import RequestProductTable from "./table-request-products"
+import { BsEye, BsViewList } from "react-icons/bs"
+import ViewProductSerials from "./view-product-serials"
 
 type StoreProducVariant = {
   description: string
@@ -181,11 +179,15 @@ export default function ProductsTable() {
 
   // Controller from Edit Product
   const [productEdit, setProductEdit] = useState<StoreProducVariant>()
+  const [productView, setProductView] = useState<StoreProducVariant>()
   const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure()
-  const handlerEditProduct = (product: StoreProducVariant) => {
-    setProductEdit(product)
-    onOpen()
-  }
+  const {
+    isOpen: isOpen2,
+    onOpen: onOpen2,
+    onOpenChange: onOpenChange2,
+    onClose: onClose2,
+  } = useDisclosure()
+
   const handlerSearcherbar = (e: string) => {
     const dataFilter = dataProducts.dataProduct.filter((data) => {
       const nameIncludes = data.producttitle
@@ -244,7 +246,6 @@ export default function ProductsTable() {
                   return (
                     <tr
                       key={data.storexvariantid}
-                      onClick={() => handlerEditProduct(data)}
                       className="cursor-pointer my-6 "
                     >
                       <td>
@@ -270,13 +271,26 @@ export default function ProductsTable() {
                       <td> $ {data.price} USD</td>
                       <td>{data.quantity} Codigos</td>
                       <td>GifCars</td>
-                      <td>
+                      <td className="flex items-center">
                         <IconButton
                           className="hover:bg-white hover:text-white hover:scale-110 transition-all"
                           variant="transparent"
-                          onClick={() => onOpen()}
+                          onClick={() => {
+                            setProductEdit(data)
+                            onOpen()
+                          }}
                         >
                           <PencilEditIcon />
+                        </IconButton>
+                        <IconButton
+                          className="hover:bg-white hover:text-white hover:scale-110 transition-all"
+                          variant="transparent"
+                          onClick={() => {
+                            setProductView(data)
+                            onOpen2()
+                          }}
+                        >
+                          <BsEye color="#9b48ed" />
                         </IconButton>
                       </td>
                     </tr>
@@ -345,6 +359,19 @@ export default function ProductsTable() {
           productData={productEdit}
           setReset={setReset}
           onClose={onClose}
+        />
+      ) : (
+        <></>
+      )}
+      {productView ? (
+        <ViewProductSerials
+          key={productEdit?.storexvariantid}
+          isOpen={isOpen2}
+          onOpen={onOpen2}
+          onOpenChange={onOpenChange2}
+          productData={productView}
+          setReset={setReset}
+          onClose={onClose2}
         />
       ) : (
         <></>

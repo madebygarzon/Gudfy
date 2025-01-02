@@ -237,28 +237,35 @@ const TicketTable: React.FC = () => {
             </thead>
             <tbody>
               {filteredTickets?.length ? (
-                filteredTickets.map((ticket) => (
-                  <tr key={ticket.id} className="hover:bg-gray-50">
-                    <td className=" py-2">
-                      <p
-                        className={`${getStatusColor(
-                          ticket.status
-                        )} px-4 py-2 rounded-lg `}
-                      >
-                        {ticket.status}
-                      </p>
-                    </td>
-
-                    <td className="px-4 py-2 ">{ticket.subject}</td>
-                    <td className="px-4 py-2 ">{ticket.created_at}</td>
-                    <td className="px-4 py-2  text-center">
-                      <EyeSeeIcon
-                        className="cursor-pointer hover:scale-110 transition-all"
-                        onClick={() => handlerSelectTicket(ticket)}
-                      />
-                    </td>
-                  </tr>
-                ))
+                [...filteredTickets]
+                  .sort(
+                    (a, b) =>
+                      new Date(b.created_at).getTime() -
+                      new Date(a.created_at).getTime() // Convertir fechas a milisegundos
+                  )
+                  .map((ticket) => (
+                    <tr key={ticket.id} className="hover:bg-gray-50">
+                      <td className=" py-2">
+                        <p
+                          className={`${getStatusColor(
+                            ticket.status
+                          )} px-4 py-2 rounded-lg `}
+                        >
+                          {ticket.status}
+                        </p>
+                      </td>
+                      <td className="px-4 py-2 ">{ticket.subject}</td>
+                      <td className="px-4 py-2">
+                        {ticket.created_at.split("T")[0]}
+                      </td>
+                      <td className="px-4 py-2  text-center">
+                        <EyeSeeIcon
+                          className="cursor-pointer hover:scale-110 transition-all"
+                          onClick={() => handlerSelectTicket(ticket)}
+                        />
+                      </td>
+                    </tr>
+                  ))
               ) : (
                 <div className="flex flex-col my-[10%] w-full text-center"></div>
               )}
