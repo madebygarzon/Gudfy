@@ -22,6 +22,7 @@ import { updateNameStore } from "./update-name-store";
 import { updateSellerAvatar } from "./update-seller-avatar";
 import { addRequestProduct } from "./request-product/post-request-product";
 import { getListRequestProduct } from "./request-product/get-list-request-product-from-seller";
+import { getListProductSerials } from "./product-serial/get-list-product-serial";
 
 const router = Router();
 
@@ -50,6 +51,10 @@ export function attachSellerRoutes(customerRouter: Router) {
   router.post(
     "/add-codes-store-variant",
     wrapHandler(postAddCodesStoreVariant)
+  );
+  router.get(
+    "/get-list-product-serials/:id",
+    wrapHandler(getListProductSerials)
   );
   router.get("/data-reviews", wrapHandler(getDataReviews));
   router.get("/reviews", wrapHandler(getStoreReviews));

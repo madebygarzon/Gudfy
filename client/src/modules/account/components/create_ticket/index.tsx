@@ -59,22 +59,22 @@ const TicketForm = ({ onClose, handlerReset }: Props) => {
     <>
       {ticketDelivered ? (
         <div className="flex flex-col items-center justify-center w-full p-6  rounded-md">
-          <p className="mb-4 text-xl font-bold text-lila-gf">
+          <h2 className="text-2xl mt-2 font-bold text-gray-700">
             ¡El ticket fue enviado con éxito!
-          </p>
-          <ButtonMedusa
-            className="px-4 py-2 text-white "
+          </h2>
+          <ButtonLigth
+            className="mt-8 bg-[#28A745] hover:bg-[#218838] text-white border-none"
             onClick={() => {
               onClose()
               setTicketDelivered(false)
             }}
           >
             Volver
-          </ButtonMedusa>
+          </ButtonLigth>
         </div>
       ) : (
         <form onSubmit={onSubmit} className="">
-          <div className="flex flex-col w-full gap-y-2 text-sm ml-auto">           
+          <div className="flex flex-col w-full gap-y-2 text-sm ml-auto">
             <Input
               value={formData.subject}
               label="Asunto"
@@ -100,13 +100,13 @@ const TicketForm = ({ onClose, handlerReset }: Props) => {
               />
             ) : ( */}
             <InputFile
-              type="Plane2"
+              type="Plane"
               alt="Image"
               label="Adjuntar imagen"
               file={image}
               setFile={setImage}
             />
-            {/* )} */}            
+            {/* )} */}
             <ButtonLigth
               isLoading={loading}
               className="bg-[#28A745] hover:bg-[#218838] text-white border-none"
@@ -114,7 +114,7 @@ const TicketForm = ({ onClose, handlerReset }: Props) => {
               color="primary"
             >
               Enviar
-              <SendIcon className="ml-2 w-4"/>
+              <SendIcon className="ml-2 w-4" />
             </ButtonLigth>
           </div>
         </form>

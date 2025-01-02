@@ -88,7 +88,10 @@ const Dashboard = ({ orders, customer }: DashboardProps) => {
             <div className="flex flex-col items-center">
               <h3 className="text-2xl text-gray-700 font-bold ">{t("acc_profile_title")}</h3>
 
-              <p className="text-sm text-center">{t("acc_profile_subtitle")}</p>
+              <p className="text-sm text-center">
+                {/* {t("acc_profile_subtitle")} */}
+                Información de tu perfil
+                </p>
               <Link href={"/account/profile"}>
                 <ButtonLigth
                   name="perfil"
