@@ -102,5 +102,34 @@ class SerialCodeService extends TransactionBaseService {
     );
     return true;
   }
+
+  async getSellerlistProductSerials(store_variant_id) {
+    console.log("esta es la informaicion que llega", store_variant_id);
+    const repoSerialCode = this.activeManager_.withRepository(
+      this.serialCodeRepository_
+    );
+
+    try {
+      const serialCodes = await repoSerialCode.find({
+        where: {
+          store_variant_id: store_variant_id,
+        },
+      });
+
+      console.log("Lista de codigos segun el producto", serialCodes.length);
+      const data = serialCodes.map((data) => {
+        return {
+          ...data,
+          store_variant_order_id: data.store_variant_order_id ? true : false,
+        };
+      });
+      return data;
+    } catch (error) {
+      console.log(
+        "error en el servicio de serial_codes para enlistar los productos del vendedor ",
+        error
+      );
+    }
+  }
 }
 export default SerialCodeService;
