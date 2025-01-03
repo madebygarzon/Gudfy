@@ -1,7 +1,6 @@
 "use client"
 
 import { useAccount } from "@lib/context/account-context"
-import Spinner from "@modules/common/icons/spinner"
 import React, { useEffect } from "react"
 import AccountNav from "../components/account-nav"
 import { useTranslation } from "react-i18next"
@@ -41,10 +40,9 @@ const AccountLayout: React.FC = ({ children }) => {
             <div className="hidden sm:block">
               <AccountNav />
             </div>
-            
+
             <div className="flex justify-center items-center">
               <button
-                
                 className="hidden sm:flex bg-white text-[#1F0054] rounded-[5px] py-2 px-3 min-w-[165px] gap-x-2 items-center justify-center font-bold"
                 type="button"
                 onClick={handleLogout}
@@ -53,28 +51,25 @@ const AccountLayout: React.FC = ({ children }) => {
                 {t("account_menu_lg")}
               </button>
               <div className="sm:hidden flex justify-center items-center gap-x-4 mt-2">
-                
-                  <Button variant="selected" href="/account" route={route!}>
-                    <Cart size={30} />
-                    {t("acc_btn_buyer")}
-                  </Button>
-                
-                
-                  <Button
-                    variant="selected"
-                    href="/account/seller"
-                    route={route!}
-                    className=" "
-                  >
-                    {notifications.map((n) => {
-                      if (n.notification_type_id === "NOTI_CLAIM_SELLER_ID") {
-                        return <Notification />
-                      }
-                    })}
-                    <Icon size={30} />
-                    {t("acc_btn_seller")}
-                  </Button>
-               
+                <Button variant="selected" href="/account" route={route!}>
+                  <Cart size={30} />
+                  {t("acc_btn_buyer")}
+                </Button>
+
+                <Button
+                  variant="selected"
+                  href="/account/seller"
+                  route={route!}
+                  className=" "
+                >
+                  {notifications.map((n) => {
+                    if (n.notification_type_id === "NOTI_CLAIM_SELLER_ID") {
+                      return <Notification />
+                    }
+                  })}
+                  <Icon size={30} />
+                  {t("acc_btn_seller")}
+                </Button>
               </div>
             </div>
           </div>

@@ -271,27 +271,29 @@ export default function ProductsTable() {
                       <td> $ {data.price} USD</td>
                       <td>{data.quantity} Codigos</td>
                       <td>GifCars</td>
-                      <td className="flex items-center">
-                        <IconButton
-                          className="hover:bg-white hover:text-white hover:scale-110 transition-all"
-                          variant="transparent"
-                          onClick={() => {
-                            setProductEdit(data)
-                            onOpen()
-                          }}
-                        >
-                          <PencilEditIcon />
-                        </IconButton>
-                        <IconButton
-                          className="hover:bg-white hover:text-white hover:scale-110 transition-all"
-                          variant="transparent"
-                          onClick={() => {
-                            setProductView(data)
-                            onOpen2()
-                          }}
-                        >
-                          <BsEye color="#9b48ed" />
-                        </IconButton>
+                      <td>
+                        <div className="flex items-center">
+                          <IconButton
+                            className="hover:bg-white hover:text-white hover:scale-110 transition-all"
+                            variant="transparent"
+                            onClick={() => {
+                              setProductEdit(data)
+                              onOpen()
+                            }}
+                          >
+                            <PencilEditIcon />
+                          </IconButton>
+                          <IconButton
+                            className="hover:bg-white hover:text-white hover:scale-110 transition-all"
+                            variant="transparent"
+                            onClick={() => {
+                              setProductView(data)
+                              onOpen2()
+                            }}
+                          >
+                            <BsEye color="#9b48ed" />
+                          </IconButton>
+                        </div>
                       </td>
                     </tr>
                   )

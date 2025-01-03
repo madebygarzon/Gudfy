@@ -1,14 +1,10 @@
-import { useAccount } from "@lib/context/account-context"
 import Button from "@modules/common/components/button"
 import Icon from "@modules/common/icons/coin"
-import clsx from "clsx"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import Cart from "@modules/common/icons/cart"
-import axios from "axios"
 import Notification from "@modules/common/components/notification"
 import { useNotificationContext } from "@lib/context/notification-context"
-
 import { useTranslation } from "react-i18next"
 
 const AccountNav = () => {
