@@ -41,7 +41,7 @@ const AccountLayout: React.FC = ({ children }) => {
               <AccountNav />
             </div>
 
-            <div className="flex justify-center items-center">
+            <div className="block mx-auto">
               <button
                 className="hidden sm:flex bg-white text-[#1F0054] rounded-[5px] py-2 px-3 min-w-[165px] gap-x-2 items-center justify-center font-bold"
                 type="button"

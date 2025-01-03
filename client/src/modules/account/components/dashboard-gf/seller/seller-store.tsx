@@ -50,9 +50,8 @@ const CustomerStore: React.FC<store> = (store) => {
   const { customer } = useMeCustomer()
   return (
     <div className="w-full pb-5">
-      <div className="text-xl-semi flex flex-col md:flex-row justify-between items-start ">
+      <div className="text-xl-semi flex flex-col md:flex-row justify-between items-center sm:items-start ">
         <span>¡Bienvenido a tu tienda!</span>
-        <span className="text-small-regular text-gray-700"></span>
       </div>
 
       <div className="flex flex-col md:flex-row min-h-[230px] my-4 gap-2">
@@ -168,7 +167,7 @@ const CardReviewProductDashboard: React.FC = () => {
   }, [])
 
   return (
-    <div className=" min-h-[200px] w-full flex flex-col py-2 px-2  h-full items-center  justify-center">
+    <div className=" min-h-[200px] w-full sm:flex flex-col py-2 px-2  h-full items-center justify-center">
       {!(
         dataReview.rating ||
         dataReview.totalReviews ||
@@ -190,28 +189,28 @@ const CardReviewProductDashboard: React.FC = () => {
             <h2 className="text-2xl mt-2 font-bold">Mis reseñas</h2>
           </div>
 
-          <div className="w-full flex items-center pt-4">
-            <div className="w-2/6 text-center">
+          <div className="w-full block sm:flex items-center pt-4">
+            <div className="w-full sm:w-2/6 text-center">
               <h3 className="text-4xl font-bold -mb-2 ">
                 {dataReview?.rating}%
               </h3>
             </div>
 
-            <div className="block w-2/6">
+            <div className="flex items-center flex-col w-full sm:w-2/6">
               <p className="text-left text-sm mt-2" onClick={() => {}}>
                 Valoraciones positivas
               </p>
-              <div className="flex w-[100%]  justify-start mt-2">
+              <div className="flex w-[100%]  justify-center mt-2">
                 <div className={`w-[${dataReview?.rating}%] z-20`}>
                   <Progress color={"secondary"} value={dataReview?.rating} />
                 </div>
               </div>
-              <p className="text-sm text-[#9B48ED]">
+              <p className="mt-2 sm:mt-0 text-sm text-[#9B48ED]">
                 Total reseñas: {dataReview.totalReviews}{" "}
               </p>
             </div>
 
-            <div className="block w-2/6">
+            <div className="sm:mt-0 mt-4 flex w-full sm:w-2/6 items-center justify-center">
               <p
                 className="flex items-center gap-2 text-sm font-bold text-[#9B48ED] cursor-pointer"
                 onClick={() => onOpen()}
@@ -222,12 +221,12 @@ const CardReviewProductDashboard: React.FC = () => {
             </div>
           </div>
 
-          <div className="flex w-full justify-center gap-6 items-center px-2 mt-4">
-            <p className="text-start font-bold">Reseña más reciente: </p>
+          <div className="sm:flex w-full justify-center gap-6 items-center px-2 mt-8 sm:mt-4">
+            <p className="sm:text-start text-center font-bold">Reseña más reciente: </p>
             {dataReview?.latestComment ? (
               <div
                 key={dataReview?.latestComment?.id}
-                className="p-6 bg-white rounded-md shadow-2xl w-[50%]"
+                className="p-6 bg-white rounded-md shadow-2xl w-full sm:w-[50%]"
               >
                 <div className="flex  relative justify-between items-center mb-2">
                   <div>
