@@ -48,20 +48,7 @@ const ModalOrderPending = ({
       </ModalBody>
       <ModalFooter>
         <div>
-          <div className="p-10">
-            <p className="text-xs">
-              * A partir de ahora, tiene un plazo de 10 días para presentar
-              cualquier reclamo{" "}
-              <Link
-                className="text-[#402e72] font-bold hover:text-[#2c1f57]"
-                href={"/account/tickets"}
-              >
-                aquí.
-              </Link>{" "}
-              Si no recibimos ningún reclamo dentro de este período,
-              consideraremos que ha recibido su compra con éxito.*
-            </p>
-          </div>
+          <div className="p-10"></div>
           <div className="">
             {orderData?.state_order === "Pendiente de pago" && (
               <div className="w-full flex gap-2 justify-center">
