@@ -44,6 +44,7 @@ import deleteReview from "./delete-review";
 import { getSellerStoreData } from "./seller-store/get-seller-store-data";
 import { getSellerStoreReviews } from "./seller-store/get-selller-store-reviews";
 import { postAddTicketsMessage } from "./tickets/post-add-ticket-message";
+import getNumberOfCompletedOrders from "./get-number-of-completed-orders";
 
 // Initialize a custom router
 const router = Router();
@@ -88,6 +89,10 @@ export function attachStoreRoutes(storeRouter: Router) {
   );
 
   router.get("/account/seller-application", wrapHandler(getSellerApplication));
+  router.get(
+    "/account/number-completed-orders/:id",
+    wrapHandler(getNumberOfCompletedOrders)
+  );
 
   // ---------------------------------Endpoins for List products Variants-------------------------------
 
