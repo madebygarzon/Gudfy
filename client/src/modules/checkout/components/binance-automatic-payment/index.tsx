@@ -7,6 +7,7 @@ import Timer from "@lib/util/timer-order"
 import Button from "@modules/common/components/button"
 import ArrowLeft from "@modules/common/icons/arrow-left"
 import ButtonLigth from "@modules/common/components/button_light"
+import io, { Socket } from "socket.io-client"
 type TransactionDetailsProps = {
   data?: {
     currency: string
@@ -47,6 +48,8 @@ const BinanceAutomaticPayment: React.FC<TransactionDetailsProps> = ({
 
   const expirationDate = new Date(expireTime).toLocaleString()
   const [orderCancel, setOrderCancel] = useState<boolean>(false)
+  const [successPay, setSuccessPay] = useState<boolean>(false)
+  const [socket, setSocket] = useState<Socket | null>(null)
 
   const { handlerOrderCancel } = useOrderGudfy()
 
@@ -56,17 +59,52 @@ const BinanceAutomaticPayment: React.FC<TransactionDetailsProps> = ({
     })
   }
 
+  useEffect(() => {
+    const socketIo = io(process.env.PORT_SOKET || "http://localhost:3001")
+
+    socketIo.on("success_pay_order", (data: { order_id: string }) => {
+      // Si la notificación es para el cliente correcto, agregarla a la lista
+
+      if (data.order_id === currentOrder?.id) setSuccessPay(true)
+    })
+
+    setSocket(socketIo)
+
+    return () => {
+      socketIo.disconnect() // Desconectar el socket cuando el componente se desmonta
+    }
+  }, [currentOrder])
+
   return (
     <Card className="p-6 max-w-4xl mx-auto mt-5 mb-10">
       <CardHeader>
         <div className="p-8 bg-white rounded-lg shadow-lg w-full text-gray-800">
-          {orderCancel ? (
-            <></>
+          {successPay ? (
+            <div className="flex flex-col items-center justify-center">
+              <h2 className="text-center text-2xl mt-2 font-bold">
+                <strong> ¡Su compra se Realizo con exito ! </strong>
+                <p>
+                  para ver su compra redirigase a la seccion de mis pedidos{" "}
+                </p>
+              </h2>
+              <Link href={"/account/orders"}>
+                <ButtonLigth className="bg-lila-gf hover:bg-[#C0392B] text-white border-none">
+                  ir a mis ordenes
+                </ButtonLigth>
+              </Link>
+            </div>
           ) : (
             <>
-              <h2 className="text-center text-2xl mt-2 font-bold">
-                <strong> ¡Gracias por tu pedido! </strong>
-              </h2>
+              {" "}
+              {orderCancel ? (
+                <></>
+              ) : (
+                <>
+                  <h2 className="text-center text-2xl mt-2 font-bold">
+                    <strong> ¡Gracias por tu pedido! </strong>
+                  </h2>
+                </>
+              )}
             </>
           )}
 
@@ -121,7 +159,7 @@ const BinanceAutomaticPayment: React.FC<TransactionDetailsProps> = ({
             </div>
 
             <div>
-              {orderCancel ? (
+              {orderCancel || successPay ? (
                 <></>
               ) : (
                 <div className="w-full flex flex-col justify-center items-center">
@@ -136,7 +174,7 @@ const BinanceAutomaticPayment: React.FC<TransactionDetailsProps> = ({
             </div>
           </div>
           <div className="p-4">
-            {orderCancel ? (
+            {orderCancel || successPay ? (
               <></>
             ) : (
               <>
@@ -151,7 +189,7 @@ const BinanceAutomaticPayment: React.FC<TransactionDetailsProps> = ({
         </div>
       </CardBody>
       <CardFooter>
-        {orderCancel ? (
+        {orderCancel || successPay ? (
           <></>
         ) : (
           <div className="p-2 w-full -mt-6 bg-white  text-center">

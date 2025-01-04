@@ -27,7 +27,12 @@ export default class StoreReviewService extends TransactionBaseService {
       calculeStars.reduce((acumulador, objeto) => {
         return acumulador + parseInt(objeto.cantidad) * parseInt(objeto.rating);
       }, 0) / total;
-    return { dataStars: calculeStars, total, media };
+
+    return {
+      dataStars: calculeStars,
+      total,
+      media: Number.isInteger(media) ? media : media.toFixed(2),
+    };
   }
   async getDataReviews() {
     try {
@@ -75,9 +80,10 @@ export default class StoreReviewService extends TransactionBaseService {
         },
       });
 
+      const rating = (parseFloat(avg) * 100) / 5;
       return {
         totalReviews: count,
-        rating: (parseFloat(avg) * 100) / 5,
+        rating: Number.isInteger(rating) ? rating : rating.toFixed(2),
         latestComment: latestComment || null,
       };
     } catch (error) {

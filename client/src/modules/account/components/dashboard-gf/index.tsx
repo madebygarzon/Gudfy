@@ -11,7 +11,7 @@ import Notification from "@modules/common/components/notification"
 import "driver.js/dist/driver.css"
 
 type DashboardProps = {
-  orders?: Order[]
+  orders?: number
   customer?: Omit<Customer, "password_hash">
 }
 
@@ -62,14 +62,16 @@ const Dashboard = ({ orders, customer }: DashboardProps) => {
                 <p className="text-2xl font-bold text-gray-700 capitalize mb-1">
                   {customer?.first_name} {customer?.last_name}
                 </p>
-                <span className="font-semibold text-gray-700 mb-3">{customer?.email}</span>
+                <span className="font-semibold text-gray-700 mb-3">
+                  {customer?.email}
+                </span>
               </div>
             </div>
             <div className="ml-4 flex items-center  text-xs">
               <Cart size={16} className="mr-1" />
               <span>
                 {t("acc_ind_purchases")}
-                {`: ${orders?.length}`}
+                {`: ${orders}`}
               </span>
             </div>
           </div>
@@ -86,12 +88,14 @@ const Dashboard = ({ orders, customer }: DashboardProps) => {
               />
             </div>
             <div className="flex flex-col items-center">
-              <h3 className="text-2xl text-gray-700 font-bold ">{t("acc_profile_title")}</h3>
+              <h3 className="text-2xl text-gray-700 font-bold ">
+                {t("acc_profile_title")}
+              </h3>
 
               <p className="text-sm text-center">
                 {/* {t("acc_profile_subtitle")} */}
                 Información de tu perfil
-                </p>
+              </p>
               <Link href={"/account/profile"}>
                 <ButtonLigth
                   name="perfil"
@@ -150,7 +154,9 @@ const Dashboard = ({ orders, customer }: DashboardProps) => {
               />
             </div>
             <div className="flex flex-col items-center">
-              <h3 className="text-2xl text-gray-700 font-bold ">{t("acc_support_title")}</h3>
+              <h3 className="text-2xl text-gray-700 font-bold ">
+                {t("acc_support_title")}
+              </h3>
               <p className="text-sm text-center">{t("acc_support_subtitle")}</p>
               <Link href={"/account/tickets"}>
                 <ButtonLigth
