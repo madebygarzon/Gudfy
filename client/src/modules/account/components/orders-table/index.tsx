@@ -54,36 +54,50 @@ const TicketTable: React.FC = () => {
     onOpenChange()
   }
 
-  const [filterStatus, setFilterStatus] = useState<"Cancelada" | "Completado" | "En discusión" | "Finalizado" | "Pagado" | "Pendiente de pago" | "all">("all");
+  const [filterStatus, setFilterStatus] = useState<
+    | "Cancelada"
+    | "Completado"
+    | "En discusión"
+    | "Finalizado"
+    | "Pagado"
+    | "Pendiente de pago"
+    | "all"
+  >("all")
 
   const [selectOrderData, setTelectOrderData] = useState<order>()
 
   const filteredOrder =
-  filterStatus === "all"
-    ? listOrder
-    : listOrder?.filter((order) => order.state_order === filterStatus);
+    filterStatus === "all"
+      ? listOrder
+      : listOrder?.filter((order) => order.state_order === filterStatus)
 
-    const getStatusColor = (
-      status: "Cancelado" | "Completado" | "En discusión" | "Finalizado" | "Pagado" | "Pendiente de pago"
-    ): string => {
-      switch (status) {
-        case "Completado":
-          return "bg-blue-500 text-white"; 
-        case "Cancelado":
-          return "bg-red-500"; 
-        case "Pendiente de pago":
-          return "bg-yellow-400 text-white"; 
-        case "Finalizado":
-          return "bg-green-500 text-white"; 
-        case "Pagado":
-          return "bg-teal-500 text-white"; 
-        case "En discusión":
-          return "bg-orange-500 text-white"; 
-        default:
-          return "bg-gray-300"; 
-      }
-    };
-    
+  const getStatusColor = (
+    status:
+      | "Cancelado"
+      | "Completado"
+      | "En discusión"
+      | "Finalizado"
+      | "Pagado"
+      | "Pendiente de pago"
+  ): string => {
+    switch (status) {
+      case "Completado":
+        return "bg-blue-500 text-white"
+      case "Cancelado":
+        return "bg-red-500"
+      case "Pendiente de pago":
+        return "bg-yellow-400 text-white"
+      case "Finalizado":
+        return "bg-green-500 text-white"
+      case "Pagado":
+        return "bg-teal-500 text-white"
+      case "En discusión":
+        return "bg-orange-500 text-white"
+      default:
+        return "bg-gray-300"
+    }
+  }
+
   function handlerOrderNumber(numberOrder: string) {
     return numberOrder.replace("store_order_id_", "")
   }
@@ -110,12 +124,12 @@ const TicketTable: React.FC = () => {
               onChange={(e) =>
                 setFilterStatus(
                   e.target.value as
-                  | "Cancelada"
-                  | "Completado"
-                  | "En discusión"
-                  | "Finalizado"
-                  | "Pagado"
-                  | "Pendiente de pago"
+                    | "Cancelada"
+                    | "Completado"
+                    | "En discusión"
+                    | "Finalizado"
+                    | "Pagado"
+                    | "Pendiente de pago"
                 )
               }
             >
@@ -179,7 +193,9 @@ const TicketTable: React.FC = () => {
                         <Timer creationTime={order.created_at} />
                       ) : order.state_order === "Cancelado" ? (
                         <p className="text-red-600">Expirado</p>
-                      ) : ["Completado", "Finalizado", "En discusión"].includes(order.state_order) ? (
+                      ) : ["Completado", "Finalizado", "En discusión"].includes(
+                          order.state_order
+                        ) ? (
                         <CheckMini className="text-green-600" />
                       ) : (
                         <></>
@@ -188,7 +204,8 @@ const TicketTable: React.FC = () => {
                     <td className="px-4 py-2 text-center">
                       {(order.state_order === "Completado" ||
                         order.state_order === "Finalizado" ||
-                        order.state_order === "Pendiente de pago") && (
+                        order.state_order === "Pendiente de pago" ||
+                        order.state_order === "En discusión") && (
                         // <EyeSeeIcon />
                         <EyeSeeIcon
                           className="cursor-pointer hover:scale-110 transition-all"

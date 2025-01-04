@@ -6,7 +6,7 @@ import OrderPaymentRepository from "src/repositories/order-payment";
 import PaymentDetailRepository from "src/repositories/payment-detail";
 import SerialCodeRepository from "src/repositories/serial-code";
 import { TransactionBaseService } from "@medusajs/medusa";
-import { Manager } from "socket.io-client";
+import { io } from "../websocket";
 import { Console } from "console";
 
 class OrderPaymentService extends TransactionBaseService {
@@ -277,6 +277,10 @@ class OrderPaymentService extends TransactionBaseService {
       }
       const storeOrderUpdate = await so.update(order_id, {
         order_status_id: "Completed_ID",
+      });
+
+      io.emit("success_pay_order", {
+        order_id: order_id,
       });
     } catch (error) {
       console.log(
