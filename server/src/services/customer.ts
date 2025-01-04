@@ -7,6 +7,7 @@ import {
 } from "@medusajs/medusa/dist/types/customers";
 import StoreRepository from "../repositories/store";
 import CustomerRoleRepository from "../repositories/customer-role";
+import StoreOrderRepository from "../repositories/store-order";
 
 type UpdateCustomerInput = {
   store_id?: string;
@@ -18,20 +19,17 @@ type CreateCustomerInput = {
 
 class CustomerService extends MedusaCustomerService {
   static LIFE_TIME = Lifetime.SCOPED;
-  protected readonly loggedInCustomer_: Customer | null;
+
   protected readonly storeRepository_: typeof StoreRepository;
   protected readonly customerRoleRepository_: typeof CustomerRoleRepository;
+  protected readonly storeOrderRepository_: typeof StoreOrderRepository;
 
   constructor(container, options) {
     // @ts-expect-error prefer-rest-params
     super(...arguments);
     this.storeRepository_ = container.storeRepository;
     this.customerRoleRepository_ = container.customerRoleRepository;
-    try {
-      this.loggedInCustomer_ = container.loggedInCustomer;
-    } catch (e) {
-      // avoid errors when backend first runs
-    }
+    this.storeOrderRepository_ = container.storeOrderRepository;
   }
 
   async createStore(customerId: string): Promise<Customer> {
@@ -70,6 +68,22 @@ class CustomerService extends MedusaCustomerService {
     };
 
     return await super.create(dataCustomer);
+  }
+  async numberOfCompletedOrders(id) {
+    const storeOrderRepository = this.manager_.withRepository(
+      this.storeOrderRepository_
+    );
+    const customer_id = id;
+
+    const count = await storeOrderRepository
+      .createQueryBuilder("so")
+      .where("so.customer_id = :customer_id", { customer_id })
+      .andWhere("so.order_status_id IN (:...statuses)", {
+        statuses: ["Finished_ID", "Completed_ID"],
+      })
+      .getCount();
+
+    return count || 0;
   }
 }
 const adjectives = [
