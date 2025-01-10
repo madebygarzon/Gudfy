@@ -91,6 +91,59 @@ class JobsService extends TransactionBaseService {
       );
     }
   }
+
+  async getOrdersCompletedBefore(date) {
+    try {
+      const repoStoreOrder = this.activeManager_.withRepository(
+        this.storeOrderRepository_
+      );
+
+      const listOrdersCompleted = await repoStoreOrder.find({
+        where: {
+          created_at: LessThan(date),
+          order_status_id: "Completed_ID",
+        },
+      });
+
+      for (const order of listOrdersCompleted) {
+        console.log("orden " + order.id + " a finalizar");
+        await this.updateOrdersCompleted(order);
+        console.log("Actualizada...");
+      }
+
+      return true;
+    } catch (error) {
+      console.log(
+        "Error al Actualizar las ordenes Completadas a Finalizadas",
+        error
+      );
+    }
+  }
+
+  async updateOrdersCompleted(storeOrder) {
+    const repoStoreOrder = this.activeManager_.withRepository(
+      this.storeOrderRepository_
+    );
+    const repoStoreVariantOrder = this.activeManager_.withRepository(
+      this.storeVariantOrderRepository_
+    );
+
+    const selectStoreVarianOrder = await repoStoreVariantOrder.find({
+      where: {
+        store_order_id: storeOrder.id,
+      },
+    });
+
+    if (selectStoreVarianOrder.length) {
+      const Ids = selectStoreVarianOrder.map((svo) => svo.id);
+      await repoStoreVariantOrder.update(Ids, {
+        store_variant_id: "Finished_ID",
+      });
+    }
+    const updateOrder = await repoStoreOrder.update(storeOrder.id, {
+      order_status_id: "Finished_ID",
+    });
+  }
 }
 
 export default JobsService;
