@@ -23,6 +23,8 @@ import { updateSellerAvatar } from "./update-seller-avatar";
 import { addRequestProduct } from "./request-product/post-request-product";
 import { getListRequestProduct } from "./request-product/get-list-request-product-from-seller";
 import { getListProductSerials } from "./product-serial/get-list-product-serial";
+import { DeleteSerialCodes } from "./product-serial/delete-serials-code";
+import { getListSoldProductSerials } from "./product-serial/get-list-sold-product-serial";
 
 const router = Router();
 
@@ -56,6 +58,13 @@ export function attachSellerRoutes(customerRouter: Router) {
     "/get-list-product-serials/:id",
     wrapHandler(getListProductSerials)
   );
+  router.get(
+    "/get-list-sold-product-serials/:id",
+    wrapHandler(getListSoldProductSerials)
+  );
+  router.delete("/delelte-serial-codes", wrapHandler(DeleteSerialCodes));
+
+  //-------reviews---------------
   router.get("/data-reviews", wrapHandler(getDataReviews));
   router.get("/reviews", wrapHandler(getStoreReviews));
 
