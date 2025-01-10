@@ -8,7 +8,8 @@ import {
 import { OrderClaimRepository } from "../repositories/order-claim";
 import { ClaimCommentRepository } from "../repositories/claim-comment";
 import { NotificationGudfyRepository } from "../repositories/notification-gudfy";
-import StoreVariantOrderRepository from "src/repositories/store-variant-order";
+import StoreVariantOrderRepository from "../repositories/store-variant-order";
+import StoreOrderRepository from "../repositories/store-order";
 import { io } from "../websocket";
 
 class OrderClaimService extends TransactionBaseService {
@@ -17,6 +18,8 @@ class OrderClaimService extends TransactionBaseService {
   protected readonly claimCommentRepository_: typeof ClaimCommentRepository;
   protected readonly notificationGudfyRepository_: typeof NotificationGudfyRepository;
   protected readonly storeVariantOrderRepository_: typeof StoreVariantOrderRepository;
+  protected readonly storeOrderRepository_: typeof StoreOrderRepository;
+
   protected readonly eventBusService_: EventBusService;
 
   // protected readonly commentOwnerRepository_: typeof ClaimCommentRepository;
@@ -28,6 +31,7 @@ class OrderClaimService extends TransactionBaseService {
     this.claimCommentRepository_ = container.claimCommentRepository;
     this.notificationGudfyRepository_ = container.notificationGudfyRepository;
     this.storeVariantOrderRepository_ = container.storeVariantOrderRepository;
+    this.storeOrderRepository_ = container.storeOrderRepository;
     this.eventBusService_ = container.eventBusService;
   }
 
@@ -75,6 +79,10 @@ class OrderClaimService extends TransactionBaseService {
         seen_status: true,
       });
       const saveNoti = await repoNotification.save(newNotification);
+
+      await repoStoreVariantOrder.update(claim.store_variant_order_id, {
+        variant_order_status_id: "Discussion_ID",
+      });
 
       io.emit("new_notification", {
         customer_id: selecSeller[0].seller_id,
@@ -213,6 +221,9 @@ class OrderClaimService extends TransactionBaseService {
     const repoNotification = this.activeManager_.withRepository(
       this.notificationGudfyRepository_
     );
+    const repoStoreVariantOrder = this.activeManager_.withRepository(
+      this.storeVariantOrderRepository_
+    );
 
     const update = await repoOrderClaim.update(idClaim, {
       status_order_claim_id: status,
@@ -226,7 +237,48 @@ class OrderClaimService extends TransactionBaseService {
       });
       await repoNotification.save(newNotification);
     }
+    if (status == "CANCEL_ID") {
+      const getClaim = await repoOrderClaim.findOne({
+        where: {
+          id: idClaim,
+        },
+      });
+      const svo = await repoStoreVariantOrder.findOne({
+        where: {
+          id: getClaim.store_variant_order_id,
+        },
+      });
+
+      const update = await repoStoreVariantOrder.update(svo.id, {
+        variant_order_status_id: "Completed_ID",
+      });
+      if (update) this.validateOrderreadyToComplete(svo.store_order_id);
+    }
   }
+
+  async validateOrderreadyToComplete(store_order_id) {
+    const repoStoreOrder = this.activeManager_.withRepository(
+      this.storeOrderRepository_
+    );
+
+    const repoStoreVariantOrder = this.activeManager_.withRepository(
+      this.storeVariantOrderRepository_
+    );
+
+    const getClamis = await repoStoreVariantOrder.find({
+      where: {
+        store_order_id: store_order_id,
+        variant_order_status_id: "Discussion_ID",
+      },
+    });
+
+    if (!getClamis.length) {
+      await repoStoreOrder.update(store_order_id, {
+        order_status_id: "Completed_ID",
+      });
+    }
+  }
+
   async listProductsInClaim(idStore) {
     const repoOrderClaim = this.activeManager_.withRepository(
       this.orderClaimRepository_

@@ -2,16 +2,20 @@ import { Lifetime } from "awilix";
 import SerialCodeRepository from "src/repositories/serial-code";
 import StoreXVariantRepository from "src/repositories/store-x-variant";
 import { TransactionBaseService, Customer } from "@medusajs/medusa";
+import { Not } from "typeorm";
+import StoreXVariantService from "./store_x_variant";
 
 class SerialCodeService extends TransactionBaseService {
   static LIFE_TIME = Lifetime.SCOPED;
   protected readonly serialCodeRepository_: typeof SerialCodeRepository;
   protected readonly storeXVariantRepository_: typeof StoreXVariantRepository;
+  protected readonly storeXVariantService_: StoreXVariantService;
   protected readonly loggedInCustomer_: Customer | null;
 
   constructor(container) {
     // @ts-expect-error prefer-rest-params
     super(...arguments);
+    this.storeXVariantService_ = container.storeXVariantService;
     this.serialCodeRepository_ = container.serialCodeRepository;
     this.storeXVariantRepository_ = container.storeXVariantRepository;
     this.loggedInCustomer_ = container.loggedInCustomer || null;
@@ -103,8 +107,7 @@ class SerialCodeService extends TransactionBaseService {
     return true;
   }
 
-  async getSellerlistProductSerials(store_variant_id) {
-    console.log("esta es la informaicion que llega", store_variant_id);
+  async getAvailableProductSerial(store_variant_id) {
     const repoSerialCode = this.activeManager_.withRepository(
       this.serialCodeRepository_
     );
@@ -113,10 +116,9 @@ class SerialCodeService extends TransactionBaseService {
       const serialCodes = await repoSerialCode.find({
         where: {
           store_variant_id: store_variant_id,
+          store_variant_order_id: null,
         },
       });
-
-      console.log("Lista de codigos segun el producto", serialCodes.length);
       const data = serialCodes.map((data) => {
         return {
           ...data,
@@ -128,6 +130,72 @@ class SerialCodeService extends TransactionBaseService {
       console.log(
         "error en el servicio de serial_codes para enlistar los productos del vendedor ",
         error
+      );
+    }
+  }
+  // async getSoldProductSerials(store_variant_id) {
+  //   const repoSerialCode = this.activeManager_.withRepository(
+  //     this.serialCodeRepository_
+  //   );
+
+  //   try {
+  //     const serialCodes = await repoSerialCode.find({
+  //       where: {
+  //         store_variant_id: store_variant_id,
+  //         store_variant_order_id: Not(null),
+  //       },
+  //     });
+  //     const data = serialCodes.map((data) => {
+  //       return {
+  //         ...data,
+  //         store_variant_order_id: data.store_variant_order_id ? true : false,
+  //       };
+  //     });
+  //     return data;
+  //   } catch (error) {
+  //     console.log(
+  //       "error en el servicio de serial_codes para enlistar los productos del vendedor ",
+  //       error
+  //     );
+  //   }
+  // }
+
+  async deleteSerialCode(idSerialCodes: string[] | string) {
+    const repoSerialCode = this.activeManager_.withRepository(
+      this.serialCodeRepository_
+    );
+
+    const ids = Array.isArray(idSerialCodes) ? idSerialCodes : [idSerialCodes];
+
+    const IdSerial = Array.isArray(idSerialCodes)
+      ? idSerialCodes[0]
+      : idSerialCodes;
+
+    const serial = await repoSerialCode.findOneBy({
+      id: IdSerial,
+    });
+
+    if (!ids || ids.length === 0) {
+      throw new Error("El array de IDs de seriales está vacío.");
+    }
+
+    try {
+      const deleteCodes = await repoSerialCode
+        .createQueryBuilder()
+        .delete()
+        .where("id IN (:...ids)", { ids })
+        .andWhere("store_variant_order_id IS NULL")
+        .execute();
+
+      const updateStock = await this.storeXVariantService_.updateProductStock(
+        serial.store_variant_id
+      );
+
+      return deleteCodes;
+    } catch (error) {
+      console.error("Error al eliminar los seriales:", error);
+      throw new Error(
+        "No se pudieron eliminar los seriales. Intente nuevamente."
       );
     }
   }
