@@ -248,27 +248,6 @@ class StoreXVariantService extends TransactionBaseService {
     }
   }
 
-  // async getSellerRating(store_id) {
-  //   const repoStoreReview = this.activeManager_.withRepository(
-  //     this.storeReviewRepository_
-  //   );
-
-  //   const reviews = await repoStoreReview.find({
-  //     where: {
-  //       store_id: store_id,
-  //       approved
-  //     },
-  //   });
-
-  //   if (!reviews.length) return 0;
-
-  //   const sum = reviews.reduce((sum, review) => {
-  //     return sum + review.rating;
-  //   }, 0);
-
-  //   return ((sum / reviews.length) * 100) / 5;
-  // }
-
   async getNumberOfSales(store_id) {
     const productV = this.manager_.withRepository(
       this.storeXVariantRepository_
@@ -289,6 +268,32 @@ class StoreXVariantService extends TransactionBaseService {
 
     const numberSales = parseInt(result.count, 10);
     return numberSales;
+  }
+
+  async updateProductStock(idSxv) {
+    const storeXVaraintRepository = this.manager_.withRepository(
+      this.storeXVariantRepository_
+    );
+    const serialCodeRepository = this.manager_.withRepository(
+      this.serialCodeRepository_
+    );
+
+    const countSerialCode = await serialCodeRepository.count({
+      where: { store_variant_id: idSxv, store_variant_order_id: null },
+    });
+
+    const select = await serialCodeRepository.find({
+      where: { store_variant_id: idSxv, store_variant_order_id: null },
+    });
+
+    const selectAvailable = select.filter(
+      (serial) => !serial.store_variant_order_id
+    );
+    const updateProduct = await storeXVaraintRepository.update(idSxv, {
+      quantity_store: selectAvailable.length,
+    });
+
+    return updateProduct;
   }
 }
 

@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 
-export async function getListProductSerials(
+export async function getListSoldProductSerials(
   req: Request,
   res: Response
 ): Promise<void> {
@@ -8,7 +8,7 @@ export async function getListProductSerials(
     const { id } = req.params;
     const getlistproductSerials = req.scope.resolve("serialCodeService");
 
-    const list = await getlistproductSerials.getAvailableProductSerial(id);
+    const list = await getlistproductSerials.getSoldProductSerials(id);
 
     if (list) {
       res.status(200).send(list);
