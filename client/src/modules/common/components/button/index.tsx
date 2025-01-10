@@ -2,8 +2,6 @@ import Spinner from "@modules/common/icons/spinner"
 import clsx from "clsx"
 import React from "react"
 import Link from "next/link"
-import Image from "next/image"
-import Cart from "@modules/common/icons/cart"
 
 type ButtonProps = {
   isLoading?: boolean

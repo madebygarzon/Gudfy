@@ -58,6 +58,7 @@
     "react-icons": "^4.10.1",
     "react-instantsearch-hooks-web": "^6.29.0",
     "react-intersection-observer": "^9.3.4",
+    "react-router-dom": "^7.1.1",
     "sharp": "^0.30.7",
     "socket.io-client": "^4.8.0",
     "stream-browserify": "^3.0.0"
