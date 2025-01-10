@@ -369,7 +369,6 @@ export default function ProductsTable() {
         <ViewProductSerials
           key={productEdit?.storexvariantid}
           isOpen={isOpen2}
-          onOpen={onOpen2}
           onOpenChange={onOpenChange2}
           productData={productView}
           setReset={setReset}
