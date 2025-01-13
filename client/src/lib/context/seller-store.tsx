@@ -14,26 +14,23 @@ interface SellerStoreContext {
 }
 export type SellerOrder = {
   id: string
-  pay_method_id: string
-  created_at: string
-  sellerapproved: string
-  customerapproved: string
-  quantity_products: number
-  total_price: string
   person_name: string
-  person_last_name: string
-  email: string
-  conty: string
-  city: string
-  phone: string
+  created_at: string
   state_order:
     | "Completado"
     | "Cancelado"
     | "Pendiente de pago"
     | "Finalizado"
     | "En discusión"
-  customer_name: string
-  customer_last_name: string
+  products: [
+    {
+      store_variant_order_id: string
+      quantity: number
+      total_price: number
+      produc_title: string
+      price: number
+    }
+  ]
 }
 
 type store = {

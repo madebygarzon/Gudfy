@@ -32,13 +32,6 @@ import { SellerOrder, useSellerStoreGudfy } from "@lib/context/seller-store"
 import { EyeSeeIcon } from "@lib/util/icons"
 import Loader from "@lib/loader"
 
-interface Ticket {
-  id: number
-  status: "" | "Por pagar" | "Completado"
-  orderNumber: string
-  createdAt: string
-}
-
 const SellerOrderTable: React.FC = () => {
   const { listSellerOrders, handlerGetListSellerOrder, isLoadingOrders } =
     useSellerStoreGudfy()
@@ -53,7 +46,21 @@ const SellerOrderTable: React.FC = () => {
     | "En discusión"
     | "all"
   >("all")
-  const [selectOrderData, setSelectOrderData] = useState<SellerOrder>()
+  const [selectOrderData, setSelectOrderData] = useState<SellerOrder>({
+    id: "",
+    person_name: "",
+    created_at: "",
+    state_order: "Cancelado",
+    products: [
+      {
+        store_variant_order_id: "",
+        quantity: 0,
+        total_price: 0,
+        produc_title: "",
+        price: 0,
+      },
+    ],
+  })
 
   const filteredOrder =
     filterStatus === "all"
@@ -215,60 +222,89 @@ const SellerOrderTable: React.FC = () => {
 }
 
 interface ModalOrder {
-  orderData?: SellerOrder
+  orderData: SellerOrder
   isOpen: boolean
   onOpenChange: () => void
   handleReset: () => void
 }
 
-const ModalOrder = ({
+const ModalOrder: React.FC<ModalOrder> = ({
   orderData,
   isOpen,
   onOpenChange,
   handleReset,
-}: ModalOrder) => {
-  const { customer } = useMeCustomer()
-  async function handlerOrderCancel(orderId: string) {
-    updateCancelStoreOrder(orderId).then(() => {
-      onOpenChange()
-      handleReset()
-    })
-  }
+}) => {
   return (
     <Modal isOpen={isOpen} onOpenChange={onOpenChange} size="5xl">
       <ModalContent>
-        <>
-          {/* {(onClose) =>
-          orderData?.state_order === "Pendiente de pago" ? (
-            <ModalOrderPending
-              handleReset={handleReset}
-              onOpenChange={onOpenChange}
-              orderData={orderData}
-            />
-          ) : orderData?.state_order === "Cancelado" ? (
-            <ModalOrderCancel
-              handleReset={handleReset}
-              onOpenChange={onOpenChange}
-              orderData={orderData}
-            />
-          ) : orderData?.state_order === "Completado" ? (
-            <ModalOrderComplete
-              customer={customer}
-              handleReset={handleReset}
-              onOpenChangeMain={onOpenChange}
-              orderData={orderData}
-            />
-          ) : orderData?.state_order === "Finalizado" ? (
-            <ModalOrderFinished
-              handleReset={handleReset}
-              onOpenChange={onOpenChange}
-              orderData={orderData}
-            />
-          ) : (
-            <></>
-          )
-        } */}
-        </>
+        {(onClose) => (
+          <>
+            {/* Header */}
+            <ModalHeader className="text-2xl font-bold text-gray-800">
+              Detalles del Pedido
+            </ModalHeader>
+
+            {/* Body */}
+            <ModalBody className="p-6">
+              {/* Order Information */}
+              <div className="mb-4">
+                <p>
+                  <strong>ID del Pedido:</strong> {orderData.id}
+                </p>
+                <p>
+                  <strong>Nombre del Cliente:</strong> {orderData.person_name}
+                </p>
+                <p>
+                  <strong>Fecha de Creación:</strong>{" "}
+                  {new Date(orderData.created_at).toLocaleString()}
+                </p>
+                <p>
+                  <strong>Estado del Pedido:</strong> {orderData.state_order}
+                </p>
+              </div>
+
+              {/* Products Table */}
+              <div className="overflow-auto">
+                <table className="w-full border-collapse border border-gray-200">
+                  <thead className="bg-gray-100">
+                    <tr>
+                      <th className="border px-4 py-2">Título del Producto</th>
+                      <th className="border px-4 py-2">Cantidad</th>
+                      <th className="border px-4 py-2">Precio Unitario</th>
+                      <th className="border px-4 py-2">Precio Total</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {orderData.products.map((product) => (
+                      <tr key={product.store_variant_order_id}>
+                        <td className="border px-4 py-2">
+                          {product.produc_title}
+                        </td>
+                        <td className="border px-4 py-2">{product.quantity}</td>
+                        <td className="border px-4 py-2">
+                          ${product.price?.toFixed(2)}
+                        </td>
+                        <td className="border px-4 py-2">
+                          ${product.total_price}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </ModalBody>
+
+            {/* Footer */}
+            <ModalFooter className="flex justify-end space-x-4">
+              {/* <Button
+                onPress={onClose}
+                className="bg-gray-600 hover:bg-gray-700 text-white"
+              >
+                Cerrar
+              </Button> */}
+            </ModalFooter>
+          </>
+        )}
       </ModalContent>
     </Modal>
   )
