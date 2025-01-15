@@ -40,7 +40,7 @@ const SellerOrderTable: React.FC = () => {
   }
   const [filterStatus, setFilterStatus] = useState<
     | "Completado"
-    | "Cancelado"
+    | "Cancelada"
     | "Pendiente de pago"
     | "Finalizado"
     | "En discusión"
@@ -50,10 +50,11 @@ const SellerOrderTable: React.FC = () => {
     id: "",
     person_name: "",
     created_at: "",
-    state_order: "Cancelado",
+    state_order: "Cancelada",
     products: [
       {
         store_variant_order_id: "",
+        variant_order_status_id: "",
         quantity: 0,
         total_price: 0,
         produc_title: "",
@@ -70,7 +71,7 @@ const SellerOrderTable: React.FC = () => {
   const getStatusColor = (
     status:
       | "Completado"
-      | "Cancelado"
+      | "Cancelada"
       | "Pendiente de pago"
       | "Finalizado"
       | "En discusión"
@@ -78,7 +79,7 @@ const SellerOrderTable: React.FC = () => {
     switch (status) {
       case "Completado":
         return "bg-blue-200"
-      case "Cancelado":
+      case "Cancelada":
         return "bg-red-200"
       case "Pendiente de pago":
         return "bg-yellow-200"
@@ -91,10 +92,6 @@ const SellerOrderTable: React.FC = () => {
     }
   }
   const { isOpen, onOpen, onOpenChange } = useDisclosure()
-
-  function handlerOrderNumber(numberOrder: string) {
-    return numberOrder.replace("store_order_id_", "")
-  }
 
   useEffect(() => {
     handlerGetListSellerOrder()
@@ -118,7 +115,7 @@ const SellerOrderTable: React.FC = () => {
               onChange={(e) =>
                 setFilterStatus(
                   e.target.value as
-                    | "Cancelado"
+                    | "Cancelada"
                     | "Pendiente de pago"
                     | "Finalizado"
                     | "En discusión"
@@ -139,10 +136,10 @@ const SellerOrderTable: React.FC = () => {
           <table className="min-w-full bg-white  rounded-lg shadow-md">
             <thead>
               <tr>
-                <th className="py-2 text-left">Estado de la orden</th>
+                {/* <th className="py-2 text-left">Estado de la orden</th> */}
+                <th className="py-2 text-left">Pago</th>
                 <th className="py-2 text-left">Numero de orden</th>
                 <th className="py-2 text-left">Fecha y hora de creación</th>
-                <th className="py-2 text-left">Tiempo a pagar</th>
                 <th className="py-2 text-left">Detalle de la orden</th>
               </tr>
             </thead>
@@ -150,7 +147,7 @@ const SellerOrderTable: React.FC = () => {
               {!isLoadingOrders ? (
                 filteredOrder?.map((order) => (
                   <tr key={order.id} className="hover:bg-gray-50">
-                    <td className=" py-2">
+                    {/* <td className=" py-2">
                       <p
                         className={`${getStatusColor(
                           order.state_order
@@ -158,18 +155,11 @@ const SellerOrderTable: React.FC = () => {
                       >
                         {order.state_order}
                       </p>
-                    </td>
-
-                    <td className="px-4 py-2 ">
-                      {handlerOrderNumber(order.id)}
-                    </td>
-                    <td className="px-4 py-2 ">
-                      {handlerformatDate(order.created_at)}
-                    </td>
-                    <td>
+                    </td> */}
+                    <td className=" px-4 py-2">
                       {order.state_order === "Pendiente de pago" ? (
                         <Timer creationTime={order.created_at} />
-                      ) : order.state_order === "Cancelado" ? (
+                      ) : order.state_order === "Cancelada" ? (
                         // <XMarkMini className="text-red-600" />
                         <p className="text-red-600">Expirado</p>
                       ) : order.state_order === "Completado" ? (
@@ -179,9 +169,14 @@ const SellerOrderTable: React.FC = () => {
                       ) : order.state_order === "En discusión" ? (
                         <CheckMini className="text-green-600" />
                       ) : (
-                        <></>
+                        <>asdasd</>
                       )}
                     </td>
+                    <td className="px-4 py-2 ">{order.id}</td>
+                    <td className="px-4 py-2 ">
+                      {handlerformatDate(order.created_at)}
+                    </td>
+
                     <td className="px-4 py-2">
                       <EyeSeeIcon
                         className="cursor-pointer hover:scale-110 transition-all"
@@ -234,6 +229,38 @@ const ModalOrder: React.FC<ModalOrder> = ({
   onOpenChange,
   handleReset,
 }) => {
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case "Completed_ID":
+        return "bg-blue-200"
+      case "Cancel_ID":
+        return "bg-red-200"
+      case "Payment_Pending_ID":
+        return "bg-yellow-200"
+      case "Finished_ID":
+        return "bg-green-200"
+      case "Discussion_ID":
+        return "bg-orange-300"
+      default:
+        return ""
+    }
+  }
+  const handlerState = (state_id: string) => {
+    switch (state_id) {
+      case "Finished_ID":
+        return "Finalizado"
+      case "Completed_ID":
+        return "Completado"
+      case "Discussion_ID":
+        return "En reclamo"
+      case "Payment_Pending_ID":
+        return "Pendiente por Pagar"
+      case "Cancel_ID":
+        return "Cancelada"
+      default:
+        return ""
+    }
+  }
   return (
     <Modal isOpen={isOpen} onOpenChange={onOpenChange} size="5xl">
       <ModalContent>
@@ -259,7 +286,7 @@ const ModalOrder: React.FC<ModalOrder> = ({
                   {new Date(orderData.created_at).toLocaleString()}
                 </p>
                 <p>
-                  <strong>Estado del Pedido:</strong> {orderData.state_order}
+                  {/* <strong>Estado del Pedido:</strong> {orderData.state_order} */}
                 </p>
               </div>
 
@@ -268,6 +295,9 @@ const ModalOrder: React.FC<ModalOrder> = ({
                 <table className="w-full border-collapse border border-gray-200">
                   <thead className="bg-gray-100">
                     <tr>
+                      <th className="border px-4 py-2">
+                        Estado del producto en la orden
+                      </th>
                       <th className="border px-4 py-2">Título del Producto</th>
                       <th className="border px-4 py-2">Cantidad</th>
                       <th className="border px-4 py-2">Precio Unitario</th>
@@ -277,6 +307,13 @@ const ModalOrder: React.FC<ModalOrder> = ({
                   <tbody>
                     {orderData.products.map((product) => (
                       <tr key={product.store_variant_order_id}>
+                        <td
+                          className={`border px-4 py-2 ${getStatusColor(
+                            product.variant_order_status_id
+                          )}`}
+                        >
+                          {handlerState(product.variant_order_status_id)}
+                        </td>
                         <td className="border px-4 py-2">
                           {product.produc_title}
                         </td>

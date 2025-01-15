@@ -18,13 +18,14 @@ export type SellerOrder = {
   created_at: string
   state_order:
     | "Completado"
-    | "Cancelado"
+    | "Cancelada"
     | "Pendiente de pago"
     | "Finalizado"
     | "En discusión"
   products: [
     {
       store_variant_order_id: string
+      variant_order_status_id: string
       quantity: number
       total_price: number
       produc_title: string

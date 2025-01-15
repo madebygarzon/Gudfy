@@ -43,8 +43,18 @@ class JobsService extends TransactionBaseService {
       repoStoreVariantOrder,
       idStoreOrder
     );
+
+    await repoStoreVariantOrder.update(
+      //Cancelasmos tambien los estados de los productos por orden
+      { store_order_id: idStoreOrder },
+      { variant_order_status_id: "Cancel_ID" }
+    );
+
     if (order.customer_id)
-      return repoStoreOrder.update(order.id, { order_status_id: "Cancel_ID" });
+      return await repoStoreOrder.update(order.id, {
+        order_status_id: "Cancel_ID",
+      });
+
     return await repoStoreOrder.remove(order);
   }
 
@@ -104,12 +114,13 @@ class JobsService extends TransactionBaseService {
           order_status_id: "Completed_ID",
         },
       });
-
       for (const order of listOrdersCompleted) {
         console.log("orden " + order.id + " a finalizar");
         await this.updateOrdersCompleted(order);
         console.log("Actualizada...");
       }
+
+      await this.updateVariantOrdersCompleted(date);
 
       return true;
     } catch (error) {
@@ -137,12 +148,33 @@ class JobsService extends TransactionBaseService {
     if (selectStoreVarianOrder.length) {
       const Ids = selectStoreVarianOrder.map((svo) => svo.id);
       await repoStoreVariantOrder.update(Ids, {
-        store_variant_id: "Finished_ID",
+        variant_order_status_id: "Finished_ID",
       });
     }
     const updateOrder = await repoStoreOrder.update(storeOrder.id, {
       order_status_id: "Finished_ID",
     });
+  }
+
+  async updateVariantOrdersCompleted(date) {
+    const repoStoreVariantOrder = this.activeManager_.withRepository(
+      this.storeVariantOrderRepository_
+    );
+    const listVariantsOrdersCompleted = await repoStoreVariantOrder.find({
+      where: {
+        created_at: LessThan(date),
+        variant_order_status_id: "Completed_ID",
+      },
+    });
+
+    if (listVariantsOrdersCompleted.length) {
+      const Ids = listVariantsOrdersCompleted.map((svo) => svo.id);
+
+      await repoStoreVariantOrder.update(Ids, {
+        variant_order_status_id: "Finished_ID",
+      });
+    }
+    return;
   }
 }
 

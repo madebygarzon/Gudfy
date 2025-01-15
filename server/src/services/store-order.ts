@@ -125,6 +125,7 @@ class StoreOrderService extends TransactionBaseService {
         "svo.id AS store_variant_order_id",
         "svo.quantity AS quantity",
         "svo.total_price AS total_price_for_product",
+        "svo.variant_order_status_id AS variant_order_status_id",
         "sso.state AS state_order",
         "pv.title AS produc_title",
         "sxv.price AS price",
@@ -143,6 +144,7 @@ class StoreOrderService extends TransactionBaseService {
         produc_title,
         price,
         quantity,
+        variant_order_status_id,
         total_price_for_product,
         ...rest
       } = order;
@@ -158,9 +160,11 @@ class StoreOrderService extends TransactionBaseService {
         price,
         quantity,
         total_price_for_product,
+        variant_order_status_id,
         serial_code_products:
           order.status_id === "Completed_ID" ||
-          order.status_id === "Finished_ID"
+          order.status_id === "Finished_ID" ||
+          order.status_id === "Discussion_ID"
             ? await this.functionRecoverCodes(store_variant_order_id)
             : [],
       });
@@ -206,6 +210,7 @@ class StoreOrderService extends TransactionBaseService {
         "svo.id AS store_variant_order_id",
         "svo.quantity AS quantity",
         "svo.total_price AS total_price_for_product",
+        "svo.variant_order_status_id AS variant_order_status_id",
         "sso.state AS state_order",
         "pv.title AS produc_title",
         "sxv.price AS price",
@@ -225,6 +230,7 @@ class StoreOrderService extends TransactionBaseService {
           products: [
             {
               store_variant_order_id: orderData.store_variant_order_id,
+              variant_order_status_id: orderData.variant_order_status_id,
               quantity: orderData.quantity,
               total_price: orderData.total_price_for_product,
               produc_title: orderData.produc_title,
@@ -235,6 +241,7 @@ class StoreOrderService extends TransactionBaseService {
       } else {
         OrderMap.get(orderData.id).products.push({
           store_variant_order_id: orderData.store_variant_order_id,
+          variant_order_status_id: orderData.variant_order_status_id,
           quantity: orderData.quantity,
           total_price: orderData.total_price_for_product,
           produc_title: orderData.produc_title,
@@ -478,6 +485,21 @@ class StoreOrderService extends TransactionBaseService {
       });
     });
     return Array.from(orderMap.values());
+  }
+
+  async updateFinishVariantOrder(store_variant_order_id) {
+    const repoStoreVariantOrder = this.activeManager_.withRepository(
+      this.storeVariantOrderRepository_
+    );
+
+    const upDateFinish = await repoStoreVariantOrder.update(
+      store_variant_order_id,
+      {
+        variant_order_status_id: "Finished_ID",
+      }
+    );
+
+    return upDateFinish;
   }
 }
 
