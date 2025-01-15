@@ -16,6 +16,7 @@ import { addClaim } from "@modules/account/actions/post-add-claim"
 import { updateFinishedOrder } from "@modules/account/actions/update-finished-order"
 import ButtonLigth from "@modules/common/components/button_light"
 import Loader from "@lib/loader"
+import InputFile from "@modules/common/components/input-file"
 
 interface ModalOrderProps {
   orderData?: order
@@ -238,6 +239,7 @@ const ModalQualify = ({
   const [viewComment, setViewComment] = useState<boolean>(false)
   const [comment, setComment] = useState<string>("")
   const [warning, setWaening] = useState<boolean>(true)
+  const [image, setImage] = useState<File | undefined>()
 
   const handlerAddClaim = () => {
     if (!productSelect) return
@@ -249,13 +251,15 @@ const ModalQualify = ({
     addClaim(
       idOrder || " ",
       { ...productSelect, comment },
-      idCustomer || " "
+      idCustomer || " ",
+      image
     ).then(() => {
       setViewComment(false)
       handleReset()
     })
   }
   useEffect(() => {
+    setImage(undefined)
     setComment("")
   }, [viewComment])
   return (
@@ -325,6 +329,13 @@ const ModalQualify = ({
                           onChange={(e) => setComment(e.target.value)}
                           className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 h-32"
                           placeholder="Escriba su motivo aquí..."
+                        />
+                        <InputFile
+                          type="Plane"
+                          alt="Image"
+                          label="Adjuntar imagen"
+                          file={image}
+                          setFile={setImage}
                         />
                       </div>
 
