@@ -134,8 +134,12 @@ export function attachStoreRoutes(storeRouter: Router) {
     wrapHandler(getListProductsInClaim)
   );
   router.get("/claim/:id/comment", wrapHandler(getListClaimComments));
-  router.post("/claim", wrapHandler(postClaim));
-  router.post("/claim/customer/add-comment", wrapHandler(postAddComment));
+  router.post("/claim", Image.single("image"), wrapHandler(postClaim));
+  router.post(
+    "/claim/customer/add-comment",
+    Image.single("image"),
+    wrapHandler(postAddComment)
+  );
   router.post("/claim/update-status", wrapHandler(updateClaimStatus));
 
   //----------------------------------Notifications------------------------------

@@ -16,6 +16,7 @@ import { addClaim } from "@modules/account/actions/post-add-claim"
 import { updateFinishedOrder } from "@modules/account/actions/update-finished-order"
 import { retriverProctsOrderClaim } from "@modules/account/actions/get-list-products-in-claim"
 import { postFinishTheVariation } from "@modules/account/actions/orders/post-finish-the-variation"
+import InputFile from "@modules/common/components/input-file"
 
 interface ModalOrderProps {
   orderData?: order
@@ -216,6 +217,7 @@ const ModalQualify = ({
   const [productListClaim, setProductListClaim] = useState<string[]>([]) // produictos que ya se encuentran en reclamacion
   const [viewComment, setViewComment] = useState<boolean>(false)
   const [comment, setComment] = useState<string>("")
+  const [image, setImage] = useState<File | undefined>()
 
   const handlerRetriver = () => {
     retriverProctsOrderClaim(idOrder || " ").then((data) => {
@@ -233,7 +235,8 @@ const ModalQualify = ({
     addClaim(
       idOrder || " ",
       { ...productSelect, comment },
-      idCustomer || " "
+      idCustomer || " ",
+      image
     ).then(() => {
       setViewComment(false)
       handleReset()
@@ -290,6 +293,13 @@ const ModalQualify = ({
                       placeholder="Escriba su motivo aquí..."
                     />
                   </div>
+                  <InputFile
+                    type="Plane"
+                    alt="Image"
+                    label="Adjuntar imagen"
+                    file={image}
+                    setFile={setImage}
+                  />
                   <Button
                     className={`${
                       !comment.length
