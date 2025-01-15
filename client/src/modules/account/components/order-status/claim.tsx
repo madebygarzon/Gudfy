@@ -15,6 +15,7 @@ import { Customer } from "@medusajs/medusa"
 import { addClaim } from "@modules/account/actions/post-add-claim"
 import { updateFinishedOrder } from "@modules/account/actions/update-finished-order"
 import { retriverProctsOrderClaim } from "@modules/account/actions/get-list-products-in-claim"
+import { postFinishTheVariation } from "@modules/account/actions/orders/post-finish-the-variation"
 
 interface ModalOrderProps {
   orderData?: order
@@ -30,6 +31,27 @@ const ModalOrderClaim = ({
   customer,
 }: ModalOrderProps) => {
   const { isOpen, onOpen, onOpenChange } = useDisclosure()
+
+  const handlerState = (state_id: string) => {
+    let state = "algo"
+    switch (state_id) {
+      case "Finished_ID":
+        state = "Finalizado"
+        break
+
+      case "Completed_ID":
+        state = "Completado"
+        break
+
+      case "Discussion_ID":
+        state = "En reclamo"
+        break
+
+      default:
+        break
+    }
+    return state
+  }
 
   return (
     <>
@@ -82,6 +104,7 @@ const ModalOrderClaim = ({
                           </div>
                           <div className="text-sm font-light">
                             <p>Vendido por: {p.store_name}</p>
+                            <p>{handlerState(p.variant_order_status_id)}</p>
                           </div>
                         </td>
                         <td className="py-2 px-4 border-b ">
@@ -140,8 +163,9 @@ const ModalOrderClaim = ({
           </div>
           <div>
             {" "}
-            Por ahora alguno de tus productos se encuentra en estado de reclamación, por
-            lo que puedes visualizarlos en la pestaña de Reclamos.
+            Por ahora alguno de tus productos se encuentra en estado de
+            reclamación, por lo que puedes visualizarlos en la pestaña de
+            Reclamos.
           </div>
         </div>
       </ModalFooter>
@@ -163,6 +187,7 @@ type product = {
   store_id: string
   store_name: string
   store_variant_order_id: string
+  variant_order_status_id: string
   produc_title: string
   price: string
   quantity: string
@@ -211,6 +236,11 @@ const ModalQualify = ({
       idCustomer || " "
     ).then(() => {
       setViewComment(false)
+      handleReset()
+    })
+  }
+  const handlerFinishTheVariation = (product: product) => {
+    postFinishTheVariation(product.store_variant_order_id).then(() => {
       handleReset()
     })
   }
@@ -266,14 +296,14 @@ const ModalQualify = ({
                         ? "bg-slate-500"
                         : " bg-blue-gf text-white"
                     }`}
-                    onClick={() => handlerAddClaim()}
+                    onPress={() => handlerAddClaim()}
                     disabled={!comment.length}
                   >
                     Presentar Reclamo
                   </Button>
                   <Button
                     className=" ml-4"
-                    onClick={() => {
+                    onPress={() => {
                       setViewComment(false)
                     }}
                   >
@@ -297,30 +327,45 @@ const ModalQualify = ({
                         Total Precio: ${product.total_price_for_product}
                       </p>
                       <div className="flex justify-center w-full mt-2">
-                        <Button
-                          className=""
-                          onClick={() => {
-                            setViewComment(true)
-                            setProductSelect(product)
-                          }}
-                          disabled={
-                            productsClaim?.includes(
-                              product.store_variant_order_id
-                            ) ||
-                            productListClaim.includes(
-                              product.store_variant_order_id
-                            )
-                          }
-                        >
-                          {productsClaim?.includes(
-                            product.store_variant_order_id
-                          ) ||
-                          productListClaim.includes(
-                            product.store_variant_order_id
-                          )
-                            ? "¡Hecho!"
-                            : "Presentar Reclamo"}
-                        </Button>
+                        {product.variant_order_status_id === "Finished_ID" ||
+                        product.variant_order_status_id === "Discussion_ID" ? (
+                          <Button
+                            className=""
+                            onPress={() => {
+                              setViewComment(true)
+                              setProductSelect(product)
+                            }}
+                            isDisabled={
+                              product.variant_order_status_id ===
+                                "Finished_ID" ||
+                              product.variant_order_status_id ===
+                                "Discussion_ID"
+                            }
+                          >
+                            {product.variant_order_status_id === "Finished_ID"
+                              ? "Producto Finalizado"
+                              : product.variant_order_status_id ===
+                                  "Discussion_ID" && "En reclamación"}
+                          </Button>
+                        ) : (
+                          <div>
+                            <Button
+                              className=""
+                              onPress={() => {
+                                setViewComment(true)
+                                setProductSelect(product)
+                              }}
+                            >
+                              Presentar Reclamo
+                            </Button>{" "}
+                            <Button
+                              className=""
+                              onPress={() => handlerFinishTheVariation(product)}
+                            >
+                              Finalizar Producto
+                            </Button>
+                          </div>
+                        )}
                       </div>
                     </div>
                   ))}
