@@ -16,6 +16,7 @@ import { addClaim } from "@modules/account/actions/post-add-claim"
 import { updateFinishedOrder } from "@modules/account/actions/update-finished-order"
 import ButtonLigth from "@modules/common/components/button_light"
 import Loader from "@lib/loader"
+import InputFile from "@modules/common/components/input-file"
 
 interface ModalOrderProps {
   orderData?: order
@@ -237,6 +238,8 @@ const ModalQualify = ({
   const [productSelect, setProductSelect] = useState<product | null>(null)
   const [viewComment, setViewComment] = useState<boolean>(false)
   const [comment, setComment] = useState<string>("")
+  const [warning, setWaening] = useState<boolean>(true)
+  const [image, setImage] = useState<File | undefined>()
 
   const handlerAddClaim = () => {
     if (!productSelect) return
@@ -248,13 +251,15 @@ const ModalQualify = ({
     addClaim(
       idOrder || " ",
       { ...productSelect, comment },
-      idCustomer || " "
+      idCustomer || " ",
+      image
     ).then(() => {
       setViewComment(false)
       handleReset()
     })
   }
   useEffect(() => {
+    setImage(undefined)
     setComment("")
   }, [viewComment])
   return (
@@ -262,127 +267,153 @@ const ModalQualify = ({
       <ModalContent>
         {(onClose) => (
           <>
-            <ModalHeader>
-              {" "}
-              <h2 className="block mx-auto text-2xl mt-2 font-bold text-gray-700">
-                Presentar reclamos
-              </h2>
-            </ModalHeader>
-            <ModalBody>
-              {viewComment ? (
-                <div className="w-full">
-                  <div className="p-4">
-                    <div>
-                      <h4 className="text-lg font-bold text-gray-800 ">
-                        {productSelect?.produc_title}
-                      </h4>
-                      <h5 className="text-sm font-semibold text-gray-600 ">
-                        Por: {productSelect?.store_name}
-                      </h5>
-                      <p className="text-gray-700 text-sm">
-                        Precio: {productSelect?.price} Cantidad:{" "}
-                        {productSelect?.quantity}
-                      </p>
-                      <p className="text-gray-900 font-bold text-sm">
-                        Total Precio: ${productSelect?.total_price_for_product}
-                      </p>
-                    </div>
-                    <label
-                      htmlFor="claimReason"
-                      className="mt-4 block text-gray-700 font-medium mb-2"
-                    >
-                      Por favor, escribe el motivo de tu reclamo:
-                    </label>
-                    <textarea
-                      id="claimReason"
-                      value={comment}
-                      onChange={(e) => setComment(e.target.value)}
-                      className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 h-32"
-                      placeholder="Escriba su motivo aquí..."
-                    />
+            {warning ? (
+              <>
+                <ModalBody>
+                  <div className="w-full flex justify-center items-center p-6  shadow-md text-center">
+                    <p className="leading-relaxed">
+                      Ten en cuenta que la reclamación se aplicará de forma
+                      independiente a cada producto por tienda. Los demás
+                      productos permanecerán en estado
+                      <strong> Completado</strong> y cambiarán a
+                      <strong> Finalizado</strong> después de{" "}
+                      <strong>tres días</strong>.
+                      <br />
+                      <br />
+                      Si necesitas agregar un reclamo a otro producto, podrás
+                      hacerlo una vez que hayas registrado el primero.
+                    </p>
                   </div>
-
-                  <div className="flex justify-center gap-2">
-                  <ButtonLigth
-                    className={`${
-                      !comment.length
-                        ? "bg-[#28A745] hover:bg-[#218838] text-white border-none"
-                        : "bg-[#28A745] hover:bg-[#218838] text-white border-none"
-                    }`}
-                    onClick={() => handlerAddClaim()}
-                    disabled={!comment.length}
-                  >
-                    Presentar reclamo
+                  <ButtonLigth onClick={() => setWaening(false)}>
+                    Seguir
                   </ButtonLigth>
-                  <ButtonLigth
-                    className="bg-[#E74C3C] hover:bg-[#C0392B] text-white border-none"
-                    onClick={() => {
-                      setViewComment(false)
-                    }}
-                  >
-                    Atrás
-                  </ButtonLigth>
-                  </div>
-                 
-
-
-
-                  
-
-
-
-                </div>
-              ) : (
-                <div className="p-4 flex flex-wrap justify-start gap-4 h-auto overflow-y-auto ">
-                  {dataProducts?.map((product) => (
-                    <div className="rounded-lg shadow-2xl p-8 ">
-                      <h4 className="text-lg font-bold text-gray-800 ">
-                        {product.produc_title}
-                      </h4>
-                      <h5 className="text-sm font-semibold text-gray-600 ">
-                        Por: {product.store_name}
-                      </h5>
-                      <p className="text-gray-700 text-sm">
-                        Precio: {product.price} Cantidad: {product.quantity}
-                      </p>
-                      <p className="text-gray-900 font-bold text-sm">
-                        Total Precio: ${product.total_price_for_product}
-                      </p>
-
-                      <div className="mt-6">
-                        <ButtonLigth
-                          className="bg-[#28A745] hover:bg-[#218838] text-white border-none"
-                          onClick={() => {
-                            setViewComment(true)
-                            setProductSelect(product)
-                          }}
-                          disabled={productsClaim?.includes(
-                            product.store_variant_order_id
-                          )}
+                </ModalBody>
+              </>
+            ) : (
+              <>
+                <ModalHeader>
+                  {" "}
+                  <h2 className="block mx-auto text-2xl mt-2 font-bold text-gray-700">
+                    Presentar reclamos
+                  </h2>
+                </ModalHeader>
+                <ModalBody>
+                  {viewComment ? (
+                    <div className="w-full">
+                      <div className="p-4">
+                        <div>
+                          <h4 className="text-lg font-bold text-gray-800 ">
+                            {productSelect?.produc_title}
+                          </h4>
+                          <h5 className="text-sm font-semibold text-gray-600 ">
+                            Por: {productSelect?.store_name}
+                          </h5>
+                          <p className="text-gray-700 text-sm">
+                            Precio: {productSelect?.price} Cantidad:{" "}
+                            {productSelect?.quantity}
+                          </p>
+                          <p className="text-gray-900 font-bold text-sm">
+                            Total Precio: $
+                            {productSelect?.total_price_for_product}
+                          </p>
+                        </div>
+                        <label
+                          htmlFor="claimReason"
+                          className="mt-4 block text-gray-700 font-medium mb-2"
                         >
-                          {productsClaim?.includes(
-                            product.store_variant_order_id
-                          )
-                            ? "¡Hecho!"
-                            : "Presentar reclamo"}
+                          Por favor, escribe el motivo de tu reclamo:
+                        </label>
+                        <textarea
+                          id="claimReason"
+                          value={comment}
+                          onChange={(e) => setComment(e.target.value)}
+                          className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 h-32"
+                          placeholder="Escriba su motivo aquí..."
+                        />
+                        <InputFile
+                          type="Plane"
+                          alt="Image"
+                          label="Adjuntar imagen"
+                          file={image}
+                          setFile={setImage}
+                        />
+                      </div>
+
+                      <div className="flex justify-center gap-2">
+                        <ButtonLigth
+                          className={`${
+                            !comment.length
+                              ? "bg-[#28A745] hover:bg-[#218838] text-white border-none"
+                              : "bg-[#28A745] hover:bg-[#218838] text-white border-none"
+                          }`}
+                          onClick={() => handlerAddClaim()}
+                          disabled={!comment.length}
+                        >
+                          Presentar reclamo
+                        </ButtonLigth>
+                        <ButtonLigth
+                          className="bg-[#E74C3C] hover:bg-[#C0392B] text-white border-none"
+                          onClick={() => {
+                            setViewComment(false)
+                          }}
+                        >
+                          Atrás
                         </ButtonLigth>
                       </div>
                     </div>
-                  ))}
-                </div>
-              )}
-            </ModalBody>
+                  ) : (
+                    <div className="p-4 flex flex-wrap justify-start gap-4 h-auto overflow-y-auto ">
+                      {dataProducts?.map((product) => (
+                        <div className="rounded-lg shadow-2xl p-8 ">
+                          <h4 className="text-lg font-bold text-gray-800 ">
+                            {product.produc_title}
+                          </h4>
+                          <h5 className="text-sm font-semibold text-gray-600 ">
+                            Por: {product.store_name}
+                          </h5>
+                          <p className="text-gray-700 text-sm">
+                            Precio: {product.price} Cantidad: {product.quantity}
+                          </p>
+                          <p className="text-gray-900 font-bold text-sm">
+                            Total Precio: ${product.total_price_for_product}
+                          </p>
 
-            <ModalFooter>
-              <div className="m-4">
-                <p className="text-xs">
-                  * Al seleccionar un producto y agregar un comentario, se
-                  generará automáticamente un ticket de reclamo, el cual estará
-                  disponible para su visualización en la sección de compras,
-                  bajo la pestaña de mis reclamos. *
-                </p>
-              </div>
-            </ModalFooter>
+                          <div className="mt-6">
+                            <ButtonLigth
+                              className="bg-[#28A745] hover:bg-[#218838] text-white border-none"
+                              onClick={() => {
+                                setViewComment(true)
+                                setProductSelect(product)
+                              }}
+                              disabled={productsClaim?.includes(
+                                product.store_variant_order_id
+                              )}
+                            >
+                              {productsClaim?.includes(
+                                product.store_variant_order_id
+                              )
+                                ? "¡Hecho!"
+                                : "Presentar reclamo"}
+                            </ButtonLigth>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </ModalBody>
+
+                <ModalFooter>
+                  <div className="m-4">
+                    <p className="text-xs">
+                      * Al seleccionar un producto y agregar un comentario, se
+                      generará automáticamente un ticket de reclamo, el cual
+                      estará disponible para su visualización en la sección de
+                      compras, bajo la pestaña de mis reclamos. *
+                    </p>
+                  </div>
+                </ModalFooter>
+              </>
+            )}
           </>
         )}
       </ModalContent>
