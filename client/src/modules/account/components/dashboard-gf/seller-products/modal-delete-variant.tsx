@@ -33,9 +33,7 @@ export default function ModalDeleteVariant({
                 Eliminar Variación
               </ModalHeader>
               <ModalBody>
-                <p>
-                  ¿Estas seguro de querer Eliminar esta variación del producto?
-                </p>
+              <p>¿Estás seguro de que deseas eliminar este serial? Esta acción no se puede deshacer.</p>
               </ModalBody>
               <ModalFooter>
                 <Button color="danger" variant="light" onPress={onClose}>
