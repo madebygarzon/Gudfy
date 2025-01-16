@@ -45,6 +45,7 @@ import { getSellerStoreData } from "./seller-store/get-seller-store-data";
 import { getSellerStoreReviews } from "./seller-store/get-selller-store-reviews";
 import { postAddTicketsMessage } from "./tickets/post-add-ticket-message";
 import getNumberOfCompletedOrders from "./get-number-of-completed-orders";
+import updateFinishVariantOrder from "./order/update-finish-variant-order";
 
 // Initialize a custom router
 const router = Router();
@@ -123,6 +124,7 @@ export function attachStoreRoutes(storeRouter: Router) {
   router.delete("/order/:id/order", wrapHandler(deleteStoreOrder));
   router.post("/order/:id/finished-order", wrapHandler(updateFinishedOrder));
   router.post("/order/uptade-data", wrapHandler(updateOrderData));
+  router.post("/order/finish-variation", wrapHandler(updateFinishVariantOrder));
 
   //-----------------------------------Endpoins for Order Claim ------------------------------------------
   router.get("/claim/:id/orders", wrapHandler(getListClaim));
@@ -132,8 +134,12 @@ export function attachStoreRoutes(storeRouter: Router) {
     wrapHandler(getListProductsInClaim)
   );
   router.get("/claim/:id/comment", wrapHandler(getListClaimComments));
-  router.post("/claim", wrapHandler(postClaim));
-  router.post("/claim/customer/add-comment", wrapHandler(postAddComment));
+  router.post("/claim", Image.single("image"), wrapHandler(postClaim));
+  router.post(
+    "/claim/customer/add-comment",
+    Image.single("image"),
+    wrapHandler(postAddComment)
+  );
   router.post("/claim/update-status", wrapHandler(updateClaimStatus));
 
   //----------------------------------Notifications------------------------------

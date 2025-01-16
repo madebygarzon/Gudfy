@@ -32,13 +32,6 @@ import { SellerOrder, useSellerStoreGudfy } from "@lib/context/seller-store"
 import { EyeSeeIcon } from "@lib/util/icons"
 import Loader from "@lib/loader"
 
-interface Ticket {
-  id: number
-  status: "" | "Por pagar" | "Completado"
-  orderNumber: string
-  createdAt: string
-}
-
 const SellerOrderTable: React.FC = () => {
   const { listSellerOrders, handlerGetListSellerOrder, isLoadingOrders } =
     useSellerStoreGudfy()
@@ -47,13 +40,28 @@ const SellerOrderTable: React.FC = () => {
   }
   const [filterStatus, setFilterStatus] = useState<
     | "Completado"
-    | "Cancelado"
+    | "Cancelada"
     | "Pendiente de pago"
     | "Finalizado"
     | "En discusión"
     | "all"
   >("all")
-  const [selectOrderData, setSelectOrderData] = useState<SellerOrder>()
+  const [selectOrderData, setSelectOrderData] = useState<SellerOrder>({
+    id: "",
+    person_name: "",
+    created_at: "",
+    state_order: "Cancelada",
+    products: [
+      {
+        store_variant_order_id: "",
+        variant_order_status_id: "",
+        quantity: 0,
+        total_price: 0,
+        produc_title: "",
+        price: 0,
+      },
+    ],
+  })
 
   const filteredOrder =
     filterStatus === "all"
@@ -63,7 +71,7 @@ const SellerOrderTable: React.FC = () => {
   const getStatusColor = (
     status:
       | "Completado"
-      | "Cancelado"
+      | "Cancelada"
       | "Pendiente de pago"
       | "Finalizado"
       | "En discusión"
@@ -71,7 +79,7 @@ const SellerOrderTable: React.FC = () => {
     switch (status) {
       case "Completado":
         return "bg-blue-200"
-      case "Cancelado":
+      case "Cancelada":
         return "bg-red-200"
       case "Pendiente de pago":
         return "bg-yellow-200"
@@ -84,10 +92,6 @@ const SellerOrderTable: React.FC = () => {
     }
   }
   const { isOpen, onOpen, onOpenChange } = useDisclosure()
-
-  function handlerOrderNumber(numberOrder: string) {
-    return numberOrder.replace("store_order_id_", "")
-  }
 
   useEffect(() => {
     handlerGetListSellerOrder()
@@ -111,7 +115,7 @@ const SellerOrderTable: React.FC = () => {
               onChange={(e) =>
                 setFilterStatus(
                   e.target.value as
-                    | "Cancelado"
+                    | "Cancelada"
                     | "Pendiente de pago"
                     | "Finalizado"
                     | "En discusión"
@@ -132,10 +136,10 @@ const SellerOrderTable: React.FC = () => {
           <table className="min-w-full bg-white  rounded-lg shadow-md">
             <thead>
               <tr>
-                <th className="py-2 text-left">Estado de la orden</th>
+                {/* <th className="py-2 text-left">Estado de la orden</th> */}
+                <th className="py-2 text-left">Pago</th>
                 <th className="py-2 text-left">Numero de orden</th>
                 <th className="py-2 text-left">Fecha y hora de creación</th>
-                <th className="py-2 text-left">Tiempo a pagar</th>
                 <th className="py-2 text-left">Detalle de la orden</th>
               </tr>
             </thead>
@@ -143,7 +147,7 @@ const SellerOrderTable: React.FC = () => {
               {!isLoadingOrders ? (
                 filteredOrder?.map((order) => (
                   <tr key={order.id} className="hover:bg-gray-50">
-                    <td className=" py-2">
+                    {/* <td className=" py-2">
                       <p
                         className={`${getStatusColor(
                           order.state_order
@@ -151,18 +155,11 @@ const SellerOrderTable: React.FC = () => {
                       >
                         {order.state_order}
                       </p>
-                    </td>
-
-                    <td className="px-4 py-2 ">
-                      {handlerOrderNumber(order.id)}
-                    </td>
-                    <td className="px-4 py-2 ">
-                      {handlerformatDate(order.created_at)}
-                    </td>
-                    <td>
+                    </td> */}
+                    <td className=" px-4 py-2">
                       {order.state_order === "Pendiente de pago" ? (
                         <Timer creationTime={order.created_at} />
-                      ) : order.state_order === "Cancelado" ? (
+                      ) : order.state_order === "Cancelada" ? (
                         // <XMarkMini className="text-red-600" />
                         <p className="text-red-600">Expirado</p>
                       ) : order.state_order === "Completado" ? (
@@ -172,9 +169,14 @@ const SellerOrderTable: React.FC = () => {
                       ) : order.state_order === "En discusión" ? (
                         <CheckMini className="text-green-600" />
                       ) : (
-                        <></>
+                        <>asdasd</>
                       )}
                     </td>
+                    <td className="px-4 py-2 ">{order.id}</td>
+                    <td className="px-4 py-2 ">
+                      {handlerformatDate(order.created_at)}
+                    </td>
+
                     <td className="px-4 py-2">
                       <EyeSeeIcon
                         className="cursor-pointer hover:scale-110 transition-all"
@@ -215,60 +217,131 @@ const SellerOrderTable: React.FC = () => {
 }
 
 interface ModalOrder {
-  orderData?: SellerOrder
+  orderData: SellerOrder
   isOpen: boolean
   onOpenChange: () => void
   handleReset: () => void
 }
 
-const ModalOrder = ({
+const ModalOrder: React.FC<ModalOrder> = ({
   orderData,
   isOpen,
   onOpenChange,
   handleReset,
-}: ModalOrder) => {
-  const { customer } = useMeCustomer()
-  async function handlerOrderCancel(orderId: string) {
-    updateCancelStoreOrder(orderId).then(() => {
-      onOpenChange()
-      handleReset()
-    })
+}) => {
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case "Completed_ID":
+        return "bg-blue-200"
+      case "Cancel_ID":
+        return "bg-red-200"
+      case "Payment_Pending_ID":
+        return "bg-yellow-200"
+      case "Finished_ID":
+        return "bg-green-200"
+      case "Discussion_ID":
+        return "bg-orange-300"
+      default:
+        return ""
+    }
+  }
+  const handlerState = (state_id: string) => {
+    switch (state_id) {
+      case "Finished_ID":
+        return "Finalizado"
+      case "Completed_ID":
+        return "Completado"
+      case "Discussion_ID":
+        return "En reclamo"
+      case "Payment_Pending_ID":
+        return "Pendiente por Pagar"
+      case "Cancel_ID":
+        return "Cancelada"
+      default:
+        return ""
+    }
   }
   return (
     <Modal isOpen={isOpen} onOpenChange={onOpenChange} size="5xl">
       <ModalContent>
-        <>
-          {/* {(onClose) =>
-          orderData?.state_order === "Pendiente de pago" ? (
-            <ModalOrderPending
-              handleReset={handleReset}
-              onOpenChange={onOpenChange}
-              orderData={orderData}
-            />
-          ) : orderData?.state_order === "Cancelado" ? (
-            <ModalOrderCancel
-              handleReset={handleReset}
-              onOpenChange={onOpenChange}
-              orderData={orderData}
-            />
-          ) : orderData?.state_order === "Completado" ? (
-            <ModalOrderComplete
-              customer={customer}
-              handleReset={handleReset}
-              onOpenChangeMain={onOpenChange}
-              orderData={orderData}
-            />
-          ) : orderData?.state_order === "Finalizado" ? (
-            <ModalOrderFinished
-              handleReset={handleReset}
-              onOpenChange={onOpenChange}
-              orderData={orderData}
-            />
-          ) : (
-            <></>
-          )
-        } */}
-        </>
+        {(onClose) => (
+          <>
+            {/* Header */}
+            <ModalHeader className="text-2xl font-bold text-gray-800">
+              Detalles del Pedido
+            </ModalHeader>
+
+            {/* Body */}
+            <ModalBody className="p-6">
+              {/* Order Information */}
+              <div className="mb-4">
+                <p>
+                  <strong>ID del Pedido:</strong> {orderData.id}
+                </p>
+                <p>
+                  <strong>Nombre del Cliente:</strong> {orderData.person_name}
+                </p>
+                <p>
+                  <strong>Fecha de Creación:</strong>{" "}
+                  {new Date(orderData.created_at).toLocaleString()}
+                </p>
+                <p>
+                  {/* <strong>Estado del Pedido:</strong> {orderData.state_order} */}
+                </p>
+              </div>
+
+              {/* Products Table */}
+              <div className="overflow-auto">
+                <table className="w-full border-collapse border border-gray-200">
+                  <thead className="bg-gray-100">
+                    <tr>
+                      <th className="border px-4 py-2">
+                        Estado del producto en la orden
+                      </th>
+                      <th className="border px-4 py-2">Título del Producto</th>
+                      <th className="border px-4 py-2">Cantidad</th>
+                      <th className="border px-4 py-2">Precio Unitario</th>
+                      <th className="border px-4 py-2">Precio Total</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {orderData.products.map((product) => (
+                      <tr key={product.store_variant_order_id}>
+                        <td
+                          className={`border px-4 py-2 ${getStatusColor(
+                            product.variant_order_status_id
+                          )}`}
+                        >
+                          {handlerState(product.variant_order_status_id)}
+                        </td>
+                        <td className="border px-4 py-2">
+                          {product.produc_title}
+                        </td>
+                        <td className="border px-4 py-2">{product.quantity}</td>
+                        <td className="border px-4 py-2">
+                          ${product.price?.toFixed(2)}
+                        </td>
+                        <td className="border px-4 py-2">
+                          ${product.total_price}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </ModalBody>
+
+            {/* Footer */}
+            <ModalFooter className="flex justify-end space-x-4">
+              {/* <Button
+                onPress={onClose}
+                className="bg-gray-600 hover:bg-gray-700 text-white"
+              >
+                Cerrar
+              </Button> */}
+            </ModalFooter>
+          </>
+        )}
       </ModalContent>
     </Modal>
   )

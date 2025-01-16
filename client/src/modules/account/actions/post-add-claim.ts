@@ -15,17 +15,20 @@ type productClaim = {
 export const addClaim = async (
   idOrder: string,
   claimData: productClaim,
-  idCustomer: string
+  idCustomer: string,
+  image: File | undefined
 ) => {
   try {
-    const claim = await axios.post(
-      `${BACKEND_URL}/store/claim/`,
-      { idOrder, claimData, idCustomer },
-      {
-        withCredentials: true,
-        headers: { "Content-Type": "application/json" },
-      }
-    )
+    const formData = new FormData()
+    formData.append("idOrder", JSON.stringify(idOrder))
+    formData.append("claimData", JSON.stringify(claimData))
+    formData.append("idCustomer", JSON.stringify(idCustomer))
+    if (image) formData.append("image", image)
+
+    const claim = await axios.post(`${BACKEND_URL}/store/claim/`, formData, {
+      withCredentials: true,
+      headers: { "Content-Type": "multipart/form-data" },
+    })
     return
   } catch (error: any) {
     console.log("error al agregar el reclamo", error.message)

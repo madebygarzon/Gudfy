@@ -8,6 +8,7 @@ export class ClaimComment1725896827110 implements MigrationInterface {
           "comment" text NOT NULL,
           "comment_owner_id" character varying NOT NULL,
           "order_claim_id" character varying,
+          "image" varchar character varying NULL,
           "customer_id" character varying NULL,
           "created_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
           "updated_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
