@@ -125,6 +125,7 @@ class StoreOrderService extends TransactionBaseService {
         "svo.id AS store_variant_order_id",
         "svo.quantity AS quantity",
         "svo.total_price AS total_price_for_product",
+        "svo.variant_order_status_id AS variant_order_status_id",
         "sso.state AS state_order",
         "pv.title AS produc_title",
         "sxv.price AS price",
@@ -143,6 +144,7 @@ class StoreOrderService extends TransactionBaseService {
         produc_title,
         price,
         quantity,
+        variant_order_status_id,
         total_price_for_product,
         ...rest
       } = order;
@@ -158,9 +160,11 @@ class StoreOrderService extends TransactionBaseService {
         price,
         quantity,
         total_price_for_product,
+        variant_order_status_id,
         serial_code_products:
           order.status_id === "Completed_ID" ||
-          order.status_id === "Finished_ID"
+          order.status_id === "Finished_ID" ||
+          order.status_id === "Discussion_ID"
             ? await this.functionRecoverCodes(store_variant_order_id)
             : [],
       });
@@ -200,28 +204,55 @@ class StoreOrderService extends TransactionBaseService {
       .where("sxv.store_id = :store_id", { store_id: storeId })
       .select([
         "so.id AS id",
-        "so.pay_method_id AS pay_method_id ",
-        "so.quantity_products AS quantity_products ",
-        "so.total_price AS total_price",
         "so.name AS person_name",
         "so.last_name AS person_last_name",
-        "so.email AS email",
-        "so.contry AS contry",
-        "so.city AS city",
-        "so.phone AS phone",
         "so.created_at AS created_at",
         "svo.id AS store_variant_order_id",
         "svo.quantity AS quantity",
         "svo.total_price AS total_price_for_product",
+        "svo.variant_order_status_id AS variant_order_status_id",
         "sso.state AS state_order",
         "pv.title AS produc_title",
         "sxv.price AS price",
-        "c.first_name AS customer_name",
-        "c.last_name AS customer_last_name",
       ])
       .orderBy("so.created_at", "DESC")
       .getRawMany();
-    return listOrder;
+
+    const OrderMap = new Map();
+
+    listOrder.forEach((orderData) => {
+      if (!OrderMap.has(orderData.id)) {
+        OrderMap.set(orderData.id, {
+          id: orderData.id,
+          person_name: orderData.person_name + " " + orderData.person_last_name,
+          created_at: orderData.created_at,
+          state_order: orderData.state_order,
+          products: [
+            {
+              store_variant_order_id: orderData.store_variant_order_id,
+              variant_order_status_id: orderData.variant_order_status_id,
+              quantity: orderData.quantity,
+              total_price: orderData.total_price_for_product,
+              produc_title: orderData.produc_title,
+              price: orderData.price,
+            },
+          ],
+        });
+      } else {
+        OrderMap.get(orderData.id).products.push({
+          store_variant_order_id: orderData.store_variant_order_id,
+          variant_order_status_id: orderData.variant_order_status_id,
+          quantity: orderData.quantity,
+          total_price: orderData.total_price_for_product,
+          produc_title: orderData.produc_title,
+          price: orderData.price,
+        });
+      }
+    });
+
+    const returnArray = Array.from(OrderMap.values());
+
+    return returnArray;
   }
 
   async listSellerPayOrders() {
@@ -454,6 +485,21 @@ class StoreOrderService extends TransactionBaseService {
       });
     });
     return Array.from(orderMap.values());
+  }
+
+  async updateFinishVariantOrder(store_variant_order_id) {
+    const repoStoreVariantOrder = this.activeManager_.withRepository(
+      this.storeVariantOrderRepository_
+    );
+
+    const upDateFinish = await repoStoreVariantOrder.update(
+      store_variant_order_id,
+      {
+        variant_order_status_id: "Finished_ID",
+      }
+    );
+
+    return upDateFinish;
   }
 }
 

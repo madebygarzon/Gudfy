@@ -1,36 +1,21 @@
 "use client"
 
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect } from "react"
 import React from "react"
-
+import InputFile from "@modules/common/components/input-file"
 import {
   Modal,
   ModalContent,
   ModalHeader,
   ModalBody,
   ModalFooter,
-  Button,
   useDisclosure,
-  ModalProps,
   Input,
 } from "@nextui-org/react"
-import { FaPlus, FaEye } from "react-icons/fa6"
-import OrderRevie from "../order-review"
-import { ChatBubble, PlayMiniSolid } from "@medusajs/icons"
-import { Button as ButtonMedusa } from "@medusajs/ui"
-import Link from "next/link"
-import { getListOrders } from "@modules/account/actions/get-list-orders"
 import { useMeCustomer } from "medusa-react"
 import type { order } from "../../templates/orders-template"
 import handlerformatDate from "@lib/util/formatDate"
-import Timer from "@lib/util/timer-order"
-import { CheckMini, XMarkMini } from "@medusajs/icons"
-import { updateCancelStoreOrder } from "@modules/account/actions/update-cancel-store-order"
 import { orderClaim, useOrderGudfy } from "@lib/context/order-context"
-import ModalOrderComplete from "../order-status/complete"
-import ModalOrderPending from "../order-status/pay-pending"
-import ModalOrderCancel from "../order-status/cancel"
-import ModalOrderFinished from "../order-status/finished"
 import { getListClaimComments } from "@modules/account/actions/get-list-claim-comments"
 import { postAddComment } from "@modules/account/actions/post-add-comment"
 import { useSellerStoreGudfy } from "@lib/context/seller-store"
@@ -42,6 +27,7 @@ import io, { Socket } from "socket.io-client"
 import Loader from "@lib/loader"
 import { ChatIcon, SendIcon } from "@lib/util/icons"
 import ButtonLigth from "@modules/common/components/button_light"
+import Image from "next/image"
 
 type orders = {
   orders: order[]
@@ -66,10 +52,6 @@ const ClaimSellerTable: React.FC = () => {
   }
   const [comments, setComments] = useState<ClaimComments[]>()
   const { isOpen, onOpen, onOpenChange } = useDisclosure()
-
-  function handlerOrderNumber(numberOrder: string) {
-    return numberOrder.replace("store_order_id_", "")
-  }
 
   const handlerSelectClaimOrder = (claim: orderClaim) => {
     if (notifications.length) {
@@ -146,9 +128,7 @@ const ClaimSellerTable: React.FC = () => {
                         )
                       )}
                     </td>
-                    <td className="py-2">
-                      {handlerOrderNumber(claim.number_order)}
-                    </td>
+                    <td className="py-2">{claim.number_order}</td>
                     <td className="py-2">
                       <div>
                         <h3 className="font-semibold">{claim.product_name}</h3>
@@ -211,6 +191,7 @@ type ClaimComments = {
   customer_name?: string
   customer_last_name?: string
   store_name?: string
+  image?: string
 }
 
 interface ModalClaimComment {
@@ -232,6 +213,7 @@ const ModalClaimComment = ({
 }: ModalClaimComment) => {
   const [newComment, setNewComment] = useState<string>()
   const [socket, setSocket] = useState<Socket | null>(null)
+  const [image, setImage] = useState<File | undefined>()
   const [isLoadingStatus, setIsLoadingStatus] = useState<boolean>(false)
   const { customer } = useMeCustomer()
 
@@ -243,7 +225,8 @@ const ModalClaimComment = ({
       comment_owner_id: "COMMENT_STORE_ID",
     }
 
-    postAddComment(dataComment).then(() => {
+    postAddComment(dataComment, image).then(() => {
+      setImage(undefined)
       setNewComment("")
       setComments((old) => {
         return old?.length
@@ -270,6 +253,10 @@ const ModalClaimComment = ({
       onOpenChange()
     })
   }
+
+  useEffect(() => {
+    setImage(undefined)
+  }, [])
 
   useEffect(() => {
     const socketIo = io(process.env.PORT_SOKET || "http://localhost:3001")
@@ -335,6 +322,15 @@ const ModalClaimComment = ({
                           : storeName}
                       </p>
                       <p>{comment.comment}</p>
+                      {comment.image ? (
+                        <Image
+                          src={comment.image}
+                          alt={"Image"}
+                          height={200}
+                          width={200}
+                          className="mt-2 rounded-md"
+                        />
+                      ) : null}
                     </div>
                   </div>
                 ))}
@@ -359,6 +355,13 @@ const ModalClaimComment = ({
                           className="cursor-pointer p-1 flex items-center justify-center w-10 h-8 rounded-full bg-blue-500 hover:bg-blue-600 text-white shadow-md transition-all duration-200"
                         />
                       </div>
+                      <InputFile
+                        type="Plane"
+                        alt="Image"
+                        label="Adjuntar imagen"
+                        file={image}
+                        setFile={setImage}
+                      />
                       <div className="mt-4 px-6 text-xs text-gray-600">
                         *Si encuentras que este asunto no puede ser resuelto por
                         ti, tienes la posibilidad de escalarlo al

@@ -35,7 +35,7 @@ class OrderClaimService extends TransactionBaseService {
     this.eventBusService_ = container.eventBusService;
   }
 
-  async addClaim(claim, idCustoemr) {
+  async addClaim(claim, idCustoemr, image) {
     try {
       const repoOrderClaim = this.activeManager_.withRepository(
         this.orderClaimRepository_
@@ -54,12 +54,15 @@ class OrderClaimService extends TransactionBaseService {
       });
       const claimSave = await repoOrderClaim.save(add);
 
-      await this.addComment({
-        comment: claim.comment,
-        comment_owner_id: "COMMENT_CUSTOMER_ID",
-        order_claim_id: claimSave.id,
-        customer_id: idCustoemr,
-      });
+      await this.addComment(
+        {
+          comment: claim.comment,
+          comment_owner_id: "COMMENT_CUSTOMER_ID",
+          order_claim_id: claimSave.id,
+          customer_id: idCustoemr,
+        },
+        image
+      );
 
       const selecSeller = await repoStoreVariantOrder
         .createQueryBuilder("svo")
@@ -180,7 +183,7 @@ class OrderClaimService extends TransactionBaseService {
     return listClaim;
   }
 
-  async addComment(dataComment) {
+  async addComment(dataComment, image) {
     const repoClaimComment = this.activeManager_.withRepository(
       this.claimCommentRepository_
     );
@@ -190,6 +193,9 @@ class OrderClaimService extends TransactionBaseService {
       comment_owner_id: dataComment.comment_owner_id,
       order_claim_id: dataComment.order_claim_id,
       customer_id: dataComment.customer_id,
+      image: image?.path
+        ? `${process.env.BACKEND_URL ?? `http://localhost:9000`}/${image.path}`
+        : null,
     });
 
     const saveClaimComment = await repoClaimComment.save(createComment);

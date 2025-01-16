@@ -8,14 +8,20 @@ type dataComment = {
   comment_owner_id?: string
 }
 
-export const postAddComment = async (dataComment: dataComment) => {
+export const postAddComment = async (
+  dataComment: dataComment,
+  image: File | undefined
+) => {
   try {
+    const formData = new FormData()
+    formData.append("dataComment", JSON.stringify(dataComment))
+    if (image) formData.append("image", image)
     const claim = await axios.post(
       `${BACKEND_URL}/store/claim/customer/add-comment`,
-      dataComment,
+      formData,
       {
         withCredentials: true,
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "multipart/form-data" },
       }
     )
     return
