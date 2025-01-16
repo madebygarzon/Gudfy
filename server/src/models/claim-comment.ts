@@ -13,6 +13,9 @@ export class ClaimComment extends BaseEntity {
   @Column({ nullable: true })
   customer_id?: string;
 
+  @Column({ type: "varchar", nullable: true })
+  image: string;
+
   @ManyToOne(() => Customer, (orderClaim) => orderClaim.comments)
   @JoinColumn({ name: "customer_id", referencedColumnName: "id" })
   customer?: Customer;

@@ -44,6 +44,7 @@ export type order = {
       price: string
       quantity: string
       total_price_for_product: string
+      variant_order_status_id: string
       serial_code_products: [{ id: string; serial: string }]
     }
   ]

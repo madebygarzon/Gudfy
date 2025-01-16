@@ -14,7 +14,7 @@ import {
 import { getListProductSerials } from "@modules/account/actions/serial-code/get-seller-product-serials"
 import ButtonLigth from "@modules/common/components/button_light"
 import Loader from "@lib/loader"
-import { DownloadIcon } from "@lib/util/icons"
+import { DownloadIcon, GarbageIcon } from "@lib/util/icons"
 import { Snippet } from "@nextui-org/react"
 import { XMark, ArrowLongRight, ArrowLongLeft, Trash } from "@medusajs/icons"
 import { IconButton } from "@medusajs/ui"
@@ -254,7 +254,7 @@ export default function ViewProductSerials({
                                 <th className="pl-3  border-b border-gray-200 text-left">
                                   Estado
                                 </th>
-                                <th className="pl-3  border-b border-gray-200 text-left"></th>
+                                <th className="pl-3  border-b border-gray-200 text-left">Eliminar</th>
                               </tr>
                             </thead>
                             <tbody>
@@ -296,11 +296,13 @@ export default function ViewProductSerials({
                                         <></>
                                       ) : (
                                         <IconButton
+                                          className="hover:bg-white hover:text-white hover:scale-110 transition-all"
+                                          variant="transparent"
                                           onClick={() =>
                                             onDeleteSerial(data.id)
                                           }
                                         >
-                                          <Trash className="text-red-600" />
+                                          <GarbageIcon />
                                         </IconButton>
                                       )}
                                     </td>
@@ -351,14 +353,14 @@ export default function ViewProductSerials({
                   </div>
                 </div>
               </ModalBody>
-              <ModalFooter className="flex justify-center items-center sm:flex-row  mt-6 gap-4 py-4 px-6 sm:px-10">
-                <ButtonLigth
+              <ModalFooter className="flex justify-center items-center sm:flex-row  mt-6 gap-4 py-4 px-2 sm:px-10">
+                {/* <ButtonLigth
                   color="primary"
                   className="bg-[#28A745] hover:bg-[#218838] text-white border-none w-full sm:w-auto"
                   onClick={onClose}
                 >
                   Cerrar
-                </ButtonLigth>
+                </ButtonLigth> */}
                 <ButtonLigth
                   color="primary"
                   className="bg-[#9B48ED] hover:bg-[#7b39c4] text-white border-none w-full sm:w-auto gap-2"

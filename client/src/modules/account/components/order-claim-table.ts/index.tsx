@@ -29,6 +29,8 @@ import Loader from "@lib/loader"
 import { ChatIcon } from "@lib/util/icons"
 import ButtonLigth from "@modules/common/components/button_light"
 import { SendIcon } from "@lib/util/icons"
+import InputFile from "@modules/common/components/input-file"
+import Image from "next/image"
 
 type orders = {
   orders: order[]
@@ -67,10 +69,6 @@ const ClaimTable: React.FC = () => {
   const { notifications, setNotifications } = useNotificationContext()
   const [comments, setComments] = useState<ClaimComments[]>()
   const { isOpen, onOpen, onOpenChange } = useDisclosure()
-
-  function handlerOrderNumber(numberOrder: string) {
-    return numberOrder.replace("store_order_id_", "")
-  }
 
   const handlerSelectClaimOrder = (claim: orderClaim) => {
     if (notifications.length) {
@@ -163,9 +161,7 @@ const ClaimTable: React.FC = () => {
                         )
                       )}
                     </td>
-                    <td className=" py-2">
-                      {handlerOrderNumber(claim.number_order)}
-                    </td>
+                    <td className=" py-2">{claim.number_order}</td>
                     <td className=" py-2">
                       <div>
                         <h3 className="font-semibold">{claim.product_name}</h3>
@@ -225,6 +221,7 @@ type ClaimComments = {
   order_claim_id?: string
   customer_id?: string
   created_at?: string
+  image?: string
 }
 
 interface ModalClaimComment {
@@ -246,6 +243,7 @@ const ModalClaimComment = ({
 }: ModalClaimComment) => {
   const [newComment, setNewComment] = useState<string>()
   const [socket, setSocket] = useState<Socket | null>(null)
+  const [image, setImage] = useState<File | undefined>()
   const [isLoadingStatus, setIsLoadingStatus] = useState<{
     solved: boolean
     cancel: boolean
@@ -260,7 +258,8 @@ const ModalClaimComment = ({
       comment_owner_id: "COMMENT_CUSTOMER_ID",
     }
 
-    postAddComment(dataComment).then((e) => {
+    postAddComment(dataComment, image).then((e) => {
+      setImage(undefined)
       setNewComment("")
       setComments((old) => {
         // se debe de arreglar un un reset
@@ -307,6 +306,7 @@ const ModalClaimComment = ({
   }
 
   useEffect(() => {
+    setImage(undefined)
     setIsLoadingStatus({ solved: false, cancel: false, unsolved: false })
   }, [])
 
@@ -371,6 +371,15 @@ const ModalClaimComment = ({
                           : claim?.store_name}
                       </p>
                       <p>{comment.comment}</p>
+                      {comment.image ? (
+                        <Image
+                          src={comment.image}
+                          alt={"Image"}
+                          height={200}
+                          width={200}
+                          className="mt-2 rounded-md"
+                        />
+                      ) : null}
                     </div>
                   </div>
                 ))}
@@ -396,6 +405,13 @@ const ModalClaimComment = ({
                         <PlayMiniSolid color="#FFFFFF" />
                       </SendIcon>
                     </div>
+                    <InputFile
+                      type="Plane"
+                      alt="Image"
+                      label="Adjuntar imagen"
+                      file={image}
+                      setFile={setImage}
+                    />
                     <div className="mt-4 px-6 text-xs text-gray-600">
                       *Estimado cliente, le informamos que dispone de varias
                       opciones para gestionar su reclamación. Le invitamos a
