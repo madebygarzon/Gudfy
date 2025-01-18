@@ -279,7 +279,7 @@ const ModalQualify = ({
               <ModalBody>
                 <div className="px-8 w-auto mx-auto rounded  bg-white">
                   <h2 className="text-2xl mt-4 font-bold text-gray-700 text-center">
-                    Califica la tienda {storeReviewData?.store_name}
+                    Califica a {storeReviewData?.store_name}
                   </h2>
                   <p className="py-4">
                     En Gudfy, nos esforzamos por garantizar una experiencia

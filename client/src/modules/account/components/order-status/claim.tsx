@@ -17,6 +17,8 @@ import { updateFinishedOrder } from "@modules/account/actions/update-finished-or
 import { retriverProctsOrderClaim } from "@modules/account/actions/get-list-products-in-claim"
 import { postFinishTheVariation } from "@modules/account/actions/orders/post-finish-the-variation"
 import InputFile from "@modules/common/components/input-file"
+import ButtonLigth from "@modules/common/components/button_light"
+import Loader from "@lib/loader"
 
 interface ModalOrderProps {
   orderData?: order
@@ -59,10 +61,83 @@ const ModalOrderClaim = ({
       <ModalHeader className="flex flex-col gap-1"></ModalHeader>
       <ModalBody>
         {orderData ? (
-          <div className="container mx-auto px-4 py-1 -mb-2">
+          <div className="container mx-auto px-4 py-1">
             <h2 className="text-center text-2xl mt-2 font-bold text-gray-700">
               Detalles del pedido
             </h2>
+
+            <div className="mb-8">
+              <table className="max-h-80 overflow-y-auto mt-6 min-w-full rounded-lg shadow-2xl px-16 py-8">
+                <thead className="bg-gray-100">
+                  <tr>
+                    <th className="py-2 px-4 border-b text-gray-700 border-gray-200">
+                      Producto
+                    </th>
+                    <th className="py-2 px-4 border-b text-gray-700 border-gray-200">
+                      Total
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="">
+                  {orderData.store_variant.map((p, i) => (
+                    <>
+                      <tr className="border-b border-gray-200">
+                        <td className="py-2 px-4 border-r border-gray-200">
+                          <div className="flex justify-between">
+                            {p.produc_title} – ${p.price} USD x {p.quantity}
+                            <br />
+                          </div>
+                          <div className="text-sm font-light">
+                            <p>Vendido por: {p.store_name}</p>
+                            <p>{handlerState(p.variant_order_status_id)}</p>
+                          </div>
+                        </td>
+                        <td className="py-2 px-4 border-b border-gray-200 ">
+                          ${p.total_price_for_product} USD
+                        </td>
+                      </tr>
+                    </>
+                  ))}
+                  <tr className="border-b border-gray-200">
+                    <td className="py-2 px-4 border-r border-gray-200">
+                      Subtotal:
+                    </td>
+                    <td className="py-2 px-4 border-r border-gray-200">
+                      $
+                      {orderData.store_variant.reduce((sum, p) => {
+                        return sum + parseFloat(p.total_price_for_product)
+                      }, 0)}{" "}
+                      USD
+                    </td>
+                  </tr>
+                  <tr className="border-b border-gray-200">
+                    <td className="py-2 px-4 border-r border-gray-200 ">
+                      Comisión de la pasarela de pago:
+                    </td>
+                    <td className="py-2 px-4 ">$0.23</td>
+                  </tr>
+                  <tr className="border-b border-gray-200">
+                    <td className="py-2 px-4 border-r border-gray-200">
+                      Método de pago:
+                    </td>
+                    <td className="py-2 px-4 ">
+                      Binance Pay Entrega Automática
+                    </td>
+                  </tr>
+                  <tr className="border-b border-gray-200">
+                    <td className="py-2 px-4 border-r border-gray-200">
+                      Total:
+                    </td>
+                    <td className="py-2 px-4 border-b border-gray-200">
+                      $
+                      {orderData.store_variant.reduce((sum, p) => {
+                        return sum + parseFloat(p.total_price_for_product)
+                      }, 0.23)}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
             <div className="mb-8">
               <p className="text-base">
                 El pedido{" "}
@@ -79,94 +154,33 @@ const ModalOrderClaim = ({
                 </span>
                 .
               </p>
+              <p className="font-bold">
+                {`Orden por: ${customer?.first_name} ${customer?.last_name} correo: ${customer?.email}`}{" "}
+              </p>
             </div>
-            <p className="font-bold text-sm">
-              {`Orden por: ${customer?.first_name} ${customer?.last_name} correo: ${customer?.email}`}{" "}
-            </p>
-            <div className="mb-8">
-              <h2 className="text-xl font-semibold mb-4">
-                Detalles del pedido
-              </h2>
-              <table className="min-w-full border border-gray-200">
-                <thead className="bg-gray-100">
-                  <tr>
-                    <th className="py-2 px-4 border-b">Producto</th>
-                    <th className="py-2 px-4 border-b">Total</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {orderData.store_variant.map((p, i) => (
-                    <>
-                      <tr className="border-b">
-                        <td className="py-2 px-4 border-r  flex justify-between">
-                          <div>
-                            {p.produc_title} – ${p.price} USD x {p.quantity}
-                            <br />
-                          </div>
-                          <div className="text-sm font-light">
-                            <p>Vendido por: {p.store_name}</p>
-                            <p>{handlerState(p.variant_order_status_id)}</p>
-                          </div>
-                        </td>
-                        <td className="py-2 px-4 border-b ">
-                          ${p.total_price_for_product} USD
-                        </td>
-                      </tr>
-                    </>
-                  ))}
-                  <tr className="border-b">
-                    <td className="py-2 px-4 border-r">Subtotal:</td>
-                    <td className="py-2 px-4 border-r">
-                      $
-                      {orderData.store_variant.reduce((sum, p) => {
-                        return sum + parseFloat(p.total_price_for_product)
-                      }, 0)}{" "}
-                      USD
-                    </td>
-                  </tr>
-                  <tr className="border-b">
-                    <td className="py-2 px-4 border-r ">
-                      Comisión de la pasarela de pago:
-                    </td>
-                    <td className="py-2 px-4 ">$0.23</td>
-                  </tr>
-                  <tr className="border-b">
-                    <td className="py-2 px-4 border-r">Método de pago:</td>
-                    <td className="py-2 px-4 ">
-                      Binance Pay Entrega Automática
-                    </td>
-                  </tr>
-                  <tr className="border-b">
-                    <td className="py-2 px-4 border-r">Total:</td>
-                    <td className="py-2 px-4 border-b">
-                      $
-                      {orderData.store_variant.reduce((sum, p) => {
-                        return sum + parseFloat(p.total_price_for_product)
-                      }, 0.23)}
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
+
             <div className="w-full"></div>
           </div>
         ) : (
-          <>CARGANDO...</>
+          <Loader />
         )}
       </ModalBody>
       <ModalFooter>
         <div className="flex flex-col gap-2 px-4">
-          <div className=" flex gap-5">
-            <Button className="bg-orange-600 text-white" onClick={onOpen}>
+          <div className=" flex justify-center gap-5">
+            <ButtonLigth
+              className="bg-[#E74C3C] hover:bg-[#C0392B] text-white border-none"
+              onClick={onOpen}
+            >
               {" "}
-              Presentar otro reclamo Reclamo{" "}
-            </Button>
+              Presentar otro reclamo{" "}
+            </ButtonLigth>
           </div>
-          <div>
-            {" "}
-            Por ahora alguno de tus productos se encuentra en estado de
-            reclamación, por lo que puedes visualizarlos en la pestaña de
-            Reclamos.
+          <div className="flex flex-col justify-center">
+              <p className="">{" "}
+                Actualmente, algunos de tus productos están en estado de
+                reclamación. Puedes revisarlos en la pestaña "Reclamos".
+              </p>
           </div>
         </div>
       </ModalFooter>
@@ -258,41 +272,39 @@ const ModalQualify = ({
           <>
             <ModalHeader>
               {" "}
-              <h1>Presentar Reclamos</h1>
+              <h1 className="block mx-auto text-2xl mt-2 font-bold text-gray-700">Presentar reclamos</h1>
             </ModalHeader>
             <ModalBody>
               {viewComment ? (
                 <div className="w-full">
-                  <div className="p-4">
-                    <div>
-                      <h4 className="text-lg font-bold text-gray-800 ">
-                        {productSelect?.produc_title}
-                      </h4>
-                      <h5 className="text-sm font-semibold text-gray-600 ">
-                        Por: {productSelect?.store_name}
-                      </h5>
-                      <p className="text-gray-700 text-sm">
-                        Precio: {productSelect?.price} Cantidad:{" "}
-                        {productSelect?.quantity}
-                      </p>
-                      <p className="text-gray-900 font-bold text-sm">
-                        Total Precio: ${productSelect?.total_price_for_product}
-                      </p>
-                    </div>
-                    <label
-                      htmlFor="claimReason"
-                      className="block text-gray-700 font-medium mb-2"
-                    >
-                      Por favor, escriba el motivo de su reclamo:
-                    </label>
-                    <textarea
-                      id="claimReason"
-                      value={comment}
-                      onChange={(e) => setComment(e.target.value)}
-                      className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 h-32"
-                      placeholder="Escriba su motivo aquí..."
-                    />
+                <div className="p-6">
+                  <div>
+                    <h4 className="text-lg font-bold text-gray-800">
+                      {productSelect?.produc_title}
+                    </h4>
+                    <h5 className="text-sm font-semibold text-gray-600">
+                      Por: {productSelect?.store_name}
+                    </h5>
+                    <p className="text-gray-700 text-sm">
+                      Precio: {productSelect?.price} Cantidad: {productSelect?.quantity}
+                    </p>
+                    <p className="text-gray-900 font-bold text-sm">
+                      Total Precio: ${productSelect?.total_price_for_product}
+                    </p>
                   </div>
+                  <label
+                    htmlFor="claimReason"
+                    className="mt-4 block text-gray-700 font-medium mb-2"
+                  >
+                    Por favor, escriba el motivo de su reclamo:
+                  </label>
+                  <textarea
+                    id="claimReason"
+                    value={comment}
+                    onChange={(e) => setComment(e.target.value)}
+                    className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 h-32"
+                    placeholder="Escriba su motivo aquí..."
+                  />
                   <InputFile
                     type="Plane"
                     alt="Image"
@@ -300,26 +312,30 @@ const ModalQualify = ({
                     file={image}
                     setFile={setImage}
                   />
-                  <Button
-                    className={`${
-                      !comment.length
-                        ? "bg-slate-500"
-                        : " bg-blue-gf text-white"
-                    }`}
-                    onPress={() => handlerAddClaim()}
-                    disabled={!comment.length}
-                  >
-                    Presentar Reclamo
-                  </Button>
-                  <Button
-                    className=" ml-4"
-                    onPress={() => {
-                      setViewComment(false)
-                    }}
-                  >
-                    Atrás
-                  </Button>
+                  <div className="flex justify-center gap-2 mt-4">
+                    <ButtonLigth
+                      className={`${
+                        !comment.length
+                          ? "bg-[#28A745] hover:bg-[#218838] text-white border-none"
+                          : "bg-[#28A745] hover:bg-[#218838] text-white border-none"
+                      }`}
+                      onClick={() => handlerAddClaim()}
+                      disabled={!comment.length}
+                    >
+                      Presentar reclamo
+                    </ButtonLigth>
+                    <ButtonLigth
+                      className="bg-[#E74C3C] hover:bg-[#C0392B] text-white border-none ml-4"
+                      onClick={() => {
+                        setViewComment(false);
+                      }}
+                    >
+                      Atrás
+                    </ButtonLigth>
+                  </div>
                 </div>
+              </div>
+              
               ) : (
                 <div className="p-4 flex flex-wrap justify-start gap-4 h-auto overflow-y-auto ">
                   {dataProducts?.map((product) => (
@@ -339,13 +355,13 @@ const ModalQualify = ({
                       <div className="flex justify-center w-full mt-2">
                         {product.variant_order_status_id === "Finished_ID" ||
                         product.variant_order_status_id === "Discussion_ID" ? (
-                          <Button
-                            className=""
-                            onPress={() => {
+                          <ButtonLigth
+                            className="bg-[#E74C3C] hover:bg-[#C0392B] px-2 text-white border-none"
+                            onClick={() => {
                               setViewComment(true)
                               setProductSelect(product)
                             }}
-                            isDisabled={
+                            disabled={
                               product.variant_order_status_id ===
                                 "Finished_ID" ||
                               product.variant_order_status_id ===
@@ -356,24 +372,24 @@ const ModalQualify = ({
                               ? "Producto Finalizado"
                               : product.variant_order_status_id ===
                                   "Discussion_ID" && "En reclamación"}
-                          </Button>
+                          </ButtonLigth>
                         ) : (
-                          <div>
-                            <Button
-                              className=""
-                              onPress={() => {
+                          <div className="gap-2">
+                            <ButtonLigth
+                               className="bg-[#E74C3C] hover:bg-[#C0392B] text-white border-none"
+                              onClick={() => {
                                 setViewComment(true)
                                 setProductSelect(product)
                               }}
                             >
                               Presentar Reclamo
-                            </Button>{" "}
-                            <Button
-                              className=""
-                              onPress={() => handlerFinishTheVariation(product)}
+                            </ButtonLigth>{" "}
+                            <ButtonLigth
+                              className="bg-[#28A745] hover:bg-[#218838] text-white border-none"
+                              onClick={() => handlerFinishTheVariation(product)}
                             >
                               Finalizar Producto
-                            </Button>
+                            </ButtonLigth>
                           </div>
                         )}
                       </div>
@@ -384,9 +400,7 @@ const ModalQualify = ({
             </ModalBody>
 
             <ModalFooter>
-              Una vez selecciones uno de los productos y agrege un comentario,
-              estos abrirán un ticket de reclamo, el cual puedes ver en la
-              sección de compras y pestaña reclamos.
+              <p className="text-center text-xs">Al seleccionar un producto y agregar un comentario, se generará automáticamente un ticket de reclamo. Podrás visualizar este ticket en la sección de compras, dentro de la pestaña de reclamos</p>
             </ModalFooter>
           </>
         )}
