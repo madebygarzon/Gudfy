@@ -95,8 +95,8 @@ const handlerTotalPrice = (items) => {
       total = total + item.unit_price * item.quantity;
     });
   }
-  total = total + total * 0.01;
-  return total;
+  total = total + total * 0.01; //Comicion de binance free y Gudfy free
+  return total + total * 0.01; //Comicion de y Gudfy free
 };
 
 const generateRandomString = (length) => {

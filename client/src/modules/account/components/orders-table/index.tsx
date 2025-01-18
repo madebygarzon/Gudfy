@@ -73,7 +73,7 @@ const TicketTable: React.FC = () => {
 
   const getStatusColor = (
     status:
-      | "Cancelado"
+      | "Cancelada"
       | "Completado"
       | "En discusión"
       | "Finalizado"
@@ -83,8 +83,8 @@ const TicketTable: React.FC = () => {
     switch (status) {
       case "Completado":
         return "bg-blue-500 text-white"
-      case "Cancelado":
-        return "bg-red-500"
+      case "Cancelada":
+        return "text-red-500"
       case "Pendiente de pago":
         return "bg-yellow-400 text-white"
       case "Finalizado":
@@ -191,7 +191,7 @@ const TicketTable: React.FC = () => {
                     <td>
                       {order.state_order === "Pendiente de pago" ? (
                         <Timer creationTime={order.created_at} />
-                      ) : order.state_order === "Cancelado" ? (
+                      ) : order.state_order === "Cancelada" ? (
                         <p className="text-red-600">Expirado</p>
                       ) : ["Completado", "Finalizado", "En discusión"].includes(
                           order.state_order
@@ -202,7 +202,7 @@ const TicketTable: React.FC = () => {
                       )}
                     </td>
                     <td className="px-4 py-2 text-center">
-                      {(order.state_order === "Completado" ||
+                      {/* {(order.state_order === "Completado" ||
                         order.state_order === "Finalizado" ||
                         order.state_order === "Pendiente de pago" ||
                         order.state_order === "En discusión") && (
@@ -214,19 +214,14 @@ const TicketTable: React.FC = () => {
                             onOpen()
                           }}
                         ></EyeSeeIcon>
-
-                        // <ButtonMedusa
-                        //   id="btn-view-order"
-                        //   className="bg-[#1f0146cf] border-none shadow-none hover:bg-blue-gf hover:text-white text-slate-200 rounded-[5px]"
-                        //   onClick={() => {
-                        //     setTelectOrderData(order)
-                        //     onOpen()
-                        //   }}
-                        // >
-                        //   <FaEye />
-                        //   Ver detalle de la orden
-                        // </ButtonMedusa>
-                      )}
+                      )} */}
+                      <EyeSeeIcon
+                        className="cursor-pointer hover:scale-110 transition-all"
+                        onClick={() => {
+                          setTelectOrderData(order)
+                          onOpen()
+                        }}
+                      ></EyeSeeIcon>
                     </td>
                   </tr>
                 ))
@@ -292,7 +287,7 @@ const ModalOrder = ({
               onOpenChange={onOpenChange}
               orderData={orderData}
             />
-          ) : orderState?.state_order === "Cancelado" ? (
+          ) : orderState?.state_order === "Cancelada" ? (
             <ModalOrderCancel
               handleReset={handleReset}
               onOpenChange={onOpenChange}

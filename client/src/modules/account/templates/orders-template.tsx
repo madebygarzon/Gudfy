@@ -23,7 +23,7 @@ export type order = {
   phone: string
   state_order:
     | "Completado"
-    | "Cancelado"
+    | "Cancelada"
     | "Pendiente de pago"
     | "Finalizado"
     | "En discusión"

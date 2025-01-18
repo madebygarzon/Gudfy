@@ -5,6 +5,7 @@ import StoreOrderRepository from "src/repositories/store-order";
 import OrderPaymentRepository from "src/repositories/order-payment";
 import PaymentDetailRepository from "src/repositories/payment-detail";
 import SerialCodeRepository from "src/repositories/serial-code";
+import StoreXVariantRepository from "src/repositories/store-x-variant";
 import { TransactionBaseService } from "@medusajs/medusa";
 import { io } from "../websocket";
 import { Console } from "console";
@@ -17,6 +18,7 @@ class OrderPaymentService extends TransactionBaseService {
   protected readonly storeRepository_: typeof StoreRepository;
   protected readonly serialCodeRepository_: typeof SerialCodeRepository;
   protected readonly storeOrderRepository_: typeof StoreOrderRepository;
+  protected readonly storeXVariantRepository_: typeof StoreXVariantRepository;
 
   constructor(container) {
     // @ts-expect-error prefer-rest-params
@@ -27,6 +29,7 @@ class OrderPaymentService extends TransactionBaseService {
     this.storeRepository_ = container.storeRepository;
     this.serialCodeRepository_ = container.serialCodeRepository;
     this.storeOrderRepository_ = container.storeOrderRepository;
+    this.storeXVariantRepository_ = container.storeXVariantRepository;
   }
   async retriveListStoresToPay() {
     try {
@@ -119,9 +122,10 @@ class OrderPaymentService extends TransactionBaseService {
         });
 
         // Añadimos los nuevos atributos al objeto de tienda
-        store.available_balance = available_balance;
-        store.outstanding_balance = outstanding_balance;
-        store.balance_paid = balance_paid;
+        store.available_balance = truncateToThreeDecimals(available_balance);
+        store.outstanding_balance =
+          truncateToThreeDecimals(outstanding_balance);
+        store.balance_paid = truncateToThreeDecimals(balance_paid);
       });
 
       return listStoreXproductsPay;
@@ -247,6 +251,10 @@ class OrderPaymentService extends TransactionBaseService {
       const svo = this.activeManager_.withRepository(
         this.storeVariantOrderRepository_
       );
+      const sv = this.activeManager_.withRepository(
+        this.storeXVariantRepository_
+      );
+
       const sc = this.activeManager_.withRepository(this.serialCodeRepository_);
       const storeOrder = await so.findOne({ where: { id: order_id } });
       if (storeOrder.order_status_id !== "Payment_Pending_ID")
@@ -271,8 +279,14 @@ class OrderPaymentService extends TransactionBaseService {
           await sc.update(serialCode.id, { store_variant_order_id: id });
         }
 
-        const upDateSVO = svo.update(variant.id, {
+        const upDateSVO = await svo.update(variant.id, {
           variant_order_status_id: "Completed_ID",
+        });
+        const storeVariant = await sv.findOneBy({
+          id: variant.store_variant_id,
+        });
+        const deleteReservation = await sv.update(variant.store_variant_id, {
+          quantity_reserved: storeVariant.quantity_reserved - quantity,
         });
       }
       const storeOrderUpdate = await so.update(order_id, {
@@ -291,3 +305,7 @@ class OrderPaymentService extends TransactionBaseService {
   }
 }
 export default OrderPaymentService;
+
+function truncateToThreeDecimals(value) {
+  return Math.floor(value * 1000) / 1000; // Trunca a 3 decimales
+}
