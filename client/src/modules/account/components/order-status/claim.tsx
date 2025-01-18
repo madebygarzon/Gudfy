@@ -63,7 +63,7 @@ const ModalOrderClaim = ({
         {orderData ? (
           <div className="container mx-auto px-4 py-1">
             <h2 className="text-center text-2xl mt-2 font-bold text-gray-700">
-              Detalles del pedido
+              Detalles del pedidos
             </h2>
 
             <div className="mb-8">
@@ -166,7 +166,7 @@ const ModalOrderClaim = ({
         )}
       </ModalBody>
       <ModalFooter>
-        <div className="flex flex-col gap-2 px-4">
+        <div className="block mx-auto px-4">
           <div className=" flex justify-center gap-5">
             <ButtonLigth
               className="bg-[#E74C3C] hover:bg-[#C0392B] text-white border-none"
@@ -176,12 +176,11 @@ const ModalOrderClaim = ({
               Presentar otro reclamo{" "}
             </ButtonLigth>
           </div>
-          <div className="flex flex-col justify-center">
-              <p className="">{" "}
-                Actualmente, algunos de tus productos están en estado de
-                reclamación. Puedes revisarlos en la pestaña "Reclamos".
-              </p>
-          </div>
+          <p className="mt-2 text-xs">
+              {" "}
+              Actualmente, algunos de tus productos están en estado de
+              reclamación. Puedes revisarlos en la pestaña "Reclamos".
+            </p>
         </div>
       </ModalFooter>
       <div className="z-30">
@@ -272,47 +271,51 @@ const ModalQualify = ({
           <>
             <ModalHeader>
               {" "}
-              <h1 className="block mx-auto text-2xl mt-2 font-bold text-gray-700">Presentar reclamos</h1>
+              <h2 className="block mx-auto text-2xl mt-2 font-bold text-gray-700">
+                Presentar reclamo
+              </h2>
             </ModalHeader>
             <ModalBody>
               {viewComment ? (
                 <div className="w-full">
-                <div className="p-6">
-                  <div>
-                    <h4 className="text-lg font-bold text-gray-800">
-                      {productSelect?.produc_title}
-                    </h4>
-                    <h5 className="text-sm font-semibold text-gray-600">
-                      Por: {productSelect?.store_name}
-                    </h5>
-                    <p className="text-gray-700 text-sm">
-                      Precio: {productSelect?.price} Cantidad: {productSelect?.quantity}
-                    </p>
-                    <p className="text-gray-900 font-bold text-sm">
-                      Total Precio: ${productSelect?.total_price_for_product}
-                    </p>
+                  <div className="p-6">
+                    <div>
+                      <h4 className="text-lg font-bold text-gray-800">
+                        {productSelect?.produc_title}
+                      </h4>
+                      <h5 className="text-sm font-semibold text-gray-600">
+                        Por: {productSelect?.store_name}
+                      </h5>
+                      <p className="text-gray-700 text-sm">
+                        Precio: {productSelect?.price} Cantidad:{" "}
+                        {productSelect?.quantity}
+                      </p>
+                      <p className="text-gray-900 font-bold text-sm">
+                        Total Precio: ${productSelect?.total_price_for_product}
+                      </p>
+                    </div>
+                    <label
+                      htmlFor="claimReason"
+                      className="mt-4 block text-gray-700 font-medium mb-2"
+                    >
+                      Por favor, escriba el motivo de su reclamo:
+                    </label>
+                    <textarea
+                      id="claimReason"
+                      value={comment}
+                      onChange={(e) => setComment(e.target.value)}
+                      className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 h-32"
+                      placeholder="Escriba su motivo aquí..."
+                    />
+                    <InputFile
+                      type="Plane"
+                      alt="Image"
+                      label="Adjuntar imagen"
+                      file={image}
+                      setFile={setImage}
+                    />
                   </div>
-                  <label
-                    htmlFor="claimReason"
-                    className="mt-4 block text-gray-700 font-medium mb-2"
-                  >
-                    Por favor, escriba el motivo de su reclamo:
-                  </label>
-                  <textarea
-                    id="claimReason"
-                    value={comment}
-                    onChange={(e) => setComment(e.target.value)}
-                    className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 h-32"
-                    placeholder="Escriba su motivo aquí..."
-                  />
-                  <InputFile
-                    type="Plane"
-                    alt="Image"
-                    label="Adjuntar imagen"
-                    file={image}
-                    setFile={setImage}
-                  />
-                  <div className="flex justify-center gap-2 mt-4">
+                  <div className="flex justify-center gap-2">
                     <ButtonLigth
                       className={`${
                         !comment.length
@@ -327,19 +330,17 @@ const ModalQualify = ({
                     <ButtonLigth
                       className="bg-[#E74C3C] hover:bg-[#C0392B] text-white border-none ml-4"
                       onClick={() => {
-                        setViewComment(false);
+                        setViewComment(false)
                       }}
                     >
                       Atrás
                     </ButtonLigth>
                   </div>
                 </div>
-              </div>
-              
               ) : (
-                <div className="p-4 flex flex-wrap justify-start gap-4 h-auto overflow-y-auto ">
+                <div className="p-3 flex flex-wrap justify-start gap-2 h-auto overflow-y-auto">
                   {dataProducts?.map((product) => (
-                    <div className="border rounded-lg shadow-lg p-4 w-[40%]  bg-white ">
+                    <div className="rounded-lg shadow-2xl p-8">
                       <h4 className="text-lg font-bold text-gray-800 ">
                         {product.produc_title}
                       </h4>
@@ -356,7 +357,7 @@ const ModalQualify = ({
                         {product.variant_order_status_id === "Finished_ID" ||
                         product.variant_order_status_id === "Discussion_ID" ? (
                           <ButtonLigth
-                            className="bg-[#E74C3C] hover:bg-[#C0392B] px-2 text-white border-none"
+                            className="bg-[#E74C3C] hover:bg-[#C0392B] text-white border-none"
                             onClick={() => {
                               setViewComment(true)
                               setProductSelect(product)
@@ -369,26 +370,26 @@ const ModalQualify = ({
                             }
                           >
                             {product.variant_order_status_id === "Finished_ID"
-                              ? "Producto Finalizado"
+                              ? "Producto finalizado"
                               : product.variant_order_status_id ===
-                                  "Discussion_ID" && "En reclamación"}
+                                  "Discussion_ID" && "En reclamación..."}
                           </ButtonLigth>
                         ) : (
-                          <div className="gap-2">
+                          <div className="">
                             <ButtonLigth
-                               className="bg-[#E74C3C] hover:bg-[#C0392B] text-white border-none"
+                              className="bg-[#E74C3C] hover:bg-[#C0392B] w-full text-white border-none"
                               onClick={() => {
                                 setViewComment(true)
                                 setProductSelect(product)
                               }}
                             >
-                              Presentar Reclamo
+                              Presentar reclamo
                             </ButtonLigth>{" "}
                             <ButtonLigth
-                              className="bg-[#28A745] hover:bg-[#218838] text-white border-none"
+                              className="bg-[#28A745] hover:bg-[#218838] w-full text-white border-none mt-2"
                               onClick={() => handlerFinishTheVariation(product)}
                             >
-                              Finalizar Producto
+                              Finalizar producto
                             </ButtonLigth>
                           </div>
                         )}
@@ -400,7 +401,12 @@ const ModalQualify = ({
             </ModalBody>
 
             <ModalFooter>
-              <p className="text-center text-xs">Al seleccionar un producto y agregar un comentario, se generará automáticamente un ticket de reclamo. Podrás visualizar este ticket en la sección de compras, dentro de la pestaña de reclamos</p>
+              <p className="text-center text-xs">
+                Al seleccionar un producto y agregar un comentario, se generará
+                automáticamente un ticket de reclamo. Podrás visualizar este
+                ticket en la sección de compras, dentro de la pestaña de
+                reclamos
+              </p>
             </ModalFooter>
           </>
         )}
