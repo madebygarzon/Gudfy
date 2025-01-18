@@ -72,7 +72,7 @@ const SellerOrdersTemplate = () => {
               key="Reclamos"
               title={
                 <div className="relative -m-1">
-                  Reclamos de ordenes 
+                  Reclamos de ordenes
                   {notifications.map((n) => {
                     if (n.notification_type_id === "NOTI_CLAIM_SELLER_ID") {
                       return <Notification />
