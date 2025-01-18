@@ -308,7 +308,7 @@ const ModalClaimComment = ({
   useEffect(() => {
     setImage(undefined)
     setIsLoadingStatus({ solved: false, cancel: false, unsolved: false })
-  }, [])
+  }, [isOpen])
 
   useEffect(() => {
     const socketIo = io(process.env.PORT_SOKET || "http://localhost:3001")
@@ -431,19 +431,23 @@ const ModalClaimComment = ({
                     >
                       Cerrar reclamo
                     </ButtonLigth>
-
-                    <ButtonLigth
-                      className="bg-[#E74C3C] px-3 hover:bg-[#C0392B] text-white border-none w-full sm:w-auto "
-                      onClick={() => handlerStatusClaim("UNSOLVED")}
-                      isLoading={isLoadingStatus.unsolved}
-                      disabled={
-                        claim?.status_order_claim_id === "CANCEL_ID" ||
-                        claim?.status_order_claim_id === "UNSOLVED_ID" ||
-                        !hasPassed48Hours(claim?.created_at)
-                      }
-                    >
-                      Escalar con un administrador
-                    </ButtonLigth>
+                    {claim?.status_order_claim_id === "UNSOLVED_ID" ? (
+                      <></>
+                    ) : (
+                      <ButtonLigth
+                        className="bg-[#E74C3C] px-3 hover:bg-[#C0392B] text-white border-none w-full sm:w-auto "
+                        onClick={() => handlerStatusClaim("UNSOLVED")}
+                        isLoading={isLoadingStatus.unsolved}
+                        disabled={
+                          claim?.status_order_claim_id === "CANCEL_ID" ||
+                          claim?.status_order_claim_id === "UNSOLVED_ID" ||
+                          !hasPassed48Hours(claim?.created_at)
+                        }
+                      >
+                        {" "}
+                        Escalar con un administrador
+                      </ButtonLigth>
+                    )}
                   </div>
                 </div>
               </div>

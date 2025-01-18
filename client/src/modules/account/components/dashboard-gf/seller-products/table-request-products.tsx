@@ -35,7 +35,8 @@ const RequestProductTable: React.FC = () => {
         className="bg-[#9B48ED] hover:bg-[#7b39c4] text-white border-none"
         onClick={onOpen}
       >
-        Productos solicitados<ListIcon className="ml-2"/>
+        Productos solicitados
+        <ListIcon className="ml-2" />
       </ButtonLigth>
       <Modal isOpen={isOpen} size="5xl" onOpenChange={onOpenChange}>
         <ModalContent>
@@ -95,7 +96,9 @@ const RequestProductTable: React.FC = () => {
                               {product.variants}
                             </td>
                             <td className="px-4 py-2 border-b border-gray-100">
-                              {product.approved ? "Si" : "No"}
+                              {product.approved
+                                ? "Aprobado"
+                                : "Pendiente de aprobación"}
                             </td>
                             <td className="px-4 py-2 border-b border-gray-100">
                               {new Date(
