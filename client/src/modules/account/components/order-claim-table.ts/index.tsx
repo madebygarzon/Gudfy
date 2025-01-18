@@ -308,7 +308,7 @@ const ModalClaimComment = ({
   useEffect(() => {
     setImage(undefined)
     setIsLoadingStatus({ solved: false, cancel: false, unsolved: false })
-  }, [])
+  }, [isOpen])
 
   useEffect(() => {
     const socketIo = io(process.env.PORT_SOKET || "http://localhost:3001")
@@ -456,9 +456,9 @@ const ModalClaimComment = ({
                       }
                     >
                       Escalar con un administradors
-                    </ButtonLigth>
-                   
+                    </ButtonLigth>                  
                     
+
                   </div>
                   {!canEscalate && (
                       <p className="text-xs text-center text-gray-600 mt-2">

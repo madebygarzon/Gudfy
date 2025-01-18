@@ -26,14 +26,18 @@ const Summary = ({ items, setModifyProduct }: ItemsTemplateProps) => {
   const { customer } = useMeCustomer()
   const [success, setSuccess] = useState<{ success: false; data: string[] }>()
   const router = useRouter()
-  const handlerTotalPrice = () => {
+  const handlerTotalPrice = (commission: boolean) => {
     let total = 0
     if (items?.length) {
       items?.forEach((item) => {
         total = total + item.unit_price * item.quantity
       })
     }
-    return parseFloat(total.toFixed(2))
+    total = parseFloat(total.toFixed(2))
+
+    if (commission) return (total = total + total * 0.01)
+
+    return total
   }
 
   const handlerAddOrder = async () => {
@@ -59,17 +63,24 @@ const Summary = ({ items, setModifyProduct }: ItemsTemplateProps) => {
         </h3>
         <div className="flex items-center justify-between text-lg text-gray-700 mb-4">
           <span>Subtotal:</span>
+
           <span className="font-medium text-gray-900">
-            {handlerTotalPrice()}
+            {handlerTotalPrice(false)}
           </span>
         </div>
-        <div className="flex items-center justify-between text-lg text-gray-700 mb-4">
-        </div>
+        <p className=" text-xs ">
+          <strong> ✨Comisión Gudfy Fee: 1%</strong> Esta comisión nos permite
+          continuar ofreciendo un servicio seguro y confiable para todos
+          nuestros usuarios.
+        </p>
+        <div className="flex items-center justify-between text-lg text-gray-700 mb-4"></div>
 
         <div className="h-px w-full border-t border-gray-300 my-4"></div>
         <div className="flex items-center justify-between text-lg text-gray-700">
           <span className="font-medium ">Total:</span>
-          <span className="text-lg font-semibold">{handlerTotalPrice()}</span>
+          <span className="text-lg font-semibold">
+            {handlerTotalPrice(true)}
+          </span>
         </div>
         <div className="mt-6">
           <Button

@@ -241,7 +241,7 @@ class CartMarketService extends TransactionBaseService {
     });
     await storeVariantRepo.update(store_variant_id, {
       quantity_store: storeVaraint.quantity_store - quantity,
-      quantity_reserved: storeVaraint.quantity_store + quantity,
+      quantity_reserved: storeVaraint.quantity_reserved + quantity,
     });
   }
 
@@ -271,7 +271,7 @@ class CartMarketService extends TransactionBaseService {
       // pay_method_id: "",
       order_status_id: "Payment_Pending_ID",
       quantity_products: quantity,
-      total_price: total_price,
+      total_price: total_price * 0.01,
       // name: "",
       // last_name: "",
       // email: "",

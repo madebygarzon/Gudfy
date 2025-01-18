@@ -206,6 +206,10 @@ const WalletListado = () => {
     return orderId.replace("reder_payments_id__", "");
   };
 
+  const handlerRoundDecimals = (value: number) => {
+    return Math.floor(value * 1000) / 1000; // Trunca a 3 decimales
+  };
+
   useEffect(() => {
     getListStoresToPay().then((data) => {
       setDataCustomer((oldData) => ({ ...oldData, dataStore: data }));
@@ -321,7 +325,7 @@ const WalletListado = () => {
 
                       <Table.Cell>{data.outstanding_balance}</Table.Cell>
                       <Table.Cell className="font-extrabold bg-[#54bf784a] flex justify-center items-center mr-12 rounded-2xl">
-                        {data.available_balance - data.available_balance * 0.1}
+                        {data.available_balance}
                       </Table.Cell>
                       <Table.Cell>--</Table.Cell>
 
@@ -475,8 +479,7 @@ const WalletListado = () => {
                                 <h3 className="my-4">
                                   Realizar pago de{" "}
                                   <span className="font-extrabold">
-                                    {data.available_balance -
-                                      data.available_balance * 0.1}
+                                    {data.available_balance}
                                   </span>{" "}
                                   a la tienda{" "}
                                   <span className="font-extrabold">
@@ -487,9 +490,11 @@ const WalletListado = () => {
                                   <div className="mt-4 flex justify-start items-center gap-x-4">
                                     <div className="flex justify-start items-center gap-x-2">
                                       <Alert className="flex items-center">
-                                        Saldo a pagar:{" "}
-                                        {data.available_balance -
-                                          data.available_balance * 0.1}
+                                        Saldo a pagar con el 1% de comisión:{" "}
+                                        {handlerRoundDecimals(
+                                          data.available_balance -
+                                            data.available_balance * 0.1
+                                        )}
                                         .
                                       </Alert>
                                       <Copy

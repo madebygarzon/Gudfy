@@ -3,7 +3,6 @@ import { BACKEND } from "../index";
 
 export const getListStoresToPay = async () => {
   try {
-    console.log("entra en la funsion");
     const getComment = await axios.get(
       `${BACKEND}/admin/wallet/payments/list-store`,
       {

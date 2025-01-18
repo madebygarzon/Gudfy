@@ -39,7 +39,7 @@ class SerialCodeService extends TransactionBaseService {
           customer_id: this.loggedInCustomer_.id,
         })
         .andWhere("so.order_status_id IN (:...statuses)", {
-          statuses: ["Completed_ID", "Finished_ID"],
+          statuses: ["Completed_ID", "Finished_ID", "Discussion_ID"],
         })
         .select([
           "sc.serial AS serial_code",
