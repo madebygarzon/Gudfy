@@ -186,7 +186,7 @@ const OrderDetails = ({ orderData, onClose }: props) => {
           y está actualmente{" "}
           <span
             className={clsx("font-bold", {
-              " text-red-500": orderData.state_order === "Cancelado",
+              " text-red-500": orderData.state_order === "Cancelada",
               " text-blue-500": orderData.state_order === "Completado",
               " text-yellow-500": orderData.state_order === "Pendiente de pago",
               " text-green-500": orderData.state_order === "Finalizado",
@@ -197,7 +197,7 @@ const OrderDetails = ({ orderData, onClose }: props) => {
           </span>
           .
           {orderData.state_order === "Pendiente de pago" ||
-          orderData.state_order === "Cancelado" ? (
+          orderData.state_order === "Cancelada" ? (
             <span className="flex gap-1">
               Cancelacion automatica:
               <div className="font-bold">
