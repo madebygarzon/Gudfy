@@ -272,21 +272,28 @@ const ModalQualify = ({
                 <ModalBody>
                   <div className="w-full flex justify-center items-center p-6  shadow-md text-center">
                     <p className="leading-relaxed">
-                      Ten en cuenta que la reclamación se aplicará de forma
-                      independiente a cada producto por tienda. Los demás
-                      productos permanecerán en estado
-                      <strong> Completado</strong> y cambiarán a
-                      <strong> Finalizado</strong> después de{" "}
-                      <strong>tres días</strong>.
-                      <br />
-                      <br />
-                      Si necesitas agregar un reclamo a otro producto, podrás
-                      hacerlo una vez que hayas registrado el primero.
+                      Ten en cuenta que cada reclamación se gestionará de manera
+                      individual para cada producto por tienda. Los demás
+                      productos mantendrán el estado de <strong>"Completado"</strong>y cambiarán
+                      automáticamente a <strong>"Finalizado"</strong> después de un período de
+                      tres días. <br/>
+                      Si deseas presentar un reclamo sobre otro
+                      producto, podrás hacerlo una vez que hayas registrado el
+                      reclamo inicial.
                     </p>
                   </div>
-                  <ButtonLigth onClick={() => setWaening(false)}>
-                    Seguir
-                  </ButtonLigth>
+
+                  
+                    <ButtonLigth
+                      // variant="transparent"
+                      className="bg-[#28A745] hover:bg-[#218838] text-white border-none"
+                      onClick={() => setWaening(false)}
+                    >
+                      Seguir
+                    </ButtonLigth>
+
+
+                  
                 </ModalBody>
               </>
             ) : (
@@ -300,7 +307,7 @@ const ModalQualify = ({
                 <ModalBody>
                   {viewComment ? (
                     <div className="w-full">
-                      <div className="p-4">
+                      <div className="p-6">
                         <div>
                           <h4 className="text-lg font-bold text-gray-800 ">
                             {productSelect?.produc_title}
@@ -362,7 +369,7 @@ const ModalQualify = ({
                       </div>
                     </div>
                   ) : (
-                    <div className="p-4 flex flex-wrap justify-start gap-4 h-auto overflow-y-auto ">
+                    <div className="p-3 flex flex-wrap justify-start gap-2 h-auto overflow-y-auto ">
                       {dataProducts?.map((product) => (
                         <div className="rounded-lg shadow-2xl p-8 ">
                           <h4 className="text-lg font-bold text-gray-800 ">
