@@ -147,6 +147,7 @@ class OrderClaimService extends TransactionBaseService {
         "s.name AS store_name",
         "v.title AS product_name",
       ])
+      .orderBy("oc.created_at", "DESC")
       .getRawMany();
 
     return listClaim;
@@ -178,6 +179,7 @@ class OrderClaimService extends TransactionBaseService {
         "c.last_name AS customer_last_name",
         "c.email AS customer_email",
       ])
+      .orderBy("oc.created_at", "DESC")
       .getRawMany();
 
     return listClaim;

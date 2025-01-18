@@ -41,7 +41,7 @@ class StoreXVariantService extends TransactionBaseService {
         .innerJoinAndSelect("pv.product", "p")
         .innerJoinAndSelect("sxv.store", "s")
         .leftJoinAndSelect("s.members", "c")
-        .where("pv.title ILIKE :title ", {
+        .where("pv.title ILIKE :title AND sxv.quantity_store > 0" , {
           title: `%${variantProduct}%`,
         })
         .select([
@@ -289,8 +289,10 @@ class StoreXVariantService extends TransactionBaseService {
     const selectAvailable = select.filter(
       (serial) => !serial.store_variant_order_id
     );
+
+    const selectSV = await storeXVaraintRepository.findOneBy({ id: idSxv });
     const updateProduct = await storeXVaraintRepository.update(idSxv, {
-      quantity_store: selectAvailable.length,
+      quantity_store: selectAvailable.length - selectSV.quantity_reserved,
     });
 
     return updateProduct;
