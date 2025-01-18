@@ -47,11 +47,10 @@ const ModalOrderPending = ({
         )}
       </ModalBody>
       <ModalFooter>
-        <div>
-          <div className="p-10"></div>
-          <div className="">
+       
+          <div className="sect1">
             {orderData?.state_order === "Pendiente de pago" && (
-              <div className="w-full flex gap-2 justify-center">
+              <div className="flex gap-2 justify-center">
                 <Link href={"/checkout"}>
                   <ButtonLigth className="bg-[#28A745] hover:bg-[#218838] text-white border-none">
                     ir a pagar
@@ -66,7 +65,7 @@ const ModalOrderPending = ({
               </div>
             )}
           </div>
-        </div>
+        
       </ModalFooter>
     </>
   )

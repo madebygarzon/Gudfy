@@ -274,26 +274,22 @@ const ModalQualify = ({
                     <p className="leading-relaxed">
                       Ten en cuenta que cada reclamación se gestionará de manera
                       individual para cada producto por tienda. Los demás
-                      productos mantendrán el estado de <strong>"Completado"</strong>y cambiarán
-                      automáticamente a <strong>"Finalizado"</strong> después de un período de
-                      tres días. <br/>
-                      Si deseas presentar un reclamo sobre otro
-                      producto, podrás hacerlo una vez que hayas registrado el
-                      reclamo inicial.
+                      productos mantendrán el estado de{" "}
+                      <strong>"Completado"</strong>y cambiarán automáticamente a{" "}
+                      <strong>"Finalizado"</strong> después de un período de
+                      tres días. <br />
+                      Si deseas presentar un reclamo sobre otro producto, podrás
+                      hacerlo una vez que hayas registrado el reclamo inicial.
                     </p>
                   </div>
 
-                  
-                    <ButtonLigth
-                      // variant="transparent"
-                      className="bg-[#28A745] hover:bg-[#218838] text-white border-none"
-                      onClick={() => setWaening(false)}
-                    >
-                      Seguir
-                    </ButtonLigth>
-
-
-                  
+                  <ButtonLigth
+                    // variant="transparent"
+                    className="bg-[#28A745] hover:bg-[#218838] text-white border-none"
+                    onClick={() => setWaening(false)}
+                  >
+                    Seguir
+                  </ButtonLigth>
                 </ModalBody>
               </>
             ) : (
@@ -301,7 +297,7 @@ const ModalQualify = ({
                 <ModalHeader>
                   {" "}
                   <h2 className="block mx-auto text-2xl mt-2 font-bold text-gray-700">
-                    Presentar reclamos
+                    Presentar reclamo
                   </h2>
                 </ModalHeader>
                 <ModalBody>
@@ -345,7 +341,6 @@ const ModalQualify = ({
                           setFile={setImage}
                         />
                       </div>
-
                       <div className="flex justify-center gap-2">
                         <ButtonLigth
                           className={`${
@@ -369,9 +364,9 @@ const ModalQualify = ({
                       </div>
                     </div>
                   ) : (
-                    <div className="p-3 flex flex-wrap justify-start gap-2 h-auto overflow-y-auto ">
+                    <div className="p-3 flex flex-wrap justify-start gap-2 h-auto overflow-y-auto">
                       {dataProducts?.map((product) => (
-                        <div className="rounded-lg shadow-2xl p-8 ">
+                        <div className="rounded-lg shadow-2xl p-8">
                           <h4 className="text-lg font-bold text-gray-800 ">
                             {product.produc_title}
                           </h4>
