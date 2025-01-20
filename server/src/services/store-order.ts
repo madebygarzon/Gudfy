@@ -266,9 +266,13 @@ class StoreOrderService extends TransactionBaseService {
       .leftJoinAndSelect("so.customer", "c")
       .leftJoinAndSelect("svo.store_variant", "sxv")
       .innerJoinAndSelect("sxv.variant", "pv")
-      .where("sxv.store_id = :store_id", {
-        store_id: this.loggedInCustomer_.store_id,
-      })
+      .where(
+        "sxv.store_id = :store_id AND svo.variant_order_status_id NOT IN (:...excludedStatus) ",
+        {
+          store_id: this.loggedInCustomer_.store_id,
+          excludedStatus: ["Cancel_ID", "Payment_Pending_ID"],
+        }
+      )
       .select([
         "so.id AS number_order",
         "so.created_at AS created_date",
@@ -281,9 +285,11 @@ class StoreOrderService extends TransactionBaseService {
         "c.first_name AS customer_name",
         "c.last_name AS customer_last_name",
       ])
+      .orderBy("so.created_at", "DESC")
       .getRawMany();
     return listOrder;
   }
+
   async deleteOrder(idStoreOrder) {
     const repoStoreOrder = this.activeManager_.withRepository(
       this.storeOrderRepository_
