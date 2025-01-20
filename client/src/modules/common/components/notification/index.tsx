@@ -3,12 +3,13 @@ import React from "react"
 // Definición del tipo de las props, el número es opcional
 interface NotificationProps {
   count?: number
+  className?: string
 }
 
-const Notification: React.FC<NotificationProps> = ({ count }) => {
+const Notification: React.FC<NotificationProps> = ({ count, className }) => {
   return (
-    <div className="absolute  inline-block -top-2 -right-2">
-      <div className="w-5 h-5 flex items-center justify-center bg-purple-500 text-white rounded-full">
+    <div className={`absolute inline-block -top-6 -right-2 ${className || ""}`}>
+      <div className="-mr-2 mt-2 w-5 h-5 flex items-center justify-center bg-purple-500 text-white rounded-full">
         {count == undefined ? (
           <svg
             xmlns="http://www.w3.org/2000/svg"

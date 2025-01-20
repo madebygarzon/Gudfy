@@ -71,7 +71,7 @@ const SerialCodeTable: React.FC = () => {
                     key={code.store_variant_order}
                     className="hover:bg-gray-50"
                   >
-                    <td className=" py-2 flex items-center justify-center">
+                    <td className=" py-2 flex items-center justify-start">
                       <Thumbnail thumbnail={code.thumbnail} size="bsmall" />
 
                       <p className="text-gray-700 font-bold">

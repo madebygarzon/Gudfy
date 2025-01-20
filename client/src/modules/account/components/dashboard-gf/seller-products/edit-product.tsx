@@ -78,13 +78,9 @@ export default function EditProduct({
       <ModalContent className="rounded-lg shadow-lg">
         {(onClose) => (
           <>
-            {/* Header */}
             <ModalHeader className="text-2xl text-center font-semibold flex flex-col gap-2 pt-6 px-6 sm:px-10">
               Editar Producto: {productData.productvarianttitle}
             </ModalHeader>
-
-            {/* Body */}
-
             <ModalBody className="flex overflow-auto py-2 px-6 sm:px-10">
               <div className="flex justify-center items-center">
                 <div>
@@ -94,15 +90,15 @@ export default function EditProduct({
                 <div className="text-sm text-gray-600">
                   <div className="">
                     <p>
-                      <span className="font-bold">Códigos en inventario:</span>{" "}
+                      <span className="font-bold">Seriales disponibles:</span>{" "}
                       {productData.quantity}
                     </p>
                     <p>
-                      <span className="font-bold">Códigos vendidos:</span>{" "}
+                      <span className="font-bold">Seriales vendidos:</span>{" "}
                       {productData.serialCodeCount}
                     </p>
                   </div>
-                  <h4 className="font-bold mt-8 text-lg mb-1">Agregar ítems</h4>
+                  <h4 className="font-bold mt-8 text-lg mb-1">Agregar inventario</h4>
                   <FileUploader
                     setError2={setError}
                     variantID={productData.storexvariantid}

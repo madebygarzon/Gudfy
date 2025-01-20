@@ -174,7 +174,7 @@ const ClaimTable: React.FC = () => {
                     </td>
 
                     <td className=" p4-2">
-                      <div className="relative">
+                      <div className="relative top-0 right-8">
                         {notifications.map((n) => {
                           if (
                             n.notification_type_id ===
@@ -418,13 +418,16 @@ const ModalClaimComment = ({
                         <PlayMiniSolid color="#FFFFFF" />
                       </SendIcon>
                     </div>
+                    <div className="mt-2">
                     <InputFile
-                      type="Plane"
+                      type="Normal"
                       alt="Image"
-                      label="Adjuntar imagen"
+                      label="Adjuntar imagen  "
                       file={image}
                       setFile={setImage}
+                      accept="image/*"
                     />
+                    </div>
                     <div className="mt-4 px-6 text-xs text-gray-600">
                       *Estimado cliente, le informamos que dispone de varias
                       opciones para gestionar su reclamación. Le invitamos a
@@ -455,14 +458,14 @@ const ModalClaimComment = ({
                         !canEscalate 
                       }
                     >
-                      Escalar con un administradors
+                      Escalar con un administrador
                     </ButtonLigth>                  
                     
 
                   </div>
                   {!canEscalate && (
                       <p className="text-xs text-center text-gray-600 mt-2">
-                      ¡No es posible escalar el reclamo antes de las 12 horas desde su creación.!
+                      ¡Puedes escalar este reclamo al administrador pasadas 12 horas!
                     </p>
                     )}
                   

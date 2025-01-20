@@ -3,6 +3,7 @@ import useToggleState from "@lib/hooks/use-toggle-state"
 import Button from "@modules/common/components/button"
 import clsx from "clsx"
 import { useEffect } from "react"
+import ButtonLigth from "@modules/common/components/button_light"
 
 type AccountInfoProps = {
   label: string
@@ -22,7 +23,7 @@ const AccountInfo = ({
   isSuccess,
   isError,
   clearState,
-  errorMessage = "An error occurred, please try again",
+  errorMessage = "Ha ocurrido un error, intentalo de nuevo",
   children,
 }: AccountInfoProps) => {
   const { state, close, toggle } = useToggleState()
@@ -42,24 +43,24 @@ const AccountInfo = ({
     <div className="text-small-regular">
       <div className="flex items-end justify-between">
         <div className="flex flex-col">
-          <span className="uppercase text-gray-700">{label}</span>
+          <span className="text-gray-500 font-bold text-base">{label}</span>
           <div className="flex items-center flex-1 basis-0 justify-end gap-x-4">
             {typeof currentInfo === "string" ? (
-              <span className="font-semibold">{currentInfo}</span>
+              <span className="text-left">{currentInfo}</span>
             ) : (
               currentInfo
             )}
           </div>
         </div>
         <div>
-          <Button
+          <ButtonLigth
             variant="secondary"
-            className="w-[100px] min-h-[25px] py-1"
+            className="bg-[#9B48ED] hover:bg-[#7b39c4] text-white border-none min-w-56"
             onClick={handleToggle}
             type={state ? "reset" : "button"}
           >
-            {state ? "Cancelar" : "Editar"}
-          </Button>
+            {state ? "Cancelar 🚫" : "Editar ✏️"}
+          </ButtonLigth>
         </div>
       </div>
 
@@ -113,13 +114,13 @@ const AccountInfo = ({
           <div className="flex flex-col gap-y-2 py-4">
             <div>{children}</div>
             <div className="flex items-center justify-end mt-2">
-              <Button
+              <ButtonLigth
                 isLoading={isLoading}
-                className="w-full small:max-w-[240px]"
+                className="bg-[#28A745] hover:bg-[#218838] text-white border-none"
                 type="submit"
               >
                 Guardar cambios
-              </Button>
+              </ButtonLigth>
             </div>
           </div>
         </Disclosure.Panel>
