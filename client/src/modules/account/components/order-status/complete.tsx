@@ -334,11 +334,12 @@ const ModalQualify = ({
                           placeholder="Escriba su motivo aquí..."
                         />
                         <InputFile
-                          type="Plane"
+                          type="Normal"
                           alt="Image"
                           label="Adjuntar imagen"
                           file={image}
                           setFile={setImage}
+                          accept="image/*"
                         />
                       </div>
                       <div className="flex justify-center gap-2">
