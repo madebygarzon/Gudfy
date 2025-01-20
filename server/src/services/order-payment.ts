@@ -8,7 +8,6 @@ import SerialCodeRepository from "src/repositories/serial-code";
 import StoreXVariantRepository from "src/repositories/store-x-variant";
 import { TransactionBaseService } from "@medusajs/medusa";
 import { io } from "../websocket";
-import { Console } from "console";
 
 class OrderPaymentService extends TransactionBaseService {
   static LIFE_TIME = Lifetime.SCOPED;
@@ -45,6 +44,9 @@ class OrderPaymentService extends TransactionBaseService {
         .innerJoinAndSelect("v.product", "p")
         .innerJoinAndSelect("svo.store_order", "so")
         .innerJoinAndSelect("so.customer", "c")
+        .where("svo.variant_order_status_id NOT IN (:...excludedStatus)", {
+          excludedStatus: ["Cancel_ID", "Payment_Pending_ID"],
+        })
         .select([
           "s.id AS store_id",
           "s.name AS store_name",
@@ -59,6 +61,7 @@ class OrderPaymentService extends TransactionBaseService {
           "c.first_name AS customer_name",
           "c.last_name AS custommer_last_name",
         ])
+        .orderBy("svo.created_at", "DESC")
         .getRawMany();
 
       const storeMap = new Map();
@@ -203,6 +206,7 @@ class OrderPaymentService extends TransactionBaseService {
         "svo.total_price AS total_price",
         "svo.store_order_id AS store_order_id",
       ])
+      .orderBy("op.created_at", "DESC")
       .getRawMany();
 
     const paymentdOrdersMap = new Map();
