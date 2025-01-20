@@ -135,11 +135,12 @@ const ViewTicket = ({
             </div>
             <div>
               <InputFile
-                type="Plane"
+                type="Normal"
                 alt="Image"
-                label="Adjuntar imagen"
+                label="Adjuntar imagen  "
                 file={image}
                 setFile={setImage}
+                accept="image/*"
               />
             </div>
           </>

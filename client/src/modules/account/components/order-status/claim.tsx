@@ -298,7 +298,7 @@ const ModalQualify = ({
                       htmlFor="claimReason"
                       className="mt-4 block text-gray-700 font-medium mb-2"
                     >
-                      Por favor, escriba el motivo de su reclamo:
+                      Por favor, escribe el motivo de su reclamo:
                     </label>
                     <textarea
                       id="claimReason"
@@ -308,11 +308,12 @@ const ModalQualify = ({
                       placeholder="Escriba su motivo aquí..."
                     />
                     <InputFile
-                      type="Plane"
+                      type="Normal"
                       alt="Image"
                       label="Adjuntar imagen"
                       file={image}
                       setFile={setImage}
+                      accept="image/*"
                     />
                   </div>
                   <div className="flex justify-center gap-2">

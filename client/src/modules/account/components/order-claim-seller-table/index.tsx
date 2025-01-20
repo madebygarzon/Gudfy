@@ -338,38 +338,38 @@ const ModalClaimComment = ({
             </ModalBody>
             <ModalFooter className="border-t border-slate-200 bg-gray-50 py-3 px-4 rounded-b-2xl">
               <div className="w-full">
-                {claim?.status_order_claim_id !== "CANCEL_ID" &&(
-                    <div className="w-full">
-                      <div className="flex items-center w-full gap-2 bg-white px-3 py-2 rounded-full shadow-md">
-                        <Input
-                          value={newComment}
-                          size="sm"
-                          radius="sm"
-                          className="flex-1 text-sm focus:outline-none focus:ring-0 border-none placeholder-gray-400"
-                          placeholder="Escribe un mensaje..."
-                          onValueChange={setNewComment}
-                        />
-                        <SendIcon
-                          onClick={handlerSubmitComment}
-                          className="cursor-pointer p-1 flex items-center justify-center w-10 h-8 rounded-full bg-blue-500 hover:bg-blue-600 text-white shadow-md transition-all duration-200"
-                        />
-                      </div>
-                      <div className="mt-2">
-                        <InputFile
-                          type="Plane"
-                          alt="Image"
-                          label="Adjuntar imagen"
-                          file={image}
-                          setFile={setImage}
-                        />
-                      </div>
-                      <div className="mt-4 px-6 text-xs text-gray-600">
-                        *Si encuentras que este asunto no puede ser resuelto por
-                        ti, tienes la posibilidad de escalarlo al
-                        administrador.*
-                      </div>
+                {claim?.status_order_claim_id !== "CANCEL_ID" && (
+                  <div className="w-full">
+                    <div className="flex items-center w-full gap-2 bg-white px-3 py-2 rounded-full shadow-md">
+                      <Input
+                        value={newComment}
+                        size="sm"
+                        radius="sm"
+                        className="flex-1 text-sm focus:outline-none focus:ring-0 border-none placeholder-gray-400"
+                        placeholder="Escribe un mensaje..."
+                        onValueChange={setNewComment}
+                      />
+                      <SendIcon
+                        onClick={handlerSubmitComment}
+                        className="cursor-pointer p-1 flex items-center justify-center w-10 h-8 rounded-full bg-blue-500 hover:bg-blue-600 text-white shadow-md transition-all duration-200"
+                      />
                     </div>
-                  )}
+                    <div className="mt-2">
+                      <InputFile
+                        type="Normal"
+                        alt="Image"
+                        label="Adjuntar imagen  "
+                        file={image}
+                        setFile={setImage}
+                        accept="image/*"
+                      />
+                    </div>
+                    <div className="mt-4 px-6 text-xs text-gray-600">
+                      *Si encuentras que este asunto no puede ser resuelto por
+                      ti, tienes la posibilidad de escalarlo al administrador.*
+                    </div>
+                  </div>
+                )}
                 <div className="mt-4 px-6 text-xs text-gray-600">
                   <div className="flex justify-center gap-2 mt-2">
                     <ButtonLigth

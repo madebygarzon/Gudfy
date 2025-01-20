@@ -106,7 +106,7 @@ const OrderDetails = ({ orderData, onClose }: props) => {
                           {!loading ? (
                             stores.includes(p.store_id) ? (
                               <span className="text-lila-gf">
-                                ¡Ya comentaste esta tienda!
+                                ¡Ya calificaste esta tienda!
                               </span>
                             ) : (
                               <button
