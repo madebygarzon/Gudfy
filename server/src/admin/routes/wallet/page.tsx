@@ -417,8 +417,11 @@ const WalletListado = () => {
                                               <div className="bg-[#46679da3] text-white rounded-md px-2 py-1">
                                                 {"PENDIENTE"}
                                               </div>
-                                            ) : (
+                                            ) : product.product_order_status ===
+                                              "Paid_ID" ? (
                                               <div className="">{"PAGADO"}</div>
+                                            ) : (
+                                              <>Cancelado</>
                                             )}
                                           </Table.Cell>
                                           <Table.Cell>
