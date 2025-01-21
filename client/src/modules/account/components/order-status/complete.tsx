@@ -116,7 +116,7 @@ const ModalOrderComplete = ({
                     <td className="py-2 px-4 border-r border-gray-200 ">
                       Comisión de la pasarela de pago:
                     </td>
-                    <td className="py-2 px-4 ">${handlerSubTotal() * 0.01}</td>
+                    <td className="py-2 px-4 ">${(handlerSubTotal() * 0.01).toFixed(2)} USD</td>
                   </tr>
                   <tr className="border-b border-gray-200">
                     <td className="py-2 px-4 border-r border-gray-200">
@@ -131,10 +131,11 @@ const ModalOrderComplete = ({
                       Total:
                     </td>
                     <td className="py-2 px-4 border-b border-gray-200">
-                      $
-                      {orderData.store_variant.reduce((sum, p) => {
-                        return sum + parseFloat(p.total_price_for_product)
-                      }, handlerSubTotal() * 0.01)}
+                    ${orderData.store_variant
+                      .reduce((sum, p) => {
+                        return sum + parseFloat(p.total_price_for_product);
+                      }, handlerSubTotal() * 0.01)
+                      .toFixed(2)} USD
                     </td>
                   </tr>
                 </tbody>
@@ -168,7 +169,7 @@ const ModalOrderComplete = ({
         <div className="flex flex-col gap-2 px-4">
           <div className="m-4">
             <p className="text-xs">
-              * A partir de este momento, dispones de un plazo de 10 días para
+              * A partir de este momento, dispones de un plazo de 3 días para
               presentar cualquier reclamo. En caso de no recibir ningún reclamo
               dentro de este período, asumiremos que has recibido tu compra
               satisfactoriamente y tu orden será marcada como Finalizada.*
@@ -181,7 +182,7 @@ const ModalOrderComplete = ({
               onClick={handlerFinishedOrder}
             >
               {" "}
-              Finalizar compra{" "}
+              Pedido recibido{" "}
             </ButtonLigth>
             <ButtonLigth
               className="bg-[#E74C3C] hover:bg-[#C0392B] text-white border-none"

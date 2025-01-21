@@ -34,7 +34,8 @@ const AccountNav = () => {
                 })}
                 <Button variant="selected" href="/account" route={route!}>
                   <Cart size={30} />
-                  {t("acc_btn_buyer")}
+                  {/* {t("acc_btn_buyer")} */}
+                  Panel
                 </Button>
               </li>
               <li id="btn_left_str" className="relative">
@@ -50,7 +51,8 @@ const AccountNav = () => {
                     }
                   })}
                   <Icon size={30} />
-                  {t("acc_btn_seller")}
+                  {/* {t("acc_btn_seller")} */}
+                  Mi tienda
                 </Button>
               </li>
             </ul>
