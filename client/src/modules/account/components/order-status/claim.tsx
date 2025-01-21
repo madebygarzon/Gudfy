@@ -63,7 +63,7 @@ const ModalOrderClaim = ({
         {orderData ? (
           <div className="container mx-auto px-4 py-1">
             <h2 className="text-center text-2xl mt-2 font-bold text-gray-700">
-              Detalles del pedidos
+              Detalles del pedido
             </h2>
 
             <div className="mb-8">
