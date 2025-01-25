@@ -46,6 +46,7 @@ import { getSellerStoreReviews } from "./seller-store/get-selller-store-reviews"
 import { postAddTicketsMessage } from "./tickets/post-add-ticket-message";
 import getNumberOfCompletedOrders from "./get-number-of-completed-orders";
 import updateFinishVariantOrder from "./order/update-finish-variant-order";
+import postWelcomeEmail from "./post-welcome-email";
 
 // Initialize a custom router
 const router = Router();
@@ -88,6 +89,7 @@ export function attachStoreRoutes(storeRouter: Router) {
     documents,
     wrapHandler(UpdateSellerAplication)
   );
+  router.post("/account/welcome-email", wrapHandler(postWelcomeEmail));
 
   router.get("/account/seller-application", wrapHandler(getSellerApplication));
   router.get(

@@ -61,7 +61,7 @@ const BinanceAutomaticPayment: React.FC<TransactionDetailsProps> = ({
 
   useEffect(() => {
     const socketIo = io(process.env.PORT_SOKET || "http://localhost:3001")
-
+      
     socketIo.on("success_pay_order", (data: { order_id: string }) => {
       // Si la notificación es para el cliente correcto, agregarla a la lista
 

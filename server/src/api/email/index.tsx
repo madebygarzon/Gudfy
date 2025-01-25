@@ -4,6 +4,7 @@ import { ApprovedApplication } from "./state-seller-application/approved-seller-
 import { RejectedApplication } from "./state-seller-application/rejected-seller-application";
 import { CorrectionApplication } from "./state-seller-application/correction-seller-application";
 import { SentApplication } from "./state-seller-application/sent-seller-application";
+import { NewSellerApplication } from "./state-seller-application/new-seller-application";
 
 type EmailApplication = {
   name: string;
@@ -67,11 +68,18 @@ export async function SendEmailSellerApplication({
 }: EmailApplication) {
   await sendgrid.setApiKey(process.env.SENDGRID_API_KEY);
   const emailHtml = render(<SentApplication name={name} />);
-  const options = {
+  const emailHtmlAdmin = render(<NewSellerApplication name={name} email={email}/>);
+  const options = [{
     from: process.env.SENDGRID_FROM,
     to: email,
     subject: "Solicitud de vendedor fue enviada",
     html: emailHtml,
-  };
+  }];
+  options.push({
+    from: process.env.SENDGRID_FROM,
+    to: "rdelgado@gudfy.com",
+    subject: "Nueva solicitud de vendedor",
+    html: emailHtmlAdmin,
+  });
   sendgrid.send(options);
 }
