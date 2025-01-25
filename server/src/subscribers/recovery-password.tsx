@@ -13,14 +13,22 @@ interface DataOptions {
 
 class RecoveryPasswork {
   constructor({ eventBusService }: InjectedDependencies) {
+    try {
+      
     eventBusService.subscribe(
       "customer.password_reset",
       this.handleRecoveryPass
     );
+    
+    } catch (error) {
+      console.log("Error in the class RecoveryPassword", error)
+    }
+    
   }
 
   handleRecoveryPass = async (data: DataOptions) => {
     try {
+     
       await sendgrid.setApiKey(process.env.SENDGRID_API_KEY);
       const { email, token } = data;
       const emailHtml = render(
@@ -39,7 +47,10 @@ class RecoveryPasswork {
       };
 
       sendgrid.send(options);
-    } catch (error) {}
+ 
+    } catch (error) {
+      console.log("Error sending email", error);
+    }
   };
 }
 
