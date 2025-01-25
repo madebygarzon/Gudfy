@@ -3,6 +3,7 @@ import TicketsRepository from "../repositories/tickets";
 import TicketMessagesRepository from "../repositories/ticket-messages";
 import { Lifetime } from "awilix";
 import { io } from "../websocket";
+import { EmailCreateTicketCustomer } from "../api/email/tickets";
 
 export default class TicketsService extends TransactionBaseService {
   static LIFE_TIME = Lifetime.SCOPED;
@@ -42,6 +43,15 @@ export default class TicketsService extends TransactionBaseService {
       image,
       message
     );
+
+    await EmailCreateTicketCustomer({
+      name:
+        this.loggedInCustomer_.first_name +
+        " " +
+        this.loggedInCustomer_.last_name,
+      email: this.loggedInCustomer_.email,
+      tiket: saveTickerd.id,
+    });
 
     return saveTickerd;
   }

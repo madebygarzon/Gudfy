@@ -86,7 +86,7 @@ const plugins = [
       localization: {
         "de-DE": {
           // locale key
-          order_placed_template: process.env.SENDGRID_ORDER_PLACED_ID_LOCALIZED,
+          order_placed_template: process.env.SENDGRID_ORDER_PLACED_ID,
         },
       },
     },
@@ -156,19 +156,19 @@ const plugins = [
 ];
 
 const modules = {
-  // eventBus: {
-  //   resolve: "@medusajs/event-bus-local",
-  // },
   eventBus: {
-    resolve: "@medusajs/event-bus-redis",
-    options: {
-      redisUrl: REDIS_URL,
-    },
+    resolve: "@medusajs/event-bus-local",
   },
+  // eventBus: {
+  //   resolve: "@medusajs/event-bus-redis",
+  //   options: {
+  //     redisUrl: process.env.REDIS_URL,
+  //   },
+  // },
   cacheService: {
     resolve: "@medusajs/cache-redis",
     options: {
-      redisUrl: REDIS_URL,
+      redisUrl: process.env.REDIS_URL,
     },
   },
 };

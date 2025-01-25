@@ -11,6 +11,7 @@ import { FieldValues, useForm } from "react-hook-form"
 import SocialButtons from "@modules/common/components/button_socials"
 import Image from "next/image"
 import NumberCountry from "@modules/common/components/select_country/selectNumberCountry"
+import { WelcomeEmail } from "@modules/account/actions/post-welcome-email"
 interface RegisterCredentials extends FieldValues {
   first_name: string
   last_name: string
@@ -110,6 +111,7 @@ const Register = () => {
         await medusaClient.customers
           .create(credentials)
           .then(() => {
+            WelcomeEmail({email: credentials.email, name: credentials.first_name + " " + credentials.last_name})
             refetchCustomer()
             router.push("/account")
           })

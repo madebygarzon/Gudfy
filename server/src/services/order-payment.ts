@@ -1,13 +1,15 @@
 import { Lifetime } from "awilix";
-import StoreVariantOrderRepository from "src/repositories/store-variant-order";
-import StoreRepository from "src/repositories/store";
-import StoreOrderRepository from "src/repositories/store-order";
-import OrderPaymentRepository from "src/repositories/order-payment";
-import PaymentDetailRepository from "src/repositories/payment-detail";
-import SerialCodeRepository from "src/repositories/serial-code";
-import StoreXVariantRepository from "src/repositories/store-x-variant";
+import StoreVariantOrderRepository from "../repositories/store-variant-order";
+import StoreRepository from "../repositories/store";
+import StoreOrderRepository from "../repositories/store-order";
+import OrderPaymentRepository from "../repositories/order-payment";
+import PaymentDetailRepository from "../repositories/payment-detail";
+import SerialCodeRepository from "../repositories/serial-code";
+import StoreXVariantRepository from "../repositories/store-x-variant";
+import ProductVariantRepository from "@medusajs/medusa/dist/repositories/product-variant";
 import { TransactionBaseService } from "@medusajs/medusa";
 import { io } from "../websocket";
+import { EmailPurchaseCompleted } from "../api/email/payments";
 
 class OrderPaymentService extends TransactionBaseService {
   static LIFE_TIME = Lifetime.SCOPED;
@@ -18,6 +20,7 @@ class OrderPaymentService extends TransactionBaseService {
   protected readonly serialCodeRepository_: typeof SerialCodeRepository;
   protected readonly storeOrderRepository_: typeof StoreOrderRepository;
   protected readonly storeXVariantRepository_: typeof StoreXVariantRepository;
+  protected readonly productVariantRepository_: typeof ProductVariantRepository;
 
   constructor(container) {
     // @ts-expect-error prefer-rest-params
@@ -29,6 +32,7 @@ class OrderPaymentService extends TransactionBaseService {
     this.serialCodeRepository_ = container.serialCodeRepository;
     this.storeOrderRepository_ = container.storeOrderRepository;
     this.storeXVariantRepository_ = container.storeXVariantRepository;
+    this.productVariantRepository_ = container.productVariantRepository;
   }
   async retriveListStoresToPay() {
     try {
@@ -258,8 +262,9 @@ class OrderPaymentService extends TransactionBaseService {
       const sv = this.activeManager_.withRepository(
         this.storeXVariantRepository_
       );
-
       const sc = this.activeManager_.withRepository(this.serialCodeRepository_);
+      const codes = [];
+
       const storeOrder = await so.findOne({ where: { id: order_id } });
       if (storeOrder.order_status_id !== "Payment_Pending_ID")
         throw new Error("Order status is not pending payment");
@@ -279,7 +284,18 @@ class OrderPaymentService extends TransactionBaseService {
           },
           take: quantity,
         });
+        const productVariant = await sv
+          .createQueryBuilder("sv")
+          .innerJoinAndSelect("sv.variant", "v")
+          .where("sv.id = :id", { id: variant.store_variant_id })
+          .select(["v.title AS title"])
+          .getRawMany();
+
         for (const serialCode of serialCodesToUpdate) {
+          codes.push({
+            serialCodes: serialCode.serial,
+            title: productVariant[0].title,
+          });
           await sc.update(serialCode.id, { store_variant_order_id: id });
         }
 
@@ -293,6 +309,14 @@ class OrderPaymentService extends TransactionBaseService {
           quantity_reserved: storeVariant.quantity_reserved - quantity,
         });
       }
+
+      await EmailPurchaseCompleted({
+        email: storeOrder.email,
+        serialCodes: codes,
+        name: storeOrder.name + " " + storeOrder.last_name,
+        order: storeOrder.id,
+      });
+
       const storeOrderUpdate = await so.update(order_id, {
         order_status_id: "Completed_ID",
       });

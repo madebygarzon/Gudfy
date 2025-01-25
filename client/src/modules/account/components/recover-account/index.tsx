@@ -39,12 +39,12 @@ const RecoverAccount: React.FC<stateProps> = ({ setIsRecovery }) => {
             email: values.email,
           })
           .then((e) => {
-            console.log(e)
+          
             setSentMail(true)
           })
           .catch((e) => {
             alert("error enviado")
-            console.log(e)
+          
           })
       } else {
         setError("email", {
