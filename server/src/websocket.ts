@@ -18,7 +18,8 @@ const io = new Server(httpServer, {
 });
 
 httpServer.listen(WEBSOCKET_PORT, () => {
-  console.log(`WebSocket server listening on port${WEBSOCKET_PORT} , BACKEND_URL: ${BACKEND_URL}, FRONT_URL: ${FRONT_URL}`);
+  console.log(`WebSocket server listening on port ${WEBSOCKET_PORT}`);
+  console.log(`Allowed origins: ${BACKEND_URL}, ${FRONT_URL}`);
 });
 
 export { io };

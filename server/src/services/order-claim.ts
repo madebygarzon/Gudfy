@@ -11,6 +11,11 @@ import { NotificationGudfyRepository } from "../repositories/notification-gudfy"
 import StoreVariantOrderRepository from "../repositories/store-variant-order";
 import StoreOrderRepository from "../repositories/store-order";
 import { io } from "../websocket";
+import {
+  EmailCreateClaimOrderCustomer,
+  EmailCreateClaimOrderSeller,
+  EmailOrderClaimAdmin,
+} from "../api/email/claim-order";
 
 class OrderClaimService extends TransactionBaseService {
   static LIFE_TIME = Lifetime.SCOPED;
@@ -67,12 +72,22 @@ class OrderClaimService extends TransactionBaseService {
       const selecSeller = await repoStoreVariantOrder
         .createQueryBuilder("svo")
         .leftJoinAndSelect("svo.store_variant", "sxv")
+        .innerJoinAndSelect("svo.store_order", "so")
+        .innerJoinAndSelect("so.customer", "cus")
         .leftJoinAndSelect("sxv.store", "s")
         .leftJoinAndSelect("s.members", "c")
         .where("svo.id = :store_variant_order_id", {
           store_variant_order_id: claim.store_variant_order_id,
         })
-        .select(["c.id AS seller_id"])
+        .select([
+          "c.id AS seller_id",
+          "s.name AS store_name",
+          "c.email AS seller_email",
+          "so.id AS order_id",
+          "cus.first_name AS customer_name",
+          "cus.last_name AS customer_last_name",
+          "cus.email AS customer_email",
+        ])
         .getRawMany();
 
       const newNotification = await repoNotification.create({
@@ -85,6 +100,22 @@ class OrderClaimService extends TransactionBaseService {
 
       await repoStoreVariantOrder.update(claim.store_variant_order_id, {
         variant_order_status_id: "Discussion_ID",
+      });
+
+      await EmailCreateClaimOrderCustomer({
+        order_id: selecSeller[0].order_id,
+        customer_name:
+          selecSeller[0].customer_name +
+          " " +
+          selecSeller[0].customer_last_name,
+
+        customer_email: selecSeller[0].customer_email,
+      });
+
+      await EmailCreateClaimOrderSeller({
+        order_id: selecSeller[0].order_id,
+        seller_email: selecSeller[0].seller_email,
+        store_name: selecSeller[0].store_name,
       });
 
       io.emit("new_notification", {
@@ -238,6 +269,22 @@ class OrderClaimService extends TransactionBaseService {
       status_order_claim_id: status,
     });
 
+    const dataClaim = await repoOrderClaim
+      .createQueryBuilder("oc")
+      .innerJoinAndSelect("oc.store_variant_order", "svo")
+      .innerJoinAndSelect("svo.customer", "c")
+      .innerJoinAndSelect("svo.store_variant", "sv")
+      .innerJoinAndSelect("sv.variant", "pv")
+      .innerJoinAndSelect("sv.store", "s")
+      .where("oc.id = :id", { id: idClaim })
+      .select([
+        "pv.title AS product_name",
+        "c.first_name AS customer_name",
+        "c.last_name AS customer_last_name",
+        "s.name AS store_name",
+      ])
+      .getRawMany();
+
     if (status == "UNSOLVED_ID") {
       const newNotification = await repoNotification.create({
         order_claim_id: idClaim,
@@ -245,6 +292,13 @@ class OrderClaimService extends TransactionBaseService {
         seen_status: true,
       });
       await repoNotification.save(newNotification);
+
+      await EmailOrderClaimAdmin({
+        product_name: dataClaim[0].product_name,
+        customer_name:
+          dataClaim[0].customer_name + " " + dataClaim[0].customer_last_name,
+        store_name: dataClaim[0].store_name,
+      });
     }
     if (status == "CANCEL_ID") {
       const getClaim = await repoOrderClaim.findOne({
