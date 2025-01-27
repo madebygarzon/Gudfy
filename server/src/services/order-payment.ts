@@ -9,7 +9,7 @@ import StoreXVariantRepository from "../repositories/store-x-variant";
 import ProductVariantRepository from "@medusajs/medusa/dist/repositories/product-variant";
 import { TransactionBaseService } from "@medusajs/medusa";
 import { io } from "../websocket";
-import { EmailPurchaseCompleted } from "../api/email/payments";
+import { EmailPurchaseCompleted } from "../admin/components/email/payments";
 
 class OrderPaymentService extends TransactionBaseService {
   static LIFE_TIME = Lifetime.SCOPED;

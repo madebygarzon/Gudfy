@@ -12,7 +12,7 @@ import {
   CorrectionEmailSellerApplication,
   RejectedEmailSellerApplication,
   SendEmailSellerApplication,
-} from "../api/email/index";
+} from "../admin/components/email/index";
 
 type updateSellerAplication = {
   payload: string;

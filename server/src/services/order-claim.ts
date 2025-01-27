@@ -15,7 +15,7 @@ import {
   EmailCreateClaimOrderCustomer,
   EmailCreateClaimOrderSeller,
   EmailOrderClaimAdmin,
-} from "../api/email/claim-order";
+} from "../admin/components/email/claim-order";
 
 class OrderClaimService extends TransactionBaseService {
   static LIFE_TIME = Lifetime.SCOPED;

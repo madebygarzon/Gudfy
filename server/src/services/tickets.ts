@@ -3,7 +3,7 @@ import TicketsRepository from "../repositories/tickets";
 import TicketMessagesRepository from "../repositories/ticket-messages";
 import { Lifetime } from "awilix";
 import { io } from "../websocket";
-import { EmailCreateTicketCustomer } from "../api/email/tickets";
+import { EmailCreateTicketCustomer } from "../admin/components/email/tickets";
 
 export default class TicketsService extends TransactionBaseService {
   static LIFE_TIME = Lifetime.SCOPED;
