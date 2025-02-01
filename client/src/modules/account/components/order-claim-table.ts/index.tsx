@@ -174,7 +174,7 @@ const ClaimTable: React.FC = () => {
                     </td>
 
                     <td className=" p4-2">
-                      <div className="relative">
+                      <div className="relative top-0 right-8">
                         {notifications.map((n) => {
                           if (
                             n.notification_type_id ===
@@ -329,6 +329,19 @@ const ModalClaimComment = ({
     }
   }, [claim])
 
+  const [canEscalate, setCanEscalate] = useState(false);
+
+  useEffect(() => {
+    if (claim?.created_at) {
+      const createdAt = new Date(claim.created_at);
+      const now = new Date();
+      const diffHours = (now.getTime() - createdAt.getTime()) / (1000 * 60 * 60);
+  
+      
+      setCanEscalate(diffHours >= 12);
+    }
+  }, [claim]);
+
   return (
     <Modal
       isOpen={isOpen}
@@ -405,13 +418,16 @@ const ModalClaimComment = ({
                         <PlayMiniSolid color="#FFFFFF" />
                       </SendIcon>
                     </div>
+                    <div className="mt-2">
                     <InputFile
-                      type="Plane"
+                      type="Normal"
                       alt="Image"
-                      label="Adjuntar imagen"
+                      label="Adjuntar imagen  "
                       file={image}
                       setFile={setImage}
+                      accept="image/*"
                     />
+                    </div>
                     <div className="mt-4 px-6 text-xs text-gray-600">
                       *Estimado cliente, le informamos que dispone de varias
                       opciones para gestionar su reclamación. Le invitamos a
@@ -431,24 +447,28 @@ const ModalClaimComment = ({
                     >
                       Cerrar reclamo
                     </ButtonLigth>
-                    {claim?.status_order_claim_id === "UNSOLVED_ID" ? (
-                      <></>
-                    ) : (
-                      <ButtonLigth
-                        className="bg-[#E74C3C] px-3 hover:bg-[#C0392B] text-white border-none w-full sm:w-auto "
-                        onClick={() => handlerStatusClaim("UNSOLVED")}
-                        isLoading={isLoadingStatus.unsolved}
-                        disabled={
-                          claim?.status_order_claim_id === "CANCEL_ID" ||
-                          claim?.status_order_claim_id === "UNSOLVED_ID" ||
-                          !hasPassed48Hours(claim?.created_at)
-                        }
-                      >
-                        {" "}
-                        Escalar con un administrador
-                      </ButtonLigth>
-                    )}
+
+                    <ButtonLigth
+                      className="bg-[#E74C3C] px-3 hover:bg-[#C0392B] text-white border-none w-full sm:w-auto"
+                      onClick={() => handlerStatusClaim("UNSOLVED")}
+                      isLoading={isLoadingStatus.unsolved}
+                      disabled={
+                        claim?.status_order_claim_id === "CANCEL_ID" ||
+                        claim?.status_order_claim_id === "UNSOLVED_ID" ||
+                        !canEscalate 
+                      }
+                    >
+                      Escalar con un administrador
+                    </ButtonLigth>                  
+                    
+
                   </div>
+                  {!canEscalate && (
+                      <p className="text-xs text-center text-gray-600 mt-2">
+                      ¡Puedes escalar este reclamo al administrador pasadas 12 horas!
+                    </p>
+                    )}
+                  
                 </div>
               </div>
             </ModalFooter>

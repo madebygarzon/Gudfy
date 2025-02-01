@@ -106,7 +106,7 @@ const OrderDetails = ({ orderData, onClose }: props) => {
                           {!loading ? (
                             stores.includes(p.store_id) ? (
                               <span className="text-lila-gf">
-                                ¡Ya comentaste esta tienda!
+                                ¡Ya calificaste esta tienda!
                               </span>
                             ) : (
                               <button
@@ -156,7 +156,7 @@ const OrderDetails = ({ orderData, onClose }: props) => {
               <td className="py-2 px-4 border-r border-slate-200">
                 Comisión de la pasarela de pago: 1%
               </td>
-              <td className="py-2 px-4 ">${handlerSubTotal() * 0.01}</td>
+              <td className="py-2 px-4 ">${(handlerSubTotal() * 0.01).toFixed(2)} USD</td>
             </tr>
             <tr className="border-b border-slate-200">
               <td className="py-2 px-4 border-r border-slate-200">
@@ -167,10 +167,11 @@ const OrderDetails = ({ orderData, onClose }: props) => {
             <tr className="border-b border-slate-200">
               <td className="py-2 px-4 border-r border-slate-200">Total:</td>
               <td className="py-2 px-4 border-b border-slate-200">
-                $
-                {orderData.store_variant.reduce((sum, p) => {
-                  return sum + parseFloat(p.total_price_for_product)
-                }, handlerSubTotal() * 0.01)}
+              ${orderData.store_variant
+                .reduce((sum, p) => {
+                  return sum + parseFloat(p.total_price_for_product);
+                }, handlerSubTotal() * 0.01)
+                .toFixed(2)} USD
               </td>
             </tr>
           </tbody>
@@ -279,7 +280,7 @@ const ModalQualify = ({
               <ModalBody>
                 <div className="px-8 w-auto mx-auto rounded  bg-white">
                   <h2 className="text-2xl mt-4 font-bold text-gray-700 text-center">
-                    Califica la tienda {storeReviewData?.store_name}
+                    Califica a {storeReviewData?.store_name}
                   </h2>
                   <p className="py-4">
                     En Gudfy, nos esforzamos por garantizar una experiencia

@@ -54,7 +54,9 @@ const SellerOrdersTemplate = () => {
   return (
     <div className="w-full p-8 border border-gray-200 rounded-lg shadow-2xl">
       <div className="mb-8 flex flex-col gap-y-4">
-       <h1 className="text-2xl mt-2 font-bold text-gray-700">Ordenes de la tienda</h1>
+        <h1 className="text-2xl mt-2 font-bold text-gray-700">
+          Ordenes de la tienda
+        </h1>
       </div>
       <div>
         <div className="flex w-full flex-col ">
@@ -72,13 +74,21 @@ const SellerOrdersTemplate = () => {
               key="Reclamos"
               title={
                 <div className="relative -m-1">
-                  Reclamos de ordenes 
                   {notifications.map((n) => {
                     if (n.notification_type_id === "NOTI_CLAIM_SELLER_ID") {
-                      return <Notification />
+                      return (
+                        <div key={n.id} className="absolute -top-2 -right-2 flex items-center justify-center">
+                          <span className="flex h-3 w-3">
+                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-purple-400 opacity-75"></span>
+                            <span className="relative inline-flex rounded-full h-3 w-3 bg-purple-500"></span>
+                          </span>
+                        </div>
+                      );
                     }
                   })}
+                  <span>Reclamos de ordenes</span>
                 </div>
+
               }
               className="relative"
             >

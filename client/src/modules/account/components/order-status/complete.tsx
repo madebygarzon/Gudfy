@@ -116,7 +116,7 @@ const ModalOrderComplete = ({
                     <td className="py-2 px-4 border-r border-gray-200 ">
                       Comisión de la pasarela de pago:
                     </td>
-                    <td className="py-2 px-4 ">${handlerSubTotal() * 0.01}</td>
+                    <td className="py-2 px-4 ">${(handlerSubTotal() * 0.01).toFixed(2)} USD</td>
                   </tr>
                   <tr className="border-b border-gray-200">
                     <td className="py-2 px-4 border-r border-gray-200">
@@ -131,10 +131,11 @@ const ModalOrderComplete = ({
                       Total:
                     </td>
                     <td className="py-2 px-4 border-b border-gray-200">
-                      $
-                      {orderData.store_variant.reduce((sum, p) => {
-                        return sum + parseFloat(p.total_price_for_product)
-                      }, handlerSubTotal() * 0.01)}
+                    ${orderData.store_variant
+                      .reduce((sum, p) => {
+                        return sum + parseFloat(p.total_price_for_product);
+                      }, handlerSubTotal() * 0.01)
+                      .toFixed(2)} USD
                     </td>
                   </tr>
                 </tbody>
@@ -168,7 +169,7 @@ const ModalOrderComplete = ({
         <div className="flex flex-col gap-2 px-4">
           <div className="m-4">
             <p className="text-xs">
-              * A partir de este momento, dispones de un plazo de 10 días para
+              * A partir de este momento, dispones de un plazo de 3 días para
               presentar cualquier reclamo. En caso de no recibir ningún reclamo
               dentro de este período, asumiremos que has recibido tu compra
               satisfactoriamente y tu orden será marcada como Finalizada.*
@@ -181,7 +182,7 @@ const ModalOrderComplete = ({
               onClick={handlerFinishedOrder}
             >
               {" "}
-              Finalizar compra{" "}
+              Pedido recibido{" "}
             </ButtonLigth>
             <ButtonLigth
               className="bg-[#E74C3C] hover:bg-[#C0392B] text-white border-none"
@@ -272,19 +273,22 @@ const ModalQualify = ({
                 <ModalBody>
                   <div className="w-full flex justify-center items-center p-6  shadow-md text-center">
                     <p className="leading-relaxed">
-                      Ten en cuenta que la reclamación se aplicará de forma
-                      independiente a cada producto por tienda. Los demás
-                      productos permanecerán en estado
-                      <strong> Completado</strong> y cambiarán a
-                      <strong> Finalizado</strong> después de{" "}
-                      <strong>tres días</strong>.
-                      <br />
-                      <br />
-                      Si necesitas agregar un reclamo a otro producto, podrás
-                      hacerlo una vez que hayas registrado el primero.
+                      Ten en cuenta que cada reclamación se gestionará de manera
+                      individual para cada producto por tienda. Los demás
+                      productos mantendrán el estado de{" "}
+                      <strong>"Completado"</strong>y cambiarán automáticamente a{" "}
+                      <strong>"Finalizado"</strong> después de un período de
+                      tres días. <br />
+                      Si deseas presentar un reclamo sobre otro producto, podrás
+                      hacerlo una vez que hayas registrado el reclamo inicial.
                     </p>
                   </div>
-                  <ButtonLigth onClick={() => setWaening(false)}>
+
+                  <ButtonLigth
+                    // variant="transparent"
+                    className="bg-[#28A745] hover:bg-[#218838] text-white border-none"
+                    onClick={() => setWaening(false)}
+                  >
                     Seguir
                   </ButtonLigth>
                 </ModalBody>
@@ -294,13 +298,13 @@ const ModalQualify = ({
                 <ModalHeader>
                   {" "}
                   <h2 className="block mx-auto text-2xl mt-2 font-bold text-gray-700">
-                    Presentar reclamos
+                    Presentar reclamo
                   </h2>
                 </ModalHeader>
                 <ModalBody>
                   {viewComment ? (
                     <div className="w-full">
-                      <div className="p-4">
+                      <div className="p-6">
                         <div>
                           <h4 className="text-lg font-bold text-gray-800 ">
                             {productSelect?.produc_title}
@@ -331,14 +335,14 @@ const ModalQualify = ({
                           placeholder="Escriba su motivo aquí..."
                         />
                         <InputFile
-                          type="Plane"
+                          type="Normal"
                           alt="Image"
                           label="Adjuntar imagen"
                           file={image}
                           setFile={setImage}
+                          accept="image/*"
                         />
                       </div>
-
                       <div className="flex justify-center gap-2">
                         <ButtonLigth
                           className={`${
@@ -362,9 +366,9 @@ const ModalQualify = ({
                       </div>
                     </div>
                   ) : (
-                    <div className="p-4 flex flex-wrap justify-start gap-4 h-auto overflow-y-auto ">
+                    <div className="p-3 flex flex-wrap justify-start gap-2 h-auto overflow-y-auto">
                       {dataProducts?.map((product) => (
-                        <div className="rounded-lg shadow-2xl p-8 ">
+                        <div className="rounded-lg shadow-2xl p-8">
                           <h4 className="text-lg font-bold text-gray-800 ">
                             {product.produc_title}
                           </h4>

@@ -338,37 +338,39 @@ const ModalClaimComment = ({
             </ModalBody>
             <ModalFooter className="border-t border-slate-200 bg-gray-50 py-3 px-4 rounded-b-2xl">
               <div className="w-full">
-                {claim?.status_order_claim_id !== "CANCEL_ID" &&
-                  claim?.status_order_claim_id !== "UNSOLVED_ID" && (
-                    <div className="w-full">
-                      <div className="flex items-center w-full gap-2 bg-white px-3 py-2 rounded-full shadow-md">
-                        <Input
-                          value={newComment}
-                          size="sm"
-                          radius="sm"
-                          className="flex-1 text-sm focus:outline-none focus:ring-0 border-none placeholder-gray-400"
-                          placeholder="Escribe un mensaje..."
-                          onValueChange={setNewComment}
-                        />
-                        <SendIcon
-                          onClick={handlerSubmitComment}
-                          className="cursor-pointer p-1 flex items-center justify-center w-10 h-8 rounded-full bg-blue-500 hover:bg-blue-600 text-white shadow-md transition-all duration-200"
-                        />
-                      </div>
+                {claim?.status_order_claim_id !== "CANCEL_ID" && (
+                  <div className="w-full">
+                    <div className="flex items-center w-full gap-2 bg-white px-3 py-2 rounded-full shadow-md">
+                      <Input
+                        value={newComment}
+                        size="sm"
+                        radius="sm"
+                        className="flex-1 text-sm focus:outline-none focus:ring-0 border-none placeholder-gray-400"
+                        placeholder="Escribe un mensaje..."
+                        onValueChange={setNewComment}
+                      />
+                      <SendIcon
+                        onClick={handlerSubmitComment}
+                        className="cursor-pointer p-1 flex items-center justify-center w-10 h-8 rounded-full bg-blue-500 hover:bg-blue-600 text-white shadow-md transition-all duration-200"
+                      />
+                    </div>
+                    <div className="mt-2">
                       <InputFile
-                        type="Plane"
+                        type="Normal"
                         alt="Image"
-                        label="Adjuntar imagen"
+                        label="Adjuntar imagen  "
                         file={image}
                         setFile={setImage}
+                        accept="image/*"
                       />
-                      <div className="mt-4 px-6 text-xs text-gray-600">
-                        *Si encuentras que este asunto no puede ser resuelto por
-                        ti, tienes la posibilidad de escalarlo al
-                        administrador.*
-                      </div>
                     </div>
-                  )}
+                    <div className="mt-1 px-6 text-xs text-gray-600">
+                      
+                      <p><span className="font-extrabold">⚠️ Aviso Importante:</span> Está prohibido compartir información personal, enlaces o datos de la cuenta o tienda en este chat. El incumplimiento resultará en suspensión de la cuenta y retención temporal de los fondos en la wallet. Use el chat solo para consultas relacionadas con pedidos.</p>
+                      
+                    </div>
+                  </div>
+                )}
                 <div className="mt-4 px-6 text-xs text-gray-600">
                   <div className="flex justify-center gap-2 mt-2">
                     <ButtonLigth
@@ -387,7 +389,10 @@ const ModalClaimComment = ({
                     >
                       Escalar con un administrador
                     </ButtonLigth>
+                    
                   </div>
+                  <p className="mt-2">*Si encuentras que este asunto no puede ser resuelto por
+                      ti, tienes la posibilidad de escalarlo al administrador.*</p>
                 </div>
               </div>
             </ModalFooter>

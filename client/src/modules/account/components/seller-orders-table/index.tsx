@@ -272,8 +272,10 @@ const ModalOrder: React.FC<ModalOrder> = ({
         {(onClose) => (
           <>
             {/* Header */}
-            <ModalHeader className="text-2xl font-bold text-gray-800">
-              Detalles del Pedido
+            <ModalHeader className="flex justify-center">
+              <h2 className="text-center text-2xl mt-2 font-bold text-gray-700">
+                Detalles del pedido
+              </h2>
             </ModalHeader>
 
             {/* Body */}
@@ -281,13 +283,13 @@ const ModalOrder: React.FC<ModalOrder> = ({
               {/* Order Information */}
               <div className="mb-4">
                 <p>
-                  <strong>ID del Pedido:</strong> {orderData.id}
+                  <strong>ID del pedido:</strong> {orderData.id}
                 </p>
                 <p>
-                  <strong>Nombre del Cliente:</strong> {orderData.person_name}
+                  <strong>Nombre del cliente:</strong> {orderData.person_name}
                 </p>
                 <p>
-                  <strong>Fecha de Creación:</strong>{" "}
+                  <strong>Fecha de creación:</strong>{" "}
                   {new Date(orderData.created_at).toLocaleString()}
                 </p>
                 <p>
@@ -296,37 +298,47 @@ const ModalOrder: React.FC<ModalOrder> = ({
               </div>
 
               {/* Products Table */}
-              <div className="overflow-auto">
-                <table className="w-full border-collapse border border-gray-200">
+              <div className="">
+                <table className="min-w-full rounded-lg shadow-2xl p-8">
                   <thead className="bg-gray-100">
                     <tr>
-                      <th className="border px-4 py-2">
+                      <th className="py-2 px-4 border-b border-slate-200">
                         Estado del producto en la orden
                       </th>
-                      <th className="border px-4 py-2">Título del Producto</th>
-                      <th className="border px-4 py-2">Cantidad</th>
-                      <th className="border px-4 py-2">Precio Unitario</th>
-                      <th className="border px-4 py-2">Precio Total</th>
+                      <th className="py-2 px-4 border-b border-slate-200">
+                        Título del Producto
+                      </th>
+                      <th className="py-2 px-4 border-b border-slate-200">
+                        Cantidad
+                      </th>
+                      <th className="py-2 px-4 border-b border-slate-200">
+                        Precio Unitario
+                      </th>
+                      <th className="py-2 px-4 border-b border-slate-200">
+                        Precio Total
+                      </th>
                     </tr>
                   </thead>
                   <tbody>
                     {orderData.products.map((product) => (
                       <tr key={product.store_variant_order_id}>
                         <td
-                          className={`border px-4 py-2 ${getStatusColor(
+                          className={`border-slate-200 px-4 py-2 ${getStatusColor(
                             product.variant_order_status_id
                           )}`}
                         >
                           {handlerState(product.variant_order_status_id)}
                         </td>
-                        <td className="border px-4 py-2">
+                        <td className="border-slate-200 px-4 py-2">
                           {product.produc_title}
                         </td>
-                        <td className="border px-4 py-2">{product.quantity}</td>
-                        <td className="border px-4 py-2">
+                        <td className="border-slate-200 px-4 py-2">
+                          {product.quantity}
+                        </td>
+                        <td className="border-slate-200 px-4 py-2">
                           ${formatPrice(product.price)}
                         </td>
-                        <td className="border px-4 py-2">
+                        <td className="border-slate-200 px-4 py-2">
                           ${formatPrice(product.total_price)}
                         </td>
                       </tr>
