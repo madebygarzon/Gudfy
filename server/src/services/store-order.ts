@@ -396,6 +396,7 @@ class StoreOrderService extends TransactionBaseService {
         const updateVariantOrder = await storeVariantOrder.update(
           {
             store_order_id: orderId,
+            variant_order_status_id: "Completed_ID",
           },
           {
             variant_order_status_id: "Finished_ID",

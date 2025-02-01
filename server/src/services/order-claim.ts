@@ -272,7 +272,7 @@ class OrderClaimService extends TransactionBaseService {
     const dataClaim = await repoOrderClaim
       .createQueryBuilder("oc")
       .innerJoinAndSelect("oc.store_variant_order", "svo")
-      .innerJoinAndSelect("svo.customer", "c")
+      .innerJoinAndSelect("oc.customer", "c")
       .innerJoinAndSelect("svo.store_variant", "sv")
       .innerJoinAndSelect("sv.variant", "pv")
       .innerJoinAndSelect("sv.store", "s")

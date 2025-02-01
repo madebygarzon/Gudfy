@@ -42,6 +42,7 @@ class OrderPaymentService extends TransactionBaseService {
 
       const listStore = await storeRepo
         .createQueryBuilder("s")
+        .innerJoinAndSelect("s.wallet", "w")
         .innerJoinAndSelect("s.store_x_variant", "sxv")
         .innerJoinAndSelect("sxv.storeVariantOrder", "svo")
         .innerJoinAndSelect("sxv.variant", "v")
@@ -64,6 +65,7 @@ class OrderPaymentService extends TransactionBaseService {
           "p.thumbnail AS thumbnail",
           "c.first_name AS customer_name",
           "c.last_name AS custommer_last_name",
+          "w.wallet_address AS wallet_address",
         ])
         .orderBy("svo.created_at", "DESC")
         .getRawMany();
@@ -76,6 +78,7 @@ class OrderPaymentService extends TransactionBaseService {
             store_id: store.store_id,
             store_name: store.store_name,
             date_order: store.date_order,
+            wallet_address: store.wallet_address,
             product: [
               {
                 order_id: store.order_id,
@@ -155,7 +158,23 @@ class OrderPaymentService extends TransactionBaseService {
     const SVORepo = this.activeManager_.withRepository(
       this.storeVariantOrderRepository_
     );
+    let newIdNumber = 1001;
+    let prefix = "MPG-PAY-";
+
+    const orderPay = await OrderPaymentRepo.createQueryBuilder("order_pay")
+      .orderBy("order_pay.created_at", "DESC")
+      .getOne();
+
+    if (orderPay && orderPay.id) {
+      const lastIdNumber = parseInt(orderPay.id.replace(`${prefix}`, ""), 10);
+
+      if (!isNaN(lastIdNumber)) {
+        newIdNumber = lastIdNumber + 1;
+      }
+    }
+
     const createOrderPay = await OrderPaymentRepo.create({
+      id: `${prefix}${newIdNumber}`,
       amount_paid: dataOrderP.amount_paid,
       payment_note: dataOrderP.payment_note,
       store_id: dataOrderP.store_id,
@@ -182,6 +201,8 @@ class OrderPaymentService extends TransactionBaseService {
       });
       const savePaymentDetail = await PayDetail.save(createPayDetail);
     }
+
+    return  saverOrderPay
   }
 
   async recoverListOrderPayments(idStore) {

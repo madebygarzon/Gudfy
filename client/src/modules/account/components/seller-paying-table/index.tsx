@@ -43,7 +43,7 @@ export type OrderPaymentData = {
 type dataWallet = {
   id: string
   store_id: string
-  aviable_balance: number
+  available_balance: number
   outstanding_balance: number
   balance_paid: number
 }
@@ -65,10 +65,7 @@ const WalletTable = ({ wallet, setWallet }: props) => {
   const [selectOrderPaymentData, setSelectOrderData] =
     useState<OrderPaymentData>()
 
-  // const filteredOrder =
-  //   filterStatus === "all"
-  //     ? listSellerOrders
-  //     : listSellerOrders?.filter((order) => order.estado === filterStatus)
+
 
   const getStatusColor = (
     status: "Pendiente" | "Pagado" | "Cancelado"
@@ -86,9 +83,7 @@ const WalletTable = ({ wallet, setWallet }: props) => {
   }
   const { isOpen, onOpen, onOpenChange } = useDisclosure()
 
-  function handlePaimentOrder(numberOrder: string) {
-    return numberOrder.replace("oreder_payments_id__", "")
-  }
+  
 
   const handlerGetListOrdersPayments = () => {
     getListOrderPayments(storeSeller?.id || " ").then((e) => {
@@ -104,26 +99,7 @@ const WalletTable = ({ wallet, setWallet }: props) => {
     <div className="w-full">
       <div className="flex flex-col gap-y-8 w-full">
         <div className="flex justify-between mb-4">
-          <div className="flex w-auto gap-7 mr-4 font-bold">
-            <div>
-              Saldo pendiente:{" "}
-              <span className="text-yellow-600  ">
-                $ {wallet.outstanding_balance}{" "}
-              </span>
-            </div>
-            <div>
-              Saldo disponible:{" "}
-              <span className="text-green-600 ">
-                $ {wallet.aviable_balance}{" "}
-              </span>
-            </div>
-            <div>
-              Saldo pagado:{" "}
-              <span className="text-gray-400-600 ">
-                $ {wallet.balance_paid}{" "}
-              </span>
-            </div>
-          </div>
+          
         </div>
         <div className="overflow-x-auto">
           <table className="min-w-full bg-white  rounded-lg shadow-md">
@@ -149,7 +125,7 @@ const WalletTable = ({ wallet, setWallet }: props) => {
                       {handlerformatDate(order.payment_date)}
                     </td>
                     <td className="px-4 py-2 ">
-                      {handlePaimentOrder(order.payment_id)}
+                      {order.payment_id}
                     </td>
                     <td className="px-4 py-2 text-green-600 ">
                       {" "}
@@ -218,7 +194,8 @@ const ModalOrder = ({
       handleReset()
     })
   }
-  const [viewVoucher, setViewVoucher] = useState<string | null>(null)
+  const commission = 0.01
+  const [viewVoucher, setViewVoucher] = useState<boolean | null>(null)
   const subtotal =
     ordePaymenmtData?.products.reduce(
       (acc, product) => acc + product.price * product.quantity,
@@ -226,18 +203,20 @@ const ModalOrder = ({
     ) || 0
   const totalComision =
     ordePaymenmtData?.products.reduce(
-      (acc, product) => acc + product.price * product.quantity * 0.1,
+      (acc, product) => acc + product.price * product.quantity * commission,
       0
     ) || 0
   const totalFinal = subtotal - totalComision
-
+    useEffect(() => {
+      setViewVoucher(false)
+    }, [isOpen])
   return (
     <Modal isOpen={isOpen} onOpenChange={onOpenChange} size="5xl">
       <ModalContent className="bg-white p-6 rounded-lg shadow-lg">
         {!viewVoucher ? (
           <>
             <ModalHeader className="text-2xl font-bold text-center mb-4">
-              Recibo de Orden
+              Recibo de Orden 
             </ModalHeader>
             <ModalBody>
               {/* Lista de productos */}
@@ -249,14 +228,14 @@ const ModalOrder = ({
                     <th className="p-2 border-b">Cliente</th>
                     <th className="p-2 border-b text-right">Cantidad</th>
                     <th className="p-2 border-b text-right">Valor Unitario</th>
-                    <th className="p-2 border-b text-right">Comisión (10%)</th>
+                    <th className="p-2 border-b text-right">Comisión (1%)</th>
                     <th className="p-2 border-b text-right">Total Producto</th>
                   </tr>
                 </thead>
                 <tbody>
                   {ordePaymenmtData?.products?.map((product, i) => {
                     const totalProducto = product.price * product.quantity
-                    const comision = (totalProducto * 0.1).toFixed(2)
+                    const comision = (totalProducto * commission).toFixed(2)
                     return (
                       <tr key={i}>
                         <td className="p-2 border-b">{product.name}</td>
@@ -284,8 +263,10 @@ const ModalOrder = ({
                   })}
                 </tbody>
               </table>
-
-              {/* Resumen */}
+                  <div>
+                   
+              <p>  <strong>Nota del pago: {" "}</strong>{ordePaymenmtData?.payment_note}</p>
+              </div>
               <div className="mt-6">
                 <div className="flex justify-between font-semibold text-lg">
                   <div>Subtotal:</div>
@@ -304,7 +285,7 @@ const ModalOrder = ({
             <ModalFooter className="flex justify-end mt-6">
               <Button
                 className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition duration-300"
-                onClick={() => setViewVoucher(ordePaymenmtData?.voucher || " ")}
+                onPress={() => setViewVoucher(true)}
               >
                 Ver Comprobante
               </Button>
@@ -313,7 +294,9 @@ const ModalOrder = ({
         ) : (
           <>
             <ModalHeader>
-              <FaArrowLeft /> volver
+              <Button  onPress={() => setViewVoucher(false)}>
+              <FaArrowLeft /> Volver
+              </Button>
             </ModalHeader>
             <ModalBody className="flex justify-center items-center">
               <Image

@@ -243,7 +243,19 @@ export default class SellerApplicationService extends TransactionBaseService {
           state_application_id: "A",
         }
       );
-      await this.customerService_.createStore(customer_id);
+
+      const sellerApplicationData = await sellerApplicationRepository
+        .createQueryBuilder("sa")
+        .innerJoinAndSelect("sa.application_data", "ad")
+        .where("sa.customer_id = :customer_id", { customer_id })
+        .select(["ad.field_payment_method_1 AS wallet_address"])
+        .getRawMany();
+
+      await this.customerService_.createStoreANDWallet(
+        customer_id,
+        sellerApplicationData[0].wallet_address
+      );
+
       await ApprovedEmailSellerApplication({
         name: customer.name,
         email: customer.email,
@@ -325,16 +337,13 @@ export default class SellerApplicationService extends TransactionBaseService {
   }
 }
 
-// Función para eliminar un archivo
 const deleteFile = (filePath: string) => {
-  // Dividir la ruta del archivo en partes utilizando el separador de directorios
   const parts = filePath.split("/");
-  // Tomar solo la parte después de la URL (desde el segundo elemento del array)
+
   const relativePath = parts.slice(3).join("/");
-  // Construir la ruta completa del archivo
+
   const fullPath = `${process.cwd()}/${relativePath}`;
 
-  // Utiliza la función unlink para eliminar el archivo
   unlink(fullPath, (err) => {
     if (err) {
       console.error(`Error al eliminar el archivo: ${err}`);

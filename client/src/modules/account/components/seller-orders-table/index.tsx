@@ -31,6 +31,7 @@ import ModalOrderFinished from "../order-status/finished"
 import { SellerOrder, useSellerStoreGudfy } from "@lib/context/seller-store"
 import { EyeSeeIcon } from "@lib/util/icons"
 import Loader from "@lib/loader"
+import { formatPrice } from "@lib/format-price"
 
 const SellerOrderTable: React.FC = () => {
   const { listSellerOrders, handlerGetListSellerOrder, isLoadingOrders } =
@@ -239,8 +240,10 @@ const ModalOrder: React.FC<ModalOrder> = ({
         return "bg-yellow-200"
       case "Finished_ID":
         return "bg-green-200"
+      case "Paid_ID":
+        return "bg-gray-200"
       case "Discussion_ID":
-        return "bg-orange-300"
+        return "bg-orange-200"
       default:
         return ""
     }
@@ -253,6 +256,8 @@ const ModalOrder: React.FC<ModalOrder> = ({
         return "Completado"
       case "Discussion_ID":
         return "En reclamo"
+      case "Paid_ID":
+        return "Pagado"
       case "Payment_Pending_ID":
         return "Pendiente por Pagar"
       case "Cancel_ID":
@@ -319,10 +324,10 @@ const ModalOrder: React.FC<ModalOrder> = ({
                         </td>
                         <td className="border px-4 py-2">{product.quantity}</td>
                         <td className="border px-4 py-2">
-                          ${product.price?.toFixed(2)}
+                          ${formatPrice(product.price)}
                         </td>
                         <td className="border px-4 py-2">
-                          ${product.total_price}
+                          ${formatPrice(product.total_price)}
                         </td>
                       </tr>
                     ))}

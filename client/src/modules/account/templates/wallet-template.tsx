@@ -13,7 +13,7 @@ import { useMeCustomer } from "medusa-react"
 type dataWallet = {
   id: string
   store_id: string
-  aviable_balance: number
+  available_balance: number
   outstanding_balance: number
   balance_paid: number
 }
@@ -24,14 +24,36 @@ const WalletTemplate = () => {
   const [wallet, setWallet] = useState<dataWallet>({
     id: "",
     store_id: "",
-    aviable_balance: 0,
+    available_balance: 0,
     outstanding_balance: 0,
     balance_paid: 0,
   })
   return (
     <div className="w-full p-8 border border-gray-200 rounded-lg">
-      <div className="mb-8 flex flex-col gap-y-4">
+      <div className="mb-8 flex  gap-y-4 justify-between">
        <h1 className="text-xl font-bold">Billetera de la tienda</h1>
+       <div className="flex w-auto gap-7 mr-4 font-bold">
+            <div>
+              
+              <span className="text-yellow-600  ">
+              Saldo pendiente:{" "}
+                $ {wallet.outstanding_balance}{" "}
+              </span>
+            </div>
+            <div>
+             
+              <span className="text-green-600 ">
+              Saldo disponible:{" "} $ {wallet.available_balance || 0}{" "}
+              </span>
+            </div>
+            <div>
+             
+              <span className="text-gray-400-600 ">
+              Saldo pagado:{" "}
+                $ {wallet.balance_paid}{" "}
+              </span>
+            </div>
+          </div>
       </div>
       <div>
         <div className="flex w-full flex-col">
