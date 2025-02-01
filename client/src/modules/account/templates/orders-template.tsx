@@ -6,6 +6,26 @@ import ClaimTable from "../components/order-claim-table.ts"
 import Notification from "@modules/common/components/notification"
 import { useNotificationContext } from "@lib/context/notification-context"
 import SerialCodeTable from "../components/products-serial-codes"
+import ButtonLigth from "@modules/common/components/button_light"
+import {
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  Button,
+  useDisclosure,
+} from "@nextui-org/react"
+import { Plus } from "@medusajs/icons"
+import TicketForm from "@modules/account/components/create_ticket"
+import { getListTickets } from "../actions/tikets/get-list-tikets"
+import { EyeSeeIcon } from "@lib/util/icons"
+interface Ticket {
+  id: string
+  status: "Cerrado" | "Abierto" | "Contestado"
+  subject: string
+  created_at: string
+}
 
 export type order = {
   id: string
@@ -43,13 +63,49 @@ export type order = {
 }
 
 const OrdersTemplate = () => {
+  const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure()
   const { notifications } = useNotificationContext()
+  const [tickets, setTickets] = useState<Ticket[]>()
+  const handleClose = () => {
+    onClose()
+    handleReset()
+  }
+
+  const handleReset = () => {
+    handlerGetListTickets()
+  }
+
+  const handlerGetListTickets = () => {
+    getListTickets().then((e) => {
+      setTickets(e)
+    })
+  }
+
+  useEffect(() => {
+    handlerGetListTickets()
+  }, [])
   return (
     <div className="w-full p-8 border border-gray-200 shadow-2xl rounded-lg">
-      <div className="mb-8 flex flex-col gap-y-4">
+      <div className="mb-8 flex justify-between gap-y-4">
         <h2 className="text-2xl mt-2 font-bold text-gray-700">
           Gestión de pedidos
         </h2>
+        <div className="flex gap-4"> 
+            <ButtonLigth
+            className="bg-[#9B48ED] hover:bg-[#7b39c4] text-white border-none"
+            onClick={onOpen}
+          >
+            Crear ticket
+            <Plus />
+          </ButtonLigth>
+          <ButtonLigth
+            className="bg-[#9B48ED] hover:bg-[#7b39c4] text-white border-none"
+            href="/account/tickets"
+          >
+            Ver mis tickets
+            👁️
+          </ButtonLigth>
+        </div>
       </div>
       <div>
         <div className="flex w-full flex-col">
@@ -67,12 +123,22 @@ const OrdersTemplate = () => {
               key="Reclamos"
               title={
                 <div className="relative -m-1">
-                  Mis reclamos
                   {notifications.map((n) => {
                     if (n.notification_type_id === "NOTI_CLAIM_CUSTOMER_ID") {
-                      return <Notification />
+                      return (
+                        <div
+                          key={n.id}
+                          className="absolute -top-2 -right-2 flex items-center justify-center"
+                        >
+                          <span className="flex h-3 w-3">
+                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-purple-400 opacity-75"></span>
+                            <span className="relative inline-flex rounded-full h-3 w-3 bg-purple-500"></span>
+                          </span>
+                        </div>
+                      )
                     }
                   })}
+                  Mis reclamos
                 </div>
               }
             >
@@ -92,6 +158,30 @@ const OrdersTemplate = () => {
           </Tabs>
         </div>
       </div>
+      
+
+      <Modal
+        isOpen={isOpen}
+        onOpenChange={onOpenChange}
+        size="xl"
+        className="rounded-2xl overflow-hidden shadow-lg"
+      >
+        <ModalContent>
+          {(onClose) => (
+            <>
+              <ModalHeader className="flex flex-col gap-1 border-b border-slate-200 bg-gray-50 py-3 px-4 rounded-t-2xl">
+                <h2 className="text-center text-2xl mt-2 font-bold text-gray-700">
+                  Crear ticket
+                </h2>
+              </ModalHeader>
+              <ModalBody>
+                <TicketForm onClose={handleClose} handlerReset={handleReset} />
+              </ModalBody>
+              <ModalFooter></ModalFooter>
+            </>
+          )}
+        </ModalContent>
+      </Modal>
     </div>
   )
 }

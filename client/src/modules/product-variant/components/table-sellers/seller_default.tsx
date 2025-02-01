@@ -102,8 +102,8 @@ const TableSellerDefault: React.FC<TableProps> = ({
               Con Stock: {(selectedSeller ?? sellerWithLowestPrice).quantity}
             </Badge>
           ) : (
-            <Badge className="bg-white" color="red">
-              Sin Stock
+            <Badge className="bg-white border-none" color="red">
+              ¡Sin Stock...!
             </Badge>
           )}
         </div>

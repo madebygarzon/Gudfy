@@ -100,18 +100,22 @@ const FileUploader: React.FC<CodesArray> = ({
         <Tooltip
           className="mb-5 w-[350px]"
           content={
-            <div className="px-1 py-2 ">
-              <div className="  text-small font-bold">
-                ¿ Qué archivo a subir ?
+            <div className="px-1 py-2">
+              <div className="text-small font-bold">
+                ¿Qué tipo de archivo deseas subir?
               </div>
               <div className="text-tiny">
-                Un archivo de texto que contiene claves de licencia, solo una
-                clave separada por linea "Enter". Ejemplo: A1Bc2xxxxx
+                Sube un archivo de texto que contenga claves de licencia. Cada clave debe estar en una línea separada usando "Enter". 
+                <br />
+                Ejemplo:
                 <br />
                 A1Bc2xxxxx
                 <br />
                 A1Bc2xxxxx
-                <br /> ...{" "}
+                <br />
+                A1Bc2xxxxx
+                <br /> 
+                ...
               </div>
             </div>
           }
@@ -134,7 +138,7 @@ const FileUploader: React.FC<CodesArray> = ({
               <p className="pl-1 pt-1 text-red-500">{error}</p>
             ) : (
               <div>
-                <span className="pl-1 pt-1">{`Codigos: ${result.quantity} `}</span>
+                <span className="pl-1 pt-1 font-bold">{`Items cargados: ${result.quantity} `}</span>
                 {Object.keys(result.duplicates).length > 0 && (
                   <>
                     <span>{`Duplicados: ${
