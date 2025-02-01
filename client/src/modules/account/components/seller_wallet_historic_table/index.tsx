@@ -18,13 +18,13 @@ export type orderData = {
   customer_last_name: string
   created_date: string
   total_price_for_product: number
-  state: "Cancelado" | "Pendiente de pago" | "Completado" | "Finalizado"
+  state: "Cancelado" | "Completado" | "Finalizado" | "Pagado"
 }
 
 type dataWallet = {
   id: string
   store_id: string
-  aviable_balance: number
+  available_balance: number
   outstanding_balance: number
   balance_paid: number
 }
@@ -34,35 +34,35 @@ interface props {
 }
 
 const WalletTable = ({ wallet, setWallet }: props) => {
+  const commission = 0.01
   const [listOrders, setList] = useState<orderData[]>()
 
   const handleReset = () => {
     // handlerGetListSellerOrder()
   }
   const [filterStatus, setFilterStatus] = useState<
-    "Cancelado" | "Pendiente de pago" | "Completado" | "Finalizado" | "all"
+    "Cancelado" | "Pagado" | "Completado" | "Finalizado" | "all"
   >("all")
   // const [selectOrderData, setSelectOrderData] = useState<orderData>()
 
   const getStatusColor = (
-    status: "Cancelado" | "Pendiente de pago" | "Completado" | "Finalizado"
+    status: "Cancelado" | "Pagado" | "Completado" | "Finalizado"
   ): string => {
     switch (status) {
       case "Cancelado":
         return "bg-red-200"
-      case "Pendiente de pago":
-        return "bg-yellow-200"
+      case "Finalizado":
+        return "bg-green-200"
       case "Completado":
         return "bg-blue-200"
+      case "Pagado":
+        return "bg-gray-200"
       default:
         return ""
     }
   }
   const { isOpen, onOpen, onOpenChange } = useDisclosure()
 
-  function handlerOrderNumber(numberOrder: string) {
-    return numberOrder.replace("store_order_id_", "")
-  }
   const handlerGetDataWallet = () => {
     getListPayOrders().then((e) => {
       setList(e)
@@ -76,17 +76,23 @@ const WalletTable = ({ wallet, setWallet }: props) => {
     handlerGetDataWallet()
   }, [])
 
+  // // Calculate totals
+  // const totalOutstandingBalance = listOrders
+  //   ?.filter((order) => filterStatus === "all" || order.state === filterStatus)
+  //   .reduce((total, order) => total + (order.state === "Pendiente de pago" ? order.total_price_for_product : 0), 0) || 0;
 
-  // Calculate totals
-  const totalOutstandingBalance = listOrders
-    ?.filter((order) => filterStatus === "all" || order.state === filterStatus)
-    .reduce((total, order) => total + (order.state === "Pendiente de pago" ? order.total_price_for_product : 0), 0) || 0;
+  const totalBalancePaid =
+    listOrders
+      ?.filter(
+        (order) => filterStatus === "all" || order.state === filterStatus
+      )
+      .reduce(
+        (total, order) =>
+          total +
+          (order.state === "Completado" ? order.total_price_for_product : 0),
+        0
+      ) || 0
 
-  const totalBalancePaid = listOrders
-    ?.filter((order) => filterStatus === "all" || order.state === filterStatus)
-    .reduce((total, order) => total + (order.state === "Completado" ? order.total_price_for_product : 0), 0) || 0;
-
-    
   return (
     <div className="w-full">
       <div className="flex flex-col gap-y-8 w-full">
@@ -106,7 +112,7 @@ const WalletTable = ({ wallet, setWallet }: props) => {
                 setFilterStatus(
                   e.target.value as
                     | "Cancelado"
-                    | "Pendiente de pago"
+                    | "Pagado"
                     | "Completado"
                     | "Finalizado"
                     | "all"
@@ -115,35 +121,23 @@ const WalletTable = ({ wallet, setWallet }: props) => {
             >
               <option value="all">Todos</option>
               <option value="Cancelado">Cancelado</option>
-              <option value="Pendiente de pago">Pendiente de pago</option>
+              <option value="Pagado">Pagado</option>
               <option value="Completado">Completado</option>
               <option value="Finalizado">Finalizado</option>
             </select>
-          </div>
-          <div>
-            Saldo pendiente:{" "}
-            <span className="text-yellow-600 text-lg">
-              $ {wallet.outstanding_balance}
-            </span>
-          </div>
-          <div>
-            Saldo pagado:{" "}
-            <span className="text-gray-600 text-lg">
-              $ {wallet.balance_paid}
-            </span>
           </div>
         </div>
         <div className="overflow-x-auto">
           <table className="min-w-full bg-white rounded-lg shadow-md table-auto">
             <thead className="border-b border-slate-100">
               <tr>
+                <th className="px-4 py-2 w-[15%] text-left">
+                  Número de pedido
+                </th>
                 <th className="px-4 py-2 w-[20%] text-left">Producto</th>
                 <th className="px-4 py-2 w-[10%] text-left">Cantidad</th>
                 <th className="px-4 py-2 w-[10%] text-left">Valor</th>
                 <th className="px-4 py-2 w-[10%] text-left">Comisión</th>
-                <th className="px-4 py-2 w-[15%] text-left">
-                  Número de pedido
-                </th>
                 <th className="px-4 py-2 w-[10%] text-left">Neto</th>
                 <th className="px-4 py-2 w-[15%] text-left">Cliente</th>
                 <th className="px-4 py-2 w-[10%] text-left">Fecha</th>
@@ -159,20 +153,23 @@ const WalletTable = ({ wallet, setWallet }: props) => {
                   )
                   .map((order, i) => (
                     <tr key={i} className="hover:bg-gray-50">
+                      <td className="px-4 py-2">{order.number_order}</td>
                       <td className="px-4 py-2 whitespace-normal">
                         {order.produc_title}
                       </td>
                       <td className="px-4 py-2">{order.quantity}</td>
                       <td className="px-4 py-2">$ {order.unit_price}</td>
                       <td className="px-4 py-2">
-                        $ {(order.total_price_for_product * 0.1).toFixed(2)}
+                        ${" "}
+                        {(order.total_price_for_product * commission).toFixed(
+                          2
+                        )}
                       </td>
                       <td className="px-4 py-2">
-                        {handlerOrderNumber(order.number_order)}
-                      </td>
-                      <td className="px-4 py-2">
-                        {order.unit_price * order.quantity -
-                          order.total_price_for_product * 0.1}
+                        {(
+                          order.unit_price * order.quantity -
+                          order.total_price_for_product * commission
+                        ).toFixed(2)}
                       </td>
                       <td className="px-4 py-2">
                         {order.customer_name + " " + order.customer_last_name}

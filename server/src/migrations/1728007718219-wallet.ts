@@ -11,6 +11,7 @@ export class Wallet1728007718219 implements MigrationInterface {
       `CREATE TABLE IF NOT EXISTS "wallet" (
         "id" character varying NOT NULL,
         "store_id" character varying NOT NULL,
+        "wallet_address" character varying NOT NULL,
         "available_balance" decimal(10,2) NOT NULL,
         "outstanding_balance" decimal(10,2) NOT NULL,
         "balance_paid" decimal(10,2) NOT NULL,

@@ -158,9 +158,19 @@ export default class SellerAdminService extends TransactionBaseService {
         }
       );
 
+      const sellerApplicationData = await sellerApplicationRepository
+        .createQueryBuilder("sa")
+        .innerJoinAndSelect("sa.application_data", "ad")
+        .where("sa.customer_id = :customer_id", { customer_id })
+        .select(["ad.field_payment_method_1 AS wallet_address"])
+        .getRawMany();
+
       // se crea una tienda solamente si la solicitud esta aprovada.
       //createStore() tiene una validacion la cual retorna si ya tiene una tienda asociada
-      await this.customerService_.createStore(customer_id);
+      await this.customerService_.createStoreANDWallet(
+        customer_id,
+        sellerApplicationData[0].wallet_address
+      );
       await ApprovedEmailSellerApplication({
         name: customer.name,
         email: customer.email,

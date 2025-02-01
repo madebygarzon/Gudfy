@@ -40,6 +40,10 @@ const ModalOrderClaim = ({
         state = "Finalizado"
         break
 
+      case "Paid_ID":
+        state = "Finalizado"
+        break
+
       case "Completed_ID":
         state = "Completado"
         break
@@ -338,6 +342,7 @@ const ModalQualify = ({
                       </p>
                       <div className="flex justify-center w-full mt-2">
                         {product.variant_order_status_id === "Finished_ID" ||
+                        product.variant_order_status_id === "Paid_ID" ||
                         product.variant_order_status_id === "Discussion_ID" ? (
                           <Button
                             className=""
@@ -348,11 +353,14 @@ const ModalQualify = ({
                             isDisabled={
                               product.variant_order_status_id ===
                                 "Finished_ID" ||
+                              product.variant_order_status_id === "Paid_ID" ||
                               product.variant_order_status_id ===
                                 "Discussion_ID"
                             }
                           >
-                            {product.variant_order_status_id === "Finished_ID"
+                            {product.variant_order_status_id ===
+                              "Finished_ID" ||
+                            product.variant_order_status_id === "Paid_ID"
                               ? "Producto Finalizado"
                               : product.variant_order_status_id ===
                                   "Discussion_ID" && "En reclamación"}
