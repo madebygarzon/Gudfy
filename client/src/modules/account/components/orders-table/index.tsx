@@ -273,6 +273,7 @@ const ModalOrder = ({
   useEffect(() => {
     setOrderState(orderData)
   }, [orderData])
+
   return (
     <Modal
       isOpen={isOpen}
@@ -282,14 +283,21 @@ const ModalOrder = ({
     >
       <ModalContent>
         {
-          (onClose) => (
-            <ModalOrderDetail
-              customer={customer}
-              handleReset={handleReset}
-              onOpenChangeMain={onOpenChange}
-              orderData={orderData}
-            />
-          )
+          (onClose) =>
+            orderState?.state_order === "Cancelada" ? (
+              <ModalOrderCancel
+                handleReset={handleReset}
+                onOpenChange={onOpenChange}
+                orderData={orderData}
+              />
+            ) : (
+              <ModalOrderDetail
+                customer={customer}
+                handleReset={handleReset}
+                onOpenChangeMain={onOpenChange}
+                orderData={orderData}
+              />
+            )
 
           // orderState?.state_order === "Pendiente de pago" ? (
           //   <ModalOrderPending
