@@ -27,6 +27,7 @@ import { Button as ButtonIcon } from "@nextui-org/react"
 import { AddStoreReview } from "@modules/account/actions/post-add-store-review"
 import clsx from "clsx"
 import ButtonLigth from "@modules/common/components/button_light"
+import DownloadButton from "@modules/common/components/download-button"
 
 interface ModalOrderProps {
   orderData?: order
@@ -61,7 +62,7 @@ const ModalOrderDetail = ({
 
   // para las ordenes que ya estan finalizadas
   const [loading, setLoading] = useState<boolean>(true)
-  const [stores, setStore] = useState<string[]>([])
+  const [stores, setStore] = useState<string[]>([]) // para saber si la tienda ya ha sido comentada
   const [storeReviewData, setStoreReviewData] = useState<propsStoreReviwe>({
     store_name: " ",
     store_id: " ",
@@ -140,43 +141,24 @@ const ModalOrderDetail = ({
             <h2 className="text-center text-2xl my-4 font-bold text-gray-700 ">
               Detalles del pedido
             </h2>
-            <div className="mb-8">
-              <p className="text-base">
-                El pedido{" "}
-                <span className="font-bold">
-                  #{orderData.id.replace("store_order_id_", "")}
-                </span>
-                se realizó el
-                <span className="font-bold">
-                  {handlerformatDate(orderData.created_at)}
-                </span>
-                .
-              </p>
-              <p className="font-bold text-sm">
-                {`Orden por: ${customer?.first_name} ${customer?.last_name} correo: ${customer?.email}`}{" "}
-              </p>
-            </div>
 
             <div className="">
-              <h2 className="text-xs font-semibold my-4">
-                * A partir de este momento, dispones de un plazo de 10 días para
-                presentar cualquier reclamo. En caso de no recibir ningún
-                reclamo dentro de este período, asumiremos que has recibido tu
-                compra satisfactoriamente y tu orden será marcada como
-                Finalizada.*
-              </h2>
-              <table className="min-w-full border border-gray-200">
+              <table className="min-w-full rounded-lg shadow-2xl p-8">
                 <thead className="bg-gray-100">
                   <tr>
-                    <th className="py-2 px-4 border">Producto</th>
-                    <th className="py-2 px-4 border">Total</th>
+                    <th className="py-2 px-4 border-b border-slate-200">
+                      Producto
+                    </th>
+                    <th className="py-2 px-4 border-b border-slate-200">
+                      Total
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
                   {orderData.store_variant.map((p, i) => (
                     <>
-                      <tr className="border">
-                        <td className="border">
+                      <tr className="border-b border-slate-200">
+                        <td className="py-2 px-4 border-r border-slate-200 flex justify-between">
                           <Accordion isCompact>
                             <AccordionItem
                               key={i}
@@ -206,7 +188,16 @@ const ModalOrderDetail = ({
                               <div className="py-2 px-4 ">
                                 <div className="flex justify-between px-2">
                                   <div className="w-[60%] text-sm font-light">
-                                    <p>Descargar codigos</p>
+                                    <p className="items-center  font-medium">
+                                      Descargar {p.serial_code_products.length}{" "}
+                                      codigos :
+                                      <DownloadButton
+                                        data={p.serial_code_products.map(
+                                          (sc) => sc.serial
+                                        )}
+                                        filename={p.produc_title}
+                                      />
+                                    </p>
                                   </div>
 
                                   <div className="w-[40%] text-center">
@@ -214,46 +205,41 @@ const ModalOrderDetail = ({
                                       "Finished_ID" ||
                                     p.variant_order_status_id === "Paid_ID" ? (
                                       <div className="text-center">
-                                        {orderData.state_order ===
-                                        "Finalizado" ? (
-                                          <>
-                                            {!loading ? (
-                                              stores.includes(p.store_id) ? (
-                                                <span className="text-lila-gf">
-                                                  ¡Ya comentaste esta tienda!
-                                                </span>
-                                              ) : (
-                                                <button
-                                                  className="text-lila-gf flex justify-center items-center gap-2 text-sm px-4"
-                                                  onClick={() => {
-                                                    onOpen2()
-                                                    setStoreReviewData({
-                                                      store_name: p.store_name,
-                                                      store_id: p.store_id,
-                                                      store_order_id:
-                                                        orderData.id,
-                                                      customer_name: customer
-                                                        ? customer?.last_name +
-                                                          customer?.first_name
-                                                        : " ",
-                                                      customer_id:
-                                                        customer?.id || " ",
-                                                      content: "",
-                                                      rating: 0,
-                                                    })
-                                                  }}
-                                                >
-                                                  Califica esta tienda
-                                                  <BlankIcon className="w-4" />
-                                                </button>
-                                              )
+                                        <>
+                                          {!loading ? (
+                                            stores.includes(p.store_id) ? (
+                                              <span className="text-lila-gf">
+                                                ¡Ya comentaste esta tienda!
+                                              </span>
                                             ) : (
-                                              <Loader />
-                                            )}
-                                          </>
-                                        ) : (
-                                          <></>
-                                        )}
+                                              <button
+                                                className="text-lila-gf flex justify-center items-center gap-2 text-sm px-4"
+                                                onClick={() => {
+                                                  onOpen2()
+                                                  setStoreReviewData({
+                                                    store_name: p.store_name,
+                                                    store_id: p.store_id,
+                                                    store_order_id:
+                                                      orderData.id,
+                                                    customer_name: customer
+                                                      ? customer?.last_name +
+                                                        customer?.first_name
+                                                      : " ",
+                                                    customer_id:
+                                                      customer?.id || " ",
+                                                    content: "",
+                                                    rating: 0,
+                                                  })
+                                                }}
+                                              >
+                                                Califica esta tienda
+                                                <BlankIcon className="w-4" />
+                                              </button>
+                                            )
+                                          ) : (
+                                            <Loader />
+                                          )}
+                                        </>
                                       </div>
                                     ) : p.variant_order_status_id ===
                                       "Completed_ID" ? (
@@ -294,16 +280,18 @@ const ModalOrderDetail = ({
                             </AccordionItem>
                           </Accordion>
                         </td>
-                        <td className="py-2 px-4 border">
+                        <td className="py-2 px-4 border-b border-slate-200 ">
                           ${formatPrice(parseFloat(p.total_price_for_product))}{" "}
                           USD
                         </td>
                       </tr>
                     </>
                   ))}
-                  <tr className="border">
-                    <td className="py-2 px-4 border">Subtotal:</td>
-                    <td className="py-2 px-4 border">
+                  <tr className="border-b border-slate-200">
+                    <td className="py-2 px-4 border-r border-slate-200 ">
+                      Subtotal:
+                    </td>
+                    <td className="py-2 px-4 border-r border-slate-200 ">
                       $
                       {orderData.store_variant.reduce((sum, p) => {
                         return sum + parseFloat(p.total_price_for_product)
@@ -311,21 +299,27 @@ const ModalOrderDetail = ({
                       USD
                     </td>
                   </tr>
-                  <tr className="border-b">
-                    <td className="py-2 px-4 border ">
+                  <tr className="border-b border-slate-200">
+                    <td className="py-2 px-4 border-r border-slate-200  ">
                       Comisión de la pasarela de pago:
                     </td>
-                    <td className="py-2 px-4 border">$0.23</td>
+                    <td className="py-2 px-4 border-r border-slate-200 ">
+                      $0.23
+                    </td>
                   </tr>
-                  <tr className="border-b">
-                    <td className="py-2 px-4 border">Método de pago:</td>
-                    <td className="py-2 px-4 border">
+                  <tr className="border-b border-slate-200">
+                    <td className="py-2 px-4 border-r border-slate-200 ">
+                      Método de pago:
+                    </td>
+                    <td className="py-2 px-4 border-r border-slate-200 ">
                       Binance Pay Entrega Automática
                     </td>
                   </tr>
-                  <tr className="border-b">
-                    <td className="py-2 px-4 border">Total:</td>
-                    <td className="py-2 px-4 border">
+                  <tr className="border-b border-slate-200">
+                    <td className="py-2 px-4 border-r border-slate-200 ">
+                      Total:
+                    </td>
+                    <td className="py-2 px-4 border-r border-slate-200 ">
                       $
                       {orderData.store_variant.reduce((sum, p) => {
                         return sum + parseFloat(p.total_price_for_product)
@@ -334,6 +328,29 @@ const ModalOrderDetail = ({
                   </tr>
                 </tbody>
               </table>
+            </div>
+            <div className="mt-8">
+              <p className="text-base">
+                El pedido{" "}
+                <span className="font-bold text-blue-gf">
+                  #{orderData.id.replace("store_order_id_", "")}
+                </span>{" "}
+                se realizó el{" "}
+                <span className="font-bold text-blue-gf">
+                  {handlerformatDate(orderData.created_at)}
+                </span>
+                .
+              </p>
+              <p className="font-bold text-sm text-blue-gf">
+                {`Orden por: ${customer?.first_name} ${customer?.last_name} correo: ${customer?.email}`}{" "}
+              </p>
+              <h2 className="text-sm  my-4 text-warning-600">
+                * A partir de este momento, dispones de un plazo de 3 días para
+                presentar cualquier reclamo. En caso de no recibir ningún
+                reclamo dentro de este período, asumiremos que has recibido tu
+                compra satisfactoriamente y tu orden será marcada como
+                Finalizada.*
+              </h2>
             </div>
             <div className="w-full"></div>
           </div>
