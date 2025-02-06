@@ -14,9 +14,9 @@ const ProductPreview = ({
 }: productVariant) => {
   return (
     <Link
-      href={`/products/${productparent}/${title
+      href={`/products/${productparent
         .replaceAll(" ", "_")
-        .toLowerCase()}`}
+        .toLowerCase()}/${title.replaceAll(" ", "_").toLowerCase()}`}
     >
       <div>
         <Thumbnail thumbnail={thumbnail} size="full" />

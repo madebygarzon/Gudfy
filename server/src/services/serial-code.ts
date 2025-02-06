@@ -113,12 +113,27 @@ class SerialCodeService extends TransactionBaseService {
     );
 
     try {
-      const serialCodes = await repoSerialCode.find({
-        where: {
+      const serialCodes = await repoSerialCode
+        .createQueryBuilder("sc")
+        .leftJoinAndSelect("sc.store_variant_order", "svo")
+        .where("sc.store_variant_id = :store_variant_id ", {
           store_variant_id: store_variant_id,
-          store_variant_order_id: null,
-        },
-      });
+        })
+        .select([
+          "sc.serial AS serial",
+          "sc.id AS id",
+          "sc.store_variant_id AS store_variant_id",
+          "sc.created_at AS created_at",
+          "sc.store_variant_order_id AS store_variant_order_id",
+          "svo.store_order_id AS store_order_id",
+        ])
+        .getRawMany();
+      // const serialCodes = await repoSerialCode.find({
+      //   where: {
+      //     store_variant_id: store_variant_id,
+      //     store_variant_order_id: null,
+      //   },
+      // });
       const data = serialCodes.map((data) => {
         return {
           ...data,
@@ -133,32 +148,6 @@ class SerialCodeService extends TransactionBaseService {
       );
     }
   }
-  // async getSoldProductSerials(store_variant_id) {
-  //   const repoSerialCode = this.activeManager_.withRepository(
-  //     this.serialCodeRepository_
-  //   );
-
-  //   try {
-  //     const serialCodes = await repoSerialCode.find({
-  //       where: {
-  //         store_variant_id: store_variant_id,
-  //         store_variant_order_id: Not(null),
-  //       },
-  //     });
-  //     const data = serialCodes.map((data) => {
-  //       return {
-  //         ...data,
-  //         store_variant_order_id: data.store_variant_order_id ? true : false,
-  //       };
-  //     });
-  //     return data;
-  //   } catch (error) {
-  //     console.log(
-  //       "error en el servicio de serial_codes para enlistar los productos del vendedor ",
-  //       error
-  //     );
-  //   }
-  // }
 
   async deleteSerialCode(idSerialCodes: string[] | string) {
     const repoSerialCode = this.activeManager_.withRepository(

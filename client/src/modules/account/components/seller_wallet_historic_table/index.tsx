@@ -7,6 +7,7 @@ import { getWallet } from "@modules/account/actions/get-wallet"
 import { getListPayOrders } from "@modules/account/actions/get-list-seller-pay-orders"
 import handlerformatDate from "@lib/util/formatDate"
 import Loader from "@lib/loader"
+import { dataWallet } from "@modules/account/templates/wallet-template"
 
 export type orderData = {
   produc_title: string
@@ -21,13 +22,6 @@ export type orderData = {
   state: "Cancelado" | "Completado" | "Finalizado" | "Pagado"
 }
 
-type dataWallet = {
-  id: string
-  store_id: string
-  available_balance: number
-  outstanding_balance: number
-  balance_paid: number
-}
 interface props {
   wallet: dataWallet
   setWallet: React.Dispatch<React.SetStateAction<dataWallet>>

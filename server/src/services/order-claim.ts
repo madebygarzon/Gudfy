@@ -304,6 +304,10 @@ class OrderClaimService extends TransactionBaseService {
     if (status == "CANCEL_ID") {
       //estado de la reclamacion si es CANCEL_ID significa que se cierra la reclamacion
       //  y su estado pasa a finalizado
+      const updateCla = await repoOrderClaim.update(idClaim, {
+        status_order_claim_id: status,
+      });
+
       const getClaim = await repoOrderClaim.findOne({
         where: {
           id: idClaim,

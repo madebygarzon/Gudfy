@@ -156,7 +156,9 @@ const OrderDetails = ({ orderData, onClose }: props) => {
               <td className="py-2 px-4 border-r border-slate-200">
                 Comisión de la pasarela de pago: 1%
               </td>
-              <td className="py-2 px-4 ">${(handlerSubTotal() * 0.01).toFixed(2)} USD</td>
+              <td className="py-2 px-4 ">
+                ${(handlerSubTotal() * 0.01).toFixed(2)} USD
+              </td>
             </tr>
             <tr className="border-b border-slate-200">
               <td className="py-2 px-4 border-r border-slate-200">
@@ -167,11 +169,13 @@ const OrderDetails = ({ orderData, onClose }: props) => {
             <tr className="border-b border-slate-200">
               <td className="py-2 px-4 border-r border-slate-200">Total:</td>
               <td className="py-2 px-4 border-b border-slate-200">
-              ${orderData.store_variant
-                .reduce((sum, p) => {
-                  return sum + parseFloat(p.total_price_for_product);
-                }, handlerSubTotal() * 0.01)
-                .toFixed(2)} USD
+                $
+                {orderData.store_variant
+                  .reduce((sum, p) => {
+                    return sum + parseFloat(p.total_price_for_product)
+                  }, handlerSubTotal() * 0.01)
+                  .toFixed(2)}{" "}
+                USD
               </td>
             </tr>
           </tbody>
@@ -318,7 +322,7 @@ const ModalQualify = ({
                         "bg-yellow-200": storeReviewData?.rating === 3,
                         "bg-white": storeReviewData?.rating !== 3,
                       })}
-                      onClick={() => handleRatingClick(3)}
+                      onPress={() => handleRatingClick(3)}
                     >
                       <div className="rotate-90">
                         <PauseSolid color="#f1c40f" />

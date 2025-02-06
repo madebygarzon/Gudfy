@@ -207,6 +207,7 @@ class StoreOrderService extends TransactionBaseService {
         "so.name AS person_name",
         "so.last_name AS person_last_name",
         "so.created_at AS created_at",
+        "so.order_status_id AS status_id",
         "svo.id AS store_variant_order_id",
         "svo.quantity AS quantity",
         "svo.total_price AS total_price_for_product",
@@ -220,7 +221,7 @@ class StoreOrderService extends TransactionBaseService {
 
     const OrderMap = new Map();
 
-    listOrder.forEach((orderData) => {
+    for (const orderData of listOrder) {
       if (!OrderMap.has(orderData.id)) {
         OrderMap.set(orderData.id, {
           id: orderData.id,
@@ -235,6 +236,15 @@ class StoreOrderService extends TransactionBaseService {
               total_price: orderData.total_price_for_product,
               produc_title: orderData.produc_title,
               price: orderData.price,
+              serial_code_products:
+                orderData.status_id === "Completed_ID" ||
+                orderData.status_id === "Finished_ID" ||
+                orderData.status_id === "Paid_ID" ||
+                orderData.status_id === "Discussion_ID"
+                  ? await this.functionRecoverCodes(
+                      orderData.store_variant_order_id
+                    )
+                  : [],
             },
           ],
         });
@@ -246,9 +256,18 @@ class StoreOrderService extends TransactionBaseService {
           total_price: orderData.total_price_for_product,
           produc_title: orderData.produc_title,
           price: orderData.price,
+          serial_code_products:
+            orderData.status_id === "Completed_ID" ||
+            orderData.status_id === "Finished_ID" ||
+            orderData.status_id === "Paid_ID" ||
+            orderData.status_id === "Discussion_ID"
+              ? await this.functionRecoverCodes(
+                  orderData.store_variant_order_id
+                )
+              : [],
         });
       }
-    });
+    }
 
     const returnArray = Array.from(OrderMap.values());
 
