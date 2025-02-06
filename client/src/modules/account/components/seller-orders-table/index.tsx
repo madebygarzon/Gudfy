@@ -32,6 +32,7 @@ import { SellerOrder, useSellerStoreGudfy } from "@lib/context/seller-store"
 import { EyeSeeIcon } from "@lib/util/icons"
 import Loader from "@lib/loader"
 import { formatPrice } from "@lib/format-price"
+import DownloadButton from "@modules/common/components/download-button"
 
 const SellerOrderTable: React.FC = () => {
   const { listSellerOrders, handlerGetListSellerOrder, isLoadingOrders } =
@@ -60,6 +61,7 @@ const SellerOrderTable: React.FC = () => {
         total_price: 0,
         produc_title: "",
         price: 0,
+        serial_code_products: [],
       },
     ],
   })
@@ -317,6 +319,9 @@ const ModalOrder: React.FC<ModalOrder> = ({
                       <th className="py-2 px-4 border-b border-slate-200">
                         Precio Total
                       </th>
+                      <th className="py-2 px-4 border-b border-slate-200">
+                        Codigos
+                      </th>
                     </tr>
                   </thead>
                   <tbody>
@@ -340,6 +345,16 @@ const ModalOrder: React.FC<ModalOrder> = ({
                         </td>
                         <td className="border-slate-200 px-4 py-2">
                           ${formatPrice(product.total_price)}
+                        </td>
+                        <td className="border-slate-200 px-4 py-2">
+                          <p className="items-center  font-medium">
+                            <DownloadButton
+                              data={product.serial_code_products.map(
+                                (sc) => sc.serial
+                              )}
+                              filename={product.produc_title}
+                            />
+                          </p>
                         </td>
                       </tr>
                     ))}

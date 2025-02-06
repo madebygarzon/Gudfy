@@ -3,14 +3,16 @@ import React from "react"
 import { FaDownload } from "react-icons/fa6"
 
 interface DownloadButtonProps {
+  type?: "button" | "icon"
   data: string[]
   filename?: string
 }
 
-const DownloadButton: React.FC<DownloadButtonProps> = ({
+const DownloadButton = ({
+  type = "icon",
   data,
   filename = "file.txt",
-}) => {
+}: DownloadButtonProps) => {
   const handleDownload = () => {
     const fileContent = data.join("\n")
     const blob = new Blob([fileContent], { type: "text/plain" })
@@ -26,6 +28,25 @@ const DownloadButton: React.FC<DownloadButtonProps> = ({
     URL.revokeObjectURL(url)
   }
 
+  if (type == "icon") {
+    return (
+      <Button
+        onPress={handleDownload}
+        className="p-0 bg-transparent text-white rounde "
+      >
+        <FaDownload size={20} color="#9b48ed" />
+      </Button>
+    )
+  } else if (type == "button") {
+    return (
+      <Button
+        onPress={handleDownload}
+        className="p-0  text-white rounde  text-xs flex"
+      >
+        Descargar {data.length} Codigos <FaDownload size={15} color="#9b48ed" />
+      </Button>
+    )
+  }
   return (
     <Button
       onPress={handleDownload}

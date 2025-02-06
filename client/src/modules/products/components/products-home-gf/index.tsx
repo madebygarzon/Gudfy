@@ -76,10 +76,7 @@ const Recommendedproduct = ({ params }: InfiniteProductsType) => {
   //   }
   // )
 
-  const previews = usePreviews({
-    pages: data?.response.products,
-    region: cart?.region,
-  })
+  const previews = data?.response.products || []
 
   useEffect(() => {
     setPage(0)
@@ -97,11 +94,15 @@ const Recommendedproduct = ({ params }: InfiniteProductsType) => {
 
       <div className="flex-1">
         <ul className="grid grid-cols-2 small:grid-cols-3 medium:grid-cols-6 gap-x-2 gap-y-8 flex-1">
-          {previews.map((p) => (
-            <li key={p.id} className="text-white">
-              <ProductPreview {...p} />
-            </li>
-          ))}
+          {previews.length &&
+            previews.map((p) => (
+              <ProductPreview
+                handle={p.handle || " "}
+                thumbnail={p.thumbnail || ""}
+                variants={p.variants}
+                key={p.id}
+              />
+            ))}
           {isLoading &&
             !previews.length &&
             repeat(6).map((index) => (
