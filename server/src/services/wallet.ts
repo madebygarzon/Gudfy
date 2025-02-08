@@ -85,8 +85,8 @@ export default class WalletService extends TransactionBaseService {
       .innerJoinAndSelect("svo.store_variant", "sxv")
       .innerJoinAndSelect("sxv.variant", "pv")
       .innerJoinAndSelect("pv.product", "p")
-      .where("sxv.store_id = :storeId", {
-        storeId: this.loggedInCustomer_.store_id,
+      .where("sxv.store_id = :store_id", {
+        store_id: this.loggedInCustomer_.store_id,
       })
       .select([
         "sxv.id AS storeXVariantId",
@@ -113,12 +113,12 @@ export default class WalletService extends TransactionBaseService {
 
     listSVO.forEach((item) => {
       const totalProductPrice = item.price * item.quantity;
-      if (item.status_id === "Finished_ID") {
+      if (item.variant_order_status_id === "Finished_ID") {
         // Si el pedido está en estado "Finished_ID"
         prices.available_balance += totalProductPrice;
       } else if (
-        item.status_id === "Discussion_ID" ||
-        item.status_id === "Completed_ID"
+        item.variant_order_status_id === "Discussion_ID" ||
+        item.variant_order_status_id === "Completed_ID"
       ) {
         // Si el pedido está en estado "Discussion_ID" o "Completed_ID"
         prices.outstanding_balance += totalProductPrice;

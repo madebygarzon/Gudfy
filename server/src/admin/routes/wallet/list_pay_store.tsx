@@ -41,7 +41,7 @@ const ListPayStore = ({ idStore }: props) => {
     getListOrderPayments(idStore).then((data) => {
       setDataOrderPay(data);
     });
-  }, []);
+  }, [idStore]);
 
   return (
     <Table className="">

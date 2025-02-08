@@ -552,7 +552,8 @@ const SellerRequestPerson = ({ onClose, handlerReset }: props) => {
           </p>
         </div>
         <p className="font-semibold text-gray-800 text-sm text-center">
-          Métodos de pago
+         <strong>Dirección de tu Wallet</strong> 
+        En el siguiente campo, por favor ingrese la dirección exacta de su billetera virtual. Esta dirección es necesaria para procesar los pagos de sus ventas y asegurar que los fondos se transfieran correctamente.
         </p>
         <Input
           label="Campo 1 "
@@ -563,6 +564,8 @@ const SellerRequestPerson = ({ onClose, handlerReset }: props) => {
           //errors={errors}
           onChange={handleInputChange}
         />
+        {}
+        Confirmar dirección de wallet
         <Input
           label="Campo 2 "
           {...register("field_payment_method_2", {
@@ -572,6 +575,7 @@ const SellerRequestPerson = ({ onClose, handlerReset }: props) => {
           //errors={errors}
           onChange={handleInputChange}
         />
+        {formData.field_payment_method_1 !== formData.field_payment_method_2 && <p className="text-base my-3 font-bold text-red-600">Dirección de wallet incorrecta</p> }
         <p className="text-base my-3 font-bold text-red-600">
           {error.fileAddressProod ||
           error.fileFrontDocument ||
@@ -586,6 +590,7 @@ const SellerRequestPerson = ({ onClose, handlerReset }: props) => {
           className="mt-4 mb-4 rounded-[5px]"
           type="submit"
           color="primary"
+          disabled={formData.field_payment_method_1 !== formData.field_payment_method_2}
         >
           Enviar solicitud
         </ButtonMedusa>

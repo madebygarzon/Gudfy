@@ -10,11 +10,11 @@ const SelectedProducts = () => {
   const [params, setParams] = useState<StoreGetProductsParams>({})
   return (
     <div className="py-10  flex ">
-      <div className="w-[15%] ">
+      <div className=" ">
         <Categories refinementList={params} setRefinementList={setParams} />
       </div>
       {/* <ButonSelector refinementList={params} setRefinementList={setParams} /> */}
-      <div className="flex items-center w-[85%]">
+      <div className="flex items-center w-[100%]">
         <Recommendedproduct params={params} />
       </div>
     </div>
