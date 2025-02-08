@@ -23,6 +23,7 @@ import ListPayStore from "./list_pay_store";
 import { getListStoresToPay } from "../../actions/payments/get-list-store-to-pay";
 import { postDataOrderPay } from "../../actions/payments/post-data-order-pay";
 import { formatDate } from "../../utils/format-date";
+import { formatPrice } from "../../handlers/format-price";
 
 type dataSotores = {
   store_id: string;
@@ -31,6 +32,7 @@ type dataSotores = {
   outstanding_balance: number;
   available_balance: number;
   balance_paid: number;
+  wallet_address: string;
   product: [
     {
       svo_id: string;
@@ -65,6 +67,7 @@ type detailsPays = {
   description: string;
 };
 const WalletListado = () => {
+  const commission = 0.01;
   const [dataCustomer, setDataCustomer] = useState<{
     dataStore: dataSotores[];
     dataFilter: dataSotores[];
@@ -77,6 +80,8 @@ const WalletListado = () => {
     count: 0,
   });
   const [isConfirmed, setIsConfirmed] = useState(false);
+  const [open2, setOpen2] = useState(false);
+  const [open, setOpen] = useState(false);
   const [pageTotal, setPagetotal] = useState(
     Math.ceil(dataCustomer.dataStore?.length / 5)
   );
@@ -153,7 +158,7 @@ const WalletListado = () => {
         return "";
     }
   };
-
+  const [selectetDataPay, setSelectetDataPay] = useState<dataSotores>();
   const [dataPay, setDataPay] = useState<{
     amount_paid: number;
     payment_note: string;
@@ -178,10 +183,11 @@ const WalletListado = () => {
       amount_paid: data.available_balance,
       payment_note: " ",
       store_id: data.store_id,
-      subtotal: data.available_balance - data.available_balance * 0.1,
-      commission: data.available_balance * 0.1,
+      subtotal: data.available_balance - data.available_balance * commission,
+      commission: data?.available_balance * commission,
       customer_name: data.product[0].customer_name,
     });
+    setSelectetDataPay(data);
 
     const productsPushOrder = data.product.filter(
       (p) => p.product_order_status === "Finished_ID"
@@ -198,8 +204,16 @@ const WalletListado = () => {
 
   const handlerSubmitPay = () => {
     postDataOrderPay(dataPay, voucher, products).then(() => {
-      alert("hecho");
+      handlerResetSubmit();
     });
+  };
+
+  const handlerResetSubmit = () => {
+    setOpen(false);
+    setOpen2(false);
+    handlerGetListStore();
+    setIsConfirmed(false);
+    setVoucher(null);
   };
 
   const handlerOrderId = (orderId: string) => {
@@ -210,10 +224,14 @@ const WalletListado = () => {
     return Math.floor(value * 1000) / 1000; // Trunca a 3 decimales
   };
 
-  useEffect(() => {
+  const handlerGetListStore = () => {
     getListStoresToPay().then((data) => {
       setDataCustomer((oldData) => ({ ...oldData, dataStore: data }));
     });
+  };
+
+  useEffect(() => {
+    handlerGetListStore();
   }, []);
 
   return (
@@ -223,37 +241,6 @@ const WalletListado = () => {
           <div className="mt-1 h-[100px] flex justify-between">
             <h1 className="text-lg font-bold">Listado de Wallets</h1>
             <div className="flex gap-5 h-full items-end py-4">
-              <div className="w-[156px]">
-                {/* <Select
-                  onValueChange={(value) => handlerFilter(value, "status")}
-                >
-                  <Select.Trigger>
-                    <Select.Value placeholder="Filtrar por estado: " />
-                  </Select.Trigger>
-                  <Select.Content>
-                    <Select.Item value="All">Todos</Select.Item>
-                    <Select.Item value="Sin liberar">Sin liberar</Select.Item>
-                    <Select.Item value="Disponible">Disponible</Select.Item>
-                  </Select.Content>
-                </Select> */}
-              </div>
-              <div className="w-[156px]">
-                {/* <Select
-                  onValueChange={(value) => handlerFilter(value, "storeName")}
-                >
-                  <Select.Trigger>
-                    <Select.Value placeholder="Filtrar por tienda: " />
-                  </Select.Trigger>
-                  <Select.Content>
-                    <Select.Item value="All">Todas</Select.Item>
-                    {fakeData.map((item) => (
-                      <Select.Item key={item.storeName} value={item.storeName}>
-                        {item.storeName}
-                      </Select.Item>
-                    ))}
-                  </Select.Content>
-                </Select> */}
-              </div>
               <div>
                 <div className="w-[250px]">
                   <DatePicker
@@ -325,7 +312,7 @@ const WalletListado = () => {
 
                       <Table.Cell>{data.outstanding_balance}</Table.Cell>
                       <Table.Cell className="font-extrabold bg-[#54bf784a] flex justify-center items-center mr-12 rounded-2xl">
-                        {data.available_balance}
+                        {data?.available_balance}
                       </Table.Cell>
                       <Table.Cell>--</Table.Cell>
 
@@ -398,11 +385,11 @@ const WalletListado = () => {
                                           </Table.Cell>
                                           <Table.Cell>--</Table.Cell>
                                           <Table.Cell>
-                                            {(
+                                            {formatPrice(
                                               product.price *
-                                              product.quantity *
-                                              0.1
-                                            ).toFixed(2)}
+                                                product.quantity *
+                                                commission
+                                            )}
                                           </Table.Cell>
                                           <Table.Cell>
                                             {product.product_order_status ===
@@ -423,12 +410,15 @@ const WalletListado = () => {
                                             ) : (
                                               <>Cancelado</>
                                             )}
+                                            0
                                           </Table.Cell>
                                           <Table.Cell>
-                                            {product.price * product.quantity -
-                                              product.price *
-                                                product.quantity *
-                                                0.1}
+                                            {formatPrice(
+                                              product.price * product.quantity -
+                                                product.price *
+                                                  product.quantity *
+                                                  commission
+                                            )}
                                           </Table.Cell>
                                           <Table.Cell>
                                             {product.customer_name}
@@ -444,16 +434,17 @@ const WalletListado = () => {
                               <div className="flex justify-end items-center gap-x-2 py-4">
                                 <p>Saldo Pagado: </p>
                                 <Badge className="bg-[#233044a3] text-white shadow-md ">
-                                  {data.balance_paid - data.balance_paid * 0.1}
+                                  {data?.balance_paid -
+                                    data?.balance_paid * commission}
                                 </Badge>
                                 <p>Saldo pendiente:</p>
                                 <Badge className="bg-[#578be0a3] text-white shadow-md ">
-                                  {data.available_balance -
-                                    data.available_balance * 0.1}
+                                  {data.outstanding_balance}
                                 </Badge>
                                 <p>Saldo disponible:</p>
                                 <Badge className="bg-green-500 text-white shadow-md ">
-                                  {data.outstanding_balance}
+                                  {data?.available_balance -
+                                    data?.available_balance * commission}
                                 </Badge>
                               </div>
                             </Drawer.Footer>
@@ -482,7 +473,7 @@ const WalletListado = () => {
                                 <h3 className="my-4">
                                   Realizar pago de{" "}
                                   <span className="font-extrabold">
-                                    {data.available_balance}
+                                    {data?.available_balance}
                                   </span>{" "}
                                   a la tienda{" "}
                                   <span className="font-extrabold">
@@ -495,45 +486,74 @@ const WalletListado = () => {
                                       <Alert className="flex items-center">
                                         Saldo a pagar con el 1% de comisión:{" "}
                                         {handlerRoundDecimals(
-                                          data.available_balance -
-                                            data.available_balance * 0.1
+                                          data?.available_balance -
+                                            data?.available_balance * commission
                                         )}
                                         .
                                       </Alert>
                                       <Copy
-                                        content={data.available_balance.toString()}
+                                        content={data?.available_balance.toString()}
                                       />
                                     </div>
                                     <div className="flex justify-start items-center gap-x-2">
                                       <Alert className="flex items-center">
-                                        Binance ID: Binance_ID123AsD01aSd.
+                                        Wallet ID: {data.wallet_address}.
                                       </Alert>
-                                      <Copy content={"Binance_ID123AsD01aSd"} />
+                                      <Copy content={data.wallet_address} />
                                     </div>
                                   </div>
 
                                   <div className="flex justify-start items-center gap-x-2 py-4">
-                                    <div className="flex items-center gap-x-2">
-                                      <p className="text-sm">
-                                        Subir comprobante:
-                                      </p>
+                                    <div>
+                                      <div className="flex items-center gap-x-2">
+                                        <p className="text-sm">
+                                          Subir comprobante:
+                                        </p>
 
-                                      <label
-                                        htmlFor={"upload-file"}
-                                        className="cursor-pointer bg-slate-600 text-white text-xs py-2 px-4 rounded-md border border-slate-500"
-                                      >
-                                        <PlusMini />
-                                      </label>
-                                      <Input
-                                        type="file"
-                                        id="upload-file"
-                                        className="hidden"
-                                        onChange={(e) => {
-                                          setVoucher(e.target.files[0]);
-                                        }}
-                                      />
+                                        <label
+                                          htmlFor={"upload-file"}
+                                          className="cursor-pointer bg-slate-600 text-white text-xs py-2 px-4 rounded-md border border-slate-500"
+                                        >
+                                          <PlusMini />
+                                        </label>
+
+                                        <Input
+                                          type="file"
+                                          id="upload-file"
+                                          className="hidden"
+                                          onChange={(e) => {
+                                            setVoucher(e.target.files[0]);
+                                          }}
+                                        />
+                                      </div>
+                                      {voucher ? (
+                                        <div>
+                                          <Tooltip
+                                            maxWidth={800}
+                                            className=" w-[50vh] h-auto  "
+                                            content={
+                                              <div className="w-[50vh] h-auto flex items-center justify-center">
+                                                <img
+                                                  src={URL.createObjectURL(
+                                                    voucher
+                                                  )}
+                                                  alt="voucher"
+                                                  className="w-[90%] h-[90%] object-contain"
+                                                />
+                                              </div>
+                                            }
+                                          >
+                                            <p className="text-xs font-bold">
+                                              Ver comprobante
+                                            </p>
+                                          </Tooltip>
+                                        </div>
+                                      ) : (
+                                        <div></div>
+                                      )}
                                     </div>
-                                    <div className="flex items-center space-x-2">
+
+                                    <div className="flex items-center space-x-2 ">
                                       <Checkbox
                                         className="flex items-center gap-x-2"
                                         id="billing-shipping"
@@ -551,61 +571,13 @@ const WalletListado = () => {
                                     </div>
 
                                     <div>
-                                      <Prompt>
-                                        <Prompt.Trigger asChild>
-                                          <Button
-                                            className="bg-green-500 border-green-500 shadow-md text-white rounded-md px-4 py-2 "
-                                            disabled={!isConfirmed}
-                                          >
-                                            Confirmar pago
-                                          </Button>
-                                        </Prompt.Trigger>
-                                        <Prompt.Content>
-                                          <Prompt.Header>
-                                            <Prompt.Title className="text-xl font-extrabold">
-                                              ¡Por favor confirma esta
-                                              transacción!
-                                            </Prompt.Title>
-                                            <Container className="bg-ui-bg-component mt-4">
-                                              <Prompt.Description>
-                                                <Alert className="text-l">
-                                                  Vas a pagar $:{" "}
-                                                  <span className="font-extrabold">
-                                                    {data.available_balance -
-                                                      data.available_balance *
-                                                        0.1}
-                                                  </span>{" "}
-                                                  a la tienda:{" "}
-                                                  <span className="font-extrabold">
-                                                    {data.store_name}
-                                                  </span>
-                                                </Alert>
-                                              </Prompt.Description>
-                                            </Container>
-
-                                            <Textarea
-                                              placeholder="Agregar notas de esta transacción ..."
-                                              onChange={(e) => {
-                                                setDataPay((old) => ({
-                                                  ...old,
-                                                  payment_note: e.target.value,
-                                                }));
-                                              }}
-                                            />
-                                          </Prompt.Header>
-                                          <Prompt.Footer>
-                                            <Prompt.Cancel className="bg-[#a697f7] border-none hover:bg-[#6659ac] text-white">
-                                              Cancelar
-                                            </Prompt.Cancel>
-                                            <Button
-                                              onClick={handlerSubmitPay}
-                                              className="bg-green-500 border-green-500 shadow-md text-white rounded-md px-4 py-2"
-                                            >
-                                              Confirmar
-                                            </Button>
-                                          </Prompt.Footer>
-                                        </Prompt.Content>
-                                      </Prompt>
+                                      <Button
+                                        onClick={() => setOpen(true)}
+                                        className="bg-green-500 border-green-500 shadow-md text-white rounded-md px-4 py-2 "
+                                        disabled={!isConfirmed || !voucher}
+                                      >
+                                        Confirmar pago
+                                      </Button>
                                     </div>
                                   </div>
                                 </Container>
@@ -632,6 +604,16 @@ const WalletListado = () => {
                   ))}
                 </Table.Body>
               </Table>
+              <PromptPayment
+                open={open}
+                setOpen={setOpen}
+                isConfirmed={isConfirmed}
+                voucher={voucher}
+                data={selectetDataPay}
+                commission={commission}
+                setDataPay={setDataPay}
+                handlerSubmitPay={handlerSubmitPay}
+              />
             </div>
           ) : (
             <p className="text-center text-ui-fg-subtle p-5">Sin datos</p>
@@ -654,6 +636,66 @@ const WalletListado = () => {
           Siguiente
         </button>
       </div>
+    </div>
+  );
+};
+
+const PromptPayment = ({
+  open,
+  setOpen,
+  isConfirmed,
+  voucher,
+  data,
+  commission,
+  setDataPay,
+  handlerSubmitPay,
+}) => {
+  return (
+    <div>
+      <Prompt open={open} onOpenChange={setOpen}>
+        <Prompt.Trigger asChild></Prompt.Trigger>
+        <Prompt.Content>
+          <Prompt.Header>
+            <Prompt.Title className="text-xl font-extrabold">
+              ¡Por favor confirma esta transacción!
+            </Prompt.Title>
+            <Container className="bg-ui-bg-component mt-4">
+              <Prompt.Description>
+                <Alert className="text-l">
+                  Vas a pagar $:{" "}
+                  <span className="font-extrabold">
+                    {data?.available_balance -
+                      data?.available_balance * commission}
+                  </span>{" "}
+                  a la tienda:{" "}
+                  <span className="font-extrabold">{data?.store_name}</span>
+                </Alert>
+              </Prompt.Description>
+            </Container>
+
+            <Textarea
+              placeholder="Agregar notas de esta transacción ..."
+              onChange={(e) => {
+                setDataPay((old) => ({
+                  ...old,
+                  payment_note: e.target.value,
+                }));
+              }}
+            />
+          </Prompt.Header>
+          <Prompt.Footer>
+            <Prompt.Cancel className="bg-[#a697f7] border-none hover:bg-[#6659ac] text-white">
+              Cancelar
+            </Prompt.Cancel>
+            <Button
+              onClick={handlerSubmitPay}
+              className="bg-green-500 border-green-500 shadow-md text-white rounded-md px-4 py-2"
+            >
+              Confirmar
+            </Button>
+          </Prompt.Footer>
+        </Prompt.Content>
+      </Prompt>
     </div>
   );
 };

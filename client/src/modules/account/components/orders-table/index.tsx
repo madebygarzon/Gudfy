@@ -32,6 +32,7 @@ import ModalOrderFinished from "../order-status/finished"
 import ModalOrderClaim from "../order-status/claim"
 import Loader from "@lib/loader"
 import { EyeSeeIcon } from "@lib/util/icons"
+import ModalOrderDetail from "../order-status/detail-order"
 
 type orders = {
   orders: order[]
@@ -272,6 +273,7 @@ const ModalOrder = ({
   useEffect(() => {
     setOrderState(orderData)
   }, [orderData])
+
   return (
     <Modal
       isOpen={isOpen}
@@ -280,42 +282,58 @@ const ModalOrder = ({
       size="5xl"
     >
       <ModalContent>
-        {(onClose) =>
-          orderState?.state_order === "Pendiente de pago" ? (
-            <ModalOrderPending
-              handleReset={handleReset}
-              onOpenChange={onOpenChange}
-              orderData={orderData}
-            />
-          ) : orderState?.state_order === "Cancelada" ? (
-            <ModalOrderCancel
-              handleReset={handleReset}
-              onOpenChange={onOpenChange}
-              orderData={orderData}
-            />
-          ) : orderState?.state_order === "Completado" ? (
-            <ModalOrderComplete
-              customer={customer}
-              handleReset={handleReset}
-              onOpenChangeMain={onOpenChange}
-              orderData={orderData}
-            />
-          ) : orderState?.state_order === "Finalizado" ? (
-            <ModalOrderFinished
-              handleReset={handleReset}
-              onOpenChange={onOpenChange}
-              orderData={orderData}
-            />
-          ) : orderState?.state_order === "En discusión" ? (
-            <ModalOrderClaim
-              customer={customer}
-              handleReset={handleReset}
-              onOpenChangeMain={onOpenChange}
-              orderData={orderData}
-            />
-          ) : (
-            <></>
-          )
+        {
+          (onClose) =>
+            orderState?.state_order === "Cancelada" ? (
+              <ModalOrderCancel
+                handleReset={handleReset}
+                onOpenChange={onOpenChange}
+                orderData={orderData}
+              />
+            ) : (
+              <ModalOrderDetail
+                customer={customer}
+                handleReset={handleReset}
+                onOpenChangeMain={onOpenChange}
+                orderData={orderData}
+              />
+            )
+
+          // orderState?.state_order === "Pendiente de pago" ? (
+          //   <ModalOrderPending
+          //     handleReset={handleReset}
+          //     onOpenChange={onOpenChange}
+          //     orderData={orderData}
+          //   />
+          // ) : orderState?.state_order === "Cancelada" ? (
+          //   <ModalOrderCancel
+          //     handleReset={handleReset}
+          //     onOpenChange={onOpenChange}
+          //     orderData={orderData}
+          //   />
+          // ) : orderState?.state_order === "Completado" ? (
+          //   <ModalOrderComplete
+          //     customer={customer}
+          //     handleReset={handleReset}
+          //     onOpenChangeMain={onOpenChange}
+          //     orderData={orderData}
+          //   />
+          // ) : orderState?.state_order === "Finalizado" ? (
+          //   <ModalOrderFinished
+          //     handleReset={handleReset}
+          //     onOpenChange={onOpenChange}
+          //     orderData={orderData}
+          //   />
+          // ) : orderState?.state_order === "En discusión" ? (
+          //   <ModalOrderClaim
+          //     customer={customer}
+          //     handleReset={handleReset}
+          //     onOpenChangeMain={onOpenChange}
+          //     orderData={orderData}
+          //   />
+          // ) : (
+          //   <></>
+          // )
         }
       </ModalContent>
     </Modal>

@@ -112,9 +112,7 @@ const Nav = () => {
                 <DesktopSearchModal />
                 {/* {process.env.FEATURE_SEARCH_ENABLED && <DesktopSearchModal />} */}
               </div>
-              <div className="min-w-[350px]">
-                {/* <CountrySelect /> */}
-              </div>
+              <div className="min-w-[350px]">{/* <CountrySelect /> */}</div>
             </div>
             <div className="flex items-center gap-x-4 sm:gap-x-8 ">
               <div>{/* <Wallet /> */}</div>

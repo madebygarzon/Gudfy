@@ -42,6 +42,10 @@ const ModalOrderClaim = ({
         state = "Finalizado"
         break
 
+      case "Paid_ID":
+        state = "Finalizado"
+        break
+
       case "Completed_ID":
         state = "Completado"
         break
@@ -177,10 +181,10 @@ const ModalOrderClaim = ({
             </ButtonLigth>
           </div>
           <p className="mt-2 text-xs">
-              {" "}
-              Actualmente, algunos de tus productos están en estado de
-              reclamación. Puedes revisarlos en la pestaña "Reclamos".
-            </p>
+            {" "}
+            Actualmente, algunos de tus productos están en estado de
+            reclamación. Puedes revisarlos en la pestaña "Reclamos".
+          </p>
         </div>
       </ModalFooter>
       <div className="z-30">
@@ -356,6 +360,7 @@ const ModalQualify = ({
                       </p>
                       <div className="flex justify-center w-full mt-2">
                         {product.variant_order_status_id === "Finished_ID" ||
+                        product.variant_order_status_id === "Paid_ID" ||
                         product.variant_order_status_id === "Discussion_ID" ? (
                           <ButtonLigth
                             className="bg-[#E74C3C] hover:bg-[#C0392B] text-white border-none"
@@ -366,12 +371,15 @@ const ModalQualify = ({
                             disabled={
                               product.variant_order_status_id ===
                                 "Finished_ID" ||
+                              product.variant_order_status_id === "Paid_ID" ||
                               product.variant_order_status_id ===
                                 "Discussion_ID"
                             }
                           >
-                            {product.variant_order_status_id === "Finished_ID"
-                              ? "Producto finalizado"
+                            {product.variant_order_status_id ===
+                              "Finished_ID" ||
+                            product.variant_order_status_id === "Paid_ID"
+                              ? "Producto Finalizado"
                               : product.variant_order_status_id ===
                                   "Discussion_ID" && "En reclamación..."}
                           </ButtonLigth>

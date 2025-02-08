@@ -15,7 +15,7 @@ import {
   EmailCreateClaimOrderCustomer,
   EmailCreateClaimOrderSeller,
   EmailOrderClaimAdmin,
-} from "../api/email/claim-order";
+} from "../admin/components/email/claim-order";
 
 class OrderClaimService extends TransactionBaseService {
   static LIFE_TIME = Lifetime.SCOPED;
@@ -265,14 +265,10 @@ class OrderClaimService extends TransactionBaseService {
       this.storeVariantOrderRepository_
     );
 
-    const update = await repoOrderClaim.update(idClaim, {
-      status_order_claim_id: status,
-    });
-
     const dataClaim = await repoOrderClaim
       .createQueryBuilder("oc")
       .innerJoinAndSelect("oc.store_variant_order", "svo")
-      .innerJoinAndSelect("svo.customer", "c")
+      .innerJoinAndSelect("oc.customer", "c")
       .innerJoinAndSelect("svo.store_variant", "sv")
       .innerJoinAndSelect("sv.variant", "pv")
       .innerJoinAndSelect("sv.store", "s")
@@ -286,11 +282,16 @@ class OrderClaimService extends TransactionBaseService {
       .getRawMany();
 
     if (status == "UNSOLVED_ID") {
+      const update = await repoOrderClaim.update(idClaim, {
+        status_order_claim_id: status,
+      });
+
       const newNotification = await repoNotification.create({
         order_claim_id: idClaim,
         notification_type_id: "NOTI_CLAIM_ADMIN_ID",
         seen_status: true,
       });
+
       await repoNotification.save(newNotification);
 
       await EmailOrderClaimAdmin({
@@ -301,6 +302,12 @@ class OrderClaimService extends TransactionBaseService {
       });
     }
     if (status == "CANCEL_ID") {
+      //estado de la reclamacion si es CANCEL_ID significa que se cierra la reclamacion
+      //  y su estado pasa a finalizado
+      const updateCla = await repoOrderClaim.update(idClaim, {
+        status_order_claim_id: status,
+      });
+
       const getClaim = await repoOrderClaim.findOne({
         where: {
           id: idClaim,
@@ -313,7 +320,7 @@ class OrderClaimService extends TransactionBaseService {
       });
 
       const update = await repoStoreVariantOrder.update(svo.id, {
-        variant_order_status_id: "Completed_ID",
+        variant_order_status_id: "Finished_ID",
       });
       if (update) this.validateOrderreadyToComplete(svo.store_order_id);
     }

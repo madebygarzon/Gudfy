@@ -20,25 +20,30 @@ export function CreateTicketCustomer(props: EmailTicket) {
                 gf: "#1F0046",
                 button: "#0BEBAA",
               },
-              boxShadow: {},
+              boxShadow: {
+                card: "0px 4px 10px rgba(0, 0, 0, 0.1)",
+              },
             },
           },
         }}
       >
         <Container>
-          <div className="border-[1px] border-solid border-[#1F0046] rounded-md shadow">
-            <div className="flex w-auto h-auto bg-gf text-[32px] justify-center rounded-t-md text-center text-white p-[5px] pl-3">
-              <p>
+          <div className="w-[800px] border-t-[5px] border-button mx-auto rounded-lg shadow-card overflow-hidden">
+            {/* Header */}
+            <div className="flex bg-gf text-[32px] justify-center text-center text-white py-6">
+              <h1>
                 GUD<strong className="text-[#0BEBAA]">FY</strong>
-              </p>
+              </h1>
             </div>
-            <div className="text-slate-800 px-5 py-2">
-              <h1>Hola {name},</h1>
-              <p>
+
+            {/* Body */}
+            <div className="bg-white px-10 py-8 text-gray-800">
+              <h2 className="text-2xl font-semibold mb-6">Hola {name},</h2>
+              <p className="leading-relaxed mb-4">
                 ¡Tu ticket ha sido creado con éxito! El ID de tu ticket es{" "}
                 <strong>{tiket}</strong>.
               </p>
-              <p>
+              <p className="leading-relaxed mb-4">
                 Puedes verificar el estado de tu ticket y seguir el progreso haciendo clic en el botón de abajo.
               </p>
               <div className="flex justify-center mt-4">
@@ -51,11 +56,18 @@ export function CreateTicketCustomer(props: EmailTicket) {
                   Ver mi ticket
                 </a>
               </div>
-              <p className="mt-4">
+              <p className="leading-relaxed mt-4">
                 Si tienes alguna pregunta adicional, no dudes en contactar con nuestro equipo de soporte.
               </p>
-              <p>Atentamente,</p>
-              <p>El equipo de Gudfy</p>
+              <p className="mt-6 font-medium">Atentamente,</p>
+              <p className="font-medium">El equipo de Gudfy</p>
+            </div>
+
+            {/* Footer */}
+            <div className="bg-gray-100 text-center py-4 px-6">
+              <p className="text-sm text-gray-600">
+                Este mensaje es automático. Si tienes preguntas, contacta con soporte.
+              </p>
             </div>
           </div>
         </Container>

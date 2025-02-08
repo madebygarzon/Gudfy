@@ -18,7 +18,9 @@ interface CategoryProviderProps {
 export const categoryContext = createContext<CategoryContext | null>(null)
 
 export const CategoryProvider = ({ children }: CategoryProviderProps) => {
-  const [isSelect, setIsSelect] = useState<string>("pcat_shirts")
+  const [isSelect, setIsSelect] = useState<string>(
+    "pcat_01HYXTEJNKS2VYMFXZ76B0MDND"
+  )
   const { product_categories, isLoading } = useProductCategories()
 
   const childCategory = () => {
