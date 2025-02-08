@@ -72,9 +72,9 @@ export type productVariant = {
   id: string
   title: string
   prices: number[]
-  productparent: string
+  product_parent: string
   thumbnail: string
-  desciption: string
+  description: string
 }
 
 export type ProductPreviewType = {

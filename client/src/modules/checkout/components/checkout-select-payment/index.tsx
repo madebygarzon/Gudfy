@@ -15,7 +15,7 @@ import { Label } from "@medusajs/ui"
 import Link from "next/link"
 import type { Selection } from "@nextui-org/react"
 import Button from "@modules/common/components/button"
-
+import { useForm } from "react-hook-form"
 import { useCartGudfy } from "@lib/context/cart-gudfy"
 import { orderDataForm } from "@lib/context/order-context"
 
@@ -68,6 +68,23 @@ const CheckoutSelectPayment: React.FC<CheckoutDetailsProps> = ({
     city: "",
     phone: "",
   })
+
+  const { register, formState, trigger, setValue } = useForm<orderDataForm>({
+    defaultValues: {
+      name: dataForm.name,
+      last_name: dataForm.last_name,
+      email: dataForm.email,
+    },
+  })
+
+  useEffect(() => {
+    if (dataForm.name) {
+      setValue("name", dataForm.name)
+      setValue("last_name", dataForm.last_name)
+      setValue("email", dataForm.email)
+      trigger()
+    }
+  }, [dataForm.name, setValue, trigger])
   return (
     <div>
       <div className="px-2 w-full flex gap-x-4 justify-between  ">
@@ -76,6 +93,10 @@ const CheckoutSelectPayment: React.FC<CheckoutDetailsProps> = ({
             Formulario de compra
           </h2>
           <CheckautVirtualForm
+            propsForm={{
+              register: register,
+              formState: formState,
+            }}
             setCompleteForm={setCompleteForm}
             dataForm={dataForm}
             setDataForm={setDataForm}
@@ -215,12 +236,13 @@ const CheckoutSelectPayment: React.FC<CheckoutDetailsProps> = ({
             <Checkbox
               radius="none"
               size="sm"
-              onChangeCapture={() =>
+              onChangeCapture={() => {
+                trigger()
                 setCompleteForm((com) => ({
                   ...com,
                   TermsConditions: !com.TermsConditions,
                 }))
-              }
+              }}
             />
             <p className="text-sm font-semibold">
               He leído y estoy de acuerdo con los{" "}
@@ -236,7 +258,9 @@ const CheckoutSelectPayment: React.FC<CheckoutDetailsProps> = ({
           <div className="flex justify-center ">
             <Button
               className="w-full"
-              onClick={() => handlersubmit(dataForm)}
+              onClick={async () => {
+                if (await trigger()) handlersubmit(dataForm)
+              }}
               disabled={
                 !(
                   completedForm.TermsConditions &&

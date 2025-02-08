@@ -365,9 +365,16 @@ const ModalClaimComment = ({
                       />
                     </div>
                     <div className="mt-1 px-6 text-xs text-gray-600">
-                      
-                      <p><span className="font-extrabold">⚠️ Aviso Importante:</span> Está prohibido compartir información personal, enlaces o datos de la cuenta o tienda en este chat. El incumplimiento resultará en suspensión de la cuenta y retención temporal de los fondos en la wallet. Use el chat solo para consultas relacionadas con pedidos.</p>
-                      
+                      <p>
+                        <span className="font-extrabold">
+                          ⚠️ Aviso Importante:
+                        </span>{" "}
+                        Está prohibido compartir información personal, enlaces o
+                        datos de la cuenta o tienda en este chat. El
+                        incumplimiento resultará en suspensión de la cuenta y
+                        retención temporal de los fondos en la wallet. Use el
+                        chat solo para consultas relacionadas con pedidos.
+                      </p>
                     </div>
                   </div>
                 )}
@@ -389,10 +396,11 @@ const ModalClaimComment = ({
                     >
                       Escalar con un administrador
                     </ButtonLigth>
-                    
                   </div>
-                  <p className="mt-2">*Si encuentras que este asunto no puede ser resuelto por
-                      ti, tienes la posibilidad de escalarlo al administrador.*</p>
+                  <p className="mt-2">
+                    *Si encuentras que este asunto no puede ser resuelto por ti,
+                    tienes la posibilidad de escalarlo al administrador.*
+                  </p>
                 </div>
               </div>
             </ModalFooter>
