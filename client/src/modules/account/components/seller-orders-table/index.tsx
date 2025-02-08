@@ -348,12 +348,16 @@ const ModalOrder: React.FC<ModalOrder> = ({
                         </td>
                         <td className="border-slate-200 px-4 py-2">
                           <p className="items-center  font-medium">
-                            <DownloadButton
-                              data={product.serial_code_products.map(
-                                (sc) => sc.serial
+                            {product.variant_order_status_id !== "Cancel_ID" &&
+                              product.variant_order_status_id !==
+                                "Payment_Pending_ID" && (
+                                <DownloadButton
+                                  data={product.serial_code_products.map(
+                                    (sc) => sc.serial
+                                  )}
+                                  filename={product.produc_title}
+                                />
                               )}
-                              filename={product.produc_title}
-                            />
                           </p>
                         </td>
                       </tr>

@@ -1,5 +1,10 @@
 import Input from "@modules/common/components/input"
-import { useForm } from "react-hook-form"
+import {
+  FormState,
+  useForm,
+  UseFormHandleSubmit,
+  UseFormRegister,
+} from "react-hook-form"
 import { useMeCustomer } from "medusa-react"
 import React, { Dispatch, SetStateAction, useEffect, useState } from "react"
 import { orderDataForm } from "@lib/context/order-context"
@@ -11,12 +16,18 @@ type CompleteForm = {
   TermsConditions: boolean
 }
 type props = {
+  propsForm: {
+    register: UseFormRegister<orderDataForm>
+
+    formState: FormState<orderDataForm>
+  }
   setCompleteForm: Dispatch<SetStateAction<CompleteForm>>
   dataForm: orderDataForm
   setDataForm: (value: React.SetStateAction<orderDataForm>) => void
 }
 
 const CheckautVirtualForm: React.FC<props> = ({
+  propsForm,
   setCompleteForm,
   dataForm,
   setDataForm,
@@ -24,10 +35,8 @@ const CheckautVirtualForm: React.FC<props> = ({
   const { customer } = useMeCustomer()
   const {
     register,
-    handleSubmit,
-    formState: { errors, isSubmitting },
-    setError,
-  } = useForm<orderDataForm>()
+    formState: { errors },
+  } = propsForm
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -75,7 +84,7 @@ const CheckautVirtualForm: React.FC<props> = ({
   }, [customer])
 
   return (
-    <div className="grid grid-cols-1 gap-y-2">
+    <form className="grid grid-cols-1 gap-y-2">
       <div className="grid grid-cols-2 gap-x-2">
         <Input
           value={dataForm.name}
@@ -106,6 +115,7 @@ const CheckautVirtualForm: React.FC<props> = ({
         errors={errors}
         onChange={handleInputChange}
       />
+
       <div className="grid grid-cols-2 gap-x-2">
         <Country
           setCodeFlag={setcodeFlag}
@@ -115,22 +125,22 @@ const CheckautVirtualForm: React.FC<props> = ({
           value={dataForm.city}
           label="Ciudad"
           {...register("city", {
-            required: "City is required",
+            required: "Escoge un ciudad",
           })}
-          autoComplete="address-level2"
           errors={errors}
           onChange={handleInputChange}
         />
       </div>
+
       <Input
         type="number"
         contentStar={`(+${codeflag})`}
         label="Telefono"
         {...register("phone")}
-        autoComplete="phone"
         errors={errors}
         required={false}
       />
+
       {/* <Input
         label="Telefono"
         {...register("phone")}
@@ -138,7 +148,7 @@ const CheckautVirtualForm: React.FC<props> = ({
         errors={errors}
         onChange={handleInputChange}
       /> */}
-    </div>
+    </form>
   )
 }
 
