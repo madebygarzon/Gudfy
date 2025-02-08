@@ -8,6 +8,7 @@ import {
 import StoreRepository from "../repositories/store";
 import CustomerRoleRepository from "../repositories/customer-role";
 import StoreOrderRepository from "../repositories/store-order";
+import WalletRepository from "../repositories/wallet";
 
 type UpdateCustomerInput = {
   store_id?: string;
@@ -23,6 +24,7 @@ class CustomerService extends MedusaCustomerService {
   protected readonly storeRepository_: typeof StoreRepository;
   protected readonly customerRoleRepository_: typeof CustomerRoleRepository;
   protected readonly storeOrderRepository_: typeof StoreOrderRepository;
+  protected readonly walletRepository_: typeof WalletRepository;
 
   constructor(container, options) {
     // @ts-expect-error prefer-rest-params
@@ -30,11 +32,18 @@ class CustomerService extends MedusaCustomerService {
     this.storeRepository_ = container.storeRepository;
     this.customerRoleRepository_ = container.customerRoleRepository;
     this.storeOrderRepository_ = container.storeOrderRepository;
+    this.walletRepository_ = container.walletRepository;
   }
 
-  async createStore(customerId: string): Promise<Customer> {
+  async createStoreANDWallet(
+    customerId: string,
+    wallet_address: string
+  ): Promise<Customer> {
     const customerRepository = this.manager_.withRepository(
       this.customerRepository_
+    );
+    const walletRepository = this.manager_.withRepository(
+      this.walletRepository_
     );
 
     const customer = await customerRepository.findOne({
@@ -46,11 +55,21 @@ class CustomerService extends MedusaCustomerService {
     if (customer.store_id) return;
 
     const storeRepo = this.manager_.withRepository(this.storeRepository_);
-    let newStore = storeRepo.create({
+    let newStore = await storeRepo.create({
       name: generateRandomStoreName(),
       avatar: "/account/avatars/avatar_aguila.png",
     });
     newStore = await storeRepo.save(newStore);
+
+    let newWallet = await walletRepository.create({
+      wallet_address,
+      store_id: newStore.id,
+      available_balance: 0,
+      outstanding_balance: 0,
+      balance_paid: 0,
+    });
+
+    newWallet = await walletRepository.save(newWallet);
 
     const updateData: UpdateCustomerInput = {
       ...customer,

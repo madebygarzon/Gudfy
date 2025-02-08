@@ -31,6 +31,8 @@ import ModalOrderFinished from "../order-status/finished"
 import { SellerOrder, useSellerStoreGudfy } from "@lib/context/seller-store"
 import { EyeSeeIcon } from "@lib/util/icons"
 import Loader from "@lib/loader"
+import { formatPrice } from "@lib/format-price"
+import DownloadButton from "@modules/common/components/download-button"
 
 const SellerOrderTable: React.FC = () => {
   const { listSellerOrders, handlerGetListSellerOrder, isLoadingOrders } =
@@ -59,6 +61,7 @@ const SellerOrderTable: React.FC = () => {
         total_price: 0,
         produc_title: "",
         price: 0,
+        serial_code_products: [],
       },
     ],
   })
@@ -239,8 +242,10 @@ const ModalOrder: React.FC<ModalOrder> = ({
         return "bg-yellow-200"
       case "Finished_ID":
         return "bg-green-200"
+      case "Paid_ID":
+        return "bg-gray-200"
       case "Discussion_ID":
-        return "bg-orange-300"
+        return "bg-orange-200"
       default:
         return ""
     }
@@ -253,6 +258,8 @@ const ModalOrder: React.FC<ModalOrder> = ({
         return "Completado"
       case "Discussion_ID":
         return "En reclamo"
+      case "Paid_ID":
+        return "Pagado"
       case "Payment_Pending_ID":
         return "Pendiente por Pagar"
       case "Cancel_ID":
@@ -268,9 +275,9 @@ const ModalOrder: React.FC<ModalOrder> = ({
           <>
             {/* Header */}
             <ModalHeader className="flex justify-center">
-            <h2 className="text-center text-2xl mt-2 font-bold text-gray-700">
-              Detalles del pedido
-            </h2>
+              <h2 className="text-center text-2xl mt-2 font-bold text-gray-700">
+                Detalles del pedido
+              </h2>
             </ModalHeader>
 
             {/* Body */}
@@ -300,10 +307,21 @@ const ModalOrder: React.FC<ModalOrder> = ({
                       <th className="py-2 px-4 border-b border-slate-200">
                         Estado del producto en la orden
                       </th>
-                      <th className="py-2 px-4 border-b border-slate-200">Título del Producto</th>
-                      <th className="py-2 px-4 border-b border-slate-200">Cantidad</th>
-                      <th className="py-2 px-4 border-b border-slate-200">Precio Unitario</th>
-                      <th className="py-2 px-4 border-b border-slate-200">Precio Total</th>
+                      <th className="py-2 px-4 border-b border-slate-200">
+                        Título del Producto
+                      </th>
+                      <th className="py-2 px-4 border-b border-slate-200">
+                        Cantidad
+                      </th>
+                      <th className="py-2 px-4 border-b border-slate-200">
+                        Precio Unitario
+                      </th>
+                      <th className="py-2 px-4 border-b border-slate-200">
+                        Precio Total
+                      </th>
+                      <th className="py-2 px-4 border-b border-slate-200">
+                        Codigos
+                      </th>
                     </tr>
                   </thead>
                   <tbody>
@@ -319,12 +337,24 @@ const ModalOrder: React.FC<ModalOrder> = ({
                         <td className="border-slate-200 px-4 py-2">
                           {product.produc_title}
                         </td>
-                        <td className="border-slate-200 px-4 py-2">{product.quantity}</td>
                         <td className="border-slate-200 px-4 py-2">
-                          ${product.price?.toFixed(2)}
+                          {product.quantity}
                         </td>
                         <td className="border-slate-200 px-4 py-2">
-                          ${product.total_price}
+                          ${formatPrice(product.price)}
+                        </td>
+                        <td className="border-slate-200 px-4 py-2">
+                          ${formatPrice(product.total_price)}
+                        </td>
+                        <td className="border-slate-200 px-4 py-2">
+                          <p className="items-center  font-medium">
+                            <DownloadButton
+                              data={product.serial_code_products.map(
+                                (sc) => sc.serial
+                              )}
+                              filename={product.produc_title}
+                            />
+                          </p>
                         </td>
                       </tr>
                     ))}
