@@ -9,8 +9,8 @@ export default async (req: Request, res: Response): Promise<void> => {
     const orderPayService = req.scope.resolve("orderPaymentService");
     orderPayService
       .postAddPayment(applicationData, voucher.path, products)
-      .then(() => {
-        return res.status(201);
+      .then((data) => {
+        return res.status(201).json(data);
       });
   } catch (error) {
     res.status(400).json({ error });

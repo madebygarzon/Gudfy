@@ -30,6 +30,7 @@ export type SellerOrder = {
       total_price: number
       produc_title: string
       price: number
+      serial_code_products: [{ id: string; serial: string }] | []
     }
   ]
 }

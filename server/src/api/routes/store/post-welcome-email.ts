@@ -1,15 +1,10 @@
 import { Request, Response } from "express";
-import { EmailWelcomeAccount } from "../../email/email-welcome-account";
+import { EmailWelcomeAccount } from "../../../admin/components/email/email-welcome-account";
 
 export default async (req: Request, res: Response) => {
   try {
     const { email, name } = req.body;
 
-    console.log(
-      "llega al punto final de enviar el email de bienvenida",
-      email,
-      name
-    );
     await EmailWelcomeAccount({ email, name }).then(() => {
       res.status(200).send();
     });

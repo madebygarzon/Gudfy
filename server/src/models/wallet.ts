@@ -26,6 +26,9 @@ export class Wallet extends BaseEntity {
   @JoinColumn({ name: "store_id", referencedColumnName: "id" })
   store?: Store;
 
+  @Column({ nullable: false })
+  wallet_address?: string;
+
   @Column({ type: "decimal", precision: 10, scale: 2, nullable: false })
   available_balance?: number;
 

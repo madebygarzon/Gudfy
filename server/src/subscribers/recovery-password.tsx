@@ -1,7 +1,7 @@
 import { EventBusService } from "@medusajs/medusa";
 import { render } from "@react-email/render";
 import sendgrid from "@sendgrid/mail";
-import { Email } from "../api/email/email-recovery-pasword";
+import { Email } from "../admin/components/email/email-recovery-pasword";
 
 type InjectedDependencies = {
   eventBusService: EventBusService;

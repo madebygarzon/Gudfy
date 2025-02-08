@@ -41,9 +41,4 @@ export class OrderPayments extends BaseEntity {
 
   @OneToMany(() => PaymentDetail, (pd) => pd?.order_payments)
   payment_detail: PaymentDetail[];
-
-  @BeforeInsert()
-  private beforeInsert(): void {
-    this.id = generateEntityId(this.id, "oreder_payments_id_");
-  }
 }
