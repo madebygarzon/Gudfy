@@ -39,48 +39,47 @@ const Category = ({
     return
   }
 
-  return <></>
-  // categories.length ? (
-  //   <div className="flex flex-wrap flex-col  h-[300px] pl-5">
-  //     <ButtonLigth
-  //       type="button"
-  //       onClick={() => {
-  //         handleAllCategories()
-  //         setIsSelect("")
-  //       }}
-  //       className={clsx(
-  //         "border-solid  border-[1px] w-[100px]  text-[14px] text-uppercase rounded-[5px] py-2 px-2",
-  //         { "border-slate-200 text-slate-200": isSelect !== "" },
-  //         { "border-white text-white": isSelect == "" }
-  //       )}
-  //     >
-  //       Todos
-  //     </ButtonLigth>
+  return categories.length ? (
+    <div className="flex flex-wrap flex-col  h-[300px] pl-5">
+      <ButtonLigth
+        type="button"
+        onClick={() => {
+          handleAllCategories()
+          setIsSelect("")
+        }}
+        className={clsx(
+          "border-solid  border-[1px] w-[100px]  text-[14px] text-uppercase rounded-[5px] py-2 px-2 my-2",
+          { "border-slate-200 text-slate-200": isSelect !== "" },
+          { "border-white text-white": isSelect == "" }
+        )}
+      >
+        Todos
+      </ButtonLigth>
 
-  //     {categories.map((category) => (
-  //       <ButtonLigth
-  //         key={category.id}
-  //         type="button"
-  //         onClick={() => {
-  //           handleSelectCategories(category.id)
-  //           setIsSelect(category.id)
-  //         }}
-  //         className={clsx(
-  //           "border-solid  border-[1px] w-[100px] text-[14px] text-uppercase rounded-[5px] py-2 px-2 ",
-  //           {
-  //             "border-slate-300 text-slate-300": isSelect !== category.id,
-  //           },
-  //           { "border-white text-white": isSelect == category.id }
-  //         )}
-  //       >
-  //         {" "}
-  //         {category.name}
-  //       </ButtonLigth>
-  //     ))}
-  //   </div>
-  // ) : (
-  //   <></>
-  // )
+      {categories.map((category) => (
+        <ButtonLigth
+          key={category.id}
+          type="button"
+          onClick={() => {
+            handleSelectCategories(category.id)
+            setIsSelect(category.id)
+          }}
+          className={clsx(
+            "border-solid  border-[1px] w-[100px] text-[14px] text-uppercase rounded-[5px] py-2 px-2 my-2",
+            {
+              "border-slate-300 text-slate-300": isSelect !== category.id,
+            },
+            { "border-white text-white": isSelect == category.id }
+          )}
+        >
+          {" "}
+          {category.name}
+        </ButtonLigth>
+      ))}
+    </div>
+  ) : (
+    <></>
+  )
 }
 
 export default Category
