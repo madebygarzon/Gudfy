@@ -47,9 +47,9 @@ const RelatedProducts = ({ product }: RelatedProductsProps) => {
       }
     )
 
-  const previews = usePreviews({ 
-    //pages: data?.pages, 
-    region: cart?.region 
+  const previews = usePreviews({
+    //pages: data?.pages,
+    region: cart?.region,
   })
 
   return (
@@ -65,9 +65,7 @@ const RelatedProducts = ({ product }: RelatedProductsProps) => {
 
       <ul className="grid grid-cols-2 small:grid-cols-3 medium:grid-cols-4 gap-x-4 gap-y-8">
         {previews.map((p) => (
-          <li key={p.id}>
-            <ProductPreview {...p} />
-          </li>
+          <li key={p.id}>{/* <ProductPreview {...p} /> */}</li>
         ))}
         {isLoading &&
           !previews.length &&
