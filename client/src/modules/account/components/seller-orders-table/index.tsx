@@ -9,25 +9,11 @@ import {
   ModalHeader,
   ModalBody,
   ModalFooter,
-  Button,
   useDisclosure,
 } from "@nextui-org/react"
-import { FaPlus, FaEye } from "react-icons/fa6"
-import OrderRevie from "../order-review"
-import { PlusMini } from "@medusajs/icons"
-import { Button as ButtonMedusa } from "@medusajs/ui"
-import Link from "next/link"
-import { getListOrders } from "@modules/account/actions/get-list-orders"
-import { useMeCustomer } from "medusa-react"
 import handlerformatDate from "@lib/util/formatDate"
 import Timer from "@lib/util/timer-order"
 import { CheckMini, XMarkMini } from "@medusajs/icons"
-import { updateCancelStoreOrder } from "@modules/account/actions/update-cancel-store-order"
-import { useOrderGudfy } from "@lib/context/order-context"
-import ModalOrderComplete from "../order-status/complete"
-import ModalOrderPending from "../order-status/pay-pending"
-import ModalOrderCancel from "../order-status/cancel"
-import ModalOrderFinished from "../order-status/finished"
 import { SellerOrder, useSellerStoreGudfy } from "@lib/context/seller-store"
 import { EyeSeeIcon } from "@lib/util/icons"
 import Loader from "@lib/loader"
@@ -207,6 +193,11 @@ const SellerOrderTable: React.FC = () => {
               )}
             </tbody>
           </table>
+          {!isLoadingOrders && !filteredOrder.length && (
+            <div className="p-10 flex w-full text-center items-center justify-center text-lg">
+              <XMarkMini /> Aun no tienes ordenes
+            </div>
+          )}
         </div>
       </div>
       <ModalOrder
@@ -348,12 +339,16 @@ const ModalOrder: React.FC<ModalOrder> = ({
                         </td>
                         <td className="border-slate-200 px-4 py-2">
                           <p className="items-center  font-medium">
-                            <DownloadButton
-                              data={product.serial_code_products.map(
-                                (sc) => sc.serial
+                            {product.variant_order_status_id !== "Cancel_ID" &&
+                              product.variant_order_status_id !==
+                                "Payment_Pending_ID" && (
+                                <DownloadButton
+                                  data={product.serial_code_products.map(
+                                    (sc) => sc.serial
+                                  )}
+                                  filename={product.produc_title}
+                                />
                               )}
-                              filename={product.produc_title}
-                            />
                           </p>
                         </td>
                       </tr>

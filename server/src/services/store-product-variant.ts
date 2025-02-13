@@ -76,13 +76,14 @@ class StoreProductVariantService extends TransactionBaseService {
         .createQueryBuilder("pv")
         .innerJoin("pv.store_x_variant", "sxv")
         .innerJoinAndSelect("pv.product", "p")
+        .where("COALESCE(sxv.quantity_store, 0) > 0")
         .select([
           "pv.id AS id",
           "pv.title AS title",
           "sxv.price AS price",
-          "p.title AS productparent",
+          "p.title AS product_parent",
           "p.thumbnail AS thumbnail",
-          "p.description AS desciption",
+          "p.description AS description",
         ])
         .getRawMany();
 

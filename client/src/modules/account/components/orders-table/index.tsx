@@ -14,7 +14,7 @@ import {
 } from "@nextui-org/react"
 import { FaPlus, FaEye } from "react-icons/fa6"
 import OrderRevie from "../order-review"
-import { PlusMini } from "@medusajs/icons"
+import { PlusMini, X } from "@medusajs/icons"
 import { Button as ButtonMedusa } from "@medusajs/ui"
 import Link from "next/link"
 import { getListOrders } from "@modules/account/actions/get-list-orders"
@@ -233,6 +233,11 @@ const TicketTable: React.FC = () => {
               )}
             </tbody>
           </table>
+          {!isLoading && !filteredOrder?.length && (
+            <div className="p-10 flex w-full text-center items-center justify-center text-lg">
+              <XMarkMini /> Aun no tienes ordenes
+            </div>
+          )}
         </div>
       </div>
       <ModalOrder

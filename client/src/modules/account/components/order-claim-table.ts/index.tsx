@@ -11,7 +11,7 @@ import {
   useDisclosure,
   Input,
 } from "@nextui-org/react"
-import { ChatBubble, PlayMiniSolid } from "@medusajs/icons"
+import { ChatBubble, PlayMiniSolid, XMarkMini } from "@medusajs/icons"
 import { Button as ButtonMedusa } from "@medusajs/ui"
 import { useMeCustomer } from "medusa-react"
 import type { order } from "../../templates/orders-template"
@@ -201,6 +201,11 @@ const ClaimTable: React.FC = () => {
               )}
             </tbody>
           </table>
+          {!isLoadingClaim && !filteredOrderClaims?.length && (
+            <div className="p-10 flex w-full text-center items-center justify-center text-lg">
+              <XMarkMini /> Sin reclamaciones
+            </div>
+          )}
         </div>
       </div>
       <ModalClaimComment
@@ -329,18 +334,17 @@ const ModalClaimComment = ({
     }
   }, [claim])
 
-  const [canEscalate, setCanEscalate] = useState(false);
+  const [canEscalate, setCanEscalate] = useState(false)
 
   useEffect(() => {
     if (claim?.created_at) {
-      const createdAt = new Date(claim.created_at);
-      const now = new Date();
-      const diffHours = (now.getTime() - createdAt.getTime()) / (1000 * 60 * 60);
-  
-      
-      setCanEscalate(diffHours >= 12);
+      const createdAt = new Date(claim.created_at)
+      const now = new Date()
+      const diffHours = (now.getTime() - createdAt.getTime()) / (1000 * 60 * 60)
+
+      setCanEscalate(diffHours >= 12)
     }
-  }, [claim]);
+  }, [claim])
 
   return (
     <Modal
@@ -419,20 +423,31 @@ const ModalClaimComment = ({
                       </SendIcon>
                     </div>
                     <div className="mt-2">
-                    <InputFile
-                      type="Normal"
-                      alt="Image"
-                      label="Adjuntar imagen  "
-                      file={image}
-                      setFile={setImage}
-                      accept="image/*"
-                    />
+                      <InputFile
+                        type="Normal"
+                        alt="Image"
+                        label="Adjuntar imagen  "
+                        file={image}
+                        setFile={setImage}
+                        accept="image/*"
+                      />
                     </div>
+
                     <div className="mt-4 px-6 text-xs text-gray-600">
                       *Estimado cliente, le informamos que dispone de varias
                       opciones para gestionar su reclamación. Le invitamos a
                       elegir la alternativa que mejor se ajuste a sus
                       necesidades.*
+                    </div>
+                    <div className="mt-1 px-6 text-xs text-gray-600">
+                      <p>
+                        <span className="font-extrabold">
+                          ⚠️ Aviso Importante:
+                        </span>{" "}
+                        Está prohibido compartir información personal, enlaces o
+                        datos de la cuenta o tienda en este chat. El
+                        incumplimiento resultará en la suspensión del reclamo.
+                      </p>
                     </div>
                   </div>
                 )}
@@ -455,20 +470,18 @@ const ModalClaimComment = ({
                       disabled={
                         claim?.status_order_claim_id === "CANCEL_ID" ||
                         claim?.status_order_claim_id === "UNSOLVED_ID" ||
-                        !canEscalate 
+                        !canEscalate
                       }
                     >
                       Escalar con un administrador
-                    </ButtonLigth>                  
-                    
-
+                    </ButtonLigth>
                   </div>
                   {!canEscalate && (
-                      <p className="text-xs text-center text-gray-600 mt-2">
-                      ¡Puedes escalar este reclamo al administrador pasadas 12 horas!
+                    <p className="text-xs text-center text-gray-600 mt-2">
+                      ¡Puedes escalar este reclamo al administrador pasadas 12
+                      horas!
                     </p>
-                    )}
-                  
+                  )}
                 </div>
               </div>
             </ModalFooter>
