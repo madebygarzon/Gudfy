@@ -89,7 +89,7 @@ const CollectionTemplate: React.FC<CollectionTemplateProps> = ({
         {previews.map((p) => (
           <li key={p.id}>
             hello word
-            <ProductPreview {...p} />
+            {/* <ProductPreview {...p} /> */}
           </li>
         ))}
         {isFetchingNextPage &&
