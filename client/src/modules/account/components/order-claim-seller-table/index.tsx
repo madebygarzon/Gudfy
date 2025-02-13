@@ -28,6 +28,7 @@ import Loader from "@lib/loader"
 import { ChatIcon, SendIcon } from "@lib/util/icons"
 import ButtonLigth from "@modules/common/components/button_light"
 import Image from "next/image"
+import { XMarkMini } from "@medusajs/icons"
 
 type orders = {
   orders: order[]
@@ -168,6 +169,11 @@ const ClaimSellerTable: React.FC = () => {
               )}
             </tbody>
           </table>
+          {!isLoadingClaim && !listOrderClaim?.length && (
+            <div className="p-10 flex w-full text-center items-center justify-center text-lg">
+              <XMarkMini /> Aun no tienes ordenes
+            </div>
+          )}
         </div>
       </div>
       <ModalClaimComment
@@ -356,7 +362,7 @@ const ModalClaimComment = ({
                     </div>
                     <div className="mt-2">
                       <InputFile
-                        type="Normal"
+                        type="Image"
                         alt="Image"
                         label="Adjuntar imagen  "
                         file={image}

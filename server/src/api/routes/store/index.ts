@@ -47,6 +47,7 @@ import { postAddTicketsMessage } from "./tickets/post-add-ticket-message";
 import getNumberOfCompletedOrders from "./get-number-of-completed-orders";
 import updateFinishVariantOrder from "./order/update-finish-variant-order";
 import postWelcomeEmail from "./post-welcome-email";
+import { getListProductVariantCategory } from "./get-list-product-variant-category";
 
 // Initialize a custom router
 const router = Router();
@@ -98,6 +99,10 @@ export function attachStoreRoutes(storeRouter: Router) {
   );
 
   // ---------------------------------Endpoins for List products Variants-------------------------------
+  router.get(
+    "/list-products-variant-category",
+    wrapHandler(getListProductVariantCategory)
+  );
 
   router.get("/list-products-variant", wrapHandler(getListProductsVariant));
   router.get(

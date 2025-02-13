@@ -11,7 +11,7 @@ import {
   useDisclosure,
   Input,
 } from "@nextui-org/react"
-import { ChatBubble, PlayMiniSolid } from "@medusajs/icons"
+import { ChatBubble, PlayMiniSolid, XMarkMini } from "@medusajs/icons"
 import { Button as ButtonMedusa } from "@medusajs/ui"
 import { useMeCustomer } from "medusa-react"
 import type { order } from "../../templates/orders-template"
@@ -201,6 +201,11 @@ const ClaimTable: React.FC = () => {
               )}
             </tbody>
           </table>
+          {!isLoadingClaim && !filteredOrderClaims?.length && (
+            <div className="p-10 flex w-full text-center items-center justify-center text-lg">
+              <XMarkMini /> Sin reclamaciones
+            </div>
+          )}
         </div>
       </div>
       <ModalClaimComment

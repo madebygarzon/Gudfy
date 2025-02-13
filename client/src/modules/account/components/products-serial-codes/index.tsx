@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from "react"
 import React from "react"
+import { XMarkMini } from "@medusajs/icons"
+
 import { Accordion, AccordionItem, Snippet } from "@nextui-org/react"
 import { FaEye } from "react-icons/fa6"
 import { updateCancelStoreOrder } from "@modules/account/actions/update-cancel-store-order"
@@ -124,6 +126,11 @@ const SerialCodeTable: React.FC = () => {
               )}
             </tbody>
           </table>
+          {!isLoading && !listSerialCodes?.length && (
+            <div className="p-10 flex w-full text-center items-center justify-center text-lg">
+              <XMarkMini /> Sin compras
+            </div>
+          )}
         </div>
       </div>
     </div>

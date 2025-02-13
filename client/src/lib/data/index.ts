@@ -1,4 +1,5 @@
 import { medusaClient } from "@lib/config"
+// import { listProductVariantCategory } from "@lib/medusa-fetch"
 import { StoreGetProductsParams } from "@medusajs/medusa"
 import { PricedProduct } from "@medusajs/medusa/dist/types/pricing"
 
@@ -129,21 +130,5 @@ export const fetchProductsList = async ({
   return {
     response: { products, count },
     nextPage: count > offset + 12 ? offset + 12 : null,
-  }
-}
-
-export const fetchProductsListTab = async ({
-  pageParam = 0,
-  queryParams,
-}: FetchProductListParams) => {
-  const { products, count, offset } = await medusaClient.products.list({
-    limit: 6,
-    offset: pageParam,
-    ...queryParams,
-  })
-
-  return {
-    response: { products, count },
-    nextPage: count > offset + 6 ? offset + 6 : null,
   }
 }

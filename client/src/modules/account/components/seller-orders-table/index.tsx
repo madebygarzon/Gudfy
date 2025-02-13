@@ -9,25 +9,11 @@ import {
   ModalHeader,
   ModalBody,
   ModalFooter,
-  Button,
   useDisclosure,
 } from "@nextui-org/react"
-import { FaPlus, FaEye } from "react-icons/fa6"
-import OrderRevie from "../order-review"
-import { PlusMini } from "@medusajs/icons"
-import { Button as ButtonMedusa } from "@medusajs/ui"
-import Link from "next/link"
-import { getListOrders } from "@modules/account/actions/get-list-orders"
-import { useMeCustomer } from "medusa-react"
 import handlerformatDate from "@lib/util/formatDate"
 import Timer from "@lib/util/timer-order"
 import { CheckMini, XMarkMini } from "@medusajs/icons"
-import { updateCancelStoreOrder } from "@modules/account/actions/update-cancel-store-order"
-import { useOrderGudfy } from "@lib/context/order-context"
-import ModalOrderComplete from "../order-status/complete"
-import ModalOrderPending from "../order-status/pay-pending"
-import ModalOrderCancel from "../order-status/cancel"
-import ModalOrderFinished from "../order-status/finished"
 import { SellerOrder, useSellerStoreGudfy } from "@lib/context/seller-store"
 import { EyeSeeIcon } from "@lib/util/icons"
 import Loader from "@lib/loader"
@@ -207,6 +193,11 @@ const SellerOrderTable: React.FC = () => {
               )}
             </tbody>
           </table>
+          {!isLoadingOrders && !filteredOrder.length && (
+            <div className="p-10 flex w-full text-center items-center justify-center text-lg">
+              <XMarkMini /> Aun no tienes ordenes
+            </div>
+          )}
         </div>
       </div>
       <ModalOrder
