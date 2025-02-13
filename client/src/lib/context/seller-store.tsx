@@ -60,18 +60,23 @@ export const SellerStoreProvider = ({
 
   const handlerGetSellerStore = async () => {
     setIsLoadingStore(true)
-    getStore().then((data) => {
-      setStoreSeller(data)
-      setIsLoadingStore(false)
-    })
+    const store = await getStore()
+    setStoreSeller(store)
+    setIsLoadingStore(false)
+
+    return store
   }
 
   const handlerGetListSellerOrder = async () => {
+    let store_id = storeSeller
+    if (!store_id) {
+      store_id = await handlerGetSellerStore()
+    }
     setIsLoadingOrders(true)
-    if (storeSeller) {
+    if (store_id) {
       await axios
         .get(
-          `${process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL}/seller/store/account/${storeSeller.id}/orders`,
+          `${process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL}/seller/store/account/${store_id.id}/orders`,
           {
             withCredentials: true,
           }

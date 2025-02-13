@@ -7,14 +7,14 @@ import { Avatar } from "@nextui-org/react"
 
 const ProductPreview = ({
   title,
-  productparent,
+  product_parent,
   id,
   thumbnail,
   prices,
 }: productVariant) => {
   return (
     <Link
-      href={`/products/${productparent
+      href={`/products/${product_parent
         .replaceAll(" ", "_")
         .toLowerCase()}/${title.replaceAll(" ", "_").toLowerCase()}`}
     >

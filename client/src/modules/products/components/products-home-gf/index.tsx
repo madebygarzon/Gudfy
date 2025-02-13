@@ -1,5 +1,5 @@
 "use client"
-import { fetchProductsListTab } from "@lib/data"
+import { fetchProductsListTab } from "@modules/products/actions"
 import usePreviews from "@lib/hooks/use-previews"
 import getNumberOfSkeletons from "@lib/util/get-number-of-skeletons"
 import repeat from "@lib/util/repeat"
@@ -14,6 +14,8 @@ import { useCollections } from "medusa-react"
 import { useRouter } from "next/navigation"
 import ButtonLigth from "@modules/common/components/button_light"
 import { IoIosArrowForward, IoIosArrowBack } from "react-icons/io"
+import Link from "next/link"
+import Thumbnail from "../thumbnail"
 
 type InfiniteProductsType = {
   params: StoreGetProductsParams
@@ -61,21 +63,6 @@ const Recommendedproduct = ({ params }: InfiniteProductsType) => {
       { keepPreviousData: true }
     )
 
-  // const {
-  //   data,
-  //   fetchNextPage,
-  //   fetchPreviousPage,
-  //   isLoading,
-  //   isFetchingNextPage,
-  // } = useInfiniteQuery(
-  //   [`infinite-products-store`, queryParams, cart],
-  //   ({ pageParam }) => fetchProductsListTab({ pageParam, queryParams }),
-  //   {
-  //     getNextPageParam: (lastPage, pages) => lastPage.nextPage,
-  //     getPreviousPageParam: (firstPage, pages) => firstPage.nextPage,
-  //   }
-  // )
-
   const previews = data?.response.products || []
 
   useEffect(() => {
@@ -94,15 +81,34 @@ const Recommendedproduct = ({ params }: InfiniteProductsType) => {
 
       <div className="flex-1">
         <ul className="grid grid-cols-2 small:grid-cols-3 medium:grid-cols-6 gap-x-2 gap-y-8 flex-1">
-          {previews.length &&
-            previews.map((p) => (
-              <ProductPreview
-                handle={p.handle || " "}
-                thumbnail={p.thumbnail || ""}
-                variants={p.variants}
-                key={p.id}
-              />
-            ))}
+          {previews.length
+            ? previews.map(
+                (p: {
+                  id: string
+                  parent_title: string
+                  title: string
+                  thumbnail: string
+                }) => (
+                  <li key={p.id} className="text-white">
+                    <Link
+                      href={`/products/${p.parent_title}/${p.title
+                        ?.replace(" ", "_")
+                        .toLowerCase()}`}
+                    >
+                      <div>
+                        <Thumbnail thumbnail={p.thumbnail} size="full" />
+                        <div className="flex justify-center">
+                          <div className=" text-base-regular text-center mt-2 z-10 w-[90%] ">
+                            <span>{p.title}</span>
+                            <div className="flex w-full items-center"></div>
+                          </div>
+                        </div>
+                      </div>
+                    </Link>
+                  </li>
+                )
+              )
+            : ""}
           {isLoading &&
             !previews.length &&
             repeat(6).map((index) => (
