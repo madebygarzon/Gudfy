@@ -205,28 +205,27 @@ export default function AddProducts({ setReset }: Reset) {
       </ButtonLigth>
 
       <Modal isOpen={isOpen} onOpenChange={onOpenChange} size="full">
-        <ModalContent>
+        <ModalContent className="max-h-screen overflow-y-auto">
           {(onClose) => (
             <>
-              <ModalHeader className="text-xl font-bold flex items-center mt-6 flex-col gap-1 px-20">
-                Agregar productos
-              </ModalHeader>
-              <ModalBody className="m-6 border-1 rounded-xl shadow-md border-gray-200 p-12 ">
+              <ModalBody className=" m-6 border-1 rounded-xl shadow-md border-gray-200 p-12 ">
                 <div className=" flex w-full h-full">
                   <div className="w-[30%] h-full flex flex-col justify-between">
                     <Input
-                      placeholder="Busca tu producto"
+                      placeholder="Buscar un producto"
                       id="search-input"
                       type="search"
                       onChange={(e) => handlerSearcherbar(e.target.value)}
                     />
                     {listProducts.products.length ? (
-                      <div className=" container my-2 max-h-[70vh] bg-white p-4 border border-slate-200 rounded-[5px] overflow-auto">
+                      <div className=" container my-2 max-h-[60vh] bg-white p-4 border border-slate-200 rounded-[5px] overflow-auto">
                         <table className="">
                           <thead>
                             <tr>
-                              <th className="w-1/4 py-2">Lista de productos</th>
-                              <th className="w-1/4 py-2"></th>
+                              <th className="flex items-start w-full py-2">
+                                Productos disponibles
+                              </th>
+                              <th className="w-2/4 py-2"></th>
                             </tr>
                           </thead>
                           <tbody>
@@ -253,13 +252,22 @@ export default function AddProducts({ setReset }: Reset) {
                                   </td>
 
                                   <td className="py-2 text-center">
-                                    <Button
+                                    {/* <Button
                                       onPress={() =>
                                         handlerAddProduct(product.id)
                                       }
                                     >
                                       Agregar a mi tienda
-                                    </Button>
+                                    </Button> */}
+
+                                    <ButtonLigth
+                                      className="ml-2 bg-[#9B48ED] hover:bg-[#7b39c4] text-white border-none"
+                                      onClick={() =>
+                                        handlerAddProduct(product.id)
+                                      }
+                                    >
+                                      Agregar <Plus />
+                                    </ButtonLigth>
                                   </td>
                                 </tr>
                               ))
@@ -278,12 +286,12 @@ export default function AddProducts({ setReset }: Reset) {
                       </div>
                     )}
                     <div className="flex flex-col items-center">
-                      <p className="mb-2">¿No encuentras tu producto?</p>
+                      <p className="mb-2">¿No encuentras el producto vas a vender?</p>
                       <RequestProduct setReset={setReset} />
                     </div>
                   </div>
-                  <div className="w-[70%] pt-8 pl-8">
-                    <h2 className="font-bold text-base">
+                  <div className="w-[70%] pl-8">
+                    <h2 className="flex justify-center text-lg">
                       Lista de productos seleccionados
                     </h2>
                     {listProducts.selectedProducts.length ? (
@@ -314,7 +322,8 @@ export default function AddProducts({ setReset }: Reset) {
                                   <span>{product.titleVariant}</span>
                                 </div>
                               </td>
-                              <td className="py-2  text-center ">
+                              <td className="py-2 text-center ">
+                                <p className="text-star text-sm">cargar códigos</p>
                                 <FileUploader
                                   variantID={product.id}
                                   setAddResult={setAddResult}
@@ -334,7 +343,15 @@ export default function AddProducts({ setReset }: Reset) {
                               </td>
                               <td className="py-2  text-center ">
                                 {" "}
-                                <ButtonM
+                                <ButtonLigth
+                                  className="ml-4 bg-[#E74C3C] hover:bg-[#C0392B] text-white border-none"
+                                  onClick={() =>
+                                    handlerDeleteProduct(product.id)
+                                  }
+                                >
+                                  Cancelar
+                                </ButtonLigth>
+                                {/* <ButtonM
                                   variant="danger"
                                   onClick={() =>
                                     handlerDeleteProduct(product.id)
@@ -342,24 +359,68 @@ export default function AddProducts({ setReset }: Reset) {
                                 >
                                   {" "}
                                   Eliminar
-                                </ButtonM>
+                                </ButtonM> */}
                               </td>
                             </tr>
                           ))}
                         </tbody>
                       </table>
                     ) : (
-                      <div className="felx justify-center text-center">
-                        Agrega un producto de la lista de disponibles
+                      <div className="flex mt-10 items-center justify-center ">
+                        Agrega un producto de la lista de disponibles...
                       </div>
                     )}
                     {susccessful && (
-                      <div className=" flex items-center justify-center font-semibold text-lg text-center text-blue-700 h-full">
-                        Productos agregados correctamente{" "}
+                      <div className=" flex mt-10 justify-center font-semibold text-2xl text-[#218838] h-full">
+                        ¡Productos agregados correctamente!{" "}
                       </div>
                     )}
+
+                    <div>
+                      {!erros.codes ? (
+                        <div>
+                          <p className="text-red-600">
+                            ** No se han subido códigos a ningún producto **
+                          </p>
+                        </div>
+                      ) : (
+                        <></>
+                      )}
+                      {!erros.price ? (
+                        <div>
+                          <p className="text-red-600 mb-4">
+                            ** No se ha asignado precio a ningún producto **
+                          </p>
+                        </div>
+                      ) : (
+                        <div></div>
+                      )}
+                      
+                    </div>
+                    
                   </div>
+                  
                 </div>
+                <div className="flex justify-center gap-2">
+                        <ButtonLigth
+                          // variant="transparent"
+                          className="bg-[#E74C3C] hover:bg-[#C0392B] text-white border-none"
+                          onClick={onClose}
+                        >
+                          Cancelar
+                        </ButtonLigth>
+                        <ButtonLigth
+                          // variant="transparent"
+                          className="bg-[#28A745] hover:bg-[#218838] text-white border-none"
+                          onClick={onSubmit}
+                        >
+                          {isloadingPV ? (
+                            <Spinner color="secondary" />
+                          ) : (
+                            "Guardar productos"
+                          )}
+                        </ButtonLigth>
+                      </div>
               </ModalBody>
               <ModalFooter className="mb-[2%] justify-center">
                 <div>
@@ -381,26 +442,7 @@ export default function AddProducts({ setReset }: Reset) {
                   ) : (
                     <div></div>
                   )}
-                  <div className="flex justify-center gap-2">
-                    <ButtonLigth
-                      // variant="transparent"
-                      className="bg-[#E74C3C] hover:bg-[#C0392B] text-white border-none"
-                      onClick={onClose}
-                    >
-                      Cancelar
-                    </ButtonLigth>
-                    <ButtonLigth
-                      // variant="transparent"
-                      className="bg-[#28A745] hover:bg-[#218838] text-white border-none"
-                      onClick={onSubmit}
-                    >
-                      {isloadingPV ? (
-                        <Spinner color="secondary" />
-                      ) : (
-                        "Guardar productos"
-                      )}
-                    </ButtonLigth>
-                  </div>
+                  
                 </div>
               </ModalFooter>
             </>

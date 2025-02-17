@@ -58,7 +58,7 @@ const ItemsTemplate = ({ items, modifyProduct }: ItemsTemplateProps) => {
       <div className="grid grid-cols-1 gap-y-8 py-8">
         {items?.length ? (
           <>
-            <div className="overflow-y-scroll max-h-[402px] px-4 grid grid-cols-1 gap-y-2 no-scrollbar">
+            <div className="overflow-y-scroll max-h-[402px] px-4 grid grid-cols-1 gap-y-2">
               {items
                 .sort((a, b) => {
                   return a.created_at > b.created_at ? -1 : 1
@@ -146,7 +146,7 @@ const ItemsTemplate = ({ items, modifyProduct }: ItemsTemplateProps) => {
                               return (
                                 <>
                                   <Alert variant="warning">
-                                    Cantidad Insuficiente
+                                    Cantidad insuficiente
                                   </Alert>
                                 </>
                               )

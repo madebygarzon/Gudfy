@@ -33,9 +33,9 @@ const WalletTemplate = () => {
   return (
     <div className="w-full p-8 border border-gray-200 rounded-lg">
       <div className="mb-8 flex  gap-y-4 justify-between">
-        <h1 className="text-xl font-bold">
+        <h2 className="text-2xl mt-2 font-bold text-gray-700 capitalize">
           Billetera : {wallet.wallet_address}
-        </h1>
+        </h2>
         <div className="flex w-auto gap-7 mr-4 font-bold">
           <div>
             <span className="text-yellow-600  ">

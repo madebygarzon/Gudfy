@@ -33,7 +33,7 @@ const Dashboard = ({ orders, customer }: DashboardProps) => {
           <div className=" h-52 w-full flex flex-col items-center justify-center ">
             <div className="flex items-end ">
               <span className="ml-16 text-xs leading-none ">
-                Perfil {`${getProfileCompletion(customer)}%`} completado
+                {/* Perfil {`${getProfileCompletion(customer)}%`} completado */}
                 {/* {t("acc_ind_completed")} */}
               </span>
             </div>
