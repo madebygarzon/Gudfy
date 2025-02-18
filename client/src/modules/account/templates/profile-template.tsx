@@ -21,9 +21,7 @@ const ProfileTemplate = () => {
   ): number => {
     let count = 0
 
-    if (!customer) {
-      return 0
-    }
+    if (!customer) return 0
 
     if (customer.email) count++
     if (customer.first_name && customer.last_name) count++
@@ -34,22 +32,22 @@ const ProfileTemplate = () => {
   }
 
   return (
-    <div className="h-full flex items-center">
-      <div className="w-4/12 p-8">        
-        <div className="mb-8 flex gap-4 items-center">
+    <div className="h-full flex flex-col lg:flex-row items-center lg:items-center gap-6 p-4 sm:p-2 ">
+      {/* Sidebar */}
+      <div className="w-full lg:w-4/12 lg:p-6 flex flex-col items-center lg:items-start sm:p-10">
+        <div className="mb-6 flex flex-col sm:flex-row gap-6 items-center">
           {/* Avatar */}
-          <div className="flex items-center relative group mb-4">
+          <div className="relative group">
             <Avatar
               color="secondary"
               size="lg"
-              className="w-28 h-28 text-5xl border-solid border-5 border-[#ffffff] opacity-100 group-hover:opacity-50 transition-opacity duration-300 cursor-pointer"
+              className="w-24 h-24 md:w-28 md:h-28 text-5xl border-solid border-5 border-white opacity-100 group-hover:opacity-50 transition-opacity duration-300 cursor-pointer"
               name={
                 customer
                   ? customer.first_name.charAt(0) + customer.last_name.charAt(0)
                   : " "
               }
             />
-
             <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
               <span className="text-xs leading-none">
                 {`${getProfileCompletion(customer)}%`} completado
@@ -58,17 +56,20 @@ const ProfileTemplate = () => {
           </div>
 
           {/* Profile Header */}
-          <div className="text-start">
-            <h1 className="text-2xl font-bold text-gray-700 capitalize">
+          <div className="text-center lg:text-start">
+            <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-700 capitalize">
               {customer.first_name} {customer.last_name}
             </h1>
-            <p className="text-base-regular text-gray-600">{customer.email}</p>
+            <p className="text-sm sm:text-base text-gray-600">
+              {customer.email}
+            </p>
           </div>
         </div>
       </div>
-      <div className="w-8/12 mr-6 rounded-lg shadow-2xl p-8">
-        {/* Profile Information */}
-        <div className="flex pl-2 flex-col gap-y-8 w-full">
+
+      {/* Profile Information */}
+      <div className="w-full lg:w-8/12 rounded-lg shadow-2xl p-6 ">
+        <div className="flex flex-col gap-y-6 w-full">
           <ProfileName customer={customer} />
           <Divider />
           <ProfileEmail customer={customer} />
@@ -76,8 +77,6 @@ const ProfileTemplate = () => {
           <ProfilePhone customer={customer} />
           <Divider />
           <ProfilePassword customer={customer} />
-          {/* <Divider /> */}
-          {/* <ProfileBillingAddress customer={customer} /> */}
         </div>
       </div>
     </div>

@@ -69,14 +69,15 @@ const OrderDetails = ({ orderData, onClose }: props) => {
   }, [loading])
 
   return (
-    <div className="container mx-auto p-4">
+    <div className="max-w-4xl md:container  mx-auto p-0 md:p-4">
       <h2 className="text-center text-2xl mt-2 font-bold text-gray-700">
         Detalles del pedido
       </h2>
 
-      <div className="m-8">
-        <table className="min-w-full rounded-lg shadow-2xl p-8">
-          <thead className="bg-gray-100">
+      {/* Tabla Responsiva */}
+      <div className="m-4 overflow-x-auto">
+        <table className="min-w-full rounded-lg shadow-md text-sm">
+          <thead className="bg-gray-100 text-gray-700">
             <tr>
               <th className="py-2 px-4 border-b border-slate-200">Producto</th>
               <th className="py-2 px-4 border-b border-slate-200">Subtotal</th>
@@ -84,150 +85,97 @@ const OrderDetails = ({ orderData, onClose }: props) => {
           </thead>
           <tbody>
             {orderData.store_variant.map((p, i) => (
-              <>
-                <tr className="border-b border-slate-200">
-                  <td className="py-2 px-4 border-r border-slate-200 flex justify-between">
-                    <div>
-                      {p.produc_title} – ${p.price} USD x {p.quantity}
-                      <br />
-                    </div>
-                    <div className="text-sm font-light">
-                      <p>
-                        Vendido por:{" "}
-                        <Link
-                          className="text-lila-gf capitalize"
-                          href={`/seller/store/${p.store_id}`}
-                        >
-                          {p.store_name}
-                        </Link>
-                      </p>
-                      {orderData.state_order === "Finalizado" ? (
-                        <>
-                          {!loading ? (
-                            stores.includes(p.store_id) ? (
-                              <span className="text-lila-gf">
-                                ¡Ya calificaste esta tienda!
-                              </span>
-                            ) : (
-                              <button
-                                className="text-lila-gf flex justify-center items-center gap-2 text-sm px-4"
-                                onClick={() => {
-                                  onOpen()
-                                  setStoreReviewData({
-                                    store_name: p.store_name,
-                                    store_id: p.store_id,
-                                    store_order_id: orderData.id,
-                                    customer_name: customer
-                                      ? customer?.last_name +
-                                        customer?.first_name
-                                      : " ",
-                                    customer_id: customer?.id || " ",
-                                    content: "",
-                                    rating: 0,
-                                  })
-                                }}
-                              >
-                                Califica esta tienda
-                                <BlankIcon className="w-4" />
-                              </button>
-                            )
+              <tr key={i} className="border-b border-slate-200">
+                <td className="py-2 px-4 border-r border-slate-200 flex justify-between flex-wrap">
+                  <div>
+                    {p.produc_title} – ${p.price} USD x {p.quantity}
+                  </div>
+                  <div className="text-xs font-light mt-2">
+                    <p>
+                      Vendido por:{" "}
+                      <Link
+                        className="text-blue-500 capitalize"
+                        href={`/seller/store/${p.store_id}`}
+                      >
+                        {p.store_name}
+                      </Link>
+                    </p>
+                    {orderData.state_order === "Finalizado" && (
+                      <>
+                        {!loading ? (
+                          stores.includes(p.store_id) ? (
+                            <span className="text-green-500">
+                              ¡Ya calificaste esta tienda!
+                            </span>
                           ) : (
-                            <Loader />
-                          )}
-                        </>
-                      ) : (
-                        <></>
-                      )}
-                    </div>
-                  </td>
-                  <td className="py-2 px-4 border-b border-slate-200">
-                    ${p.total_price_for_product} USD
-                  </td>
-                </tr>
-              </>
+                            <button
+                              className="text-blue-500 flex items-center gap-1 text-xs mt-1"
+                              onClick={() => {
+                                onOpen()
+                                setStoreReviewData({
+                                  store_name: p.store_name,
+                                  store_id: p.store_id,
+                                  store_order_id: orderData.id,
+                                  customer_name: customer
+                                    ? `${customer.last_name} ${customer.first_name}`
+                                    : " ",
+                                  customer_id: customer?.id || " ",
+                                  content: "",
+                                  rating: 0,
+                                })
+                              }}
+                            >
+                              Califica esta tienda <BlankIcon className="w-4" />
+                            </button>
+                          )
+                        ) : (
+                          <Loader />
+                        )}
+                      </>
+                    )}
+                  </div>
+                </td>
+                <td className="py-2 px-4 border-b border-slate-200">
+                  ${p.total_price_for_product} USD
+                </td>
+              </tr>
             ))}
-            <tr className="border-b border-slate-200">
-              <td className="py-2 px-4 border-r border-slate-200">Subtotal:</td>
-              <td className="py-2 px-4 border-r border-slate-200">
-                ${handlerSubTotal()} USD
-              </td>
-            </tr>
-            <tr className="border-b border-slate-200">
-              <td className="py-2 px-4 border-r border-slate-200">
-                Comisión de la pasarela de pago: 1%
-              </td>
-              <td className="py-2 px-4 ">
-                ${(handlerSubTotal() * 0.01).toFixed(2)} USD
-              </td>
-            </tr>
-            <tr className="border-b border-slate-200">
-              <td className="py-2 px-4 border-r border-slate-200">
-                Método de pago:
-              </td>
-              <td className="py-2 px-4 ">Binance Pay Entrega Automática</td>
-            </tr>
-            <tr className="border-b border-slate-200">
-              <td className="py-2 px-4 border-r border-slate-200">Total:</td>
-              <td className="py-2 px-4 border-b border-slate-200">
-                $
-                {orderData.store_variant
-                  .reduce((sum, p) => {
-                    return sum + parseFloat(p.total_price_for_product)
-                  }, handlerSubTotal() * 0.01)
-                  .toFixed(2)}{" "}
-                USD
-              </td>
-            </tr>
           </tbody>
         </table>
       </div>
-      <div className="p-8">
-        <p className="text-base">
+
+      {/* Información del pedido */}
+      <div className="p-4 text-sm text-center ">
+        <p>
           El pedido <span className="font-bold">#{orderData.id}</span> se
           realizó el{" "}
           <span className="font-bold">
             {handlerformatDate(orderData.created_at)}
-          </span>{" "}
+          </span>
           y está actualmente{" "}
           <span
             className={clsx("font-bold", {
-              " text-red-500": orderData.state_order === "Cancelada",
-              " text-blue-500": orderData.state_order === "Completado",
-              " text-yellow-500": orderData.state_order === "Pendiente de pago",
-              " text-green-500": orderData.state_order === "Finalizado",
-              " text-orange-500": orderData.state_order === "En discusión",
+              "text-red-500": orderData.state_order === "Cancelada",
+              "text-blue-500": orderData.state_order === "Completado",
+              "text-yellow-500": orderData.state_order === "Pendiente de pago",
+              "text-green-500": orderData.state_order === "Finalizado",
+              "text-orange-500": orderData.state_order === "En discusión",
             })}
           >
             {orderData.state_order}
           </span>
           .
-          {orderData.state_order === "Pendiente de pago" ||
-          orderData.state_order === "Cancelada" ? (
-            <span className="flex gap-1">
-              Cancelacion automatica:
-              <div className="font-bold">
-                <Timer creationTime={orderData.created_at} />
-              </div>
-            </span>
-          ) : (
-            <></>
-          )}
-        </p>
-        <p className="font-bold">
-          {`Orden por: ${customer?.first_name} ${customer?.last_name} correo: ${customer?.email}`}{" "}
         </p>
       </div>
 
-      <div className="z-30">
-        <ModalQualify
-          isOpen={isOpen}
-          onOpenChange={onOpenChange}
-          storeReviewData={storeReviewData}
-          setStoreReviewData={setStoreReviewData}
-          setLoading={setLoading}
-        />
-      </div>
-      <div className="w-full"></div>
+      {/* Modal de calificación */}
+      <ModalQualify
+        isOpen={isOpen}
+        onOpenChange={onOpenChange}
+        storeReviewData={storeReviewData}
+        setStoreReviewData={setStoreReviewData}
+        setLoading={setLoading}
+      />
     </div>
   )
 }
