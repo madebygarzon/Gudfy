@@ -44,16 +44,19 @@ type arraysRequestProduct = {
 };
 
 const registerNumber = [15, 30, 100];
-// numero de filas por pagina predeterminado
 const APPROVED = "APPROVED";
 const REJECTED = "REJECTED";
 const dataSelecFilter = [
   {
-    value: true,
+    value: "all",
+    label: "Todos",
+  },
+  {
+    value: "true",
     label: "Aprobado",
   },
   {
-    value: false,
+    value: "false",
     label: "Sin Aprobar",
   },
 ];
@@ -65,7 +68,7 @@ const RequestProduct = () => {
     dataPreview: [],
     count: 0,
   });
-  const [pageTotal, setPagetotal] = useState<number>(); // paginas totales
+  const [pageTotal, setPagetotal] = useState<number>();
   const [page, setPage] = useState(1);
   const [rowsPages, setRowsPages] = useState<number>(15);
   const [isLoading2, setIsLoading] = useState<boolean>(true);
@@ -78,11 +81,18 @@ const RequestProduct = () => {
       setIsLoading(false);
       return p;
     });
-    setPagetotal(Math.ceil(product?.length || 0 / rowsPages));
+
+    const sortedProducts = product.sort((a, b) => {
+      return (
+        new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+      );
+    });
+
+    setPagetotal(Math.ceil(sortedProducts?.length || 0 / rowsPages));
     setDataCustomer({
-      dataRequestProduct: product,
-      dataPreview: handlerPreviewSellerAplication(product, 1),
-      count: product?.length || 0,
+      dataRequestProduct: sortedProducts,
+      dataPreview: handlerPreviewSellerAplication(sortedProducts, 1),
+      count: sortedProducts?.length || 0,
     });
   };
 
@@ -137,8 +147,6 @@ const RequestProduct = () => {
     page,
     rows?
   ) => {
-    // cadena de array para filtrar segun la pagina , se debe de pensar en cambiar el llamado a la api para poder
-    // solicitar unicamente los que se estan pidiendo en la paginacion
     const dataRowPage = rows || rowsPages;
     const start = (page - 1) * dataRowPage;
     const end = page * dataRowPage;
@@ -156,14 +164,17 @@ const RequestProduct = () => {
     setPage(1);
     let dataFilter;
     switch (value) {
-      case dataSelecFilter[0].value:
+      case "all":
+        dataFilter = dataProduct.dataRequestProduct;
+        break;
+      case "true":
         dataFilter = dataProduct.dataRequestProduct.filter(
-          (data) => data.approved == dataSelecFilter[0].value
+          (data) => data.approved === true
         );
         break;
-      case dataSelecFilter[1].value:
+      case "false":
         dataFilter = dataProduct.dataRequestProduct.filter(
-          (data) => data.approved == dataSelecFilter[1].value
+          (data) => data.approved === false
         );
         break;
       default:
@@ -173,9 +184,10 @@ const RequestProduct = () => {
     setDataCustomer({
       ...dataProduct,
       dataPreview: handlerPreviewSellerAplication(dataFilter, 1),
-      dataFilter: value === dataSelecFilter[0].value ? [] : dataFilter,
+      dataFilter: value === "all" ? [] : dataFilter,
     });
   };
+
   const handlerRowsNumber = (value) => {
     const valueInt = parseInt(value);
     setRowsPages(valueInt);
@@ -195,24 +207,20 @@ const RequestProduct = () => {
     handlerGetListProduct(value ? "ASC" : "DESC");
     setOrderDate((data) => !data);
   };
+
   const handlerSearcherbar = (e: string) => {
+    const searchTerm = e.toLowerCase();
+
     const dataFilter = dataProduct.dataRequestProduct.filter((data) => {
-      if ("customer" in data) {
-        const nameIncludes = data.product_title
-          .toLowerCase()
-          .includes(e.toLowerCase());
-        const emailIncludes = data.customer_email
-          .toLowerCase()
-          .includes(e.toLowerCase());
-        return nameIncludes || emailIncludes;
-      }
-      return false;
+      const titleMatch = data.product_title.toLowerCase().includes(searchTerm);
+      const emailMatch = data.customer_email.toLowerCase().includes(searchTerm);
+      return titleMatch || emailMatch;
     });
 
     setDataCustomer({
       ...dataProduct,
       dataPreview: handlerPreviewSellerAplication(dataFilter, 1),
-      dataFilter: dataFilter?.length ? dataFilter : [],
+      dataFilter: dataFilter,
     });
   };
 
@@ -248,7 +256,7 @@ const RequestProduct = () => {
               </Select.Trigger>
               <Select.Content>
                 {dataSelecFilter.map((item, i) => (
-                  <Select.Item key={i} value={item.label}>
+                  <Select.Item key={i} value={item.value}>
                     {item.label}
                   </Select.Item>
                 ))}
@@ -257,7 +265,7 @@ const RequestProduct = () => {
           </div>
           <div className="w-[250px]">
             <Input
-              placeholder="Search"
+              placeholder="Buscar por nombre o email"
               id="search-input"
               type="search"
               onChange={(e) => handlerSearcherbar(e.target.value)}
@@ -313,10 +321,7 @@ const RequestProduct = () => {
                             />
                             <div>
                               <Link to={data.product_image} target="_blank">
-                                <IconButton
-                                  className="w-auto border"
-                                  // onClick={() => handleDownload(data)}
-                                >
+                                <IconButton className="w-auto border">
                                   Descargar Imagen
                                   <ArrowDownTray />
                                 </IconButton>

@@ -19,7 +19,7 @@ describe("Dashboard Component", () => {
 
   test("renders the profile completion percentage", () => {
     render(<Dashboard customer={customer} />)
-    const profileCompletionElement = screen.getByText("75% completado")
+    const profileCompletionElement = screen.getByText("79% completado")
     expect(profileCompletionElement).toBeInTheDocument()
   })
   

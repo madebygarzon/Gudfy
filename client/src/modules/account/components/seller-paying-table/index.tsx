@@ -21,6 +21,8 @@ import { useStore } from "@lib/context/store-context"
 import { useSellerStoreGudfy } from "@lib/context/seller-store"
 import Loader from "@lib/loader"
 import { dataWallet } from "@modules/account/templates/wallet-template"
+import { EyeSeeIcon } from "@lib/util/icons"
+import ButtonLigth from "@modules/common/components/button_light"
 
 export type OrderPaymentData = {
   payment_id: string
@@ -113,7 +115,15 @@ const WalletTable = ({ wallet, setWallet }: props) => {
                       $ {order.amoun_paid}
                     </td>
                     <td className="px-4 py-2  ">
-                      <ButtonMedusa
+                      <EyeSeeIcon
+                        className="cursor-pointer hover:scale-110 transition-all"
+                        onClick={() => {
+                          setSelectOrderData(order)
+                          onOpen()
+                        }}
+                      />
+
+                      {/* <ButtonMedusa
                         className=" bg-ui-button-neutral border-ui-button-neutral hover:bg-ui-button-neutral-hover rounded-[5px] text-[#402e72] "
                         onClick={() => {
                           setSelectOrderData(order)
@@ -122,7 +132,7 @@ const WalletTable = ({ wallet, setWallet }: props) => {
                       >
                         <FaEye />
                         Ver detalle del pago
-                      </ButtonMedusa>
+                      </ButtonMedusa> */}
                     </td>
                   </tr>
                 ))
@@ -195,91 +205,133 @@ const ModalOrder = ({
       <ModalContent className="bg-white p-6 rounded-lg shadow-lg">
         {!viewVoucher ? (
           <>
-            <ModalHeader className="text-2xl font-bold text-center mb-4">
-              Recibo de Orden
-            </ModalHeader>
+            <ModalHeader className="text-2xl font-bold text-center"></ModalHeader>
             <ModalBody>
               {/* Lista de productos */}
-              <table className="w-full table-auto border-collapse">
-                <thead>
-                  <tr className="bg-gray-100">
-                    <th className="p-2 border-b">Producto</th>
-                    <th className="p-2 border-b">N° Pedido</th>
-                    <th className="p-2 border-b">Cliente</th>
-                    <th className="p-2 border-b text-right">Cantidad</th>
-                    <th className="p-2 border-b text-right">Valor Unitario</th>
-                    <th className="p-2 border-b text-right">Comisión (1%)</th>
-                    <th className="p-2 border-b text-right">Total Producto</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {ordePaymenmtData?.products?.map((product, i) => {
-                    const totalProducto = product.price * product.quantity
-                    const comision = (totalProducto * commission).toFixed(2)
-                    return (
-                      <tr key={i}>
-                        <td className="p-2 border-b">{product.name}</td>
-                        <td className="p-2 border-b">
-                          {product.store_order_id.replace(
-                            "store_order_id_",
-                            ""
-                          )}
-                        </td>
-                        <td className="p-2 border-b">
-                          {product.customer_name}
-                        </td>
-                        <td className="p-2 border-b text-right">
-                          {product.quantity}
-                        </td>
-                        <td className="p-2 border-b text-right">
-                          ${product.price}
-                        </td>
-                        <td className="p-2 border-b text-right">${comision}</td>
-                        <td className="p-2 border-b text-right">
-                          ${totalProducto}
-                        </td>
-                      </tr>
-                    )
-                  })}
-                </tbody>
-              </table>
+              <h2 className="text-center text-2xl my-4 font-bold text-gray-700 ">
+                Recibo de pago
+              </h2>
+
+              <div className="overflow-y-scroll max-h-[350px] ">
+                <table className="min-w-full rounded-lg shadow-2xl p-8">
+                  <thead className="bg-gray-100">
+                    <tr>
+                      <th className="py-2 px-4 border-b border-slate-200">
+                        Producto
+                      </th>
+                      <th className="py-2 px-4 border-b border-slate-200">
+                        N° Pedido
+                      </th>
+                      <th className="py-2 px-4 border-b border-slate-200">
+                        Cliente
+                      </th>
+                      <th className="py-2 px-4 border-b border-slate-200">
+                        Cantidad
+                      </th>
+                      <th className="py-2 px-4 border-b border-slate-200">
+                        Valor Unitario
+                      </th>
+                      <th className="py-2 px-4 border-b border-slate-200">
+                        Comisión (1%)
+                      </th>
+                      <th className="py-2 px-4 border-b border-slate-200">
+                        Total Producto
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {ordePaymenmtData?.products?.map((product, i) => {
+                      const totalProducto = product.price * product.quantity
+                      const comision = (totalProducto * commission).toFixed(2)
+                      return (
+                        <tr className="border-b border-slate-200" key={i}>
+                          <td className="p-2 border-b">{product.name}</td>
+                          <td className="p-2 border-b">
+                            {product.store_order_id.replace(
+                              "store_order_id_",
+                              ""
+                            )}
+                          </td>
+                          <td className="p-2 border-b">
+                            {product.customer_name}
+                          </td>
+                          <td className="p-2 border-b text-right">
+                            {product.quantity}
+                          </td>
+                          <td className="p-2 border-b text-right">
+                            ${product.price}
+                          </td>
+                          <td className="p-2 border-b text-right">
+                            ${comision}
+                          </td>
+                          <td className="p-2 border-b text-right">
+                            ${totalProducto}
+                          </td>
+                        </tr>
+                      )
+                    })}
+                  </tbody>
+                </table>
+              </div>
+
               <div>
-                <p>
+                <p className="text-xs">
                   {" "}
                   <strong>Nota del pago: </strong>
                   {ordePaymenmtData?.payment_note}
                 </p>
               </div>
               <div className="mt-6">
-                <div className="flex justify-between font-semibold text-lg">
-                  <div>Subtotal:</div>
+                <div className="flex justify-between ">
+                  <div>
+                    <p>Subtotal:</p>
+                  </div>
                   <div>${subtotal.toFixed(2)}</div>
                 </div>
-                <div className="flex justify-between font-semibold text-lg mt-2">
-                  <div>Total Comisión:</div>
+                <div className="flex justify-between ">
+                  <div>
+                    <p>Total Comisión:</p>
+                  </div>
                   <div>${totalComision.toFixed(2)}</div>
                 </div>
-                <div className="flex justify-between font-semibold text-xl mt-4">
+                <div className="flex justify-between text-bold">
                   <div>Total Final:</div>
                   <div>${totalFinal.toFixed(2)}</div>
                 </div>
               </div>
             </ModalBody>
             <ModalFooter className="flex justify-end mt-6">
-              <Button
+              {/* <Button
                 className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition duration-300"
                 onPress={() => setViewVoucher(true)}
               >
                 Ver Comprobante
-              </Button>
+              </Button> */}
+
+              <ButtonLigth
+                // variant="transparent"
+                className="bg-[#28A745] hover:bg-[#218838] text-white border-none"
+                onClick={() => setViewVoucher(true)}
+              >
+                Ver comprobante
+              </ButtonLigth>
             </ModalFooter>{" "}
           </>
         ) : (
           <>
             <ModalHeader>
-              <Button onPress={() => setViewVoucher(false)}>
+              <ButtonLigth
+                onClick={() => setViewVoucher(false)}
+                // variant="transparent"
+                className="bg-[#9B48ED] hover:bg-[#7b39c4] text-white border-none"
+              >
+                <FaArrowLeft className="mr-2" />
+                Volver
+              </ButtonLigth>
+
+              {/* <Button onPress={() => setViewVoucher(false)}>
                 <FaArrowLeft /> Volver
-              </Button>
+              </Button> */}
             </ModalHeader>
             <ModalBody className="flex justify-center items-center">
               <Image

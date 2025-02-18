@@ -198,11 +198,12 @@ export default function ViewProductSerials({
         <>
           <div className="absolute top-2 left-2">
             <ButtonLigth
+              className="bg-[#9B48ED] hover:bg-[#7b39c4] text-white border-none"
               onClick={() => {
                 setViewSerial(undefined)
               }}
             >
-              <ArrowLongLeft />
+              <ArrowLongLeft className="mr-2" />
               Volver
             </ButtonLigth>{" "}
           </div>

@@ -142,7 +142,7 @@ const ModalOrderDetail = ({
               Detalles del pedido
             </h2>
 
-            <div className="">
+            <div className="overflow-y-scroll max-h-[350px] ">
               <table className="min-w-full rounded-lg shadow-2xl p-8">
                 <thead className="bg-gray-100">
                   <tr>
@@ -154,7 +154,7 @@ const ModalOrderDetail = ({
                     </th>
                   </tr>
                 </thead>
-                <tbody>
+                <tbody className="">
                   {orderData.store_variant.map((p, i) => (
                     <>
                       <tr className="border-b border-slate-200">
@@ -345,11 +345,7 @@ const ModalOrderDetail = ({
                 {`Orden por: ${customer?.first_name} ${customer?.last_name} correo: ${customer?.email}`}{" "}
               </p>
               <h2 className="text-sm  my-4 text-warning-600">
-                * A partir de este momento, dispones de un plazo de 3 días para
-                presentar cualquier reclamo. En caso de no recibir ningún
-                reclamo dentro de este período, asumiremos que has recibido tu
-                compra satisfactoriamente y tu orden será marcada como
-                Finalizada.*
+                * A partir de la recepción de tu pedido, dispones de un plazo de 3 días hábiles para presentar cualquier reclamo relacionado con tu compra. Si no recibimos ninguna notificación dentro de este período, consideraremos que has recibido el producto en óptimas condiciones y procederemos a marcar tu orden como Finalizada.*
               </h2>
             </div>
             <div className="w-full"></div>
@@ -438,7 +434,7 @@ const ModalQualify = ({
         <>
           <ModalHeader>
             {" "}
-            <h1>Presentar Reclamos</h1>
+            <h2 className="block mx-auto text-xl font-bold text-gray-700">Presentar Reclamos</h2>
           </ModalHeader>
           <ModalBody>
             <div className="w-full">
@@ -472,13 +468,40 @@ const ModalQualify = ({
                 />
               </div>
               <InputFile
-                type="Image"
+                type="Normal"
                 alt="Image"
                 label="Adjuntar imagen"
                 file={image}
                 setFile={setImage}
+                accept="image/*"
               />
-              <Button
+              
+              
+                <div className="flex justify-center gap-2">
+                    <ButtonLigth
+                    className={`${
+                      !comment.length ? "bg-[#a76963] hover:bg-[#744843] text-white border-none" : "   bg-[#E74C3C] hover:bg-[#C0392B] text-white border-none"
+                    }`}
+                      // variant="transparent"
+                      
+                      onClick={() => handlerAddClaim()}
+                
+                    >
+                      Presentar reclamo
+                    </ButtonLigth>
+                    <ButtonLigth
+                      // variant="transparent"
+                      className="bg-[#28A745] hover:bg-[#218838] text-white border-none"
+                      onClick={() => {
+                        onClose()
+                      }}
+                    >
+                      Atras
+                    </ButtonLigth>
+                  </div>
+
+
+              {/* <Button
                 className={`${
                   !comment.length ? "bg-slate-500" : " bg-blue-gf text-white"
                 }`}
@@ -494,14 +517,20 @@ const ModalQualify = ({
                 }}
               >
                 Atrás
-              </Button>
+              </Button> */}
+
+
+
+
+
+
+
+
             </div>
           </ModalBody>
 
           <ModalFooter>
-            Una vez selecciones uno de los productos y agrege un comentario,
-            estos abrirán un ticket de reclamo, el cual puedes ver en la sección
-            de compras y pestaña reclamos.
+            <p className="text-xs">* Una vez que selecciones uno de los productos y agregues un comentario, se generará automáticamente un ticket de reclamo. Podrás visualizar y gestionar este ticket en la sección de compras, dentro de la pestaña dedicada a reclamos." *</p>
           </ModalFooter>
         </>
       </ModalContent>
