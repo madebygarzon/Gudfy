@@ -206,45 +206,25 @@ const SellerApplication = () => {
   const handlerNextPage = (action) => {
     if (action == "NEXT")
       setPage((old) => {
-        if (dataCustomer.dataFilter!) {
-          setDataCustomer({
-            ...dataCustomer,
-            dataPreview: handlerPreviewSellerAplication(
-              dataCustomer.dataFilter,
-              page + 1
-            ),
-          });
-          return old + 1;
-        } else
-          setDataCustomer({
-            ...dataCustomer,
-            dataPreview: handlerPreviewSellerAplication(
-              dataCustomer.dataSellers,
-              page + 1
-            ),
-          });
+        const dataToUse = dataCustomer.dataFilter.length
+          ? dataCustomer.dataFilter
+          : dataCustomer.dataSellers;
+        setDataCustomer({
+          ...dataCustomer,
+          dataPreview: handlerPreviewSellerAplication(dataToUse, page + 1),
+        });
         return old + 1;
       });
 
     if (action == "PREV")
       setPage((old) => {
-        if (dataCustomer.dataFilter!) {
-          setDataCustomer({
-            ...dataCustomer,
-            dataPreview: handlerPreviewSellerAplication(
-              dataCustomer.dataFilter,
-              page - 1
-            ),
-          });
-          return old - 1;
-        } else
-          setDataCustomer({
-            ...dataCustomer,
-            dataPreview: handlerPreviewSellerAplication(
-              dataCustomer.dataSellers,
-              page - 1
-            ),
-          });
+        const dataToUse = dataCustomer.dataFilter.length
+          ? dataCustomer.dataFilter
+          : dataCustomer.dataSellers;
+        setDataCustomer({
+          ...dataCustomer,
+          dataPreview: handlerPreviewSellerAplication(dataToUse, page - 1),
+        });
         return old - 1;
       });
   };
@@ -300,6 +280,16 @@ const SellerApplication = () => {
       case dataSelecFilter[3].value:
         dataFilter = dataCustomer.dataSellers.filter(
           (data) => data.state_application.id === dataSelecFilter[3].value
+        );
+        break;
+      case dataSelecFilter[4].value:
+        dataFilter = dataCustomer.dataSellers.filter(
+          (data) => data.state_application.id === dataSelecFilter[4].value
+        );
+        break;
+      case dataSelecFilter[5].value:
+        dataFilter = dataCustomer.dataSellers.filter(
+          (data) => data.state_application.id === dataSelecFilter[5].value
         );
         break;
       default:
@@ -373,7 +363,7 @@ const SellerApplication = () => {
               </div>
               <div className="w-[250px]">
                 <Input
-                  placeholder="Search"
+                  placeholder="Buscar por nombre"
                   id="search-input"
                   type="search"
                   onChange={(e) => handlerSearcherbar(e.target.value)}

@@ -73,7 +73,6 @@ const FooterCTA = () => {
               </Link>
             </div>
           </div>
-           
         </div>
 
         <div className="hidden sm:grid grid-cols-4 gap-x-10">
@@ -83,31 +82,13 @@ const FooterCTA = () => {
             </span>
             <ul className="text-[#C7C7C7] font-[300] text-sm/[14px] grid grid-cols-1 gap-y-4">
               <li>
-                <a
-                  href="https://gudfy.com/sobre-nosotros/"
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  Sobre nosotros
-                </a>
+                <a href="/about">Sobre nosotros</a>
               </li>
               <li>
-                <a
-                  href="https://gudfy.com/contacto/"
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  Contáctanos
-                </a>
+                <a href="/contact">Contáctanos</a>
               </li>
               <li>
-                <a
-                  href="https://gudfy.com/contacto/"
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  FQA
-                </a>
+                <a href="/faq">FAQ</a>
               </li>
             </ul>
           </div>
@@ -187,9 +168,8 @@ const FooterCTA = () => {
               </li>
               <li>
                 <a
-                  href="https://gudfy.com/crear-un-ticket/"
-                  target="_blank"
-                  rel="noreferrer"
+                  href="/account/tickets"
+                  
                 >
                   Crea un ticket
                 </a>
@@ -206,31 +186,13 @@ const FooterCTA = () => {
               </span>
               <ul className="text-[#C7C7C7] font-[300] text-sm/[14px] grid grid-cols-1 gap-y-4">
                 <li>
-                  <a
-                    href="https://gudfy.com/sobre-nosotros/"
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    Sobre nosotros
-                  </a>
+                  <a href="/about">Sobre nosotros</a>
                 </li>
                 <li>
-                  <a
-                    href="https://gudfy.com/contacto/"
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    Contáctanos
-                  </a>
+                  <a href="/contact">Contáctanos</a>
                 </li>
                 <li>
-                  <a
-                    href="https://gudfy.com/contacto/"
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    FQA
-                  </a>
+                  <a href="/faq">FQA</a>
                 </li>
               </ul>
             </div>
@@ -284,7 +246,7 @@ const FooterCTA = () => {
                     target="_blank"
                     rel="noreferrer"
                   >
-                   Ayuda al vender
+                    Ayuda al vender
                   </a>
                 </li>
               </ul>
@@ -310,16 +272,15 @@ const FooterCTA = () => {
                     target="_blank"
                     rel="noreferrer"
                   >
-                   Sorteos
+                    Sorteos
                   </a>
                 </li>
                 <li>
                   <a
-                    href="https://gudfy.com/crear-un-ticket/"
-                    target="_blank"
-                    rel="noreferrer"
+                    href="/account/tickets"
+                    
                   >
-                   Crea un ticket
+                    Crea un ticket
                   </a>
                 </li>
               </ul>

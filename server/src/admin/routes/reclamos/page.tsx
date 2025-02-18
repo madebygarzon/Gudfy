@@ -18,6 +18,8 @@ import {
   ArrowLongRight,
   ArrowLongLeft,
   Eye,
+  ArchiveBox,
+  PlayMiniSolid,
 } from "@medusajs/icons";
 import Spinner from "../../components/shared/spinner";
 import { RouteConfig } from "@medusajs/admin";
@@ -77,8 +79,12 @@ const ReclamosListado = () => {
     Math.ceil(dataCustomer?.dataClaim.length / 5 || 0)
   );
   const [page, setPage] = useState(1);
-  const [rowsPages, setRowsPages] = useState(5);
+  const [rowsPages, setRowsPages] = useState(10);
   const [isLoading, setIsLoading] = useState(true);
+
+  const formatStatus = (status) => {
+    return status.charAt(0).toUpperCase() + status.slice(1).toLowerCase();
+  };
 
   const handlerNextPage = (action) => {
     if (action === "NEXT")
@@ -150,28 +156,32 @@ const ReclamosListado = () => {
   };
 
   const handlerSearcherbar = (e) => {
-    const dataFilter = dataCustomer.dataClaim.filter((data) => {
-      return data.number_order.toLowerCase().includes(e.toLowerCase());
-    });
+    const searchValue = e.toLowerCase();
+    let dataFilter = dataCustomer.dataClaim;
+    if (searchValue) {
+      dataFilter = dataCustomer.dataClaim.filter((data) => {
+        return data.number_order.toLowerCase().includes(searchValue);
+      });
+    }
     setDataCustomer({
       ...dataCustomer,
       dataPreview: handlerPreviewSellerAplication(dataFilter, 1),
-      dataFilter: dataFilter.length ? dataFilter : [],
+      dataFilter: searchValue ? dataFilter : [],
     });
   };
 
   const getStatusColor = (status) => {
     switch (status) {
       case "CERRADA":
-        return "bg-red-200";
+        return "bg-red-200"; // Rojo: Indica que el reclamo está cerrado o finalizado.
       case "SIN RESOLVER":
-        return "bg-yellow-200";
+        return "bg-yellow-200"; // Amarillo: Indica que el reclamo está pendiente o requiere atención.
       case "ABIERTA":
-        return "bg-green-200";
+        return "bg-blue-200"; // Azul: Indica que el reclamo está activo o en revisión.
       case "RESUELTA":
-        return "bg-green-200";
+        return "bg-green-200"; // Verde: Indica que el reclamo ha sido resuelto satisfactoriamente.
       default:
-        return "";
+        return "bg-gray-200"; // Gris: Para estados no definidos o neutrales.
     }
   };
 
@@ -258,6 +268,7 @@ const ReclamosListado = () => {
         <>
           <div className="mt-1 h-[100px] flex justify-between">
             <h1 className="text-lg font-bold">Listado de reclamos</h1>
+
             <div className="flex gap-5 h-full items-end py-4">
               <div className="w-[156px]">
                 <Select onValueChange={handlerFilter}>
@@ -266,9 +277,10 @@ const ReclamosListado = () => {
                   </Select.Trigger>
                   <Select.Content>
                     <Select.Item value="All">Todos</Select.Item>
-                    <Select.Item value="Cerrado">Cerrado</Select.Item>
-                    <Select.Item value="En proceso">En proceso</Select.Item>
-                    <Select.Item value="Abierto">Abierto</Select.Item>
+                    <Select.Item value="CERRADA">Cerrado</Select.Item>
+                    <Select.Item value="SIN RESOLVER">En proceso</Select.Item>
+                    <Select.Item value="ABIERTA">Abierto</Select.Item>
+                    <Select.Item value="RESUELTA">Resuelto</Select.Item>
                   </Select.Content>
                 </Select>
               </div>
@@ -307,9 +319,9 @@ const ReclamosListado = () => {
                         <p
                           className={`${getStatusColor(
                             data.status_order_claim
-                          )} px-4 py-2 rounded-lg`}
+                          )} capitalize px-4 py-2 rounded-lg`}
                         >
-                          {data.status_order_claim}
+                          {formatStatus(data.status_order_claim)}
                         </p>
                       </Table.Cell>
                       <Table.Cell>
@@ -476,80 +488,79 @@ const ModalComment = ({
         <IconButton>
           <Eye className="text-ui-fg-subtle" />
         </IconButton>
-        {/* <Button>Edit Variant</Button> */}
       </FocusModal.Trigger>
-      <FocusModal.Content className="w-[50%] h-[80%] mx-auto my-auto">
-        <FocusModal.Header>{/* <Button>Save</Button> */}</FocusModal.Header>
-        <FocusModal.Body className="flex flex-col items-center py-8 ">
-          <div className="flex w-full  flex-col gap-y-8">
-            <div className="p-4 bg-white rounded ">
-              <div className="mb-4">
-                <p className="text-gray-600  font-bold mb-2">Conversación</p>
-                <div className="bg-gray-100 p-3 rounded max-h-[400px] mb-4 overflow-y-scroll">
-                  {comments?.map((comment) => (
-                    <div
-                      className={`flex w-full  ${
-                        comment.comment_owner_id === "COMMENT_ADMIN_ID"
-                          ? "justify-end"
-                          : "justify-start"
-                      }`}
-                    >
-                      <div className="my-1 px-3 py-1 max-w-[500px] bg-slate-200 border rounded-[10px]">
-                        <p className="text-xs">
-                          {comment.comment_owner_id === "COMMENT_ADMIN_ID"
-                            ? "Admin Gudfy"
-                            : comment.comment_owner_id === "COMMENT_CUSTOMER_ID"
-                            ? "Cliente"
-                            : "Tienda"}
-                        </p>
-                        {comment.comment}
-                      </div>
-                    </div>
-                  ))}
+
+      {/* Contenedor principal del modal, aplicando estilos similares a "rounded-2xl overflow-hidden shadow-lg" */}
+      <FocusModal.Content className="w-[50%] h-[80%] mx-auto my-auto rounded-2xl overflow-hidden shadow-lg">
+        {/* Encabezado con estilo similar al ModalHeader original */}
+        <FocusModal.Header className="flex flex-col gap-1 border-b border-slate-200 bg-gray-50 py-3 px-4 rounded-t-2xl">
+          <h2 className="text-center text-lg font-semibold">
+            Resolución de Reclamaciones
+          </h2>
+        </FocusModal.Header>
+
+        {/* Cuerpo principal del chat, similar al ModalBody original */}
+        <FocusModal.Body className="bg-gray-100 px-8 py-4 overflow-y-auto h-[60vh]">
+          <div className="flex flex-col gap-2">
+            {comments?.map((comment) => (
+              <div
+                key={comment.id}
+                className={`flex w-full transition-transform duration-300 ease-in-out ${
+                  comment.comment_owner_id === "COMMENT_CUSTOMER_ID"
+                    ? "justify-end"
+                    : "justify-start"
+                }`}
+              >
+                <div
+                  className={`max-w-[75%] px-4 py-2 shadow-md text-sm ${
+                    comment.comment_owner_id === "COMMENT_CUSTOMER_ID"
+                      ? "bg-blue-400 text-white rounded-bl-xl rounded-tr-xl rounded-tl-xl"
+                      : "bg-gray-200 text-gray-900 rounded-br-xl rounded-tr-xl rounded-tl-xl"
+                  }`}
+                >
+                  <p className="mb-1 text-xs font-bold">
+                    {comment.comment_owner_id === "COMMENT_CUSTOMER_ID"
+                      ? "Cliente"
+                      : comment.comment_owner_id === "COMMENT_ADMIN_ID"
+                      ? "Admin Gudfy"
+                      : "Tienda"}
+                  </p>
+                  <p>{comment.comment}</p>
                 </div>
               </div>
+            ))}
+          </div>
+        </FocusModal.Body>
 
-              <div className="relative mb-4">
-                <input
-                  value={newComment}
-                  onChange={(e) => {
-                    setNewComment(e.target.value);
-                  }}
-                  type="text"
-                  placeholder="Escribe tu respuesta..."
-                  className="w-full p-3 border border-gray-300 rounded focus:outline-none"
-                />
-                <button
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2"
-                  onClick={handlerSubmitComment}
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    className="w-6 h-6 text-gray-500"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M8 12h.01M12 12h.01M16 12h.01M9 16h6m-6-8h6m-8 4h.01m-2-4h.01M16 4h2a2 2 0 012 2v12a2 2 0 01-2 2h-4l-4 4v-4H8a2 2 0 01-2-2V6a2 2 0 012-2h2z"
-                    />
-                  </svg>
-                </button>
-              </div>
-
-              <p className="text-gray-500 mb-4">
-                Como vendedor, tiene la opción de escalar esta discusión al
-                administrador para una resolución más detallada.
-              </p>
-
+        {/* Zona de footer o acciones (en tu caso, lo manejas con otro FocusModal.Body) */}
+        <FocusModal.Body className="border-t border-slate-200 bg-gray-50 py-3 px-4 rounded-b-2xl">
+          <div className="w-full">
+            {/* Campo de texto + botón de enviar, usando las clases del input estilo "rounded-full shadow-md" */}
+            <div className="flex items-center w-full gap-2 bg-white px-3 py-2 rounded-full shadow-md">
+              <input
+                value={newComment}
+                onChange={(e) => setNewComment(e.target.value)}
+                type="text"
+                placeholder="Escribe tu respuesta..."
+                className="flex-1 text-sm focus:outline-none focus:ring-0 border-none placeholder-gray-400"
+              />
               <button
-                className=" bg-red-500 text-white p-3 rounded hover:bg-red-600 transition-colors"
+                onClick={handlerSubmitComment}
+                className="cursor-pointer p-1 flex items-center justify-center w-10 h-8 rounded-full bg-blue-500 hover:bg-blue-600 text-white shadow-md transition-all duration-200"
+              >
+                {/* Icono de enviar (similar a SendIcon del original) */}
+                <PlayMiniSolid />
+              </button>
+            </div>
+
+            <div className="flex justify-center mt-4">
+              <button
+                type="button"
+                className="py-2 btn btn-secondary btn-small flex items-center"
                 onClick={handlerStatusClaim}
               >
-                Cerrar Reclamación
+                <ArchiveBox className="mr-2" />
+                Cerrar reclamación
               </button>
             </div>
           </div>

@@ -243,10 +243,14 @@ export default function RequestProduct({ setReset }: Reset) {
                             />
                           )}
                           <InputFile
+                          type="Normal"
                             label="Subir imagen"
                             setFile={setFile}
                             alt={""}
+                            accept="image/*"
                           />
+
+                          
                         </div>
                         <div className="flex gap-4 mt-4">
                           <ButtonLigth
