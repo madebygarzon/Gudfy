@@ -34,7 +34,7 @@ const ModalOrderCancel = ({
   return (
     <>
       <ModalHeader className="flex flex-col gap-1"></ModalHeader>
-      <ModalBody>
+      <ModalBody className="md:px-6 p-1">
         {orderData ? (
           <OrderRevie
             orderData={orderData}
@@ -48,7 +48,7 @@ const ModalOrderCancel = ({
         )}
       </ModalBody>
       <ModalFooter>
-        <div className="p-10"></div>
+        <div className=" md:p-10"></div>
         {orderData?.state_order === "Pendiente de pago" && (
           <div className="w-full flex gap-2 justify-end">
             <Link href={"/checkout"}>

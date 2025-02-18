@@ -16,10 +16,11 @@ type UpdateCustomerPasswordFormData = {
   confirm_password: string
 }
 
-const ProfileName: React.FC<MyInformationProps> = ({ customer }) => {
+const ProfilePassword: React.FC<MyInformationProps> = ({ customer }) => {
   const [errorMessage, setErrorMessage] = React.useState<string | undefined>(
     undefined
   )
+
   const {
     register,
     handleSubmit,
@@ -38,9 +39,12 @@ const ProfileName: React.FC<MyInformationProps> = ({ customer }) => {
 
   useEffect(() => {
     reset()
+    setErrorMessage(undefined) // Limpiar mensajes de error al resetear el formulario
   }, [customer, reset])
 
   const updatePassword = async (data: UpdateCustomerPasswordFormData) => {
+    setErrorMessage(undefined) // Limpiar mensajes previos
+
     const isValid = await medusaClient.auth
       .authenticate({
         email: customer.email,
@@ -52,20 +56,18 @@ const ProfileName: React.FC<MyInformationProps> = ({ customer }) => {
     if (!isValid) {
       setError("old_password", {
         type: "validate",
-        message: "Old password is incorrect",
+        message: "La contraseña actual es incorrecta",
       })
-      setErrorMessage("Old password is incorrect")
-
+      setErrorMessage("La contraseña actual es incorrecta")
       return
     }
 
     if (data.new_password !== data.confirm_password) {
       setError("confirm_password", {
         type: "validate",
-        message: "Passwords do not match",
+        message: "Las contraseñas no coinciden",
       })
-      setErrorMessage("Passwords do not match")
-
+      setErrorMessage("Las contraseñas no coinciden")
       return
     }
 
@@ -83,20 +85,18 @@ const ProfileName: React.FC<MyInformationProps> = ({ customer }) => {
     >
       <AccountInfo
         label="Contraseña"
-        currentInfo={
-          <span className="font-extrabold">********</span>
-        }
+        currentInfo={<span className="font-extrabold">********</span>}
         isLoading={isLoading}
         isSuccess={isSuccess}
         isError={isError}
         errorMessage={errorMessage}
         clearState={clearState}
       >
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <Input
             label="Contraseña actual"
             {...register("old_password", {
-              required: true,
+              required: "Este campo es obligatorio",
             })}
             type="password"
             errors={errors}
@@ -104,13 +104,17 @@ const ProfileName: React.FC<MyInformationProps> = ({ customer }) => {
           <Input
             label="Nueva Contraseña"
             type="password"
-            {...register("new_password", { required: true })}
+            {...register("new_password", {
+              required: "Este campo es obligatorio",
+            })}
             errors={errors}
           />
           <Input
             label="Confirmar Contraseña"
             type="password"
-            {...register("confirm_password", { required: true })}
+            {...register("confirm_password", {
+              required: "Este campo es obligatorio",
+            })}
             errors={errors}
           />
         </div>
@@ -119,4 +123,4 @@ const ProfileName: React.FC<MyInformationProps> = ({ customer }) => {
   )
 }
 
-export default ProfileName
+export default ProfilePassword
