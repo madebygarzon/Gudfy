@@ -61,7 +61,7 @@ const ModalSellerStoreReviews = ({
         {(onClose) => (
           <>
             <ModalBody>
-              <div className=" flex py-3 bg-white rounded-lg px-2 ">
+              <div className=" flex py-3 bg-white rounded-lg px-2 items-center">
                 <div className="w-60 flex flex-col items-center justify-center">   
                   <Avatar
                     size="lg"
@@ -121,7 +121,7 @@ const ModalSellerStoreReviews = ({
                       width={80}
                       height={80}
                     />
-                    <h3 className="text-xl font-semibold">
+                    <h3 className="ml-4 text-xl font-semibold">
                       Esta tienda aún no tiene reseñas.
                     </h3>
                   </div>

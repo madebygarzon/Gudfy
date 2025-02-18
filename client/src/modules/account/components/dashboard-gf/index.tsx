@@ -18,6 +18,7 @@ const Dashboard = ({ orders, customer }: DashboardProps) => {
   const { notifications } = useNotificationContext()
 
   return (
+
     <div className="w-full mt-8 flex items-center justify-center">
       <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* Perfil */}
@@ -26,6 +27,7 @@ const Dashboard = ({ orders, customer }: DashboardProps) => {
             <div className="flex flex-col items-center">
               <span className="text-xs text-center">
                 Perfil {`${getProfileCompletion(customer)}%`} completado
+
               </span>
             </div>
             <div className="flex flex-col md:flex-row items-center gap-4 mt-3">
