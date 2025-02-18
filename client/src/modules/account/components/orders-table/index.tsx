@@ -108,19 +108,19 @@ const TicketTable: React.FC = () => {
   }, [])
 
   return (
-    <div className="w-full p-6">
-      <div className="flex flex-col gap-y-8 w-full">
-        <div className="flex justify-between mb-4">
+    <div className="w-full p-1 md:p-6">
+      <div className="flex flex-col gap-y-6">
+        <div className="flex flex-col md:flex-row justify-between gap-4">
           <div>
             <label
               htmlFor="status-filter"
-              className="mr-4 font-semibold text-gray-700 text-sm lg:text-base"
+              className="font-semibold text-gray-700 text-sm md:text-base"
             >
               Filtrar por estado:
             </label>
             <select
               id="status-filter"
-              className="p-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm lg:text-base bg-white"
+              className="p-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm md:text-base bg-white mt-2 md:mt-0"
               value={filterStatus}
               onChange={(e) =>
                 setFilterStatus(
@@ -143,53 +143,48 @@ const TicketTable: React.FC = () => {
               <option value="Pagado">Pagado</option>
             </select>
           </div>
-          {/* <div className="">
-            ¿Necesitas ayuda? Crea un ticket:
-            <div className="flex justify-center mt-5">
-              <ButtonMedusa
-                className="text-white bg-[#402e72]  hover:bg-[#2c1f57] rounded-[5px]"
-                onClick={onOpen}
-              >
-                <FaPlus />
-                Nuevo ticket
-              </ButtonMedusa>
-            </div>
-          </div> */}
         </div>
         <div className="overflow-x-auto">
-          <table className="min-w-full bg-white  rounded-lg shadow-md">
+          <table className="min-w-full bg-white rounded-lg shadow-md">
             <thead>
-              <tr>
-                <th className="px-4 py-2 text-left">Estado de la orden</th>
-                <th className="px-4 py-2 text-left">Numero de orden</th>
-                <th className="px-4 py-2 100 text-left">
-                  Fecha y hora de creación
+              <tr className="bg-gray-100 text-gray-700">
+                <th className="px-4 py-2 text-left text-sm md:text-base">
+                  Estado
                 </th>
-                <th className="px-4 py-2 text-left">Tiempo a pagar</th>
-                <th className="px-4 py-2 text-left">Detalle de la orden</th>
+                <th className="px-4 py-2 text-left text-sm md:text-base">
+                  Número de orden
+                </th>
+                <th className="px-4 py-2 text-left text-sm md:text-base">
+                  Fecha y hora
+                </th>
+                <th className="px-4 py-2 text-left text-sm md:text-base">
+                  Tiempo a pagar
+                </th>
+                <th className="px-4 py-2 text-center text-sm md:text-base">
+                  Detalles
+                </th>
               </tr>
             </thead>
             <tbody>
               {!isLoading ? (
                 filteredOrder?.map((order) => (
                   <tr key={order.id} className="hover:bg-gray-50">
-                    <td className=" py-2">
-                      <p
-                        className={`${getStatusColor(
+                    <td className="px-4 py-2">
+                      <span
+                        className={`px-3 py-1 rounded-lg text-sm md:text-base ${getStatusColor(
                           order.state_order
-                        )} px-4 py-2 rounded-lg `}
+                        )}`}
                       >
                         {order.state_order}
-                      </p>
+                      </span>
                     </td>
-
-                    <td className="px-4 py-2 ">
-                      {handlerOrderNumber(order.id)}
+                    <td className="px-4 py-2 text-sm md:text-base">
+                      {order.id.replace("store_order_id_", "")}
                     </td>
-                    <td className="px-4 py-2 ">
+                    <td className="px-4 py-2 text-sm md:text-base">
                       {handlerformatDate(order.created_at)}
                     </td>
-                    <td>
+                    <td className="px-4 py-2 text-sm md:text-base">
                       {order.state_order === "Pendiente de pago" ? (
                         <Timer creationTime={order.created_at} />
                       ) : order.state_order === "Cancelada" ? (
@@ -198,52 +193,39 @@ const TicketTable: React.FC = () => {
                           order.state_order
                         ) ? (
                         <CheckMini className="text-green-600" />
-                      ) : (
-                        <></>
-                      )}
+                      ) : null}
                     </td>
                     <td className="px-4 py-2 text-center">
-                      {/* {(order.state_order === "Completado" ||
-                        order.state_order === "Finalizado" ||
-                        order.state_order === "Pendiente de pago" ||
-                        order.state_order === "En discusión") && (
-                        // <EyeSeeIcon />
-                        <EyeSeeIcon
-                          className="cursor-pointer hover:scale-110 transition-all"
-                          onClick={() => {
-                            setTelectOrderData(order)
-                            onOpen()
-                          }}
-                        ></EyeSeeIcon>
-                      )} */}
                       <EyeSeeIcon
                         className="cursor-pointer hover:scale-110 transition-all"
                         onClick={() => {
                           setTelectOrderData(order)
                           onOpen()
                         }}
-                      ></EyeSeeIcon>
+                      />
                     </td>
                   </tr>
                 ))
               ) : (
-                <div className="p-6">
-                  <Loader />
-                </div>
+                <tr>
+                  <td colSpan={5} className="p-6 text-center">
+                    <Loader />
+                  </td>
+                </tr>
               )}
             </tbody>
           </table>
           {!isLoading && !filteredOrder?.length && (
-            <div className="p-10 flex w-full text-center items-center justify-center text-lg">
-              <XMarkMini /> Aun no tienes ordenes
+            <div className="p-6 flex items-center justify-center text-gray-700 text-sm md:text-base">
+              <XMarkMini /> Aún no tienes órdenes.
             </div>
           )}
         </div>
       </div>
       <ModalOrder
         orderData={selectOrderData}
-        handleReset={handleReset}
         isOpen={isOpen}
+        handleReset={handleReset}
         onOpenChange={onOpenChange}
         onClose={onClose}
       />
@@ -287,58 +269,21 @@ const ModalOrder = ({
       size="5xl"
     >
       <ModalContent>
-        {
-          (onClose) =>
-            orderState?.state_order === "Cancelada" ? (
-              <ModalOrderCancel
-                handleReset={handleReset}
-                onOpenChange={onOpenChange}
-                orderData={orderData}
-              />
-            ) : (
-              <ModalOrderDetail
-                customer={customer}
-                handleReset={handleReset}
-                onOpenChangeMain={onOpenChange}
-                orderData={orderData}
-              />
-            )
-
-          // orderState?.state_order === "Pendiente de pago" ? (
-          //   <ModalOrderPending
-          //     handleReset={handleReset}
-          //     onOpenChange={onOpenChange}
-          //     orderData={orderData}
-          //   />
-          // ) : orderState?.state_order === "Cancelada" ? (
-          //   <ModalOrderCancel
-          //     handleReset={handleReset}
-          //     onOpenChange={onOpenChange}
-          //     orderData={orderData}
-          //   />
-          // ) : orderState?.state_order === "Completado" ? (
-          //   <ModalOrderComplete
-          //     customer={customer}
-          //     handleReset={handleReset}
-          //     onOpenChangeMain={onOpenChange}
-          //     orderData={orderData}
-          //   />
-          // ) : orderState?.state_order === "Finalizado" ? (
-          //   <ModalOrderFinished
-          //     handleReset={handleReset}
-          //     onOpenChange={onOpenChange}
-          //     orderData={orderData}
-          //   />
-          // ) : orderState?.state_order === "En discusión" ? (
-          //   <ModalOrderClaim
-          //     customer={customer}
-          //     handleReset={handleReset}
-          //     onOpenChangeMain={onOpenChange}
-          //     orderData={orderData}
-          //   />
-          // ) : (
-          //   <></>
-          // )
+        {(onClose) =>
+          orderState?.state_order === "Cancelada" ? (
+            <ModalOrderCancel
+              handleReset={handleReset}
+              onOpenChange={onOpenChange}
+              orderData={orderData}
+            />
+          ) : (
+            <ModalOrderDetail
+              customer={customer}
+              handleReset={handleReset}
+              onOpenChangeMain={onOpenChange}
+              orderData={orderData}
+            />
+          )
         }
       </ModalContent>
     </Modal>

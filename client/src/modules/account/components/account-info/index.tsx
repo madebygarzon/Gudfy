@@ -23,7 +23,7 @@ const AccountInfo = ({
   isSuccess,
   isError,
   clearState,
-  errorMessage = "Ha ocurrido un error, intentalo de nuevo",
+  errorMessage = "Ha ocurrido un error, inténtalo de nuevo",
   children,
 }: AccountInfoProps) => {
   const { state, close, toggle } = useToggleState()
@@ -41,10 +41,10 @@ const AccountInfo = ({
 
   return (
     <div className="text-small-regular">
-      <div className="flex items-end justify-between">
-        <div className="flex flex-col">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div className="w-full sm:w-auto">
           <span className="text-gray-500 font-bold text-base">{label}</span>
-          <div className="flex items-center flex-1 basis-0 justify-end gap-x-4">
+          <div className="flex items-center flex-1 justify-start sm:justify-end gap-x-4">
             {typeof currentInfo === "string" ? (
               <span className="text-left">{currentInfo}</span>
             ) : (
@@ -52,16 +52,14 @@ const AccountInfo = ({
             )}
           </div>
         </div>
-        <div>
-          <ButtonLigth
-            variant="secondary"
-            className="bg-[#9B48ED] hover:bg-[#7b39c4] text-white border-none min-w-56"
-            onClick={handleToggle}
-            type={state ? "reset" : "button"}
-          >
-            {state ? "Cancelar 🚫" : "Editar ✏️"}
-          </ButtonLigth>
-        </div>
+        <ButtonLigth
+          variant="secondary"
+          className="bg-[#9B48ED] hover:bg-[#7b39c4] text-white border-none min-w-56"
+          onClick={handleToggle}
+          type={state ? "reset" : "button"}
+        >
+          {state ? "Cancelar 🚫" : "Editar ✏️"}
+        </ButtonLigth>
       </div>
 
       {/* Success state */}
@@ -113,10 +111,10 @@ const AccountInfo = ({
         >
           <div className="flex flex-col gap-y-2 py-4">
             <div>{children}</div>
-            <div className="flex items-center justify-end mt-2">
+            <div className="flex flex-col sm:flex-row items-center sm:justify-end gap-2 mt-4">
               <ButtonLigth
                 isLoading={isLoading}
-                className="bg-[#28A745] hover:bg-[#218838] text-white border-none"
+                className="bg-[#28A745] hover:bg-[#218838] text-white border-none w-full sm:w-auto"
                 type="submit"
               >
                 Guardar cambios
