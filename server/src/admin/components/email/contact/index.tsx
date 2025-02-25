@@ -1,20 +1,22 @@
 import sendgrid from "@sendgrid/mail";
 import { render } from "@react-email/render";
-import { WelcomeAccount } from "./welcome-account";
+import { ContactEmail } from "./reception-contact-email";
 
 type EmailTicket = {
-  email: string;
   name: string;
+  email: string;
+  phone?: string;
+  message: string;
 };
-export async function EmailWelcomeAccount({ email, name }: EmailTicket) {
+export async function ReceptionEmail(data: EmailTicket) {
   try {
     await sendgrid.setApiKey(process.env.SENDGRID_API_KEY);
-    const emailHtml = render(<WelcomeAccount name={name} />);
+    const emailHtml = render(<ContactEmail {...data} />);
 
     const options = {
       from: process.env.SENDGRID_FROM,
-      to: email,
-      subject: `¡Bienvenido a Gudfy Marketplace!`,
+      to: process.env.RECEPTION_EMAIL || "sales@gudfy.com",
+      subject: `Nuevo mensaje de contacto`,
       html: emailHtml,
     };
 

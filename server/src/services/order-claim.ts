@@ -16,6 +16,7 @@ import {
   EmailCreateClaimOrderSeller,
   EmailOrderClaimAdmin,
 } from "../admin/components/email/claim-order";
+import StoreOrderService from "./store-order";
 
 class OrderClaimService extends TransactionBaseService {
   static LIFE_TIME = Lifetime.SCOPED;
@@ -24,6 +25,7 @@ class OrderClaimService extends TransactionBaseService {
   protected readonly notificationGudfyRepository_: typeof NotificationGudfyRepository;
   protected readonly storeVariantOrderRepository_: typeof StoreVariantOrderRepository;
   protected readonly storeOrderRepository_: typeof StoreOrderRepository;
+  protected readonly storeOrderService_: StoreOrderService;
 
   protected readonly eventBusService_: EventBusService;
 
@@ -37,6 +39,8 @@ class OrderClaimService extends TransactionBaseService {
     this.notificationGudfyRepository_ = container.notificationGudfyRepository;
     this.storeVariantOrderRepository_ = container.storeVariantOrderRepository;
     this.storeOrderRepository_ = container.storeOrderRepository;
+    this.storeOrderService_ = container.storeOrderService;
+
     this.eventBusService_ = container.eventBusService;
   }
 
@@ -346,6 +350,9 @@ class OrderClaimService extends TransactionBaseService {
       await repoStoreOrder.update(store_order_id, {
         order_status_id: "Completed_ID",
       });
+      await this.storeOrderService_.validateOrderreadyToFinished(
+        store_order_id
+      );
     }
   }
 

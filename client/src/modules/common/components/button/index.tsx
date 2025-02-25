@@ -28,11 +28,12 @@ const Button = ({
       <Link
         href={href}
         className={clsx(
-          " flex  rounded-[5px] py-2 px-3 min-w-[160px] gap-x-2 items-center justify-center font-bold",
+          " flex  rounded-[5px] py-2 px-3 min-w-[160px] gap-x-2 items-center justify-center font-bold ",
           { "bg-white text-[#1F0054] ": !active },
           {
             "bg-[#9B48ED] text-white ": active,
-          }
+          },
+          className
         )}
       >
         {children}

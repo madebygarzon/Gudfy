@@ -91,7 +91,7 @@ const ClaimTable: React.FC = () => {
   }, [])
 
   return (
-    <div className="w-full p-6">
+    <div className="w-full p-1 md:p-6">
       <div className="flex flex-col gap-y-8 w-full">
         <div className="flex justify-between mb-4">
           <div>
@@ -126,7 +126,7 @@ const ClaimTable: React.FC = () => {
         </div>
 
         <div className="overflow-x-auto">
-          <table className="min-w-full bg-white  rounded-lg shadow-md">
+          <table className="min-w-full bg-white  rounded-lg shadow-md md:text-base text-xs">
             <thead>
               <tr>
                 <th className="py-2 text-left">Estado del reclamo</th>
@@ -163,10 +163,16 @@ const ClaimTable: React.FC = () => {
                     </td>
                     <td className=" py-2">{claim.number_order}</td>
                     <td className=" py-2">
-                      <div>
-                        <h3 className="font-semibold">{claim.product_name}</h3>
-                        <p className="text-xs">Cantidad: {claim.quantity}</p>
-                        <p className="text-xs">por: {claim.store_name}</p>
+                      <div className="">
+                        <h3 className="font-semibold md:text-xs text-[10px]">
+                          {claim.product_name}
+                        </h3>
+                        <p className="md:text-xs text-[10px]">
+                          Cantidad: {claim.quantity}
+                        </p>
+                        <p className="md:text-xs text-[10px]">
+                          por: {claim.store_name}
+                        </p>
                       </div>
                     </td>
                     <td className=" py-2">

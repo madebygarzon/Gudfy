@@ -2,22 +2,7 @@
 
 import { useState, useEffect } from "react"
 import React from "react"
-
-import {
-  Modal,
-  ModalContent,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
-  Button,
-  useDisclosure,
-} from "@nextui-org/react"
-import { FaPlus, FaEye } from "react-icons/fa6"
-import OrderRevie from "../order-review"
-import { PlusMini, X } from "@medusajs/icons"
-import { Button as ButtonMedusa } from "@medusajs/ui"
-import Link from "next/link"
-import { getListOrders } from "@modules/account/actions/get-list-orders"
+import { Modal, ModalContent, useDisclosure } from "@nextui-org/react"
 import { useMeCustomer } from "medusa-react"
 import type { order } from "../../templates/orders-template"
 import handlerformatDate from "@lib/util/formatDate"
@@ -25,11 +10,7 @@ import Timer from "@lib/util/timer-order"
 import { CheckMini, XMarkMini } from "@medusajs/icons"
 import { updateCancelStoreOrder } from "@modules/account/actions/update-cancel-store-order"
 import { useOrderGudfy } from "@lib/context/order-context"
-import ModalOrderComplete from "../order-status/complete"
-import ModalOrderPending from "../order-status/pay-pending"
 import ModalOrderCancel from "../order-status/cancel"
-import ModalOrderFinished from "../order-status/finished"
-import ModalOrderClaim from "../order-status/claim"
 import Loader from "@lib/loader"
 import { EyeSeeIcon } from "@lib/util/icons"
 import ModalOrderDetail from "../order-status/detail-order"
@@ -144,8 +125,11 @@ const TicketTable: React.FC = () => {
             </select>
           </div>
         </div>
-        <div className="overflow-x-auto">
-          <table className="min-w-full bg-white rounded-lg shadow-md">
+        <div className="overflow-x-scroll" style={{ transform: "scaleX(-1)" }}>
+          <table
+            className="min-w-full bg-white rounded-lg shadow-md"
+            style={{ transform: "scaleX(-1)" }}
+          >
             <thead>
               <tr className="bg-gray-100 text-gray-700">
                 <th className="px-4 py-2 text-left text-sm md:text-base">

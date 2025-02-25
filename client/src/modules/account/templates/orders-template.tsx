@@ -113,7 +113,7 @@ const OrdersTemplate = () => {
         <Tabs aria-label="Options">
           <Tab key="Orders" title="Mis órdenes">
             <Card className="shadow-white shadow-lg">
-              <CardBody>
+              <CardBody className="md:p-3 p-1">
                 <div className="overflow-x-auto">
                   <TableOrder />
                 </div>
@@ -144,7 +144,7 @@ const OrdersTemplate = () => {
             }
           >
             <Card className="shadow-white shadow-lg">
-              <CardBody>
+              <CardBody className="md:p-3 p-1">
                 <div className="overflow-x-auto">
                   <ClaimTable />
                 </div>
@@ -153,7 +153,7 @@ const OrdersTemplate = () => {
           </Tab>
           <Tab key="Compras" title="Mis compras">
             <Card className="shadow-white shadow-lg">
-              <CardBody>
+              <CardBody className="md:p-3 p-1">
                 <div className="overflow-x-auto">
                   <SerialCodeTable />
                 </div>
