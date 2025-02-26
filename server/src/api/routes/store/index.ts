@@ -48,6 +48,7 @@ import getNumberOfCompletedOrders from "./get-number-of-completed-orders";
 import updateFinishVariantOrder from "./order/update-finish-variant-order";
 import postWelcomeEmail from "./post-welcome-email";
 import { getListProductVariantCategory } from "./get-list-product-variant-category";
+import postSendContactForm from "./post-send-contact-form";
 
 // Initialize a custom router
 const router = Router();
@@ -184,4 +185,7 @@ export function attachStoreRoutes(storeRouter: Router) {
   //-------------------------seller stores----------------------------
   router.get("/seller-store/:id", wrapHandler(getSellerStoreData));
   router.get("/seller-store-reviews", wrapHandler(getSellerStoreReviews));
+
+  //------------------------Contact---------------------------------
+  router.post("/contact", wrapHandler(postSendContactForm));
 }

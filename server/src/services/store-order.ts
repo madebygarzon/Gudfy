@@ -524,8 +524,31 @@ class StoreOrderService extends TransactionBaseService {
         variant_order_status_id: "Finished_ID",
       }
     );
-
+    
     return upDateFinish;
+  }
+
+  async validateOrderreadyToFinished(store_order_id) {
+    const repoStoreOrder = this.activeManager_.withRepository(
+      this.storeOrderRepository_
+    );
+
+    const repoStoreVariantOrder = this.activeManager_.withRepository(
+      this.storeVariantOrderRepository_
+    );
+
+    const getClamis = await repoStoreVariantOrder.find({
+      where: {
+        store_order_id: store_order_id,
+        variant_order_status_id: "Completed_ID",
+      },
+    });
+
+    if (!getClamis.length) {
+      await repoStoreOrder.update(store_order_id, {
+        order_status_id: "Finished_ID",
+      });
+    }
   }
 }
 

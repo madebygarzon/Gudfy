@@ -88,7 +88,7 @@ const FooterCTA = () => {
                 <a href="/contact">Contáctanos</a>
               </li>
               <li>
-                <a href="/faq">FAQ</a>
+                <a href="/faq/marketplace">FAQ</a>
               </li>
             </ul>
           </div>
@@ -167,12 +167,7 @@ const FooterCTA = () => {
                 </a>
               </li>
               <li>
-                <a
-                  href="/account/tickets"
-                  
-                >
-                  Crea un ticket
-                </a>
+                <a href="/account/tickets">Crea un ticket</a>
               </li>
             </ul>
           </div>
@@ -276,12 +271,7 @@ const FooterCTA = () => {
                   </a>
                 </li>
                 <li>
-                  <a
-                    href="/account/tickets"
-                    
-                  >
-                    Crea un ticket
-                  </a>
+                  <a href="/account/tickets">Crea un ticket</a>
                 </li>
               </ul>
               {/* <div className="flex justify-between w-28">

@@ -44,11 +44,12 @@ export function CreateTicketCustomer(props: EmailTicket) {
                 <strong>{tiket}</strong>.
               </p>
               <p className="leading-relaxed mb-4">
-                Puedes verificar el estado de tu ticket y seguir el progreso haciendo clic en el botón de abajo.
+                Puedes verificar el estado de tu ticket y seguir el progreso
+                haciendo clic en el botón de abajo.
               </p>
               <div className="flex justify-center mt-4">
                 <a
-                  href="http://179.61.219.62:8000/account/ticket"
+                  href="https://gudfyp2p.com/account/ticket"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="bg-button text-white text-center py-2 px-4 rounded-md shadow hover:bg-[#0acb96] transition"
@@ -57,7 +58,8 @@ export function CreateTicketCustomer(props: EmailTicket) {
                 </a>
               </div>
               <p className="leading-relaxed mt-4">
-                Si tienes alguna pregunta adicional, no dudes en contactar con nuestro equipo de soporte.
+                Si tienes alguna pregunta adicional, no dudes en contactar con
+                nuestro equipo de soporte.
               </p>
               <p className="mt-6 font-medium">Atentamente,</p>
               <p className="font-medium">El equipo de Gudfy</p>
@@ -66,7 +68,8 @@ export function CreateTicketCustomer(props: EmailTicket) {
             {/* Footer */}
             <div className="bg-gray-100 text-center py-4 px-6">
               <p className="text-sm text-gray-600">
-                Este mensaje es automático. Si tienes preguntas, contacta con soporte.
+                Este mensaje es automático. Si tienes preguntas, contacta con
+                soporte.
               </p>
             </div>
           </div>
