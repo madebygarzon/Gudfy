@@ -1,4 +1,3 @@
-
 import { RouteConfig } from "@medusajs/admin";
 import { CreateClaimCustomer } from "../../components/email/claim-order/create-claim-customer";
 import { WelcomeAccount } from "../../components/email/welcome-account";
@@ -14,35 +13,55 @@ import { CreateTicketCustomer } from "../../components/email/tickets/create-tick
 import { NewTicketAdmin } from "../../components/email/tickets/new-ticket-admin";
 import { Email } from "../../components/email/email-recovery-pasword";
 
-
-const data ={
-    name: "Ronaldo Delgado",
-    order: "GMP-123456"
-}
+const data = {
+  name: "Ronaldo Delgado",
+  order: "GMP-123456",
+};
 const Emails = () => {
   return (
     <div className="w-full h-full">
-      <h1 className="text-2xl font-bold text-center pb-2">Email de Bienvenida</h1>
+      <h1 className="text-2xl font-bold text-center pb-2">
+        Email de Bienvenida
+      </h1>
       <WelcomeAccount name={data.name} />
-      <div className="w-full h-[100px] border-top "><hr className="mt-10" /></div>
+      <div className="w-full h-[100px] border-top ">
+        <hr className="mt-10" />
+      </div>
 
-      <h1 className="text-2xl font-bold text-center pb-2">Creación de Reclamo por Cliente</h1>
+      <h1 className="text-2xl font-bold text-center pb-2">
+        Creación de Reclamo por Cliente
+      </h1>
       <CreateClaimCustomer name={data.name} order={data.order} />
-      <div className="w-full h-[100px]"> <hr className="mt-10" /></div>
+      <div className="w-full h-[100px]">
+        {" "}
+        <hr className="mt-10" />
+      </div>
 
-      <h1 className="text-2xl font-bold text-center pb-2">Creación de Reclamo por Vendedor</h1>
+      <h1 className="text-2xl font-bold text-center pb-2">
+        Creación de Reclamo por Vendedor
+      </h1>
       <CreateClaimSeller order_id={data.order} store_name={data.name} />
-      <div className="w-full h-[100px]"> <hr className="mt-10" /></div>
+      <div className="w-full h-[100px]">
+        {" "}
+        <hr className="mt-10" />
+      </div>
 
-      <h1 className="text-2xl font-bold text-center pb-2">Reclamo de Pedido No Resuelto</h1>
+      <h1 className="text-2xl font-bold text-center pb-2">
+        Reclamo de Pedido No Resuelto
+      </h1>
       <OrderClaimUnsolved
         customer_name="Ronaldo Delgado"
         product_name="Netflix 1 mes"
         store_name="tienda D1"
       />
-      <div className="w-full h-[100px]"> <hr className="mt-10" /></div>
+      <div className="w-full h-[100px]">
+        {" "}
+        <hr className="mt-10" />
+      </div>
 
-      <h1 className="text-2xl font-bold text-center pb-2">Compra Completada con Códigos Seriales</h1>
+      <h1 className="text-2xl font-bold text-center pb-2">
+        Compra Completada con Códigos Seriales
+      </h1>
       <PurchaseCompleted
         name="Ronaldo Delgado"
         order=""
@@ -51,43 +70,79 @@ const Emails = () => {
           { serialCodes: "serial 2", title: "Netflix 3 mes " },
         ]}
       />
-      <div className="w-full h-[100px]"> <hr className="mt-10" /> </div>
-      <h1 className="text-2xl font-bold text-center pb-2">Solicitud de vendedor aprovada</h1>
+      <div className="w-full h-[100px]">
+        {" "}
+        <hr className="mt-10" />{" "}
+      </div>
+      <h1 className="text-2xl font-bold text-center pb-2">
+        Solicitud de vendedor aprovada
+      </h1>
       <ApprovedApplication name="Ronaldo Delgado" />
-      <div className="w-full h-[100px]"><hr className="mt-10" /></div>
+      <div className="w-full h-[100px]">
+        <hr className="mt-10" />
+      </div>
 
-      <h1 className="text-2xl font-bold text-center pb-2">Nueva Solicitud de Vendedor</h1>
+      <h1 className="text-2xl font-bold text-center pb-2">
+        Nueva Solicitud de Vendedor
+      </h1>
       <NewSellerApplication email="ronaldo@gmail.com" name="Ronaldo Delgado" />
-      <div className="w-full h-[100px]"><hr className="mt-10" /></div>
+      <div className="w-full h-[100px]">
+        <hr className="mt-10" />
+      </div>
 
-      <h1 className="text-2xl font-bold text-center pb-2">Solicitud de Vendedor Requiere Corrección</h1>
+      <h1 className="text-2xl font-bold text-center pb-2">
+        Solicitud de Vendedor Requiere Corrección
+      </h1>
       <CorrectionApplication
         name="Ronaldo Delgado"
         message="este es el mensaje que debe de recibir para que corriga"
       />
-      <div className="w-full h-[100px]"><hr className="mt-10" /></div>
+      <div className="w-full h-[100px]">
+        <hr className="mt-10" />
+      </div>
 
-      <h1 className="text-2xl font-bold text-center pb-2">Solicitud de Vendedor Enviada</h1>
+      <h1 className="text-2xl font-bold text-center pb-2">
+        Solicitud de Vendedor Enviada
+      </h1>
       <SentApplication name="Ronaldo Delgado" />
-      <div className="w-full h-[100px]"><hr className="mt-10" /></div>
+      <div className="w-full h-[100px]">
+        <hr className="mt-10" />
+      </div>
 
-      <h1 className="text-2xl font-bold text-center pb-2">Solicitud de Vendedor Rechazada</h1>
-      <RejectedApplication message="la razón por la que fue rechazado" name="Ronaldo Delgado" />
-      <div className="w-full h-[100px]"><hr className="mt-10" /></div>
+      <h1 className="text-2xl font-bold text-center pb-2">
+        Solicitud de Vendedor Rechazada
+      </h1>
+      <RejectedApplication
+        message="la razón por la que fue rechazado"
+        name="Ronaldo Delgado"
+      />
+      <div className="w-full h-[100px]">
+        <hr className="mt-10" />
+      </div>
 
-      <h1 className="text-2xl font-bold text-center pb-2">Ticket Creado por Cliente</h1>
+      <h1 className="text-2xl font-bold text-center pb-2">
+        Ticket Creado por Cliente
+      </h1>
       <CreateTicketCustomer name="Ronaldo Delgado" tiket="tkict-123123" />
       <div className="w-full h-[100px]"></div>
 
-      <h1 className="text-2xl font-bold text-center pb-2">Nuevo Ticket Creado por Administrador</h1>
-      <NewTicketAdmin name="Ronaldo Delgado" tiket="tkict-123123" email="ronaldo@gmail.com" />
+      <h1 className="text-2xl font-bold text-center pb-2">
+        Nuevo Ticket Creado por Administrador
+      </h1>
+      <NewTicketAdmin
+        name="Ronaldo Delgado"
+        tiket="tkict-123123"
+        email="ronaldo@gmail.com"
+      />
       <div className="w-full h-[100px]"></div>
 
-      <h1 className="text-2xl font-bold text-center pb-2">Restablecimiento de Contraseña</h1>
+      <h1 className="text-2xl font-bold text-center pb-2">
+        Restablecimiento de Contraseña
+      </h1>
       <Email
         email="ronaldo@gmail.com"
         token="token-123"
-        url="http://localhost:8000/account/recover-password"
+        url="https://gudfyp2p.com/account/recover-password"
       />
       <div className="w-full h-[100px]"></div>
     </div>
@@ -104,300 +159,295 @@ export const config: RouteConfig = {
 export default Emails;
 
 interface SentProps {
-    name: string;
-    order: string;
-    
-  }
-  
+  name: string;
+  order: string;
+}
 
-  // function CreateClaimCustomer(props: SentProps) {
-  //   const { name, order } = props;
-  
-  //   return (
-  //     <Html lang="en">
-  //       <Tailwind
-  //         config={{
-  //           theme: {
-  //             extend: {
-  //               colors: {
-  //                 gf: "#1F0046",
-  //                 button: "#0BEBAA",
-  //               },
-  //               boxShadow: {
-  //                 card: "0px 4px 10px rgba(0, 0, 0, 0.1)",
-  //               },
-  //             },
-  //           },
-  //         }}
-  //       >
-  //         <Container className="bg-gray-50 font-sans  ">
-  //         <div className="w-[800px] border-t-[5px] border-button mx-auto  rounded-lg shadow-card overflow-hidden">
-  //             {/* Header */}
-  //             <div className="bg-gf text-white text-center py-4">
-  //               <h1 className="text-2xl font-bold tracking-wide">
-  //                 GUD
-  //                 <span className="text-button">FY</span>
-  //               </h1>
-  //             </div>
-  
-  //             {/* Body */}
-  //             <div className="bg-white px-6 py-8 text-gray-800">
-  //               <h2 className="text-xl font-semibold mb-4">
-  //                 Estimado/a {name},
-  //               </h2>
-  //               <p className="leading-relaxed mb-4">
-  //                 Nos complace informarte que hemos recibido tu reclamación para la orden con número 
-  //                 <strong className="text-gf"> {order}</strong>. Ya hemos notificado a la tienda correspondiente sobre tu solicitud.
-  //               </p>
-  //               <p className="leading-relaxed mb-6">
-  //                 Puedes consultar el estado de tu reclamación en cualquier momento haciendo clic en el botón a continuación:
-  //               </p>
-  //               <div className="text-center">
-  //                 <a
-  //                   href="http://179.61.219.62:8000/account/"
-  //                   target="_blank"
-  //                   rel="noopener noreferrer"
-  //                   className="inline-block bg-gf text-white text-lg font-medium py-3 px-6 rounded-lg shadow hover:bg-[#0acb96] transition duration-200"
-  //                 >
-  //                   Ver estado de la reclamación
-  //                 </a>
-  //               </div>
-  //             </div>
-  
-  //             {/* Footer */}
-  //             <div className="bg-gray-100 text-center py-4 px-6">
-  //               <p className="text-sm text-gray-600">
-  //                 Si tienes alguna pregunta o necesitas más información, no dudes en contactarnos.
-  //               </p>
-  //               <p className="mt-2 text-gray-800 font-medium">El equipo de Gudfy</p>
-  //             </div>
-  //           </div>
-  //         </Container>
-  //       </Tailwind>
-  //     </Html>
-  //   );
-  // }
+// function CreateClaimCustomer(props: SentProps) {
+//   const { name, order } = props;
 
+//   return (
+//     <Html lang="en">
+//       <Tailwind
+//         config={{
+//           theme: {
+//             extend: {
+//               colors: {
+//                 gf: "#1F0046",
+//                 button: "#0BEBAA",
+//               },
+//               boxShadow: {
+//                 card: "0px 4px 10px rgba(0, 0, 0, 0.1)",
+//               },
+//             },
+//           },
+//         }}
+//       >
+//         <Container className="bg-gray-50 font-sans  ">
+//         <div className="w-[800px] border-t-[5px] border-button mx-auto  rounded-lg shadow-card overflow-hidden">
+//             {/* Header */}
+//             <div className="bg-gf text-white text-center py-4">
+//               <h1 className="text-2xl font-bold tracking-wide">
+//                 GUD
+//                 <span className="text-button">FY</span>
+//               </h1>
+//             </div>
 
-  // type welcomeAccount = {
-  //   name: string;
-  // };
-  
-  // function WelcomeAccount(props: welcomeAccount) {
-  //   const { name } = props;
-  
-  //   return (
-  //     <Html lang="en">
-  //       <Tailwind
-  //         config={{
-  //           theme: {
-  //             extend: {
-  //               colors: {
-  //                 gf: "#1F0046",
-  //                 button: "#0BEBAA",
-  //               },
-  //               boxShadow: {
-  //                 card: "0px 4px 10px rgba(0, 0, 0, 0.1)",
-  //               },
-  //             },
-  //           },
-  //         }}
-  //       >
-  //         <Container className="bg-gray-50 font-sans">
-  //         <div className="w-[800px] border-t-[5px] border-button mx-auto  rounded-lg shadow-card overflow-hidden">
-  //             {/* Header */}
-  //             <div className="bg-gf text-white text-center py-4">
-  //               <h1 className="text-2xl font-bold tracking-wide">
-  //                 GUD
-  //                 <span className="text-button">FY</span>
-  //               </h1>
-  //             </div>
-  
-  //             {/* Body */}
-  //             <div className="bg-white px-6 py-8 text-gray-800">
-  //               <h2 className="text-xl font-semibold mb-4">
-  //                 ¡Bienvenido(a), {name}!
-  //               </h2>
-  //               <p className="leading-relaxed mb-4">
-  //                 Nos complace darte la bienvenida a <strong>Gudfy Marketplace</strong>, tu nueva comunidad para realizar compras y ventas de manera eficiente y confiable.
-  //               </p>
-  //               <p className="leading-relaxed mb-4">
-  //                 En Gudfy, trabajamos para ofrecerte las mejores herramientas para gestionar tus transacciones y ayudarte a alcanzar tus metas.
-  //               </p>
-  //               <p className="leading-relaxed mb-6">
-  //                 ¡Esperamos que disfrutes de la experiencia y aproveches al máximo las funcionalidades que hemos preparado para ti!
-  //               </p>
-  //               <p>Atentamente,</p>
-  //               <p className="font-medium text-gf">El equipo de Gudfy</p>
-  //             </div>
-  
-  //             {/* Footer */}
-  //             <div className="bg-gray-100 text-center py-4 px-6">
-  //               <p className="text-sm text-gray-600">
-  //                 Si tienes alguna pregunta, no dudes en contactarnos. ¡Estamos aquí para ayudarte!
-  //               </p>
-  //             </div>
-  //           </div>
-  //         </Container>
-  //       </Tailwind>
-  //     </Html>
-  //   );
-  // }
-  
+//             {/* Body */}
+//             <div className="bg-white px-6 py-8 text-gray-800">
+//               <h2 className="text-xl font-semibold mb-4">
+//                 Estimado/a {name},
+//               </h2>
+//               <p className="leading-relaxed mb-4">
+//                 Nos complace informarte que hemos recibido tu reclamación para la orden con número
+//                 <strong className="text-gf"> {order}</strong>. Ya hemos notificado a la tienda correspondiente sobre tu solicitud.
+//               </p>
+//               <p className="leading-relaxed mb-6">
+//                 Puedes consultar el estado de tu reclamación en cualquier momento haciendo clic en el botón a continuación:
+//               </p>
+//               <div className="text-center">
+//                 <a
+//                   href="http://179.61.219.62:8000/account/"
+//                   target="_blank"
+//                   rel="noopener noreferrer"
+//                   className="inline-block bg-gf text-white text-lg font-medium py-3 px-6 rounded-lg shadow hover:bg-[#0acb96] transition duration-200"
+//                 >
+//                   Ver estado de la reclamación
+//                 </a>
+//               </div>
+//             </div>
 
-  // interface propsCreate {
-  //   order_id: string;
-  //   store_name: string;
-    
-  // }
-  
-  // function CreateClaimSeller(props: propsCreate) {
-  //   const { store_name, order_id } = props;
-  
-  //   return (
-  //     <Html lang="en">
-  //       <Tailwind
-  //         config={{
-  //           theme: {
-  //             extend: {
-  //               colors: {
-  //                 gf: "#1F0046",
-  //                 button: "#0BEBAA",
-  //               },
-  //               boxShadow: {
-  //                 card: "0px 4px 10px rgba(0, 0, 0, 0.1)",
-  //               },
-  //             },
-  //           },
-  //         }}
-  //       >
-  //         <Container className="w-full bg-gray-50 font-sans">
-  //           <div className="w-[800px] border-t-[5px] border-button mx-auto  rounded-lg shadow-card overflow-hidden">
-  //             {/* Header */}
-  //             <div className="bg-gf text-white text-center py-6">
-  //               <h1 className="text-3xl font-bold tracking-wide">
-  //                 GUD
-  //                 <span className="text-button">FY</span>
-  //               </h1>
-  //             </div>
-  
-  //             {/* Body */}
-  //             <div className="bg-white px-10 py-8 text-gray-800">
-  //               <h2 className="text-2xl font-semibold mb-4">Hola {store_name},</h2>
-  //               <p className="leading-relaxed mb-4">
-  //                 Queremos informarte que un cliente ha realizado una reclamación sobre la orden con ID{" "}
-  //                 <strong>{order_id}</strong>.
-  //               </p>
-  //               <p className="leading-relaxed mb-6">
-  //                 Por favor, revisa los detalles de la reclamación y proporciona una solución lo más pronto posible.
-  //               </p>
-  //               <div className="text-center mt-6">
-  //                 <a
-  //                   href={`http://179.61.219.62:8000/account/`}
-  //                   target="_blank"
-  //                   rel="noopener noreferrer"
-  //                   className="inline-block bg-gf text-white text-lg font-medium py-3 px-6 rounded-md shadow hover:bg-[#0acb96] transition duration-200"
-  //                 >
-  //                   Ver detalles de la reclamación
-  //                 </a>
-  //               </div>
-  //               <p className="mt-8">
-  //                 Si necesitas ayuda o tienes preguntas, no dudes en contactar con nuestro equipo de soporte.
-  //               </p>
-  //               <p className="mt-4 font-medium text-gf">Atentamente,</p>
-  //               <p className="font-medium text-gray-800">El equipo de Gudfy</p>
-  //             </div>
-  
-  //             {/* Footer */}
-  //             <div className="bg-gray-100 text-center py-4 px-6">
-  //               <p className="text-sm text-gray-600">
-  //                 Este mensaje es automático. Si tienes preguntas, contacta con soporte.
-  //               </p>
-  //             </div>
-  //           </div>
-  //         </Container>
-  //       </Tailwind>
-  //     </Html>
-  //   );
-  // }
-  
+//             {/* Footer */}
+//             <div className="bg-gray-100 text-center py-4 px-6">
+//               <p className="text-sm text-gray-600">
+//                 Si tienes alguna pregunta o necesitas más información, no dudes en contactarnos.
+//               </p>
+//               <p className="mt-2 text-gray-800 font-medium">El equipo de Gudfy</p>
+//             </div>
+//           </div>
+//         </Container>
+//       </Tailwind>
+//     </Html>
+//   );
+// }
 
-  // interface PropsOrderClaimUnsolved {
-  //   product_name: string;
-  //   customer_name: string;
-  //   store_name: string;
-  // }
-  
-  // function OrderClaimUnsolved(props: PropsOrderClaimUnsolved) {
-  //   const { product_name, customer_name, store_name } = props;
-  
-  //   return (
-  //     <Html lang="en">
-  //       <Tailwind
-  //         config={{
-  //           theme: {
-  //             extend: {
-  //               colors: {
-  //                 gf: "#1F0046",
-  //                 button: "#0BEBAA",
-  //               },
-  //               boxShadow: {
-  //                 card: "0px 4px 10px rgba(0, 0, 0, 0.1)",
-  //               },
-  //             },
-  //           },
-  //         }}
-  //       >
-  //         <Container className="w-full bg-gray-50 font-sans">
-  //         <div className="w-[800px] border-t-[5px] border-button mx-auto  rounded-lg shadow-card overflow-hidden">
-  //             {/* Header */}
-  //             <div className="bg-gf text-white text-center py-6">
-  //               <h1 className="text-3xl font-bold tracking-wide">
-  //                 GUD
-  //                 <span className="text-button">FY</span>
-  //               </h1>
-  //             </div>
-  
-  //             {/* Body */}
-  //             <div className="bg-white px-10 py-8 text-gray-800">
-  //               <h2 className="text-2xl font-semibold mb-6">Reclamación No Resuelta</h2>
-  //               <p className="leading-relaxed mb-4">
-  //                 Se informa que la tienda <strong>{store_name}</strong> y el cliente{" "}
-  //                 <strong>{customer_name}</strong> no han podido llegar a un acuerdo sobre la reclamación del producto{" "}
-  //                 <strong>{product_name}</strong>.
-  //               </p>
-  //               <p className="leading-relaxed mb-6">
-  //                 Por favor, revisa esta situación y toma las medidas necesarias para resolver el conflicto.
-  //               </p>
-  //               <p className="leading-relaxed mb-6">
-  //                 La reclamación está disponible en el dashboard, en la sección de <strong>"Reclamaciones"</strong>.
-  //               </p>
-  //               <p className="mt-6 font-medium text-gf">Atentamente,</p>
-  //               <p className="font-medium text-gray-800">El sistema de notificaciones de Gudfy</p>
-  //             </div>
-  
-  //             {/* Footer */}
-  //             <div className="bg-gray-100 text-center py-4 px-6">
-  //               <p className="text-sm text-gray-600">
-  //                 Este mensaje es automático. Si tienes preguntas, contacta con soporte.
-  //               </p>
-  //             </div>
-  //           </div>
-  //         </Container>
-  //       </Tailwind>
-  //     </Html>
-  //   );
-  // }
-  
+// type welcomeAccount = {
+//   name: string;
+// };
+
+// function WelcomeAccount(props: welcomeAccount) {
+//   const { name } = props;
+
+//   return (
+//     <Html lang="en">
+//       <Tailwind
+//         config={{
+//           theme: {
+//             extend: {
+//               colors: {
+//                 gf: "#1F0046",
+//                 button: "#0BEBAA",
+//               },
+//               boxShadow: {
+//                 card: "0px 4px 10px rgba(0, 0, 0, 0.1)",
+//               },
+//             },
+//           },
+//         }}
+//       >
+//         <Container className="bg-gray-50 font-sans">
+//         <div className="w-[800px] border-t-[5px] border-button mx-auto  rounded-lg shadow-card overflow-hidden">
+//             {/* Header */}
+//             <div className="bg-gf text-white text-center py-4">
+//               <h1 className="text-2xl font-bold tracking-wide">
+//                 GUD
+//                 <span className="text-button">FY</span>
+//               </h1>
+//             </div>
+
+//             {/* Body */}
+//             <div className="bg-white px-6 py-8 text-gray-800">
+//               <h2 className="text-xl font-semibold mb-4">
+//                 ¡Bienvenido(a), {name}!
+//               </h2>
+//               <p className="leading-relaxed mb-4">
+//                 Nos complace darte la bienvenida a <strong>Gudfy Marketplace</strong>, tu nueva comunidad para realizar compras y ventas de manera eficiente y confiable.
+//               </p>
+//               <p className="leading-relaxed mb-4">
+//                 En Gudfy, trabajamos para ofrecerte las mejores herramientas para gestionar tus transacciones y ayudarte a alcanzar tus metas.
+//               </p>
+//               <p className="leading-relaxed mb-6">
+//                 ¡Esperamos que disfrutes de la experiencia y aproveches al máximo las funcionalidades que hemos preparado para ti!
+//               </p>
+//               <p>Atentamente,</p>
+//               <p className="font-medium text-gf">El equipo de Gudfy</p>
+//             </div>
+
+//             {/* Footer */}
+//             <div className="bg-gray-100 text-center py-4 px-6">
+//               <p className="text-sm text-gray-600">
+//                 Si tienes alguna pregunta, no dudes en contactarnos. ¡Estamos aquí para ayudarte!
+//               </p>
+//             </div>
+//           </div>
+//         </Container>
+//       </Tailwind>
+//     </Html>
+//   );
+// }
+
+// interface propsCreate {
+//   order_id: string;
+//   store_name: string;
+
+// }
+
+// function CreateClaimSeller(props: propsCreate) {
+//   const { store_name, order_id } = props;
+
+//   return (
+//     <Html lang="en">
+//       <Tailwind
+//         config={{
+//           theme: {
+//             extend: {
+//               colors: {
+//                 gf: "#1F0046",
+//                 button: "#0BEBAA",
+//               },
+//               boxShadow: {
+//                 card: "0px 4px 10px rgba(0, 0, 0, 0.1)",
+//               },
+//             },
+//           },
+//         }}
+//       >
+//         <Container className="w-full bg-gray-50 font-sans">
+//           <div className="w-[800px] border-t-[5px] border-button mx-auto  rounded-lg shadow-card overflow-hidden">
+//             {/* Header */}
+//             <div className="bg-gf text-white text-center py-6">
+//               <h1 className="text-3xl font-bold tracking-wide">
+//                 GUD
+//                 <span className="text-button">FY</span>
+//               </h1>
+//             </div>
+
+//             {/* Body */}
+//             <div className="bg-white px-10 py-8 text-gray-800">
+//               <h2 className="text-2xl font-semibold mb-4">Hola {store_name},</h2>
+//               <p className="leading-relaxed mb-4">
+//                 Queremos informarte que un cliente ha realizado una reclamación sobre la orden con ID{" "}
+//                 <strong>{order_id}</strong>.
+//               </p>
+//               <p className="leading-relaxed mb-6">
+//                 Por favor, revisa los detalles de la reclamación y proporciona una solución lo más pronto posible.
+//               </p>
+//               <div className="text-center mt-6">
+//                 <a
+//                   href={`http://179.61.219.62:8000/account/`}
+//                   target="_blank"
+//                   rel="noopener noreferrer"
+//                   className="inline-block bg-gf text-white text-lg font-medium py-3 px-6 rounded-md shadow hover:bg-[#0acb96] transition duration-200"
+//                 >
+//                   Ver detalles de la reclamación
+//                 </a>
+//               </div>
+//               <p className="mt-8">
+//                 Si necesitas ayuda o tienes preguntas, no dudes en contactar con nuestro equipo de soporte.
+//               </p>
+//               <p className="mt-4 font-medium text-gf">Atentamente,</p>
+//               <p className="font-medium text-gray-800">El equipo de Gudfy</p>
+//             </div>
+
+//             {/* Footer */}
+//             <div className="bg-gray-100 text-center py-4 px-6">
+//               <p className="text-sm text-gray-600">
+//                 Este mensaje es automático. Si tienes preguntas, contacta con soporte.
+//               </p>
+//             </div>
+//           </div>
+//         </Container>
+//       </Tailwind>
+//     </Html>
+//   );
+// }
+
+// interface PropsOrderClaimUnsolved {
+//   product_name: string;
+//   customer_name: string;
+//   store_name: string;
+// }
+
+// function OrderClaimUnsolved(props: PropsOrderClaimUnsolved) {
+//   const { product_name, customer_name, store_name } = props;
+
+//   return (
+//     <Html lang="en">
+//       <Tailwind
+//         config={{
+//           theme: {
+//             extend: {
+//               colors: {
+//                 gf: "#1F0046",
+//                 button: "#0BEBAA",
+//               },
+//               boxShadow: {
+//                 card: "0px 4px 10px rgba(0, 0, 0, 0.1)",
+//               },
+//             },
+//           },
+//         }}
+//       >
+//         <Container className="w-full bg-gray-50 font-sans">
+//         <div className="w-[800px] border-t-[5px] border-button mx-auto  rounded-lg shadow-card overflow-hidden">
+//             {/* Header */}
+//             <div className="bg-gf text-white text-center py-6">
+//               <h1 className="text-3xl font-bold tracking-wide">
+//                 GUD
+//                 <span className="text-button">FY</span>
+//               </h1>
+//             </div>
+
+//             {/* Body */}
+//             <div className="bg-white px-10 py-8 text-gray-800">
+//               <h2 className="text-2xl font-semibold mb-6">Reclamación No Resuelta</h2>
+//               <p className="leading-relaxed mb-4">
+//                 Se informa que la tienda <strong>{store_name}</strong> y el cliente{" "}
+//                 <strong>{customer_name}</strong> no han podido llegar a un acuerdo sobre la reclamación del producto{" "}
+//                 <strong>{product_name}</strong>.
+//               </p>
+//               <p className="leading-relaxed mb-6">
+//                 Por favor, revisa esta situación y toma las medidas necesarias para resolver el conflicto.
+//               </p>
+//               <p className="leading-relaxed mb-6">
+//                 La reclamación está disponible en el dashboard, en la sección de <strong>"Reclamaciones"</strong>.
+//               </p>
+//               <p className="mt-6 font-medium text-gf">Atentamente,</p>
+//               <p className="font-medium text-gray-800">El sistema de notificaciones de Gudfy</p>
+//             </div>
+
+//             {/* Footer */}
+//             <div className="bg-gray-100 text-center py-4 px-6">
+//               <p className="text-sm text-gray-600">
+//                 Este mensaje es automático. Si tienes preguntas, contacta con soporte.
+//               </p>
+//             </div>
+//           </div>
+//         </Container>
+//       </Tailwind>
+//     </Html>
+//   );
+// }
+
 //   interface PropsPurchaseCompleted {
 //     serialCodes: { serialCodes: string; title: string }[];
 //     order: string;
 //     name: string;
 //   }
-  
+
 //  function PurchaseCompleted(props: PropsPurchaseCompleted) {
 //     const { name, order, serialCodes } = props;
-  
+
 //     return (
 //       <Html lang="en">
 //         <Tailwind
@@ -451,10 +501,10 @@ interface SentProps {
 //   interface PropsApprovedApplication {
 //     name: string;
 //   }
-  
+
 //   function ApprovedApplication(props: PropsApprovedApplication) {
 //     const { name } = props;
-  
+
 //     return (
 //       <Html lang="en">
 //         <Tailwind
@@ -507,10 +557,10 @@ interface SentProps {
 //     name: string;
 //     message: string;
 //   }
-  
+
 //    function CorrectionApplication(props: PropsCorrectionApplication) {
 //     const { name, message } = props;
-  
+
 //     return (
 //       <Html lang="en">
 //         <Tailwind
@@ -540,7 +590,7 @@ interface SentProps {
 //                   antes de que podamos avanzar con tu solicitud.
 //                 </p>
 //                 <p>{message}</p>
-  
+
 //                 <p>Agradecemos tu comprensión y cooperación en este proceso.</p>
 //                 <p>Atentamente,</p>
 //                 <p>El equipo de Gudfy</p>
@@ -552,14 +602,13 @@ interface SentProps {
 //     );
 //   }
 
-
 //   interface PropsNewSeller {
 //     name: string;
 //     email: string;
 //   }
 //    function NewSellerApplication(props: PropsNewSeller) {
 //     const { name, email } = props;
-  
+
 //     return (
 //       <Html lang="en">
 //         <Tailwind
@@ -605,15 +654,14 @@ interface SentProps {
 //     );
 //   }
 
-
 //   interface PropsRejectedApplication {
 //     name: string;
 //     message: string;
 //   }
-  
+
 //  function RejectedApplication(props: PropsRejectedApplication) {
 //     const { name, message } = props;
-  
+
 //     return (
 //       <Html lang="en">
 //         <Tailwind
@@ -662,14 +710,14 @@ interface SentProps {
 //       </Html>
 //     );
 //   }
-  
+
 //   interface PropsSentApplication {
 //     name: string;
 //   }
-  
+
 //    function SentApplication(props: PropsSentApplication) {
 //     const { name } = props;
-  
+
 //     return (
 //       <Html lang="en">
 //         <Tailwind
@@ -717,16 +765,15 @@ interface SentProps {
 //       </Html>
 //     );
 //   }
-  
 
 //   type CreateTicketCustomer = {
 //     tiket: string;
 //     name: string;
 //   };
-  
+
 //  function CreateTicketCustomer(props: CreateTicketCustomer) {
 //     const { name, tiket } = props;
-  
+
 //     return (
 //       <Html lang="en">
 //         <Tailwind
@@ -786,10 +833,10 @@ interface SentProps {
 //     name: string;
 //     email: string;
 //   };
-  
+
 //   function NewTicketAdmin(props: AdminTicket) {
 //     const { name, tiket, email } = props;
-  
+
 //     return (
 //       <Html lang="en">
 //         <Tailwind
@@ -841,16 +888,15 @@ interface SentProps {
 //     );
 //   }
 
-
 //   interface EmailProps {
 //     url: string;
 //     email: string;
 //     token: string;
 //   }
-  
+
 //    function Email(props: EmailProps) {
 //     const { url, email, token } = props;
-  
+
 //     return (
 //       <Html lang="en">
 //         <Tailwind
@@ -901,6 +947,3 @@ interface SentProps {
 //       </Html>
 //     );
 //   }
-
-  
-  
