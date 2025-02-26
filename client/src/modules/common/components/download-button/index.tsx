@@ -5,12 +5,14 @@ import { FaDownload } from "react-icons/fa6"
 interface DownloadButtonProps {
   type?: "button" | "icon"
   data: string[]
+  size?: number
   filename?: string
 }
 
 const DownloadButton = ({
   type = "icon",
   data,
+  size = 20,
   filename = "file.txt",
 }: DownloadButtonProps) => {
   const handleDownload = () => {
@@ -34,7 +36,7 @@ const DownloadButton = ({
         onPress={handleDownload}
         className="p-0 bg-transparent text-white rounde "
       >
-        <FaDownload size={20} color="#9b48ed" />
+        <FaDownload size={size} color="#9b48ed" />
       </Button>
     )
   } else if (type == "button") {
@@ -52,7 +54,7 @@ const DownloadButton = ({
       onPress={handleDownload}
       className="p-0 bg-transparent text-white rounde "
     >
-      <FaDownload size={25} color="#9b48ed" />
+      <FaDownload size={size} color="#9b48ed" />
     </Button>
   )
 }

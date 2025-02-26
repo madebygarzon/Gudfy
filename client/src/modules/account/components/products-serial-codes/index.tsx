@@ -35,10 +35,6 @@ const SerialCodeTable: React.FC = () => {
     content: "text-small px-2",
   }
 
-  function handlerOrderNumber(numberOrder: string) {
-    return numberOrder.replace("store_order_id_", "")
-  }
-
   const handlerGetListSerialCodes = () => {
     getListSerialCode().then((e) => {
       setListSerialCodes(e)
@@ -54,10 +50,10 @@ const SerialCodeTable: React.FC = () => {
     <div className="w-full">
       <div className="flex flex-col gap-y-8 w-full">
         <div className="overflow-x-auto">
-          <table className="min-w-full bg-white  rounded-lg shadow-md">
+          <table className="min-w-full bg-white  rounded-lg shadow-md md:text-base text-xs">
             <thead>
               <tr>
-                <th className="flex items-center px-4 py-2 text-left">
+                <th className="flex items-center px-4 py-2 text-left ">
                   Producto
                 </th>
                 <th className="px-4 py-2 text-left">Numero orden</th>
@@ -80,33 +76,46 @@ const SerialCodeTable: React.FC = () => {
                         {code.product_name}
                       </p>
                     </td>
-                    <td className="px-4 py-2 ">
-                      {handlerOrderNumber(code.order_number)}
-                    </td>
-                    <td className="px-4 py-2 ">{code.store_name}</td>
+                    <td className="md:px-4 py-2 px-2 ">{code.order_number}</td>
+                    <td className="md:px-4 py-2 px-2">{code.store_name}</td>
 
-                    <td className="px-4 py-2  text-center">
+                    <td className="md:px-4 py-2 px-2 text-center">
                       <Accordion
                         showDivider={false}
-                        className="p-2 flex flex-col gap-1 w-full max-w-[300px]"
+                        className="p-2 flex flex-col gap-1 w-full "
                         variant="shadow"
                         itemClasses={itemClasses}
                       >
                         <AccordionItem
+                          className="text-xs md:text-base"
                           key={i}
                           aria-label="Items"
                           startContent={<FaEye className="text-lila-gf" />}
                           subtitle={
-                            <p className="flex">
+                            <p className="flex text-xs md:text-base min-w-[100px]">
                               {code.serial_codes.length}
                               {" Items - "}
-                              <span className="text-lila-gf ml-1">Ver más</span>
+                              <span className="text-lila-gf ml-1 md:text-base text-[10px]">
+                                Ver más
+                              </span>
                             </p>
                           }
-                          title="Listado de ítems"
+                          title={
+                            <p className="flex text-xs md:text-base">
+                              Listado de ítems
+                            </p>
+                          }
                         >
                           {code.serial_codes.map((code) => (
-                            <Snippet color="default">{code}</Snippet>
+                            <div>
+                              <Snippet
+                                size="sm"
+                                className="text-xs"
+                                color="default"
+                              >
+                                {code}
+                              </Snippet>
+                            </div>
                           ))}
                         </AccordionItem>
                       </Accordion>

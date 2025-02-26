@@ -10,13 +10,11 @@ import {
   Accordion,
   AccordionItem,
 } from "@nextui-org/react"
-import Link from "next/link"
+
 import type { order } from "../../templates/orders-template"
 import handlerformatDate from "@lib/util/formatDate"
 import { Customer } from "@medusajs/medusa"
 import { addClaim } from "@modules/account/actions/post-add-claim"
-import { updateFinishedOrder } from "@modules/account/actions/update-finished-order"
-import { retriverProctsOrderClaim } from "@modules/account/actions/get-list-products-in-claim"
 import { postFinishTheVariation } from "@modules/account/actions/orders/post-finish-the-variation"
 import InputFile from "@modules/common/components/input-file"
 import { validateComment } from "@modules/account/actions/get-validate-review"
@@ -135,9 +133,9 @@ const ModalOrderDetail = ({
   return (
     <>
       <ModalHeader className="flex flex-col gap-1"></ModalHeader>
-      <ModalBody>
+      <ModalBody className="md:px-6 px-1 py-1">
         {orderData ? (
-          <div className="container mx-auto px-4 py-1 -mb-2">
+          <div className="max-w-4xl md:container  mx-auto p-0 md:p-4">
             <h2 className="text-center text-2xl my-4 font-bold text-gray-700 ">
               Detalles del pedido
             </h2>
@@ -154,11 +152,11 @@ const ModalOrderDetail = ({
                     </th>
                   </tr>
                 </thead>
-                <tbody className="">
+                <tbody className="md:text-base text-xs">
                   {orderData.store_variant.map((p, i) => (
                     <>
-                      <tr className="border-b border-slate-200">
-                        <td className="py-2 px-4 border-r border-slate-200 flex justify-between">
+                      <tr className="border-b border-slate-200 ">
+                        <td className="md:py-2 md:px-4  border-r border-slate-200 flex justify-between min-w-[250px]">
                           <Accordion isCompact>
                             <AccordionItem
                               key={i}
@@ -166,12 +164,12 @@ const ModalOrderDetail = ({
                               // indicator={}
                               title={
                                 <div className="w-full flex">
-                                  <div className="w-[60%] text-base">
+                                  <div className="w-[60%] md:text-base text-xs">
                                     <p>{`${p.produc_title} – ${p.price} USD x ${p.quantity}`}</p>{" "}
                                   </div>
-                                  <div className="w-[40%] text-xs text-center">
-                                    <p className="">
-                                      Vendido por: {p.store_name}
+                                  <div className="w-[40%] md:text-xs text-[10px]  text-center">
+                                    <p className="leading-tight ">
+                                      Vendido por:{p.store_name}
                                     </p>
                                     <span
                                       className={`${getColorState(
@@ -185,10 +183,10 @@ const ModalOrderDetail = ({
                               }
                               className=""
                             >
-                              <div className="py-2 px-4 ">
+                              <div className="py-2 md:px-4  ">
                                 <div className="flex justify-between px-2">
-                                  <div className="w-[60%] text-sm font-light">
-                                    <p className="items-center  font-medium">
+                                  <div className="w-[50%] md:text-sm text-xs font-light">
+                                    <p className="items-center  font-medium sm:text-start text-center ">
                                       Descargar {p.serial_code_products.length}{" "}
                                       codigos :
                                       <DownloadButton
@@ -200,7 +198,7 @@ const ModalOrderDetail = ({
                                     </p>
                                   </div>
 
-                                  <div className="w-[40%] text-center">
+                                  <div className="w-[50%] text-center">
                                     {p.variant_order_status_id ===
                                       "Finished_ID" ||
                                     p.variant_order_status_id === "Paid_ID" ? (
@@ -213,7 +211,7 @@ const ModalOrderDetail = ({
                                               </span>
                                             ) : (
                                               <button
-                                                className="text-lila-gf flex justify-center items-center gap-2 text-sm px-4"
+                                                className="text-lila-gf flex justify-center items-center gap-2 md:text-sm px-4 text-xs"
                                                 onClick={() => {
                                                   onOpen2()
                                                   setStoreReviewData({
@@ -280,7 +278,7 @@ const ModalOrderDetail = ({
                             </AccordionItem>
                           </Accordion>
                         </td>
-                        <td className="py-2 px-4 border-b border-slate-200 ">
+                        <td className="py-2 px-4 border-b border-slate-200 md:text-base text-xs">
                           ${formatPrice(parseFloat(p.total_price_for_product))}{" "}
                           USD
                         </td>
@@ -288,10 +286,10 @@ const ModalOrderDetail = ({
                     </>
                   ))}
                   <tr className="border-b border-slate-200">
-                    <td className="py-2 px-4 border-r border-slate-200 ">
+                    <td className="py-2 px-4 border-r border-slate-200  md:text-base text-xs">
                       Subtotal:
                     </td>
-                    <td className="py-2 px-4 border-r border-slate-200 ">
+                    <td className="py-2 px-4 border-r border-slate-200  md:text-base text-xs">
                       $
                       {orderData.store_variant.reduce((sum, p) => {
                         return sum + parseFloat(p.total_price_for_product)
@@ -329,7 +327,7 @@ const ModalOrderDetail = ({
                 </tbody>
               </table>
             </div>
-            <div className="mt-8">
+            <div className="mt-8 text-[10px] md:text-base">
               <p className="text-base">
                 El pedido{" "}
                 <span className="font-bold text-blue-gf">
@@ -341,11 +339,15 @@ const ModalOrderDetail = ({
                 </span>
                 .
               </p>
-              <p className="font-bold text-sm text-blue-gf">
+              <p className="font-bold  text-blue-gf  ">
                 {`Orden por: ${customer?.first_name} ${customer?.last_name} correo: ${customer?.email}`}{" "}
               </p>
-              <h2 className="text-sm  my-4 text-warning-600">
-                * A partir de la recepción de tu pedido, dispones de un plazo de 3 días hábiles para presentar cualquier reclamo relacionado con tu compra. Si no recibimos ninguna notificación dentro de este período, consideraremos que has recibido el producto en óptimas condiciones y procederemos a marcar tu orden como Finalizada.*
+              <h2 className="  my-4 text-warning-600 ">
+                * A partir de la recepción de tu pedido, dispones de un plazo de
+                3 días hábiles para presentar cualquier reclamo relacionado con
+                tu compra. Si no recibimos ninguna notificación dentro de este
+                período, consideraremos que has recibido el producto en óptimas
+                condiciones y procederemos a marcar tu orden como Finalizada.*
               </h2>
             </div>
             <div className="w-full"></div>
@@ -354,7 +356,6 @@ const ModalOrderDetail = ({
           <>CARGANDO...</>
         )}
       </ModalBody>
-      <ModalFooter></ModalFooter>
       <div className="z-30">
         <ModalQualify
           isOpen={isOpen}
@@ -434,7 +435,9 @@ const ModalQualify = ({
         <>
           <ModalHeader>
             {" "}
-            <h2 className="block mx-auto text-xl font-bold text-gray-700">Presentar Reclamos</h2>
+            <h2 className="block mx-auto text-xl font-bold text-gray-700">
+              Presentar Reclamos
+            </h2>
           </ModalHeader>
           <ModalBody>
             <div className="w-full">
@@ -475,31 +478,30 @@ const ModalQualify = ({
                 setFile={setImage}
                 accept="image/*"
               />
-              
-              
-                <div className="flex justify-center gap-2">
-                    <ButtonLigth
-                    className={`${
-                      !comment.length ? "bg-[#a76963] hover:bg-[#744843] text-white border-none" : "   bg-[#E74C3C] hover:bg-[#C0392B] text-white border-none"
-                    }`}
-                      // variant="transparent"
-                      
-                      onClick={() => handlerAddClaim()}
-                
-                    >
-                      Presentar reclamo
-                    </ButtonLigth>
-                    <ButtonLigth
-                      // variant="transparent"
-                      className="bg-[#28A745] hover:bg-[#218838] text-white border-none"
-                      onClick={() => {
-                        onClose()
-                      }}
-                    >
-                      Atras
-                    </ButtonLigth>
-                  </div>
 
+              <div className="flex justify-center gap-2">
+                <ButtonLigth
+                  className={`${
+                    !comment.length
+                      ? "bg-[#a76963] hover:bg-[#744843] text-white border-none"
+                      : "   bg-[#E74C3C] hover:bg-[#C0392B] text-white border-none"
+                  }`}
+                  // variant="transparent"
+
+                  onClick={() => handlerAddClaim()}
+                >
+                  Presentar reclamo
+                </ButtonLigth>
+                <ButtonLigth
+                  // variant="transparent"
+                  className="bg-[#28A745] hover:bg-[#218838] text-white border-none"
+                  onClick={() => {
+                    onClose()
+                  }}
+                >
+                  Atras
+                </ButtonLigth>
+              </div>
 
               {/* <Button
                 className={`${
@@ -518,19 +520,16 @@ const ModalQualify = ({
               >
                 Atrás
               </Button> */}
-
-
-
-
-
-
-
-
             </div>
           </ModalBody>
 
           <ModalFooter>
-            <p className="text-xs">* Una vez que selecciones uno de los productos y agregues un comentario, se generará automáticamente un ticket de reclamo. Podrás visualizar y gestionar este ticket en la sección de compras, dentro de la pestaña dedicada a reclamos." *</p>
+            <p className="text-xs">
+              * Una vez que selecciones uno de los productos y agregues un
+              comentario, se generará automáticamente un ticket de reclamo.
+              Podrás visualizar y gestionar este ticket en la sección de
+              compras, dentro de la pestaña dedicada a reclamos." *
+            </p>
           </ModalFooter>
         </>
       </ModalContent>
