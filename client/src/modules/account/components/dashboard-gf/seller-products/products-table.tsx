@@ -211,16 +211,16 @@ export default function ProductsTable() {
     />
   ) : (
     <>
-      <div className=" bg-white p-8 border border-gray-200 rounded-lg">
-        <div className="w-full h-full ">
-          <h2 className="text-2xl mt-2 font-bold text-gray-700 ">
+      <div className="bg-white p-2 md:p-8 border border-gray-200 rounded-lg">
+        <div className="w-full h-full">
+          <h2 className="text-xl md:text-2xl mt-2 font-bold text-gray-700">
             Productos de la tienda
           </h2>
-          <div className="mt-2 flex justify-between">
-            <div className="flex gap-5 h-full items-end py-4">
-              <div className="w-[170px] ">
+          <div className="mt-2 flex flex-col md:flex-row justify-between gap-4">
+            <div className="flex flex-col md:flex-row gap-4 items-end">
+              <div className="w-full md:w-[170px]">
                 <Input
-                  className="flex items-center justify-center bg-white h-[48px] hover:bg-gray-100 text-gray-600 text-sm border border-gray-300 "
+                  className="w-full bg-white h-[48px] hover:bg-gray-100 text-gray-600 text-sm border border-gray-300"
                   placeholder="Buscar"
                   id="search-input"
                   type="search"
@@ -228,87 +228,88 @@ export default function ProductsTable() {
                 />
               </div>
             </div>
-
-            <div className="flex itmes-end py-4 gap-x-3">
+            <div className="flex gap-3 items-start">
               <AddProducts setReset={setReset} />
               <RequestProductTable />
-
-              {/* <RequestProduct setReset={setReset} /> */}
             </div>
           </div>
           {!isLoading && dataProducts.dataPreview.length ? (
             <>
-              <table className="table w-full">
-                <thead className="heade_table rounded text-left border-1 border-gray-200">
-                  <tr className="table_header  shadow-sm border-[15px] border-white">
-                    <th className="my-8">Productos</th>
-                    <th>Precio</th>
-                    <th>Inventario</th>
-                    <th>Categorias</th>
-                    <th>Ajustes</th>
-                  </tr>
-                </thead>
-                <tbody className="heade_body">
-                  {dataProducts.dataPreview?.map((data, i) => {
-                    return (
-                      <tr
-                        key={data.storexvariantid}
-                        className="cursor-pointer my-6 "
-                      >
-                        <td>
-                          <div className="flex gap-3 items-center">
-                            {data.thumbnail ? (
-                              <Thumbnail
-                                thumbnail={data.thumbnail}
-                                size="bsmall"
-                              />
-                            ) : (
-                              <ImagePlaceholderIcon />
-                            )}
-                            <div className="ml-4 gap-4">
-                              <h3 className="text-xl font-bold text-gray-700 whitespace-nowrap mr-4 ">
-                                {` ${data.productvarianttitle} `}
-                              </h3>
-                              <p className="font-medium text-gray-700">
-                                {` ${data.producttitle} `}
-                              </p>
+              <div className="overflow-x-auto mt-5">
+                <table className="w-full min-w-[600px]">
+                  <thead className="bg-gray-50 rounded text-left border-1 border-gray-200">
+                    <tr className="shadow-sm">
+                      <th className="py-3 px-4">Productos</th>
+                      <th className="py-3 px-4">Precio</th>
+                      <th className="py-3 px-4">Inventario</th>
+                      <th className="py-3 px-4">Categorias</th>
+                      <th className="py-3 px-4">Ajustes</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {dataProducts.dataPreview?.map((data, i) => {
+                      return (
+                        <tr
+                          key={data.storexvariantid}
+                          className="cursor-pointer hover:bg-gray-50"
+                        >
+                          <td className="md:py-4 md:px-4  p-1">
+                            <div className="flex gap-3 items-center">
+                              {data.thumbnail ? (
+                                <Thumbnail
+                                  thumbnail={data.thumbnail}
+                                  size="bsmall"
+                                />
+                              ) : (
+                                <ImagePlaceholderIcon />
+                              )}
+                              <div className="ml-4">
+                                <h3 className="text-lg font-bold text-gray-700">
+                                  {` ${data.productvarianttitle} `}
+                                </h3>
+                                <p className="text-sm text-gray-600">
+                                  {` ${data.producttitle} `}
+                                </p>
+                              </div>
                             </div>
-                          </div>
-                        </td>
-                        <td> $ {data.price} USD</td>
-                        <td>{data.quantity} Codigos</td>
-                        <td>GifCars</td>
-                        <td>
-                          <div className="flex items-center">
-                            <IconButton
-                              className="hover:bg-white hover:text-white hover:scale-110 transition-all"
-                              variant="transparent"
-                              onClick={() => {
-                                setProductEdit(data)
-                                onOpen()
-                              }}
-                            >
-                              <PencilEditIcon />
-                            </IconButton>
-                            <IconButton
-                              className="hover:bg-white hover:text-white hover:scale-110 transition-all"
-                              variant="transparent"
-                              onClick={() => {
-                                setProductView(data)
-                              }}
-                            >
-                              <BsEye color="#9b48ed" />
-                            </IconButton>
-                          </div>
-                        </td>
-                      </tr>
-                    )
-                  })}
-                </tbody>
-              </table>
+                          </td>
+                          <td className="md:p-4 p-2">$ {data.price} USD</td>
+                          <td className="md:p-4 p-2">
+                            {data.quantity} Codigos
+                          </td>
+                          <td className="md:p-4 p-2">GifCars</td>
+                          <td className="md:p-4 p-2">
+                            <div className="flex items-center gap-2">
+                              <IconButton
+                                className="hover:bg-gray-100 hover:scale-110 transition-all"
+                                variant="transparent"
+                                onClick={() => {
+                                  setProductEdit(data)
+                                  onOpen()
+                                }}
+                              >
+                                <PencilEditIcon />
+                              </IconButton>
+                              <IconButton
+                                className="hover:bg-gray-100 hover:scale-110 transition-all"
+                                variant="transparent"
+                                onClick={() => {
+                                  setProductView(data)
+                                }}
+                              >
+                                <BsEye color="#9b48ed" />
+                              </IconButton>
+                            </div>
+                          </td>
+                        </tr>
+                      )
+                    })}
+                  </tbody>
+                </table>
+              </div>
             </>
           ) : !isLoading && !dataProducts.dataPreview.length ? (
-            <div className="flex flex-col justify-center items-center py-10 bg-gray-100 rounded-lg shadow-md">
+            <div className="flex flex-col justify-center items-center py-10 bg-gray-100 rounded-lg shadow-md mt-4">
               <div className="flex items-center gap-2">
                 <XMark className="h-6 w-6" />
                 <p className="text-lg font-semibold">
@@ -320,14 +321,16 @@ export default function ProductsTable() {
               </p>
             </div>
           ) : (
-            <Spinner />
+            <div className="flex justify-center items-center py-10">
+              <Spinner />
+            </div>
           )}
         </div>
-        <div className="flex justify-between p-4 mt-6">
-          <div>
-            {`${dataProducts.dataFilter.length} Productos`}{" "}
+        <div className="flex flex-col md:flex-row justify-between items-center p-4 mt-6 gap-4">
+          <div className="flex items-center gap-4">
+            <span>{`${dataProducts.dataFilter.length} Productos`}</span>
             <Select onValueChange={handlerFilterRows} size="small">
-              <Select.Trigger className="bg-white mt-4 text-[#C2C2C2] text-gra-200">
+              <Select.Trigger className="bg-white text-gray-600">
                 <Select.Value placeholder="10" />
               </Select.Trigger>
               <Select.Content>
@@ -339,26 +342,29 @@ export default function ProductsTable() {
               </Select.Content>
             </Select>
           </div>
-          <div className="flex gap-5">
-            <>
+          <div className="flex items-center gap-4">
+            <span>
               {page} de {pageTotal}
-            </>
-            <button
-              disabled={page == 1 ? true : false}
-              onClick={() => handlerNextPage("PREV")}
-            >
-              <ArrowLongLeft />
-            </button>
-
-            <button
-              disabled={page == pageTotal ? true : false}
-              onClick={() => handlerNextPage("NEXT")}
-            >
-              <ArrowLongRight />
-            </button>
+            </span>
+            <div className="flex gap-2">
+              <button
+                disabled={page == 1}
+                onClick={() => handlerNextPage("PREV")}
+                className="disabled:opacity-50"
+              >
+                <ArrowLongLeft />
+              </button>
+              <button
+                disabled={page == pageTotal}
+                onClick={() => handlerNextPage("NEXT")}
+                className="disabled:opacity-50"
+              >
+                <ArrowLongRight />
+              </button>
+            </div>
           </div>
         </div>
-        {productEdit ? (
+        {productEdit && (
           <EditProduct
             key={productEdit?.storexvariantid}
             isOpen={isOpen}
@@ -368,11 +374,7 @@ export default function ProductsTable() {
             setReset={setReset}
             onClose={onClose}
           />
-        ) : (
-          <></>
         )}
-
-        <span></span>
       </div>
     </>
   )

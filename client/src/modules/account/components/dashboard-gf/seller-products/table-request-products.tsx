@@ -32,7 +32,7 @@ const RequestProductTable: React.FC = () => {
   return (
     <>
       <ButtonLigth
-        className="bg-[#9B48ED] hover:bg-[#7b39c4] text-white border-none"
+        className="bg-[#9B48ED] hover:bg-[#7b39c4] text-white border-none md:px-12 px-[10px]"
         onClick={onOpen}
       >
         Productos solicitados

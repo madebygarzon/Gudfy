@@ -52,7 +52,7 @@ export function CreateClaimSeller(props: propsCreate) {
               </p>
               <div className="text-center mt-6">
                 <a
-                  href={`https://gudfyp2p.com//account/`}
+                  href={`http://gudfyp2p.com/account/`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-block bg-gf text-white text-lg font-medium py-3 px-6 rounded-md shadow hover:bg-[#0acb96] transition duration-200"
