@@ -80,10 +80,6 @@ const TicketTable: React.FC = () => {
     }
   }
 
-  function handlerOrderNumber(numberOrder: string) {
-    return numberOrder.replace("store_order_id_", "")
-  }
-
   useEffect(() => {
     handlerListOrder()
   }, [])
@@ -163,7 +159,7 @@ const TicketTable: React.FC = () => {
                       </span>
                     </td>
                     <td className="px-4 py-2 text-sm md:text-base">
-                      {order.id.replace("store_order_id_", "")}
+                      {order.id}
                     </td>
                     <td className="px-4 py-2 text-sm md:text-base">
                       {handlerformatDate(order.created_at)}

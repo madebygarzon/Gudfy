@@ -49,7 +49,7 @@ export function CreateTicketCustomer(props: EmailTicket) {
               </p>
               <div className="flex justify-center mt-4">
                 <a
-                  href="https://gudfyp2p.com/account/ticket"
+                  href="http://gudfyp2p.com/account/ticket"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="bg-button text-white text-center py-2 px-4 rounded-md shadow hover:bg-[#0acb96] transition"

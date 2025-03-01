@@ -142,7 +142,7 @@ const Emails = () => {
       <Email
         email="ronaldo@gmail.com"
         token="token-123"
-        url="https://gudfyp2p.com/account/recover-password"
+        url="http://gudfyp2p.com/account/recover-password"
       />
       <div className="w-full h-[100px]"></div>
     </div>

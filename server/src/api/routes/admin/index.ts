@@ -26,6 +26,7 @@ import getSellersReviewsList from "./seller/get-seller-reviews-list";
 import getAllListRequestProduct from "./request-product/get-all-list-request-product";
 import updateRequestProduct from "./request-product/update-request-product";
 import { updateTicketStatus } from "./tickets/update-ticket-status";
+import getListStoreOrders from "./orders/get-list-store-order";
 
 // Initialize a custom router
 const router = Router();
@@ -104,5 +105,7 @@ export function attachAdminRoutes(adminRouter: Router) {
   );
   router.post("/update-request-product", wrapHandler(updateRequestProduct));
 
+  //---------------orders-------------------
+  router.get("/orders/list-orders", wrapHandler(getListStoreOrders));
   onboardingRoutes(adminRouter);
 }

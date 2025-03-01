@@ -13,7 +13,7 @@ module.exports = withStoreConfig({
       "medusa-public-images.s3.eu-west-1.amazonaws.com",
       "localhost",
       "medusa-server-testing.s3.amazonaws.com",
-      "179.61.219.62",
+      "gudfyp2p.com",
       "public.bnbstatic.com", //para la QR de Binance
     ],
   },

@@ -93,8 +93,6 @@ const Contact: React.FC = () => {
         }
       }
 
-      // Aquí iría la lógica para enviar el formulario (por ejemplo, una API)
-      console.log("Datos enviados:", values)
       postSendContactForm(values).then(() => {
         alert("Formulario enviado correctamente")
         setIsSubmitting(false)
