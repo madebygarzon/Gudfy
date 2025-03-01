@@ -234,6 +234,10 @@ const WalletListado = () => {
     handlerGetListStore();
   }, []);
 
+  useEffect(() => {
+    handlerResetSubmit();
+  }, []);
+
   return (
     <div className="bg-white p-8 border border-gray-200 rounded-lg">
       <div className="w-full h-full ">
@@ -453,7 +457,11 @@ const WalletListado = () => {
                       </Table.Cell>
 
                       <Table.Cell>
-                        <Drawer>
+                        <Drawer
+                          onOpenChange={(open) => {
+                            if (!open) handlerResetSubmit();
+                          }}
+                        >
                           <Drawer.Trigger>
                             <Button
                               onClick={() => handlerDataOrder(data)}
@@ -650,6 +658,10 @@ const PromptPayment = ({
   setDataPay,
   handlerSubmitPay,
 }) => {
+  const [loading, setLoading] = useState(false);
+  useEffect(() => {
+    if (open) setLoading(false);
+  }, [open]);
   return (
     <div>
       <Prompt open={open} onOpenChange={setOpen}>
@@ -664,8 +676,10 @@ const PromptPayment = ({
                 <Alert className="text-l">
                   Vas a pagar $:{" "}
                   <span className="font-extrabold">
-                    {data?.available_balance -
-                      data?.available_balance * commission}
+                    {formatPrice(
+                      data?.available_balance -
+                        data?.available_balance * commission
+                    )}
                   </span>{" "}
                   a la tienda:{" "}
                   <span className="font-extrabold">{data?.store_name}</span>
@@ -688,7 +702,11 @@ const PromptPayment = ({
               Cancelar
             </Prompt.Cancel>
             <Button
-              onClick={handlerSubmitPay}
+              isLoading={loading}
+              onClick={() => {
+                handlerSubmitPay();
+                setLoading(true);
+              }}
               className="bg-green-500 border-green-500 shadow-md text-white rounded-md px-4 py-2"
             >
               Confirmar

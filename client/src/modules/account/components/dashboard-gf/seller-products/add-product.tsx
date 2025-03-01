@@ -197,7 +197,7 @@ export default function AddProducts({ setReset }: Reset) {
   return (
     <>
       <ButtonLigth
-        className="bg-[#9B48ED] hover:bg-[#7b39c4] text-white border-none"
+        className="bg-[#9B48ED] hover:bg-[#7b39c4] text-white border-none md:px-12 px-[10px] "
         onClick={onOpen}
       >
         Agregar productos
@@ -286,7 +286,9 @@ export default function AddProducts({ setReset }: Reset) {
                       </div>
                     )}
                     <div className="flex flex-col items-center">
-                      <p className="mb-2">¿No encuentras el producto vas a vender?</p>
+                      <p className="mb-2">
+                        ¿No encuentras el producto vas a vender?
+                      </p>
                       <RequestProduct setReset={setReset} />
                     </div>
                   </div>
@@ -323,7 +325,9 @@ export default function AddProducts({ setReset }: Reset) {
                                 </div>
                               </td>
                               <td className="py-2 text-center ">
-                                <p className="text-star text-sm">cargar códigos</p>
+                                <p className="text-star text-sm">
+                                  cargar códigos
+                                </p>
                                 <FileUploader
                                   variantID={product.id}
                                   setAddResult={setAddResult}
@@ -395,32 +399,29 @@ export default function AddProducts({ setReset }: Reset) {
                       ) : (
                         <div></div>
                       )}
-                      
                     </div>
-                    
                   </div>
-                  
                 </div>
                 <div className="flex justify-center gap-2">
-                        <ButtonLigth
-                          // variant="transparent"
-                          className="bg-[#E74C3C] hover:bg-[#C0392B] text-white border-none"
-                          onClick={onClose}
-                        >
-                          Cancelar
-                        </ButtonLigth>
-                        <ButtonLigth
-                          // variant="transparent"
-                          className="bg-[#28A745] hover:bg-[#218838] text-white border-none"
-                          onClick={onSubmit}
-                        >
-                          {isloadingPV ? (
-                            <Spinner color="secondary" />
-                          ) : (
-                            "Guardar productos"
-                          )}
-                        </ButtonLigth>
-                      </div>
+                  <ButtonLigth
+                    // variant="transparent"
+                    className="bg-[#E74C3C] hover:bg-[#C0392B] text-white border-none"
+                    onClick={onClose}
+                  >
+                    Cancelar
+                  </ButtonLigth>
+                  <ButtonLigth
+                    // variant="transparent"
+                    className="bg-[#28A745] hover:bg-[#218838] text-white border-none"
+                    onClick={onSubmit}
+                  >
+                    {isloadingPV ? (
+                      <Spinner color="secondary" />
+                    ) : (
+                      "Guardar productos"
+                    )}
+                  </ButtonLigth>
+                </div>
               </ModalBody>
               <ModalFooter className="mb-[2%] justify-center">
                 <div>
@@ -442,7 +443,6 @@ export default function AddProducts({ setReset }: Reset) {
                   ) : (
                     <div></div>
                   )}
-                  
                 </div>
               </ModalFooter>
             </>
