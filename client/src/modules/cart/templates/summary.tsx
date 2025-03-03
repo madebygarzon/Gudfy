@@ -69,7 +69,9 @@ const Summary = ({ items, setModifyProduct }: ItemsTemplateProps) => {
           </span>
         </div>
         <p className=" text-xs ">
-          <strong> ✨Comisión Gudfy Fee: 1%</strong> Esta comisión nos ayuda a mantener un servicio seguro, confiable y de alta calidad para todos nuestros usuarios.
+          <strong> ✨Comisión Gudfy Fee: 1%</strong> Esta comisión nos ayuda a
+          mantener un servicio seguro, confiable y de alta calidad para todos
+          nuestros usuarios.
         </p>
         <div className="flex items-center justify-between text-lg text-gray-700 mb-4"></div>
 

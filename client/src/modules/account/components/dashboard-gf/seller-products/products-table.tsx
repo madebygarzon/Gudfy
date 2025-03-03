@@ -57,6 +57,7 @@ interface serials {
   store_variant_order_id: boolean
   store_order_id: string
 }
+
 export default function ProductsTable() {
   const [dataProducts, setDataProducts] = useState<ListDataSellerProduct>({
     dataProduct: [],
@@ -236,7 +237,7 @@ export default function ProductsTable() {
           {!isLoading && dataProducts.dataPreview.length ? (
             <>
               <div className="overflow-x-auto mt-5">
-                <table className="w-full min-w-[600px]">
+                <table className="w-full min-w-[600px] md:text-base text-sm">
                   <thead className="bg-gray-50 rounded text-left border-1 border-gray-200">
                     <tr className="shadow-sm">
                       <th className="py-3 px-4">Productos</th>
@@ -264,10 +265,10 @@ export default function ProductsTable() {
                                 <ImagePlaceholderIcon />
                               )}
                               <div className="ml-4">
-                                <h3 className="text-lg font-bold text-gray-700">
+                                <h3 className="md:text-lg text-sm font-bold text-gray-700">
                                   {` ${data.productvarianttitle} `}
                                 </h3>
-                                <p className="text-sm text-gray-600">
+                                <p className="md:text-sm text-xs text-gray-600">
                                   {` ${data.producttitle} `}
                                 </p>
                               </div>
@@ -327,8 +328,8 @@ export default function ProductsTable() {
           )}
         </div>
         <div className="flex flex-col md:flex-row justify-between items-center p-4 mt-6 gap-4">
-          <div className="flex items-center gap-4">
-            <span>{`${dataProducts.dataFilter.length} Productos`}</span>
+          <div className="flex items-center gap-4 ">
+            <p className="md:text-sm text-xs whitespace-nowrap">{`${dataProducts.dataFilter.length} productos`}</p>
             <Select onValueChange={handlerFilterRows} size="small">
               <Select.Trigger className="bg-white text-gray-600">
                 <Select.Value placeholder="10" />
@@ -342,7 +343,7 @@ export default function ProductsTable() {
               </Select.Content>
             </Select>
           </div>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-4 md:text-base text-sm">
             <span>
               {page} de {pageTotal}
             </span>

@@ -146,7 +146,7 @@ const SellerApplication = () => {
   const handlerNextPage = (action) => {
     if (action == "NEXT")
       setPage((old) => {
-        const dataToUse = dataOrder.dataFilter.length
+        const dataToUse = dataOrder.dataFilter?.length
           ? dataOrder.dataFilter
           : dataOrder.dataOrders;
         setDataCustomer({
@@ -158,7 +158,7 @@ const SellerApplication = () => {
 
     if (action == "PREV")
       setPage((old) => {
-        const dataToUse = dataOrder.dataFilter.length
+        const dataToUse = dataOrder.dataFilter?.length
           ? dataOrder.dataFilter
           : dataOrder.dataOrders;
         setDataCustomer({
@@ -299,7 +299,7 @@ const SellerApplication = () => {
             <div className="min-h-[293px] flex items-center justify-center">
               <Spinner size="large" variant="secondary" />
             </div>
-          ) : dataOrder.dataPreview.length ? (
+          ) : dataOrder.dataPreview?.length ? (
             <div className="min-h-[293px]">
               <Table>
                 <Table.Header>
@@ -414,9 +414,9 @@ function FocusModalDemo({
     <Drawer open={isOpen} onOpenChange={onOpenChange}>
       <Drawer.Content className="w-1/2 right-0">
         <Drawer.Header>
-          <Drawer.Title>Edit Variant</Drawer.Title>
+          <Drawer.Title>Detalles del pedido {orderData?.id}</Drawer.Title>
         </Drawer.Header>
-        <Drawer.Body className="flex flex-col items-center justify-center py-16">
+        <Drawer.Body className="flex flex-col  py-5">
           {orderData?.state_order === "Cancelada" ? (
             <OrderCancel orderData={orderData} />
           ) : (

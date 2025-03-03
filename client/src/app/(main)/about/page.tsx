@@ -1,34 +1,67 @@
 import React from "react"
 
-const About: React.FC = () => {
+const AboutUsSection = () => {
   return (
-    <div className="flex flex-col items-center justify-start my-10 mx-4 sm:mx-80" >
-      <h2 className="text-2xl mt-2 font-bold text-gray-700 capitalize mb-4">Sobre nosotros</h2>
-      <p>
-        En Gudfy, nos enorgullece ser una plataforma líder en la distribución de
-        códigos digitales, operando a nivel internacional y atendiendo a más de
-        1000 usuarios activos en todo el mundo. Nuestra presencia en esta
-        marketplace refleja nuestro compromiso de acercar soluciones digitales
-        de calidad a retailers, wholesalers y emprendedores que buscan potenciar
-        sus negocios.
-      </p><br/>
+    <div className="bg-white p-8 rounded-lg shadow-md max-w-7xl mx-auto">
+      <h2 className="text-3xl font-bold text-gray-800 mb-6 text-center">
+        Sobre GudfyP2P
+      </h2>
 
-      <p>
-        Nos destacamos por ofrecer un servicio al cliente excepcional, con
-        soporte en vivo personalizado que guía y resuelve cualquier inquietud
-        durante el proceso de compra. Nuestra misión es clara: brindar el mejor
-        servicio en productos digitales, con precios asequibles, entrega rápida
-        y un proceso de compra sencillo y eficiente.
-      </p><br/>
+      <div className="space-y-6">
+        <div>
+          <h3 className="text-xl font-bold text-gray-800 mb-2">
+            Quiénes somos
+          </h3>
+          <p className="text-gray-700">
+            En GudfyP2P, estamos transformando la manera en que las personas
+            compran y venden productos digitales. Nuestra plataforma conecta
+            directamente a vendedores y compradores de todo el mundo,
+            permitiéndoles realizar transacciones de manera rápida, segura y
+            accesible.
+          </p>
+        </div>
 
-      <p>
-        En esta sección de la marketplace, queremos que encuentres no solo
-        productos, sino también una experiencia de compra diseñada para ayudarte
-        a llevar tu negocio al siguiente nivel. En Gudfy, estamos aquí para
-        apoyarte en cada paso del camino.
-      </p>
+        <div>
+          <h3 className="text-xl font-bold text-gray-800 mb-2">
+            Nuestro enfoque
+          </h3>
+          <p className="text-gray-700">
+            Con el objetivo de expandir el alcance de nuestra comunidad, en
+            GudfyP2P brindamos un espacio donde cualquier usuario puede
+            convertirse en un comerciante digital. Nuestro enfoque se basa en
+            proporcionar una experiencia personalizada, herramientas innovadoras
+            y un soporte en vivo que te guiará durante cada paso del proceso,
+            desde la publicación de tus productos hasta la entrega a tus
+            clientes.
+          </p>
+        </div>
+
+        <div>
+          <h3 className="text-xl font-bold text-gray-800 mb-2">
+            Nuestra misión
+          </h3>
+          <p className="text-gray-700">
+            Nuestra misión es empoderar a nuestra comunidad de usuarios,
+            retailers y vendedores independientes, facilitando un mercado justo
+            y dinámico que fomente el intercambio directo de productos
+            digitales, con precios competitivos y procesos transparentes.
+          </p>
+        </div>
+
+        <div>
+          <h3 className="text-xl font-bold text-gray-800 mb-2">
+            Nuestra visión
+          </h3>
+          <p className="text-gray-700">
+            Creemos en el potencial de una economía digital conectada y
+            accesible para todos. En GudfyP2P, tú eres el protagonista: define
+            tus precios, gestiona tus ventas y haz crecer tu negocio en un
+            entorno confiable y global.
+          </p>
+        </div>
+      </div>
     </div>
   )
 }
 
-export default About
+export default AboutUsSection
