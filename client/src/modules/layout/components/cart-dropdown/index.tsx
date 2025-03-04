@@ -23,17 +23,16 @@ const CartDropdown = () => {
   const [subTotal, setSubtotal] = useState<number>(0)
 
   useEffect(() => {
-    listItem()
+    if (!items.length) listItem()
     handlerSubTotal()
-  }, [])
+  }, [items])
 
   const handlerSubTotal = () => {
-    let total =
-      items?.length || 0
-        ? items.reduce((total: any, i: any) => {
-            return total + i.unit_price * i.quantity
-          }, 0)
-        : 0
+    let total = items?.length
+      ? items.reduce((total: any, i: any) => {
+          return total + i.unit_price * i.quantity
+        }, 0)
+      : 0
     setSubtotal(total)
   }
   const { t } = useTranslation("common")
@@ -71,7 +70,9 @@ const CartDropdown = () => {
             className="hidden small:block absolute top-[calc(100%+30px)] right-0 bg-white border-x border-b border-gray-200 w-[382px] text-gray-900"
           >
             <div className="p-4 flex justify-center border-b border-gray-200">
-              <h3 className="text-xl text-large-semi">{t("cart_shopping_cart")}</h3>
+              <h3 className="text-xl text-large-semi">
+                {t("cart_shopping_cart")}
+              </h3>
             </div>
             {items?.length ? (
               <>
@@ -150,7 +151,8 @@ const CartDropdown = () => {
                     <span className="text-gray-700 font-semibold">
                       {t("cart_subtotal")}: {parseFloat(subTotal.toFixed(2))}
                       <span className="font-normal">
-                        {" "}({t("cart_taxes_included")})
+                        {" "}
+                        ({t("cart_taxes_included")})
                       </span>
                     </span>
                     <span className="text-large-semi">

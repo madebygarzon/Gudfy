@@ -6,9 +6,9 @@ type ButtonProps = {
   isLoading?: boolean
   variant?: "primary" | "secondary" | "tertiary"
   name?: string
-  href?: string 
+  href?: string
 } & React.ButtonHTMLAttributes<HTMLButtonElement> &
-  React.AnchorHTMLAttributes<HTMLAnchorElement> 
+  React.AnchorHTMLAttributes<HTMLAnchorElement>
 
 const ButtonLigth = ({
   children,
@@ -20,10 +20,12 @@ const ButtonLigth = ({
   ...props
 }: ButtonProps) => {
   const commonClasses = clsx(
-    "flex items-center justify-center h-[48px] text-[14px] px-12 py-[10px] rounded transition-colors duration-200 disabled:opacity-50",
+    "flex items-center justify-center h-[48px] text-[14px] md:px-12 px-2 md:py-[10px] py-[2px] rounded transition-colors duration-200 disabled:opacity-50 md:text-base text-xs",
     {
-      "border-[1px] border-blue-gf border-solid font-light": variant === "primary",
-      "border-[1px] border-white border-solid text-white": variant === "secondary",
+      "border-[1px] border-blue-gf border-solid font-light":
+        variant === "primary",
+      "border-[1px] border-white border-solid text-white":
+        variant === "secondary",
       "border-[1px] border-[#9B48ED] border-solid": variant === "tertiary",
     },
     className
@@ -38,11 +40,7 @@ const ButtonLigth = ({
   }
 
   return (
-    <button
-      name={name}
-      {...props}
-      className={commonClasses}
-    >
+    <button name={name} {...props} className={commonClasses}>
       {isLoading ? <Spinner /> : children}
     </button>
   )

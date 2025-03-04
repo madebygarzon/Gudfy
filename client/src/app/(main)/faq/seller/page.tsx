@@ -62,17 +62,17 @@ const OfertasYProductos = [
     url: "./agregar-codigos-oferta",
   },
   {
-    question: "El producto que quieres vender no está en nuestra lista?",
-    url: "https://supporthub.g2a.com/seller/en/selling-digital/how-can-i-sell-an-item-you-do-not-have-in-your-offer",
+    question: "¿El producto que quieres vender no está en nuestra lista?",
+    url: "./solicitar-producto",
   },
   {
     question:
       "¿Cómo puedo gestionar los artículos digitales que ya estoy vendiendo a través de la pestaña 'productos'?",
-    url: "./gestionar-productos",
+    url: "#",
   },
   {
     question: "¿Qué significa el estado de mi oferta?",
-    url: "https://supporthub.g2a.com/seller/en/selling-digital/what-does-the-status-of-my-auction-mean",
+    url: "#",
   },
   {
     question: "Guía completa para vender artículos digitales",
