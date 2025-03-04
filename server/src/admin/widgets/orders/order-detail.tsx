@@ -75,44 +75,54 @@ const OrderDetail = ({ orderData, customer }: ModalOrderProps) => {
     <>
       {orderData ? (
         <div className="w-full md:container  mx-auto p-0 large:p-4">
-          <h2 className="text-center text-2xl my-4 font-bold text-gray-700 ">
-            Detalles del pedido
-          </h2>
-
-          <div className="overflow-y-scroll max-h-[350px] ">
-            <table className="min-w-full rounded-lg shadow-2xl p-8">
+          <div className="mt-2  text-base mb-2">
+            <p className="text-lg">
+              El pedido
+              <span className=" ">#{orderData.id}</span>
+              se realizó el
+              <span className="font-bold ">
+                {formatDate(orderData.created_at)}
+              </span>
+              .
+            </p>
+            <p className="font-bold   ">{`Orden por: ${customer} `} </p>
+            <p>Correo: {orderData.email}</p>
+          </div>
+          <div className="overflow-y-scroll min-h-[450px] ">
+            <table className="min-w-full rounded-lg shadow-2xl p-4">
               <thead className="bg-gray-100">
                 <tr>
-                  <th className="py-2 px-4 border-b border-slate-200">
-                    Producto
+                  <th className="py-2 px-4 border-b border-slate-100">
+                    Productos
                   </th>
-                  <th className="py-2 px-4 border-b border-slate-200">Total</th>
+                  <th className="py-2 px-4 border-b border-slate-100">Total</th>
                 </tr>
               </thead>
-              <tbody className="md:text-base text-xs">
+              <tbody className="lg:text-base text-xs">
                 {orderData.store_variant.map((p, i) => (
                   <>
                     <tr className="border-b border-slate-200 ">
-                      <td className="md:py-2 md:px-4  border-r border-slate-200 flex justify-between min-w-[250px]">
-                        <div className="w-full flex">
-                          <div className="w-[60%] md:text-base text-xs">
-                            <p>{`${p.produc_title} – ${p.price} USD x ${p.quantity}`}</p>{" "}
-                          </div>
-                          <div className="w-[40%] md:text-xs text-[10px]  text-center">
-                            <p className="leading-tight ">
-                              Vendido por:{p.store_name}
+                      <td className="py-2 px-4  border-r border-slate-200 flex justify-between min-w-[250px]">
+                        <div className="w-full flex justify-between">
+                          <div className="text-base">
+                            <p className="font-bold">{`${p.produc_title} – ${p.price} USD x ${p.quantity}`}</p>
+
+                            <p className=" font-light ">
+                              Tienda:{p.store_name}
                             </p>
+                          </div>
+                          <div className=" w-[20%] text-base  text-center">
                             <span
                               className={`${getColorState(
                                 p.variant_order_status_id
-                              )}`}
+                              )} `}
                             >
                               {handlerState(p.variant_order_status_id)}
                             </span>
                           </div>
                         </div>
                       </td>
-                      <td className="py-2 px-4 border-b border-slate-200 md:text-base text-xs">
+                      <td className="py-2 px-4 border-b border-slate-200 text-base ">
                         ${formatPrice(parseFloat(p.total_price_for_product))}{" "}
                         USD
                       </td>
@@ -120,14 +130,16 @@ const OrderDetail = ({ orderData, customer }: ModalOrderProps) => {
                   </>
                 ))}
                 <tr className="border-b border-slate-200">
-                  <td className="py-2 px-4 border-r border-slate-200  md:text-base text-xs">
+                  <td className="py-2 px-4 border-r border-slate-200  small:text-base text-xs">
                     Subtotal:
                   </td>
-                  <td className="py-2 px-4 border-r border-slate-200  md:text-base text-xs">
+                  <td className="py-2 px-4 border-r border-slate-200  large:text-base text-xs ">
                     $
-                    {orderData.store_variant.reduce((sum, p) => {
-                      return sum + parseFloat(p.total_price_for_product);
-                    }, 0)}{" "}
+                    {formatPrice(
+                      orderData.store_variant.reduce((sum, p) => {
+                        return sum + parseFloat(p.total_price_for_product);
+                      }, 0)
+                    )}
                     USD
                   </td>
                 </tr>
@@ -153,38 +165,16 @@ const OrderDetail = ({ orderData, customer }: ModalOrderProps) => {
                   </td>
                   <td className="py-2 px-4 border-r border-slate-200 ">
                     $
-                    {orderData.store_variant.reduce((sum, p) => {
-                      return sum + parseFloat(p.total_price_for_product);
-                    }, 0.23)}
+                    {formatPrice(
+                      orderData.store_variant.reduce((sum, p) => {
+                        return sum + parseFloat(p.total_price_for_product);
+                      }, 0)
+                    )}
                   </td>
                 </tr>
               </tbody>
             </table>
           </div>
-          <div className="mt-8 text-[10px] md:text-base">
-            <p className="text-base">
-              El pedido{" "}
-              <span className="font-bold text-blue-gf">
-                #{orderData.id.replace("store_order_id_", "")}
-              </span>{" "}
-              se realizó el{" "}
-              <span className="font-bold text-blue-gf">
-                {formatDate(orderData.created_at)}
-              </span>
-              .
-            </p>
-            <p className="font-bold  text-blue-gf  ">
-              {`Orden por: ${customer} correo: ${orderData.email}`}{" "}
-            </p>
-            <h2 className="  my-4 text-warning-600 ">
-              * A partir de la recepción de tu pedido, dispones de un plazo de 3
-              días hábiles para presentar cualquier reclamo relacionado con tu
-              compra. Si no recibimos ninguna notificación dentro de este
-              período, consideraremos que has recibido el producto en óptimas
-              condiciones y procederemos a marcar tu orden como Finalizada.*
-            </h2>
-          </div>
-          <div className="w-full"></div>
         </div>
       ) : (
         <>CARGANDO...</>

@@ -1,6 +1,5 @@
 "use client"
 import React, { useState, useEffect } from "react"
-
 import {
   Modal,
   ModalContent,
@@ -59,7 +58,7 @@ export default function EditProduct({
   }, [])
 
   const onSubmit = () => {
-    setError(true)
+    if (Error) return
     const code = addResult.find(
       (data) => data.variantID === productData.storexvariantid
     )?.codes
@@ -67,6 +66,7 @@ export default function EditProduct({
       productvariantid: productData.storexvariantid,
       codes: code,
     }
+   
     postAddCodesProduct(codes).then(() => {
       setReset((reset) => !reset)
       onClose()
@@ -79,11 +79,11 @@ export default function EditProduct({
         {(onClose) => (
           <>
             <ModalHeader className="text-2xl text-center font-semibold flex flex-col gap-2 pt-6 px-6 sm:px-10">
-              Editar Producto: {productData.productvarianttitle}
+              Agregar Productos: {productData.productvarianttitle}
             </ModalHeader>
             <ModalBody className="flex overflow-auto py-2 px-6 sm:px-10">
-              <div className="flex justify-center items-center">
-                <div>
+              <div className="flex flex-col md:flex-row justify-center items-center gap-4">
+                <div className="flex justify-center items-center">
                   <Thumbnail thumbnail={productData.thumbnail} size="small" />
                 </div>
 
@@ -98,7 +98,9 @@ export default function EditProduct({
                       {productData.serialCodeCount}
                     </p>
                   </div>
-                  <h4 className="font-bold mt-8 text-lg mb-1">Agregar inventario</h4>
+                  <h4 className="font-bold mt-8 text-lg mb-1">
+                    Agregar inventario
+                  </h4>
                   <FileUploader
                     setError2={setError}
                     variantID={productData.storexvariantid}
@@ -110,6 +112,11 @@ export default function EditProduct({
 
             {/* Footer */}
             <ModalFooter className="flex flex-col sm:flex-row justify-center items-center mt-6 gap-4 py-4 px-6 sm:px-10">
+              {Error && (
+                <p className="text-red-500 text-sm">
+                  {"El formato de los codigos es incorrecto"}
+                </p>
+              )}
               <ButtonLigth
                 className="bg-[#E74C3C] hover:bg-[#C0392B] text-white border-none w-full sm:w-auto"
                 onClick={onClose}
@@ -117,6 +124,7 @@ export default function EditProduct({
                 Cancelar
               </ButtonLigth>
               <ButtonLigth
+                disabled={addResult.length === 0 || Error}
                 color="primary"
                 className="bg-[#28A745] hover:bg-[#218838] text-white border-none w-full sm:w-auto"
                 onClick={onSubmit}

@@ -110,12 +110,14 @@ const Contact: React.FC = () => {
           <Spinner size={24} />
         </div>
       )}
-      <h2 className="text-2xl mt-2 font-bold text-gray-700 capitalize mb-4">
+      <h2 className="text-2xl mt-2 font-bold text-blue-gf capitalize mb-4">
         ¡Hablemos!
       </h2>
-      <p>
-        Si deseas realizar un comentario, sugerencia o una propuesta comercial,
-        deja tu solicitud aquí 🙂
+      <p className="text-gray-700 text-center">
+        ¿Tienes alguna consulta, sugerencia o propuesta para mejorar tu
+        experiencia en GudfyP2P? Ya sea que estés interesado en convertirte en
+        vendedor, buscar soporte sobre tus transacciones o simplemente necesites
+        más información sobre cómo empezar, estamos aquí para ayudarte.
       </p>
       <form
         className="w-full font[400] shadow-xl rounded-3xl p-10 flex flex-col items-center"
@@ -166,6 +168,11 @@ const Contact: React.FC = () => {
           Enviar
         </Button>
       </form>
+      <p className="text-gray-700 text-center mt-5">
+        Deja tu mensaje y uno de nuestros especialistas se pondrá en contacto
+        contigo lo antes posible. ¡Juntos podemos hacer crecer nuestra comunidad
+        de comercio digital! 😊
+      </p>
     </div>
   )
 }

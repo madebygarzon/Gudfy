@@ -34,13 +34,19 @@ const OrderCancel = ({ orderData }: props) => {
   });
   return (
     <div className="w-full md:container  mx-auto p-0 md:p-4">
-      <h2 className="text-center text-2xl mt-2 font-bold text-gray-700">
-        Detalles del pedido
-      </h2>
+      <div className="p-4 text-lg  ">
+        <p>
+          El pedido <span className="font-bold">#{orderData.id}</span> se
+          realizó el{" "}
+          <span className="font-bold">{formatDate(orderData.created_at)}</span>y
+          está actualmente{" "}
+          <span className={"text-red-500"}>{orderData.state_order}</span>.
+        </p>
+      </div>
 
       {/* Tabla Responsiva */}
       <div className="m-4 overflow-x-auto">
-        <table className="min-w-full rounded-lg shadow-md text-sm">
+        <table className="min-w-full rounded-lg shadow-md text-base text-start">
           <thead className="bg-gray-100 text-gray-700">
             <tr>
               <th className="py-2 px-4 border-b border-slate-200">Producto</th>
@@ -54,7 +60,7 @@ const OrderCancel = ({ orderData }: props) => {
                   <div className="w-[70%]">
                     {p.produc_title} – ${p.price} USD x {p.quantity}
                   </div>
-                  <div className="text-xs font-light mt-2 w-[30%]">
+                  <div className="text-sm  font-light mt-2 w-[30%]">
                     <p>
                       Vendido por:{" "}
                       <Link
@@ -76,15 +82,6 @@ const OrderCancel = ({ orderData }: props) => {
       </div>
 
       {/* Información del pedido */}
-      <div className="p-4 text-sm text-center ">
-        <p>
-          El pedido <span className="font-bold">#{orderData.id}</span> se
-          realizó el{" "}
-          <span className="font-bold">{formatDate(orderData.created_at)}</span>y
-          está actualmente{" "}
-          <span className={"text-red-500"}>{orderData.state_order}</span>.
-        </p>
-      </div>
     </div>
   );
 };
