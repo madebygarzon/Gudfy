@@ -1,7 +1,7 @@
 import axios from "axios";
 import { BACKEND } from "../index";
 
-export const getListStoreOrder = async (idStore) => {
+export const getListStoreOrder = async () => {
   try {
     const getList = await axios.get(`${BACKEND}/admin/orders/list-orders`, {
       withCredentials: true,

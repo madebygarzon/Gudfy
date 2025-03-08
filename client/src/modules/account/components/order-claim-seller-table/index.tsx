@@ -93,14 +93,14 @@ const ClaimSellerTable: React.FC = () => {
           </div>
         </div> */}
         <div className="overflow-x-auto">
-          <table className="min-w-full bg-white  rounded-lg shadow-md">
+          <table className="min-w-full bg-white  rounded-lg shadow-md md:text-base text-sm">
             <thead>
               <tr>
-                <th className="py-2 text-left">Estado del reclamo</th>
-                <th className="py-2 text-left">Orden número</th>
-                <th className="py-2 text-left">Detalles del producto</th>
-                <th className="py-2 text-left">Cliente que reclama</th>
-                <th className="py-2 text-left">Fecha y hora de creación</th>
+                <th className="py-2 text-left">Estado </th>
+                <th className="py-2 text-left">Orden</th>
+                <th className="py-2 text-left">Detalles</th>
+                <th className="py-2 text-left">Cliente </th>
+                <th className="py-2 text-left">Fecha</th>
                 <th className="py-2 text-left">Chat</th>
               </tr>
             </thead>
@@ -110,7 +110,7 @@ const ClaimSellerTable: React.FC = () => {
                   <tr key={claim.id} className="hover:bg-gray-50">
                     <td>
                       {claim.status_order_claim_id === "OPEN_ID" ? (
-                        <div className="mr-2 p-3 bg-blue-200 rounded-md">
+                        <div className="mr-2 p-3 bg-blue-200 rounded-md whitespace-nowrap">
                           En proceso
                         </div>
                       ) : claim.status_order_claim_id === "CANCEL_ID" ? (
@@ -129,19 +129,25 @@ const ClaimSellerTable: React.FC = () => {
                         )
                       )}
                     </td>
-                    <td className="py-2">{claim.number_order}</td>
-                    <td className="py-2">
+                    <td className="p-2 whitespace-nowrap">
+                      {claim.number_order}
+                    </td>
+                    <td className="p-2">
                       <div>
-                        <h3 className="font-semibold">{claim.product_name}</h3>
-                        <p className="text-xs">Cantidad: {claim.quantity}</p>
+                        <h3 className="font-semibold whitespace-nowrap">
+                          {claim.product_name}
+                        </h3>
+                        <p className="text-xs whitespace-nowrap">
+                          Cantidad: {claim.quantity}
+                        </p>
                         <p className="text-xs">por: {claim.store_name}</p>
                       </div>
                     </td>
-                    <td className="py-2">
+                    <td className="p-2">
                       {`${claim.customer_name} ${claim.customer_last_name}`}
                       <p className="text-xs">{claim.customer_email}</p>
                     </td>
-                    <td className="py-2">
+                    <td className="p-2">
                       {handlerformatDate(claim.created_at)}
                     </td>
                     <td className="p-4">
@@ -219,6 +225,7 @@ const ModalClaimComment = ({
 }: ModalClaimComment) => {
   const [newComment, setNewComment] = useState<string>()
   const [socket, setSocket] = useState<Socket | null>(null)
+  const [viewMessage, setViewMessage] = useState<boolean>(true)
   const [image, setImage] = useState<File | undefined>()
   const [isLoadingStatus, setIsLoadingStatus] = useState<boolean>(false)
   const { customer } = useMeCustomer()
@@ -261,6 +268,7 @@ const ModalClaimComment = ({
   }
 
   useEffect(() => {
+    setViewMessage(true)
     setImage(undefined)
   }, [])
 
@@ -370,24 +378,34 @@ const ModalClaimComment = ({
                         accept="image/*"
                       />
                     </div>
-                    <div className="mt-1 px-6 text-xs text-gray-600">
-                      <p>
-                        <span className="font-extrabold">
-                          ⚠️ Aviso Importante:
-                        </span>{" "}
-                        Está prohibido compartir información personal, enlaces o
-                        datos de la cuenta o tienda en este chat. El
-                        incumplimiento resultará en suspensión de la cuenta y
-                        retención temporal de los fondos en la wallet. Use el
-                        chat solo para consultas relacionadas con pedidos.
-                      </p>
-                    </div>
+                    {viewMessage ? (
+                      <div className="relative mt-1 px-6 text-xs text-gray-600">
+                        <button
+                          onClick={() => setViewMessage(false)}
+                          className="absolute top-0 right-2"
+                        >
+                          <XMarkMini />
+                        </button>
+                        <p>
+                          <span className="font-extrabold">
+                            ⚠️ Aviso Importante:
+                          </span>{" "}
+                          Está prohibido compartir información personal, enlaces
+                          o datos de la cuenta o tienda en este chat. El
+                          incumplimiento resultará en suspensión de la cuenta y
+                          retención temporal de los fondos en la wallet. Use el
+                          chat solo para consultas relacionadas con pedidos.
+                        </p>
+                      </div>
+                    ) : (
+                      ""
+                    )}
                   </div>
                 )}
                 <div className="mt-4 px-6 text-xs text-gray-600">
                   <div className="flex justify-center gap-2 mt-2">
                     <ButtonLigth
-                      className={`bg-[#E74C3C] hover:bg-[#C0392B] text-white border-none w-full sm:w-auto ${
+                      className={`bg-[#E74C3C] hover:bg-[#C0392B] text-white border-none md:w-full w-auto px-2${
                         claim?.status_order_claim_id === "UNSOLVED_ID" ||
                         claim?.status_order_claim_id === "CANCEL_ID"
                           ? "opacity-50"

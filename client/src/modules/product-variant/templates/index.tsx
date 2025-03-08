@@ -1,8 +1,6 @@
 "use client"
 
 import React, { useEffect, useRef, useState } from "react"
-// import ImageGallery from "../components/image-gallary"
-// import MobileActions from "../components/mobile-actions"
 import ReviewProduct from "@modules/product-variant/components/product-review"
 import Thumbnail from "@modules/products/components/thumbnail"
 import { storeProductVariant } from "types/global"
@@ -10,7 +8,6 @@ import TableSeller from "../components/table-sellers"
 import TableSellerDefault from "../components/table-sellers/seller_default"
 import { Input, Button } from "@nextui-org/react"
 import { useCart } from "medusa-react"
-
 import { useCartGudfy } from "@lib/context/cart-gudfy"
 import Link from "next/link"
 import { useCartDropdown } from "@lib/context/cart-dropdown-context"
@@ -19,6 +16,7 @@ type ProductVariantTemplateProps = {
   product: storeProductVariant
   storeId?: string
 }
+
 interface Seller {
   store_variant_id: string
   store_id: string
@@ -56,6 +54,7 @@ const ProductTemplate: React.FC<ProductVariantTemplateProps> = ({
       )
     )
   }
+
   const handlerAmount = (value: string) => {
     const numberAmount = parseInt(value)
     if (numberAmount > selectedSeller.quantity) {
@@ -92,30 +91,27 @@ const ProductTemplate: React.FC<ProductVariantTemplateProps> = ({
       open()
     })
   }
+
   useEffect(() => {
     setAmount(1)
     handlerPrice(1)
   }, [selectedSeller])
 
   return (
-    <div className="w-full flex">
-      <div className="w-2/3">
+    <div className="w-full flex flex-col lg:flex-row">
+      <div className="w-full lg:w-2/3">
         <div className="content-container flex flex-col small:flex-row small:items-start py-6 relative mt-10">
-          <div className="col1 flex flex-col gap-y-8 w-full pr-9 justify-center items-center">
+          <div className="col1 flex flex-col gap-y-8 w-full lg:pr-9 justify-center items-center">
             <Thumbnail thumbnail={product.thumbnail} size="medium" />
-            {/* <ImageGallery images={product?.images || []} /> */}
           </div>
 
-          <div className="col2 flex flex-col gap-y-8 w-full pr-9">
+          <div className="col2 flex flex-col gap-y-8 w-full lg:pr-9">
             <h3 className="text-3xl font-extrabold">{product.title}</h3>
             <p className="text-base-regular">{product.description}</p>
           </div>
         </div>
 
-        <div
-          className="flex w-full  h-auto  items-center"
-          // id="list-sellers"
-        >
+        <div className="flex w-full h-auto items-center">
           <div className="w-full p-10">
             <TableSeller
               sellers={product.sellers}
@@ -128,18 +124,17 @@ const ProductTemplate: React.FC<ProductVariantTemplateProps> = ({
         <div className="content-container my-16 px-6 small:px-8 small:my-32">
           {/* <RelatedProducts product={product} /> */}
         </div>
-        {/* <MobileActions product={product} show={!inView} /> */}
       </div>
 
-      <div className="w-1/3">
-        <div className="sticky top-[180px] col3 mt-[-35px] w-full small:max-w-[344px] medium:max-w-[400px] flex flex-col gap-y-8 mr-10">
+      <div className="w-full lg:w-1/3">
+        <div className="sticky top-[180px] col3 mt-[-35px] w-full small:max-w-[344px] medium:max-w-[400px] flex flex-col gap-y-8 lg:mr-10">
           <div id="product-info">
             <div className="flex flex-col gap-y-12 lg:max-w-[500px] mx-auto">
               <div></div>
             </div>
           </div>
 
-          <div className="  border border-solid border-gray-200 p-5 rounded-[5px] shadow-lg">
+          <div className="border border-solid border-gray-200 p-5 rounded-[5px] shadow-lg">
             <TableSellerDefault
               sellers={product.sellers}
               selectedSeller={selectedSeller}
@@ -176,21 +171,10 @@ const ProductTemplate: React.FC<ProductVariantTemplateProps> = ({
           <Button
             disabled={amount ? false : true}
             onPress={handlerAddCart}
-            className="bg-[#402e72] hover:bg-blue-gf text-white rounded-[5px] mb-[10px] "
+            className="bg-[#402e72] hover:bg-blue-gf text-white rounded-[5px] mb-[10px]"
           >
             Añadir al carrito
           </Button>
-          {/* <Link href="/cart" passHref className="w-full flex justify-end  ">
-            <Button className="bg-[#402e72] hover:bg-blue-gf text-white rounded-[5px]  ">
-              Ir al Carrito
-            </Button>
-          </Link> */}
-
-          {/* <a className ="mb-[80px]" href="#list-sellers">
-            <span className="text-[#402e72] text-sm font-bold">
-              Ver más vendedores de este producto
-            </span>
-          </a> */}
         </div>
       </div>
     </div>

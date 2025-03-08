@@ -60,7 +60,7 @@ const AccountLayout: React.FC = ({ children }) => {
                   variant="selected"
                   href="/account/seller"
                   route={route!}
-                  className=" "
+                  className=" relative"
                 >
                   {notifications.map((n) => {
                     if (n.notification_type_id === "NOTI_CLAIM_SELLER_ID") {

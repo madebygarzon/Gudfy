@@ -201,7 +201,7 @@ export const OrderGudfyProvider = ({
         // location.href = result.data.checkoutUrl //redirect user to pay link
       })
       .catch((e) => {
-        alert(e.error.message)
+        alert(e)
       })
   }
 

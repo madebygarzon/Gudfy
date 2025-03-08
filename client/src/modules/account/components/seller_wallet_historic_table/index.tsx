@@ -89,8 +89,8 @@ const WalletTable = ({ wallet, setWallet }: props) => {
 
   return (
     <div className="w-full">
-      <div className="flex flex-col gap-y-8 w-full">
-        <div className="flex flex-wrap items-center justify-between gap-4 p-4 rounded-lg shadow-sm">
+      <div className="flex flex-col w-full">
+        <div className="flex flex-wrap  justify-between gap-4 p-4 rounded-lg shadow-sm">
           <div>
             <label
               htmlFor="status-filter"
@@ -122,12 +122,10 @@ const WalletTable = ({ wallet, setWallet }: props) => {
           </div>
         </div>
         <div className="overflow-x-auto">
-          <table className="min-w-full bg-white rounded-lg shadow-md table-auto">
+          <table className="min-w-full bg-white rounded-lg shadow-md table-auto md:text-base text-sm">
             <thead className="border-b border-slate-100">
               <tr>
-                <th className="px-4 py-2 w-[15%] text-left">
-                  Número de pedido
-                </th>
+                <th className="px-4 py-2 w-[15%] text-left">Orden</th>
                 <th className="px-4 py-2 w-[20%] text-left">Producto</th>
                 <th className="px-4 py-2 w-[10%] text-left">Cantidad</th>
                 <th className="px-4 py-2 w-[10%] text-left">Valor</th>
@@ -147,7 +145,9 @@ const WalletTable = ({ wallet, setWallet }: props) => {
                   )
                   .map((order, i) => (
                     <tr key={i} className="hover:bg-gray-50">
-                      <td className="px-4 py-2">{order.number_order}</td>
+                      <td className="px-4 py-2 whitespace-nowrap">
+                        {order.number_order}
+                      </td>
                       <td className="px-4 py-2 whitespace-normal">
                         {order.produc_title}
                       </td>

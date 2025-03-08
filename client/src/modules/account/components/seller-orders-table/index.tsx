@@ -89,7 +89,7 @@ const SellerOrderTable: React.FC = () => {
   return (
     <div className="w-full">
       <div className="flex flex-col gap-y-8 w-full">
-        <div className="w-96 flex flex-wrap items-center justify-between gap-4  bg-gray-50 p-4 rounded-lg shadow-sm">
+        <div className="w-96 flex flex-wrap items-center justify-between gap- py-4 rounded-lg shadow-sm">
           <div className="flex items-center">
             <label
               htmlFor="status-filter"
@@ -122,14 +122,14 @@ const SellerOrderTable: React.FC = () => {
         </div>
 
         <div className="overflow-x-auto">
-          <table className="min-w-full bg-white  rounded-lg shadow-md">
+          <table className="min-w-full bg-white  rounded-lg shadow-md md:text-base text-sm">
             <thead>
               <tr>
                 {/* <th className="py-2 text-left">Estado de la orden</th> */}
                 <th className="py-2 text-left">Pago</th>
-                <th className="py-2 text-left">Numero de orden</th>
-                <th className="py-2 text-left">Fecha y hora de creación</th>
-                <th className="py-2 text-left">Detalle de la orden</th>
+                <th className="py-2 text-left">Orden</th>
+                <th className="py-2 text-left">Fecha</th>
+                <th className="py-2 text-left">Detalle </th>
               </tr>
             </thead>
             <tbody>

@@ -1,13 +1,9 @@
 "use client"
-import React, { useEffect, useState } from "react"
-//import TableOrder from "../components/seller-orders-table"
+import React from "react"
 import { Tabs, Tab, Card, CardBody } from "@nextui-org/react"
 import ClaimSellerTable from "../components/order-claim-seller-table"
-import { getStore } from "../actions/get-seller-store"
-import type { SellerCredentials } from "types/global"
 import SellerOrderTable from "../components/seller-orders-table"
 import { useNotificationContext } from "@lib/context/notification-context"
-import Notification from "@modules/common/components/notification"
 
 export type order = {
   id: string
@@ -42,26 +38,20 @@ export type order = {
   ]
 }
 
-interface SellerRole {
-  application: boolean
-  state: string
-  comment: string
-  application_data: SellerCredentials & { id: string }
-}
-
 const SellerOrdersTemplate = () => {
   const { notifications } = useNotificationContext()
+
   return (
-    <div className="w-full p-8 border border-gray-200 rounded-lg shadow-2xl">
+    <div className="w-full p-2 md:p-8 border border-gray-200 rounded-lg shadow-2xl">
       <div className="mb-8 flex flex-col gap-y-4">
-        <h1 className="text-2xl mt-2 font-bold text-gray-700">
+        <h1 className="text-xl sm:text-2xl mt-2 font-bold text-gray-700">
           Ordenes de la tienda
         </h1>
       </div>
       <div>
-        <div className="flex w-full flex-col ">
-          <Tabs className="text-2xl" aria-label="Options">
-            <Tab className="" key="Orders" title="Listado de ordenes">
+        <div className="flex w-full flex-col">
+          <Tabs className="text-lg sm:text-2xl" aria-label="Options">
+            <Tab key="Orders" title="Listado de ordenes">
               <Card className="shadow-white shadow-lg">
                 <CardBody>
                   <div className="flex w-full flex-col">
@@ -77,18 +67,20 @@ const SellerOrdersTemplate = () => {
                   {notifications.map((n) => {
                     if (n.notification_type_id === "NOTI_CLAIM_SELLER_ID") {
                       return (
-                        <div key={n.id} className="absolute -top-2 -right-2 flex items-center justify-center">
+                        <div
+                          key={n.id}
+                          className="absolute -top-2 -right-2 flex items-center justify-center"
+                        >
                           <span className="flex h-3 w-3">
                             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-purple-400 opacity-75"></span>
                             <span className="relative inline-flex rounded-full h-3 w-3 bg-purple-500"></span>
                           </span>
                         </div>
-                      );
+                      )
                     }
                   })}
                   <span>Reclamos de ordenes</span>
                 </div>
-
               }
               className="relative"
             >
@@ -98,11 +90,6 @@ const SellerOrdersTemplate = () => {
                 </CardBody>
               </Card>
             </Tab>
-            {/* <Tab key="Compras" title="Compras">
-              <Card>
-                <CardBody>Listado de Compras</CardBody>
-              </Card>
-            </Tab> */}
           </Tabs>
         </div>
       </div>
