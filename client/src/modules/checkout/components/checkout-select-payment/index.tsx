@@ -85,193 +85,109 @@ const CheckoutSelectPayment: React.FC<CheckoutDetailsProps> = ({
       trigger()
     }
   }, [dataForm.name, setValue, trigger])
+
   return (
-    <div>
-      <div className="px-2 w-full flex gap-x-4 justify-between  ">
-        <div className="w-1/2 ml-8 mr-4 bg-white p-5">
-          <h2 className="font-bold text-2xl text-center my-3">
-            Formulario de compra
-          </h2>
-          <CheckautVirtualForm
-            propsForm={{
-              register: register,
-              formState: formState,
+    <div className="px-2 w-full flex flex-col md:flex-row gap-4 justify-between">
+      {/* Formulario de compra */}
+      <div className="w-full md:w-1/2 bg-white p-4 md:p-5">
+        <h2 className="font-bold text-xl md:text-2xl text-center my-3">
+          Formulario de compra
+        </h2>
+        <CheckautVirtualForm
+          propsForm={{
+            register: register,
+            formState: formState,
+          }}
+          setCompleteForm={setCompleteForm}
+          dataForm={dataForm}
+          setDataForm={setDataForm}
+        />
+        <p className="p-4 md:p-6 text-xs">
+          *Tus datos personales se utilizarán para procesar tu pedido, respaldar
+          tu experiencia en este sitio web y para otros fines descritos en
+          nuestra política de privacidad.*
+        </p>
+      </div>
+
+      {/* Forma de pago */}
+      <div className="w-full md:w-1/2 bg-white p-4 md:p-5">
+        <h2 className="text-xl md:text-2xl font-bold text-center my-3">
+          Forma de pago
+        </h2>
+        <Accordion
+          selectedKeys={selectedKeys}
+          onSelectionChange={(key) => {
+            const checkbox = methodPayment.find((e) => e === Array.from(key)[0])
+            selectedCheckbox(checkbox || "automatic_binance_pay")
+          }}
+        >
+          <AccordionItem
+            key="automatic_binance_pay"
+            aria-label="Binance Pay Entrega Automática"
+            title="Binance Pay Entrega Automática"
+            indicator={<></>}
+            className="font-medium"
+            startContent={
+              <Checkbox
+                defaultSelected
+                radius="full"
+                isSelected={checkbox == methodPayment[0]}
+              />
+            }
+          >
+            <div className="font-normal px-4 md:px-12 text-sm pb-5">
+              <p>
+                Paga en USDT usando Binance Pay, sin comisiones, recibes los
+                códigos de manera inmediata.
+              </p>
+              <br />
+              <p>
+                Importante: desde el 21 de septiembre Binance decidió fijar una
+                tasa del 1% de comisión en sus transacciones de Binance Pay.
+                Este método de pago tiene un <b>1% de comisión.</b>
+              </p>
+            </div>
+          </AccordionItem>
+        </Accordion>
+        <div className="pl-2 flex my-5">
+          <Checkbox
+            radius="none"
+            size="sm"
+            onChangeCapture={() => {
+              trigger()
+              setCompleteForm((com) => ({
+                ...com,
+                TermsConditions: !com.TermsConditions,
+              }))
             }}
-            setCompleteForm={setCompleteForm}
-            dataForm={dataForm}
-            setDataForm={setDataForm}
           />
-          <p className="p-6 text-xs">
-            *Tus datos personales se utilizarán para procesar tu pedido,
-            respaldar tu experiencia en este sitio web y para otros fines
-            descritos en nuestra política de privacidad.*
+          <p className="text-sm font-semibold">
+            He leído y estoy de acuerdo con los{" "}
+            <Link
+              href="/terminos-y-condiciones"
+              className="text-sky-600 underline"
+            >
+              términos y condiciones de la web
+            </Link>
+            *
           </p>
         </div>
-
-        <div className="w-1/2 mr-8 ml-4 bg-white p-5">
-          <h2 className="text-2xl font-bold text-center my-3">Forma de pago</h2>
-          <Accordion
-            selectedKeys={selectedKeys}
-            onSelectionChange={(key) => {
-              const checkbox = methodPayment.find(
-                (e) => e === Array.from(key)[0]
-              )
-              selectedCheckbox(checkbox || "automatic_binance_pay")
+        <div className="flex justify-center">
+          <Button
+            className="w-full"
+            onClick={async () => {
+              if (await trigger()) handlersubmit(dataForm)
             }}
+            disabled={
+              !(
+                completedForm.TermsConditions &&
+                completedForm.form &&
+                completedForm.payment
+              )
+            }
           >
-            <AccordionItem
-              key="automatic_binance_pay"
-              aria-label="Binance Pay Entrega Automática"
-              title="Binance Pay Entrega Automática"
-              indicator={<></>}
-              className="font-medium"
-              startContent={
-                <Checkbox
-                  defaultSelected
-                  radius="full"
-                  isSelected={checkbox == methodPayment[0]}
-                />
-              }
-            >
-              <div className="font-normal px-12 text-sm pb-5">
-                <p>
-                  Paga en USDT usando Binance Pay, sin comisiones, recibes los
-                  códigos de manera inmediata.
-                </p>
-                <br />
-
-                <p>
-                  Importante: desde el 21 de septiembre Binance decidió fijar
-                  una tasa del 1% de comisión en sus transacciones de Binance
-                  Pay. Este método de pago tiene un <b>1% de comisión.</b>
-                </p>
-              </div>
-            </AccordionItem>
-            {/* <AccordionItem
-                disabled
-                key="manual_binance_pay"
-                aria-label="Binance Pay Entrega Manual - "
-                title="Binance Pay Entrega Manual - "
-                className="font-medium"
-                startContent={
-                  // <Checkbox
-                  //   radius="full"
-                  //   isSelected={checkbox == methodPayment[1]}
-                  // />
-                  <p>Deshabilitado</p>
-                }
-              >
-                <div className="font-normal px-12 text-sm pb-5">
-                  <p>
-                    Por favor use Binance Pay ID 202554183 o escanee el código
-                    QR con su aplicación de Binance. Se debe subir el
-                    comprobante de pago en la siguiente página, todos los pagos
-                    serán comprobados manualmente.
-                    <div className="m-5 flex justify-center">
-                      <Image
-                        src="/pay/BinancePayId.webp"
-                        alt="Binance Pay ID 202554183"
-                        width={300}
-                        height={300}
-                      />
-                    </div>
-                  </p>
-                </div>
-              </AccordionItem> */}
-            {/* <AccordionItem
-                disabled
-                key="usdt_trc20_entrega_manual"
-                aria-label="USDT-TRC20 Entrega Manual "
-                title="USDT-TRC20 Entrega Manual "
-                className="font-medium"
-                startContent={
-                  // <Checkbox
-                  //   disabled
-                  //   radius="full"
-                  //   isSelected={checkbox == methodPayment[3]}
-                  // />
-                  <p>Deshabilitado</p>
-                }
-              >
-                <div className="font-normal px-12 text-sm pb-5">
-                  <p>
-                    Transferir montos exactos, usted debe asumir el valor de la
-                    comisión de red, una vez hecho el pago por favor subir
-                    captura. Wallet: THUCrw23pHkB2KW5EoFhgfd8g6YKKyMPHD
-                  </p>
-                </div>
-              </AccordionItem> */}
-            {/* <AccordionItem
-                disabled
-                key="bitcoin_ethereum_litecoin_entrega_automatica"
-                aria-label=" Bitcoin - Ethereum - Litecoin - Entrega Automática "
-                title="Bitcoin - Ethereum - Litecoin - Entrega Automática "
-                className="font-medium"
-                startContent={
-                  // <Checkbox
-                  //   disabled
-                  //   radius="full"
-                  //   isSelected={checkbox == methodPayment[2]}
-                  // />
-                  <p>Deshabilitado</p>
-                }
-              >
-                <div className="font-normal px-12 text-sm pb-5">
-                  <div className="flex w-full flex-wrap md:flex-nowrap gap-4">
-                    <Select
-                      label="Selecciona la cripto moneda"
-                      className="max-w-xs"
-                    >
-                      {cripto.map((cripto) => (
-                        <SelectItem key={cripto.value} value={cripto.value}>
-                          {cripto.label}
-                        </SelectItem>
-                      ))}
-                    </Select>
-                  </div>
-                </div>
-              </AccordionItem> */}
-          </Accordion>
-          <div className="pl-2 flex my-5">
-            <Checkbox
-              radius="none"
-              size="sm"
-              onChangeCapture={() => {
-                trigger()
-                setCompleteForm((com) => ({
-                  ...com,
-                  TermsConditions: !com.TermsConditions,
-                }))
-              }}
-            />
-            <p className="text-sm font-semibold">
-              He leído y estoy de acuerdo con los{" "}
-              <Link
-                href="/terminos-y-condiciones"
-                className="text-sky-600 underline"
-              >
-                términos y condiciones de la web
-              </Link>
-              *
-            </p>
-          </div>
-          <div className="flex justify-center ">
-            <Button
-              className="w-full"
-              onClick={async () => {
-                if (await trigger()) handlersubmit(dataForm)
-              }}
-              disabled={
-                !(
-                  completedForm.TermsConditions &&
-                  completedForm.form &&
-                  completedForm.payment
-                )
-              }
-            >
-              Ir al pago
-            </Button>
-          </div>
+            Ir al pago
+          </Button>
         </div>
       </div>
     </div>

@@ -23,7 +23,9 @@ const CartDropdown = () => {
   const [subTotal, setSubtotal] = useState<number>(0)
 
   useEffect(() => {
-    if (!items.length) listItem()
+
+    if (!items?.length) listItem()
+
     handlerSubTotal()
   }, [items])
 

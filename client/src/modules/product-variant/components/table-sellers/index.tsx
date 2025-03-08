@@ -29,7 +29,9 @@ interface TableProps {
   selectedSeller: Seller | null
   setSelectedSeller: React.Dispatch<React.SetStateAction<Seller>>
 }
+
 const dataSelecterPAge = [10, 20, 30]
+
 const TableSeller: React.FC<TableProps> = ({
   sellers,
   selectedSeller,
@@ -61,106 +63,99 @@ const TableSeller: React.FC<TableProps> = ({
 
   return (
     <div
-      className=" bg-white p-8 border border-gray-200 rounded-lg shadow-lg"
+      className="bg-white p-8 border border-gray-200 rounded-lg shadow-lg"
       id="list-sellers"
     >
       <h3 className="mt-[-45px] bg-white text-center font-semibold w-[50%] mb-4">
-        {" "}
-        Más vendedores para este producto{" "}
+        Más vendedores para este producto
       </h3>
-      <div className="">
-        <div className="">
-          <table className="rounded-[5px] ">
-            <tbody>
-              {paginatedSellers.map((seller) => (
-                <tr
-                  key={seller.store_id}
-                  className={`w-full border-2  border-[#e7e7e7]   ${
-                    selectedSeller?.store_id === seller.store_id
-                      ? "bg-gray-100 hover:bg-gray-100 shadow-lg"
-                      : "bg-white hover:bg-gray-100"
-                  }`}
+      <div className="overflow-x-auto">
+        {/* Contenedor principal que reemplaza la tabla */}
+        <div className="w-full rounded-[5px]">
+          {paginatedSellers.map((seller) => (
+            <div
+              key={seller.store_id}
+              className={`flex flex-col md:flex-row w-full border-2 border-[#e7e7e7] p-4 ${
+                selectedSeller?.store_id === seller.store_id
+                  ? "bg-gray-100 hover:bg-gray-100 shadow-lg"
+                  : "bg-white hover:bg-gray-100"
+              }`}
+            >
+              {/* Celda 1: Información del vendedor */}
+              <div className="flex-1 flex flex-col md:flex-row items-center gap-2">
+                <Tooltip
+                  className="border border-[#7b39c4]"
+                  content={`Ver la tienda de ${seller.store_name}`}
                 >
-                  <td className="w-[40%] p-4 ">
-                    <Tooltip
-                      className="border border-[#7b39c4]"
-                      content={`ver la tienda de ${seller.store_name}`}
-                    >
-                      <Link href={`/seller/store/${seller.store_id}`}>
-                        <div className="flex gap-2">
-                          <div className="flex items-center">
-                            <Avatar
-                              isBordered
-                              size="md"
-                              color="secondary"
-                              className=""
-                              src={seller.avatar}
-                            />
-                          </div>
-                          <div>
-                            <div className="flex items-center gap-2">
-                              <h3 className="text-sm font-bold">
-                                {seller.store_name}
-                              </h3>
-                              <BlankIcon width={15} />
-                            </div>
-
-                            <p className="text-xs font-normal text-gray-500">
-                              Vendedor excelente
-                            </p>
-                            <p className="text-xs font-normal text-gray-500">
-                              <span className="font-bold">
-                                {seller.parameters?.rating
-                                  ? `${seller.parameters?.rating}% Comentarios positivos`
-                                  : "Sin compras"}
-                              </span>{" "}
-                            </p>
-                          </div>
-                          <div className="mt-8 flex items-center gap-2 ite">
-                            | <HiOutlineShoppingCart size={15} />{" "}
-                            {seller.parameters?.sales ?? 0}
-                          </div>
+                  <Link href={`/seller/store/${seller.store_id}`}>
+                    <div className="flex flex-row gap-2 items-center">
+                      <div className="flex items-center">
+                        <Avatar
+                          isBordered
+                          size="md"
+                          color="secondary"
+                          src={seller.avatar}
+                        />
+                      </div>
+                      <div className="text-center md:text-left">
+                        <div className="flex flex-row  items-center gap-2 whitespace-nowrap">
+                          <h3 className="text-sm font-bold">
+                            {seller.store_name}
+                          </h3>
+                          <BlankIcon width={15} />
                         </div>
-                      </Link>
-                    </Tooltip>
-                  </td>
+                        <p className="text-xs font-normal text-gray-500">
+                          Vendedor excelente
+                        </p>
+                        <p className="text-xs font-normal text-gray-500">
+                          <span className="font-bold">
+                            {seller.parameters?.rating
+                              ? `${seller.parameters?.rating}% Comentarios positivos`
+                              : "Sin compras"}
+                          </span>
+                        </p>
+                      </div>
+                      <div className="hidden mt-2 md:mt-0 md:flex items-center gap-2">
+                        | <HiOutlineShoppingCart size={15} />{" "}
+                        {seller.parameters?.sales ?? 0}
+                      </div>
+                    </div>
+                  </Link>
+                </Tooltip>
+              </div>
 
-                  <td className=" w-[20%] p-4">
-                    {seller.quantity ? (
-                      <Badge
-                        className="bg-white border-0 shadow-md"
-                        color="green"
-                      >
-                        Con: {seller.quantity} en stock:
-                      </Badge>
-                    ) : (
-                      <Badge
-                        className="bg-white border-0 shadow-md"
-                        color="red"
-                      >
-                        Sin stock
-                      </Badge>
-                    )}
-                  </td>
+              {/* Celda 2: Stock */}
+              <div className="flex-1 flex items-center justify-center md:justify-start  md:p-4 p-2">
+                {seller.quantity ? (
+                  <Badge className="bg-white border-0 shadow-md" color="green">
+                    Con: {seller.quantity} en stock
+                  </Badge>
+                ) : (
+                  <Badge className="bg-white border-0 shadow-md" color="red">
+                    Sin stock
+                  </Badge>
+                )}
+              </div>
 
-                  <td className="w-[20%] p-4">
-                    <span className=" text-sm font-extrabold ">
-                      Precio: $ {seller.price}
-                    </span>
-                  </td>
-                  <td className="w-[20%] p-4">
-                    <Button
-                      disabled={seller.quantity ? false : true}
-                      onClick={() => handleRowClick(seller)}
-                      className="bg-[#402e72] hover:bg-blue-gf text-white rounded-[5px]"
-                    >
-                      Seleccionar
-                    </Button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+              {/* Celda 3: Precio */}
+              <div className="flex-1 flex items-center justify-center md:justify-start md:p-4 p-2">
+                <span className="text-sm font-extrabold">
+                  Precio: $ {seller.price}
+                </span>
+              </div>
+
+              {/* Celda 4: Botón de selección */}
+              <div className="flex-1 flex items-center justify-center md:justify-start  md:p-4 p-2">
+                <Button
+                  disabled={seller.quantity ? false : true}
+                  onClick={() => handleRowClick(seller)}
+                  className="bg-[#402e72] hover:bg-blue-gf text-white rounded-[5px]"
+                >
+                  Seleccionar
+                </Button>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     </div>

@@ -27,7 +27,10 @@ export default (rootDirectory: string): Router | Router[] => {
   };
 
   const adminCorsOptions = {
-    origin: projectConfig.admin_cors.split(","),
+    origin: [
+      ...projectConfig.admin_cors.split(","),
+      "https://gudfyp2p.com/app",
+    ],
     credentials: true,
   };
 

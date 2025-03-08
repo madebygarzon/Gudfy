@@ -62,7 +62,6 @@ type Errors = {
   variant_prices: string
 }
 export default function RequestProduct({ setReset }: Reset) {
-  // const [open, setOpen] = useState(false)
   const { customer } = useMeCustomer()
   const [file, setFile] = useState<File>()
   const [product, setProduct] = useState({
@@ -107,7 +106,6 @@ export default function RequestProduct({ setReset }: Reset) {
 
   const onSubmit = () => {
     setLoading(true)
-    // if (handlerError()) return
     if (!file) return setLoading(false)
 
     const productData = {
@@ -149,16 +147,16 @@ export default function RequestProduct({ setReset }: Reset) {
           {(onClose) => (
             <>
               <ModalHeader className=""></ModalHeader>
-              <ModalBody className="flex justify-center items-center">
-                <div className=" overflow-y-auto gap-x-10 flex flex-col">
-                  <div className="flex overflow-auto py-2 px-40 justify-center items-center">
-                    <div className="rounded-lg shadow-2xl p-8 flex w-full gap-10 ">
-                      <div className="flex flex-col w-[50%] gap-y-5 ">
-                        <h2 className="text-2xl mt-2 font-bold text-gray-700">
+              <ModalBody className="flex justify-center items-center ">
+                <div className="gap-x-10 flex flex-col w-full h-screen">
+                  <div className="flex py-2 px-4 sm:px-10 md:px-20 lg:px-40 justify-center items-center overflow-y-auto h-full">
+                    <div className="rounded-lg shadow-2xl p-4 sm:p-8 flex flex-col md:flex-row w-full gap-4 sm:gap-2  mb-8 ">
+                      <div className="flex flex-col w-full md:w-[50%] gap-y-5">
+                        <h2 className="md:text-2xl md:mt-2 font-bold text-gray-700 text-lg mt-10">
                           Solicitar un producto
                         </h2>
                         <div>
-                          <h3 className="text-base font-blod ">
+                          <h3 className="md:text-base font-blod text-sm">
                             Agrega un titulo sin variaciones, Ejemplo: Netflix
                             Colombia
                           </h3>
@@ -174,7 +172,7 @@ export default function RequestProduct({ setReset }: Reset) {
                           />
                         </div>
                         <div>
-                          <h3 className="text-base font-blod ">
+                          <h3 className="text-base font-blod">
                             ¿De qué se trata este producto?
                           </h3>
                           <Textarea
@@ -189,7 +187,7 @@ export default function RequestProduct({ setReset }: Reset) {
                           />
                         </div>
                         <div>
-                          <h3 className="text-base font-blod ">
+                          <h3 className="text-base font-blod">
                             Presiona "," para agregar una variación
                           </h3>
 
@@ -206,7 +204,7 @@ export default function RequestProduct({ setReset }: Reset) {
                               titleValueVariants.length ? (
                                 titleValueVariants?.map((v: string) => (
                                   <button
-                                    className=" mx-1 px-2 py-1 rounded-[10px] bg-slate-300 w-auto "
+                                    className="mx-1 px-2 py-1 rounded-[10px] bg-slate-300 w-auto"
                                     onClick={() => handlerTrashVariant(v)}
                                   >
                                     <span className="flex gap-1 text-xs items-center">
@@ -222,35 +220,27 @@ export default function RequestProduct({ setReset }: Reset) {
                           />
                         </div>
                       </div>
-                      <div className="w-[50%] flex justify-between  flex-col items-center">
-                        <div className="mt-14 flex flex-col items-center">
-                          <h3 className="text-base font-blod ">
+                      <div className="w-full md:w-[50%] flex justify-between flex-col items-center">
+                        <div className="mt-4 sm:mt-14 flex flex-col items-center">
+                          <h3 className="text-base font-blod">
                             Imagen del producto
                           </h3>
-                          {file ? (
-                            <Image
-                              alt="ImagePreview"
-                              src={URL.createObjectURL(file)}
-                              width={100}
-                              height={100}
-                            />
-                          ) : (
+                          {!file && (
                             <Image
                               alt="ImagePreview"
                               src="/product/image_default.svg"
                               width={100}
                               height={100}
+                              className="w-full md:max-w-[200px]  max-w-[100px] rounded-lg"
                             />
                           )}
                           <InputFile
-                          type="Normal"
+                            type="Normal"
                             label="Subir imagen"
                             setFile={setFile}
                             alt={""}
                             accept="image/*"
                           />
-
-                          
                         </div>
                         <div className="flex gap-4 mt-4">
                           <ButtonLigth

@@ -90,10 +90,9 @@ const WalletTable = ({ wallet, setWallet }: props) => {
 
   return (
     <div className="w-full">
-      <div className="flex flex-col gap-y-8 w-full">
-        <div className="flex justify-between mb-4"></div>
+      <div className="flex flex-col w-full">
         <div className="overflow-x-auto">
-          <table className="min-w-full bg-white  rounded-lg shadow-md">
+          <table className="min-w-full bg-white  rounded-lg shadow-md md:text-base text-sm">
             <thead>
               <tr>
                 <th className="px-4 py-2 text-left">Fecha</th>
@@ -109,9 +108,10 @@ const WalletTable = ({ wallet, setWallet }: props) => {
                     <td className="px-4 py-2 ">
                       {handlerformatDate(order.payment_date)}
                     </td>
-                    <td className="px-4 py-2 ">{order.payment_id}</td>
+                    <td className="px-4 py-2 whitespace-nowrap">
+                      {order.payment_id}
+                    </td>
                     <td className="px-4 py-2 text-green-600 ">
-                      {" "}
                       $ {order.amoun_paid}
                     </td>
                     <td className="px-4 py-2  ">
@@ -122,17 +122,6 @@ const WalletTable = ({ wallet, setWallet }: props) => {
                           onOpen()
                         }}
                       />
-
-                      {/* <ButtonMedusa
-                        className=" bg-ui-button-neutral border-ui-button-neutral hover:bg-ui-button-neutral-hover rounded-[5px] text-[#402e72] "
-                        onClick={() => {
-                          setSelectOrderData(order)
-                          onOpen()
-                        }}
-                      >
-                        <FaEye />
-                        Ver detalle del pago
-                      </ButtonMedusa> */}
                     </td>
                   </tr>
                 ))

@@ -26,7 +26,7 @@ const CartTemplate = () => {
   // }
 
   return (
-    <div className="bg-gray-50 pb-12">
+    <div className="bg-gray-50 md:pb-12 pb-4">
       <div className="h-16 bg-white">
         <nav className="flex items-center h-full justify-between content-container">
           <Link
@@ -43,16 +43,16 @@ const CartTemplate = () => {
         </nav>
       </div>
 
-      <div className="content-container pt-12">
+      <div className="content-container md:p-12 p-2">
         {items?.length ? (
-          <div className="grid grid-cols-1 small:grid-cols-[1fr_460px] gap-x-8 ">
-            <div className="flex flex-col bg-white p-6 gap-y-6 max-w-[80%]">
+          <div className="grid grid-cols-1 small:grid-cols-[1fr_460px] gap-x-8">
+            <div className="flex flex-col bg-white md:p-6 p-2 gap-y-6 w-full small:max-w-[80%]">
               {!customer && <SignInPrompt />}
               <ItemsTemplate items={items} modifyProduct={modifyProduct} />
             </div>
-            <div className="w relative">
-              <div className="flex flex-col gap-y-8 sticky top-36 mr-8">
-                <div className="bg-white p-6">
+            <div className="w-full small:w-auto relative">
+              <div className="flex flex-col gap-y-8 sticky top-36 small:mr-8">
+                <div className="bg-white md:p-6 p-0">
                   <Summary items={items} setModifyProduct={setModifyProduct} />
                 </div>
               </div>

@@ -68,24 +68,20 @@ const dataSelecFilter = [
     label: "Todos",
   },
   {
-    value: "A",
-    label: "Aprobado",
+    value: "Completado",
+    label: "Completado",
   },
   {
-    value: "C",
-    label: "Pendiente",
+    value: "Finalizado",
+    label: "Finalizado",
   },
   {
-    value: "B",
-    label: "Rechazado",
+    value: "Cancelada",
+    label: "Cancelada",
   },
   {
-    value: "D",
-    label: "A Corrección",
-  },
-  {
-    value: "E",
-    label: "Corregido",
+    value: "En discusión",
+    label: "En discusión",
   },
 ];
 const registerNumber = [20, 50, 100];
@@ -116,7 +112,6 @@ const SellerApplication = () => {
     | "Completado"
     | "En discusión"
     | "Finalizado"
-    | "Pagado"
     | "Pendiente de pago"
     | "all"
   >("all");
@@ -126,9 +121,9 @@ const SellerApplication = () => {
 
   const handlerReset = () => {};
 
-  const handlerGetListApplication = async (order?: string) => {
+  const handlerGetListOrder = async () => {
     setIsLoading(true);
-    const dataApplication = await getListStoreOrder(order)
+    const dataApplication = await getListStoreOrder()
       .then((e) => {
         setIsLoading(false);
         return e;
@@ -186,48 +181,47 @@ const SellerApplication = () => {
   };
 
   useEffect(() => {
-    handlerGetListApplication();
+    handlerGetListOrder();
   }, []);
 
-  const handlerActionStatus = async () => {};
   const handlerFilter = (value) => {
-    // setPage(1);
-    // let dataFilter;
-    // switch (value) {
-    //   case dataSelecFilter[1].value:
-    //     dataFilter = dataOrder.dataOrders.filter(
-    //       (data) => data.state_application.id === dataSelecFilter[1].value
-    //     );
-    //     break;
-    //   case dataSelecFilter[2].value:
-    //     dataFilter = dataOrder.dataOrders.filter(
-    //       (data) => data.state_application.id === dataSelecFilter[2].value
-    //     );
-    //     break;
-    //   case dataSelecFilter[3].value:
-    //     dataFilter = dataOrder.dataOrders.filter(
-    //       (data) => data.state_application.id === dataSelecFilter[3].value
-    //     );
-    //     break;
-    //   case dataSelecFilter[4].value:
-    //     dataFilter = dataCustomer.dataSellers.filter(
-    //       (data) => data.state_application.id === dataSelecFilter[4].value
-    //     );
-    //     break;
-    //   case dataSelecFilter[5].value:
-    //     dataFilter = dataCustomer.dataSellers.filter(
-    //       (data) => data.state_application.id === dataSelecFilter[5].value
-    //     );
-    //     break;
-    //   default:
-    //     dataFilter = dataCustomer.dataSellers;
-    //     break;
-    // }
-    // setDataCustomer({
-    //   ...dataCustomer,
-    //   dataPreview: handlerPreviewSellerAplication(dataFilter, 1),
-    //   dataFilter: value === dataSelecFilter[0].value ? [] : dataFilter,
-    // });
+    setPage(1);
+    let dataFilter;
+    switch (value) {
+      case dataSelecFilter[1].value:
+        dataFilter = dataOrder.dataOrders.filter(
+          (data) => data.state_order === dataSelecFilter[1].value
+        );
+        break;
+      case dataSelecFilter[2].value:
+        dataFilter = dataOrder.dataOrders.filter(
+          (data) => data.state_order === dataSelecFilter[2].value
+        );
+        break;
+      case dataSelecFilter[3].value:
+        dataFilter = dataOrder.dataOrders.filter(
+          (data) => data.state_order === dataSelecFilter[3].value
+        );
+        break;
+      case dataSelecFilter[4].value:
+        dataFilter = dataOrder.dataOrders.filter(
+          (data) => data.state_order === dataSelecFilter[4].value
+        );
+        break;
+      case dataSelecFilter[5].value:
+        dataFilter = dataOrder.dataOrders.filter(
+          (data) => data.state_order === dataSelecFilter[5].value
+        );
+        break;
+      default:
+        dataFilter = dataOrder.dataOrders;
+        break;
+    }
+    setDataCustomer({
+      ...dataOrder,
+      dataPreview: handlerPreviewSellerAplication(dataFilter, 1),
+      dataFilter: value === dataSelecFilter[0].value ? [] : dataFilter,
+    });
   };
   const handlerRowsNumber = (value) => {
     const valueInt = parseInt(value);
@@ -242,26 +236,43 @@ const SellerApplication = () => {
     });
   };
 
-  const handlerOrderDate = (value: boolean) => {
-    handlerGetListApplication(value ? "ASC" : "DESC");
-    setOrderDate((data) => !data);
+  const getColorState = (state_id: string) => {
+    switch (state_id) {
+      case "Finalizado":
+        return "text-green-500";
+
+      case "Paid_ID":
+        return "text-green-500";
+
+      case "Completado":
+        return "text-blue-500";
+
+      case "En discusión":
+        return "text-orange-500";
+
+      case "Cancelada":
+        return "text-red-500";
+      default:
+        break;
+    }
   };
+
   const handlerSearcherbar = (e: string) => {
-    // const dataFilter = dataOrder.dataOrders.filter((data) => {
-    //   const nameIncludes = data.customer.name
-    //     .toLowerCase()
-    //     .includes(e.toLowerCase());
-    //   const emailIncludes = data.customer.email
-    //     .toLowerCase()
-    //     .includes(e.toLowerCase());
-    //   // Devuelve true si la palabra enviada está incluida en el nombre o el correo electrónico
-    //   return nameIncludes || emailIncludes;
-    // });
-    // setDataCustomer({
-    //   ...dataOrder,
-    //   dataPreview: handlerPreviewSellerAplication(dataFilter, 1),
-    //   dataFilter: dataFilter.length ? dataFilter : [],
-    // });
+    const dataFilter = dataOrder.dataOrders.filter((data) => {
+      const nameIncludes = data.email.toLowerCase().includes(e.toLowerCase());
+      const emailIncludes = data.id.toLowerCase().includes(e.toLowerCase());
+      const name = (data.person_name + " " + data.person_last_name)
+        .toLowerCase()
+        .toLowerCase()
+        .includes(e.toLowerCase());
+      // Devuelve true si la palabra enviada está incluida en el nombre o el correo electrónico
+      return nameIncludes || emailIncludes || name;
+    });
+    setDataCustomer({
+      ...dataOrder,
+      dataPreview: handlerPreviewSellerAplication(dataFilter, 1),
+      dataFilter: dataFilter.length ? dataFilter : [],
+    });
   };
 
   return (
@@ -307,9 +318,8 @@ const SellerApplication = () => {
                     <Table.HeaderCell>Estado</Table.HeaderCell>
                     <Table.HeaderCell>Número de orden</Table.HeaderCell>
                     <Table.HeaderCell>Usuario</Table.HeaderCell>
-                    <Table.HeaderCell>Fecha y hora</Table.HeaderCell>
                     <Table.HeaderCell>Email Cliente</Table.HeaderCell>
-                    <Table.HeaderCell>Tiempo a pagar</Table.HeaderCell>
+                    <Table.HeaderCell>Fecha y hora</Table.HeaderCell>
                     <Table.HeaderCell>Detalle</Table.HeaderCell>
                   </Table.Row>
                 </Table.Header>
@@ -317,14 +327,17 @@ const SellerApplication = () => {
                   {dataOrder.dataPreview?.map((data, i) => {
                     return (
                       <Table.Row key={data.id}>
-                        <Table.Cell>{data.state_order}</Table.Cell>
+                        <Table.Cell
+                          className={`${getColorState(data.state_order)}`}
+                        >
+                          {data.state_order}
+                        </Table.Cell>
                         <Table.Cell>{data.id}</Table.Cell>
                         <Table.Cell>
                           {data.person_name + " " + data.person_last_name}
                         </Table.Cell>
-                        <Table.Cell>{formatDate(data.created_at)}</Table.Cell>
                         <Table.Cell>{data.email}</Table.Cell>
-                        <Table.Cell>{"123"}</Table.Cell>
+                        <Table.Cell>{formatDate(data.created_at)}</Table.Cell>
                         <Table.Cell>
                           <IconButton
                             onClick={() => {

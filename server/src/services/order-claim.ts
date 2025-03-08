@@ -132,34 +132,42 @@ class OrderClaimService extends TransactionBaseService {
   }
 
   async retriverListClaimAdmin() {
-    const repoOrderClaim = this.activeManager_.withRepository(
-      this.orderClaimRepository_
-    );
+    try {
+      const repoOrderClaim = this.activeManager_.withRepository(
+        this.orderClaimRepository_
+      );
 
-    const listClaim = await repoOrderClaim
-      .createQueryBuilder("oc")
-      .leftJoinAndSelect("oc.store_variant_order", "svo")
-      .leftJoinAndSelect("oc.status_order_claim", "soc")
-      .leftJoinAndSelect("oc.customer", "c")
-      .leftJoinAndSelect("svo.store_variant", "sxv")
-      .leftJoinAndSelect("sxv.store", "s")
-      .leftJoinAndSelect("sxv.variant", "v")
-      .select([
-        "oc.id AS id",
-        "soc.status AS status_order_claim",
-        "oc.created_at AS created_at",
-        "svo.quantity AS quantity",
-        "svo.store_order_id AS number_order",
-        "sxv.price AS price_unit",
-        "s.name AS store_name",
-        "v.title AS product_name",
-        "c.first_name AS customer_name",
-        "c.last_name AS customer_last_name",
-        "c.email AS customer_email",
-      ])
-      .orderBy("oc.created_at", "DESC")
-      .getRawMany();
-    return listClaim;
+      const listClaim = await repoOrderClaim
+        .createQueryBuilder("oc")
+        .leftJoinAndSelect("oc.store_variant_order", "svo")
+        .leftJoinAndSelect("oc.status_order_claim", "soc")
+        .leftJoinAndSelect("oc.customer", "c")
+        .leftJoinAndSelect("svo.store_variant", "sxv")
+        .leftJoinAndSelect("sxv.store", "s")
+        .leftJoinAndSelect("sxv.variant", "v")
+        .select([
+          "oc.id AS id",
+          "soc.status AS status_order_claim",
+          "oc.created_at AS created_at",
+          "svo.quantity AS quantity",
+          "svo.store_order_id AS number_order",
+          "sxv.price AS price_unit",
+          "s.name AS store_name",
+          "v.title AS product_name",
+          "c.first_name AS customer_name",
+          "c.last_name AS customer_last_name",
+          "c.email AS customer_email",
+        ])
+        .orderBy("oc.created_at", "DESC")
+        .getRawMany();
+
+      return listClaim;
+    } catch (error) {
+      console.log(
+        "error en la obtencion de la lista de reclamaciones en el servicio",
+        error
+      );
+    }
   }
 
   async retriveListClaimCustomer(idCustomer) {
