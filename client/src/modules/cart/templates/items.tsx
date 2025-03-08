@@ -10,7 +10,6 @@ import { getListVariantAndStock } from "../actions/get-listvariandAndStock"
 import { Avatar } from "@nextui-org/react"
 import { Divider } from "@nextui-org/react"
 import InputSelectStock from "../components/input-stock"
-
 import { Alert } from "@medusajs/ui"
 
 interface lineItem
@@ -64,41 +63,39 @@ const ItemsTemplate = ({ items, modifyProduct }: ItemsTemplateProps) => {
                   return a.created_at > b.created_at ? -1 : 1
                 })
                 .map((item) => (
-                  <>
-                    <div className="flex relative w-full justify-between ">
-                      <div className="flex items-center gap-4" key={item.id}>
+                  <div key={item.id}>
+                    <div className="flex flex-col md:flex-row relative w-full justify-between">
+                      {/* Información del producto */}
+                      <div className="flex items-center gap-4 ">
                         <div className="w-[122px]">
                           <Thumbnail thumbnail={item.thumbnail} size="bsmall" />
                         </div>
                         <div className="flex flex-col justify-between flex-1">
                           <div className="flex flex-col flex-1">
-                            <div className="flex items-start justify-between">
+                            <div className="flex flex-col md:flex-row items-start justify-between">
                               <div>
-                                <h3 className="text-lg font-bold  whitespace-nowrap mr-4 ">
+                                <h3 className="md:text-lg text-sm font-bold whitespace-nowrap mr-4">
                                   {item.title}
                                 </h3>
-                                <div className=" flex first-line:text-slate-400 gap-2 rounded-[5px]  mt-1">
+                                <div className="flex text-slate-400 gap-2 rounded-[5px] mt-1">
                                   <Avatar
                                     isBordered
                                     size="sm"
                                     color="secondary"
-                                    className=""
                                     src={item.store.avatar}
-                                  />{" "}
+                                  />
                                   <div>
-                                    <p className="text-base font-semibold">
-                                      {" "}
-                                      {item.store?.store_name}{" "}
+                                    <p className="md:text-base text-xs font-semibold">
+                                      {item.store?.store_name}
                                     </p>
                                     <div className="text-xs">
-                                      <p> Precio: {item.unit_price} </p>
+                                      <p>Precio: {item.unit_price}</p>
                                       <p>
                                         Stock:
                                         {handlerSelectStock(
                                           item.store_variant_id
                                         ) || (
                                           <div className="text-center text-red-600 border border-red-600 rounded-[5px] w-auto py-1 px-2">
-                                            {" "}
                                             Sin stock
                                           </div>
                                         )}
@@ -107,20 +104,14 @@ const ItemsTemplate = ({ items, modifyProduct }: ItemsTemplateProps) => {
                                   </div>
                                 </div>
                               </div>
-
-                              <div className="flex justify-end">
-                                {/* <LineItemPrice
-                                  region={cart.region}
-                                  item={item}
-                                  style="tight"
-                                /> */}
-                              </div>
                             </div>
                           </div>
                         </div>
                       </div>
-                      <div className="w-[50%]">
-                        <div className="mx-5  h-full flex items-center justify-start text-base ">
+
+                      {/* Selector de stock */}
+                      <div className="w-full md:w-[50%] mt-4 md:mt-0">
+                        <div className="mx-5 h-full flex items-center justify-start text-base">
                           {handlerSelectStock(item.store_variant_id) ? (
                             <InputSelectStock
                               currentStock={
@@ -139,23 +130,25 @@ const ItemsTemplate = ({ items, modifyProduct }: ItemsTemplateProps) => {
                           )}
                         </div>
                       </div>
-                      <div className="absolute  top-0 right-0  py-1 px-">
+
+                      {/* Alerta de cantidad insuficiente */}
+                      <div className="absolute top-0 right-0 py-1 px-1">
                         {modifyProduct?.length ? (
                           modifyProduct.map((itemId) => {
                             if (itemId === item.store_variant_id)
                               return (
-                                <>
-                                  <Alert variant="warning">
-                                    Cantidad insuficiente
-                                  </Alert>
-                                </>
+                                <Alert key={itemId} variant="warning">
+                                  Cantidad insuficiente
+                                </Alert>
                               )
                           })
                         ) : (
                           <></>
                         )}
                       </div>
-                      <div className="absolute  bottom-0 right-6 gap-2  py-1 px-">
+
+                      {/* Botón de remover */}
+                      <div className="absolute bottom-0 right-6 gap-2 py-1 px-1">
                         <button
                           className="flex items-center gap-x-1 text-gray-500"
                           onClick={() => deleteLineItem(item.id)}
@@ -166,19 +159,15 @@ const ItemsTemplate = ({ items, modifyProduct }: ItemsTemplateProps) => {
                       </div>
                     </div>
                     <Divider className="my-4" />
-                  </>
+                  </div>
                 ))}
             </div>
-            <div className="p-4 flex flex-col gap-y-4 text-small-regular">
-              {/* <Link href="/cart" passHref>
-                <Button className="rounded-30">Ir a pagar</Button>
-              </Link> */}
-            </div>
+            <div className="p-4 flex flex-col gap-y-4 text-small-regular border-b-1 border-slate-300"></div>
           </>
         ) : (
           <div>
             <div className="flex py-16 flex-col gap-y-4 items-center justify-center">
-              <div className=" text-small-regular flex items-center justify-center w-6 h-6 rounded-full text-white">
+              <div className="text-small-regular flex items-center justify-center w-6 h-6 rounded-full text-white">
                 <span>0</span>
               </div>
               <span>Tu carrito está vacio.</span>

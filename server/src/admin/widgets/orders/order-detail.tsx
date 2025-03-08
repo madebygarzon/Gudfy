@@ -74,8 +74,8 @@ const OrderDetail = ({ orderData, customer }: ModalOrderProps) => {
   return (
     <>
       {orderData ? (
-        <div className="w-full md:container  mx-auto p-0 large:p-4">
-          <div className="mt-2  text-base mb-2">
+        <div className="w-full md:container  mx-auto p-2 large:p-4">
+          <div className="my-2  text-base ">
             <p className="text-lg">
               El pedido
               <span className=" ">#{orderData.id}</span>
@@ -88,7 +88,7 @@ const OrderDetail = ({ orderData, customer }: ModalOrderProps) => {
             <p className="font-bold   ">{`Orden por: ${customer} `} </p>
             <p>Correo: {orderData.email}</p>
           </div>
-          <div className="overflow-y-scroll min-h-[450px] ">
+          <div className="overflow-y-scroll min-h-[350px] ">
             <table className="min-w-full rounded-lg shadow-2xl p-4">
               <thead className="bg-gray-100">
                 <tr>

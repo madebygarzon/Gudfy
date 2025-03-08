@@ -188,6 +188,7 @@ const ReclamosListado = () => {
   const handlerGetListClaim = () => {
     setIsLoading(true);
     getListClaim().then((data) => {
+      
       setDataCustomer({
         dataClaim: data,
         dataFilter: [],
@@ -197,10 +198,6 @@ const ReclamosListado = () => {
 
       setIsLoading(false);
     });
-  };
-
-  const handlerDate = (date: string) => {
-    return;
   };
 
   // COMENTARIOS DE LA RECLAMACION ----------------
@@ -298,7 +295,7 @@ const ReclamosListado = () => {
             <div className="min-h-[293px] flex items-center justify-center">
               <Spinner size="large" variant="secondary" />
             </div>
-          ) : dataCustomer.dataPreview.length ? (
+          ) : dataCustomer.dataPreview?.length ? (
             <div className="min-h-[293px]">
               <Table>
                 <Table.Header>

@@ -41,13 +41,13 @@ const RequestProductTable: React.FC = () => {
       <Modal isOpen={isOpen} size="5xl" onOpenChange={onOpenChange}>
         <ModalContent>
           {(onClose) => (
-            <div className="p-8 min-h-2/3">
-              <h2 className="ml-4 text-2xl mt-2 mb-4 font-bold text-gray-700">
+            <div className="md:p-8 p-4 min-h-[400px]">
+              <h2 className="ml-4 md:text-2xl text-lg md:text-start text-center mt-2 mb-4 font-bold text-gray-700">
                 Mis solicitudes de productos <ListIcon />
               </h2>
-              <div className="relative">
-                <div className="rounded-lg shadow-2xl px-4 overflow-x-auto overflow-y-auto max-h-96">
-                  <table className="min-w-full p-8 bg-white">
+              <div className="relative  ">
+                <div className="rounded-lg shadow-2xl px-4 overflow-x-auto overflow-y-auto max-h-96 ">
+                  <table className="min-w-full md:p-8 p-2 bg-white min-h-[100px] md:text-base text-xs">
                     <thead className="sticky top-0 bg-white border-b border-gray-100">
                       <tr>
                         <th className="px-4 py-2 border-b border-gray-100 text-left">
