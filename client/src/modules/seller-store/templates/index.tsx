@@ -30,12 +30,14 @@ export interface StoreData {
 const SellerStore: React.FC<{ store: StoreData }> = ({ store }) => {
   const router = useRouter()
   return (
-    <div className="my-10 mx-20  ">
-      <div className="flex flex-col md:flex-row p-4 rounded-lg  ">
-        <div className="w-[20%] bg-white p-4 rounded-lg shadow-2xl flex flex-col items-center  justify-center text-center">
+    <div className="my-10 mx-4 sm:mx-10 md:mx-20">
+      <div className="flex flex-col md:flex-row p-4 rounded-lg gap-6">
+        {/* Contenedor de SellerProfile */}
+        <div className="w-full md:w-[25%] bg-white p-4 rounded-lg shadow-2xl flex flex-col items-center justify-center text-center">
           <SellerProfile store={store} />
-        </div>       
-        <div className=" w-[80%] mt-6 md:mt-0 md:ml-6 ">
+        </div>
+        {/* Contenedor de SellerProductTable */}
+        <div className="w-full md:w-[75%] mt-6 md:mt-0">
           <SellerProductTable store={store} />
         </div>
       </div>
