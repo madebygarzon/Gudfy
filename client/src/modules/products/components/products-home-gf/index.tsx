@@ -70,7 +70,7 @@ const Recommendedproduct = ({ params }: InfiniteProductsType) => {
   }, [params])
 
   return (
-    <div className="flex items-center px-10 w-full">
+    <div className="flex items-center md:px-10  px-2 w-full">
       <button
         onClick={() => setPage((old) => Math.max(old - 1, 0))}
         className="-mr-2 px-2 tex"
@@ -120,7 +120,7 @@ const Recommendedproduct = ({ params }: InfiniteProductsType) => {
 
         {!isLoading && !previews.length && (
           <div className="flex justify-center h-[250px]  items-center w-full">
-            <h2 className="text-3xl text-white text-center w-[70%]">
+            <h2 className="md:text-3xl text-small text-white text-center w-[70%]">
               {" "}
               ¡Oh, vaya! , Lamentablemente en la actualidad no contamos con
               productos disponibles en esta categoría.
