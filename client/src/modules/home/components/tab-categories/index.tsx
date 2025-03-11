@@ -40,7 +40,7 @@ const Category = ({
   }
 
   return categories.length ? (
-    <div className="flex flex-wrap flex-col  h-[300px] pl-5">
+    <div className="flex flex-wrap md:flex-col  max-h-[300px] md:pl-5 mb-3 overflow-x-auto">
       <ButtonLigth
         type="button"
         onClick={() => {
@@ -48,7 +48,7 @@ const Category = ({
           setIsSelect("")
         }}
         className={clsx(
-          "border-solid  border-[1px] w-[100px]  text-[14px] text-uppercase rounded-[5px] py-2 px-2 my-2",
+          "border-solid  border-[1px] w-[100px]  text-[14px] text-uppercase rounded-[5px]  md:p-2 p-1 md:my-2 my-0 mx-2 ",
           { "border-slate-200 text-slate-200": isSelect !== "" },
           { "border-white text-white": isSelect == "" }
         )}
@@ -65,7 +65,7 @@ const Category = ({
             setIsSelect(category.id)
           }}
           className={clsx(
-            "border-solid  border-[1px] w-[100px] text-[14px] text-uppercase rounded-[5px] py-2 px-2 my-2",
+            "border-solid  border-[1px] w-[100px] text-[14px] text-uppercase rounded-[5px] md:p-2 p-1 md:my-2 my-0 mx-2",
             {
               "border-slate-300 text-slate-300": isSelect !== category.id,
             },
