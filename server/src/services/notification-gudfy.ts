@@ -4,8 +4,7 @@ import {
   Customer,
 } from "@medusajs/medusa";
 import { NotificationGudfyRepository } from "../repositories/notification-gudfy";
-import { EmitData, EventBusTypes } from "@medusajs/types";
-import { AbstractEventBusModuleService } from "@medusajs/utils";
+
 import { io } from "../websocket";
 
 export default class NotificationGudfyService extends TransactionBaseService {

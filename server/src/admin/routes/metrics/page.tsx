@@ -5,6 +5,15 @@ import Spinner from "../../components/shared/spinner";
 import { Table, Input, Select } from "@medusajs/ui";
 import { formatDate } from "../../utils/format-date";
 import { getMetricsListStoreOrderCustomer } from "../../actions/orders/get-list-store-orders-customer";
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  Legend,
+} from "recharts";
 
 const salesData = [
   { month: "Ene", ventas: 150, ingresos: 3000 },
@@ -175,6 +184,36 @@ const SellerApplication = ({ data }) => {
   return (
     <div className=" bg-white p-8 border border-gray-200 rounded-lg ">
       <div className="w-full h-auto ">
+        <div className=" flex w-full">
+          <div className="p-4 bg-white rounded-lg shadow-md">
+            <h2 className="text-lg font-bold text-center mb-4">
+              💰 Ingresos Mensuales
+            </h2>
+            <ResponsiveContainer width="100%" height={300}>
+              <BarChart data={salesData}>
+                <XAxis dataKey="month" />
+                <YAxis />
+                <Tooltip />
+                <Legend />
+                <Bar dataKey="ingresos" fill="#f59e0b" name="Ingresos" />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+          <div className="p-4 bg-white rounded-lg shadow-md">
+            <h2 className="text-lg font-bold text-center mb-4">
+              📈 Ventas Mensuales
+            </h2>
+            <ResponsiveContainer width="100%" height={300}>
+              <BarChart data={salesData}>
+                <XAxis dataKey="month" />
+                <YAxis />
+                <Tooltip />
+                <Legend />
+                <Bar dataKey="ventas" fill="#3b82f6" name="Ventas" />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
         <>
           <div className="mt-2 h-[120px] flex justify-between">
             <h1 className=" text-xl font-bold"> Metricas Clientes</h1>
