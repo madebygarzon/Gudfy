@@ -27,6 +27,7 @@ import getAllListRequestProduct from "./request-product/get-all-list-request-pro
 import updateRequestProduct from "./request-product/update-request-product";
 import { updateTicketStatus } from "./tickets/update-ticket-status";
 import getListStoreOrders from "./orders/get-list-store-order";
+import getListMetricsCustomer from "./metrics/get-list-metrics-customer";
 
 // Initialize a custom router
 const router = Router();
@@ -107,5 +108,10 @@ export function attachAdminRoutes(adminRouter: Router) {
 
   //---------------orders-------------------
   router.get("/orders/list-orders", wrapHandler(getListStoreOrders));
+  router.get(
+    "/list-metrics-orders-customer",
+    wrapHandler(getListMetricsCustomer)
+  );
+
   onboardingRoutes(adminRouter);
 }

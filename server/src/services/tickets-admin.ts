@@ -33,6 +33,7 @@ export default class TicketsAdminService extends TransactionBaseService {
         "c.last_name AS last_name",
         "t.created_at AS created_at",
       ])
+      .orderBy("t.created_at", "DESC")
       .getRawMany();
 
     return listTikets;

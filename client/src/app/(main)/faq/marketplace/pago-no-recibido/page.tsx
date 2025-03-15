@@ -1,4 +1,5 @@
 import Button from "@modules/common/components/button"
+import Link from "next/link"
 import React from "react"
 
 const MissingItemsAlert = () => {
@@ -16,12 +17,14 @@ const MissingItemsAlert = () => {
         infórmanos creando un ticket. Revisaremos tu caso y te ayudaremos a
         solucionarlo lo antes posible.
       </p>
-      <Button
-        href="/account/ticket"
-        className="inline-block mt-4  text-white px-4 py-2 rounded-lg font-medium  transition duration-300"
-      >
-        Crear Ticket
-      </Button>
+      <Link href="/account/ticket">
+        <Button
+          href="/account/ticket"
+          className="inline-block mt-4  text-white px-4 py-2 rounded-lg font-medium  transition duration-300"
+        >
+          Crear Tickets
+        </Button>
+      </Link>
     </div>
   )
 }

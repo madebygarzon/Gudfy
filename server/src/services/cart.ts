@@ -20,10 +20,6 @@ class CartService extends MedusaCartService {
   async updateUnitPrices_(cart, regionId, customer_id) {
     return;
   }
-
-  async removeLineItem(cartId: string, lineItemId: string): Promise<Cart> {
-    return;
-  }
 }
 
 export default CartService;
