@@ -22,7 +22,7 @@ class StoreOrderService extends TransactionBaseService {
     this.storeVariantOrderRepository_ = container.storeVariantOrderRepository;
     this.storeXVariantRepository_ = container.storeXVariantRepository;
     this.serialCodeRepository_ = container.serialCodeRepository;
-    this.loggedInCustomer_ = container.loggedInCustomer || null;
+    this.loggedInCustomer_ = container?.loggedInCustomer ?? null;
   }
 
   async currentOrder(customerId) {
@@ -38,7 +38,7 @@ class StoreOrderService extends TransactionBaseService {
         .innerJoinAndSelect("sxv.variant", "pv")
         .leftJoinAndSelect("sxv.store", "s")
         .where("so.customer_id = :customer_id ", {
-          customer_id: customerId || this.loggedInCustomer_.id,
+          customer_id: customerId || this.loggedInCustomer_?.id,
         })
         .select([
           "so.id AS id",
@@ -288,7 +288,7 @@ class StoreOrderService extends TransactionBaseService {
       .where(
         "sxv.store_id = :store_id AND svo.variant_order_status_id NOT IN (:...excludedStatus) ",
         {
-          store_id: this.loggedInCustomer_.store_id,
+          store_id: this.loggedInCustomer_?.store_id,
           excludedStatus: ["Cancel_ID", "Payment_Pending_ID"],
         }
       )
@@ -459,7 +459,7 @@ class StoreOrderService extends TransactionBaseService {
       .innerJoinAndSelect("sxv.variant", "pv")
       .leftJoinAndSelect("sxv.store", "s")
       .where("so.customer_id = :customer_id ", {
-        customer_id: this.loggedInCustomer_.id,
+        customer_id: this.loggedInCustomer_?.id,
       })
       .select([
         "so.id AS id",
@@ -524,7 +524,7 @@ class StoreOrderService extends TransactionBaseService {
         variant_order_status_id: "Finished_ID",
       }
     );
-    
+
     return upDateFinish;
   }
 

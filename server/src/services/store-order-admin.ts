@@ -6,6 +6,7 @@ import StoreVariantOrderRepository from "../repositories/store-variant-order";
 import StoreXVariantRepository from "../repositories/store-x-variant";
 import SerialCodeRepository from "src/repositories/serial-code";
 import CustomerRepository from "src/repositories/customer";
+import { In } from "typeorm";
 
 class StoreOrderAdminService extends TransactionBaseService {
   static LIFE_TIME = Lifetime.SCOPED;
@@ -178,19 +179,34 @@ class StoreOrderAdminService extends TransactionBaseService {
 
     // Convertir el Map a un array de resultados
     const result = Array.from(dataMap.values());
+    const resultMetricsOrder = await this.listMetricsOrders();
+    const addResults = {
+      customer_metrics: result,
+      order_metrics: resultMetricsOrder,
+    };
+    return addResults;
+  }
 
-    return result;
+  async listMetricsOrders() {
+    const repoOrder = this.activeManager_.withRepository(
+      this.storeOrderRepository_
+    );
+
+    const listMetrics = await repoOrder
+      .createQueryBuilder("order")
+      .select([
+        "TO_CHAR(order.created_at, 'Month YYYY') as month",
+        "SUM(order.total_price) as total_spent",
+        "COUNT(order.id) as total_orders",
+      ])
+      .where("order.order_status_id IN (:...statuses)", {
+        statuses: ["Finished_ID", "Completed_ID"],
+      })
+      .groupBy("month")
+      .orderBy("month", "ASC")
+      .getRawMany();
+
+    return listMetrics;
   }
 }
-interface dataCustomerMetrics {
-  id: string;
-  customer_name: string;
-  email: string;
-  created_at: string;
-  num_orders: string;
-  num_products: string;
-  mvp_order: number;
-  expenses: string;
-}
-
 export default StoreOrderAdminService;

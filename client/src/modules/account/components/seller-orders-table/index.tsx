@@ -126,7 +126,7 @@ const SellerOrderTable: React.FC = () => {
             <thead>
               <tr>
                 {/* <th className="py-2 text-left">Estado de la orden</th> */}
-                <th className="py-2 text-left">Pago</th>
+                <th className="py-2 text-left ">Pago</th>
                 <th className="py-2 text-left">Orden</th>
                 <th className="py-2 text-left">Fecha</th>
                 <th className="py-2 text-left">Detalle </th>

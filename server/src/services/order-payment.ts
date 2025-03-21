@@ -130,8 +130,6 @@ class OrderPaymentService extends TransactionBaseService {
             balance_paid += totalPrice;
           }
         });
-
-        // Añadimos los nuevos atributos al objeto de tienda
         store.available_balance = truncateToThreeDecimals(available_balance);
         store.outstanding_balance =
           truncateToThreeDecimals(outstanding_balance);
@@ -202,7 +200,7 @@ class OrderPaymentService extends TransactionBaseService {
       const savePaymentDetail = await PayDetail.save(createPayDetail);
     }
 
-    return  saverOrderPay
+    return saverOrderPay;
   }
 
   async recoverListOrderPayments(idStore) {
@@ -357,4 +355,26 @@ export default OrderPaymentService;
 
 function truncateToThreeDecimals(value) {
   return Math.floor(value * 1000) / 1000; // Trunca a 3 decimales
+}
+
+interface data {
+  store_id: string;
+  store_name: string;
+  date_order: string;
+  wallet_address: string;
+  product: [
+    {
+      order_id: string;
+      svo_id: string;
+      product_name: string;
+      thumbnail: string;
+      price: string;
+      quantity: string;
+      customer_name: string;
+      product_order_status: string;
+    }
+  ];
+  available_balance: number;
+  outstanding_balance: number;
+  balance_paid: number;
 }
