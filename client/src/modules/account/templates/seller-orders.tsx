@@ -186,7 +186,10 @@ const SellerOrdersTemplate = () => {
   return (
     <>
       <div className="">
-        <div style={{ width: "100%", height: 400 }}>
+        <div className="w-full p-2 md:p-8 border border-gray-200 rounded-lg shadow-lg mb-4 flex flex-col items-center justify-center">
+          <h2 className="text-sm text-center font-semibold text-blue-gf mb-2">
+            Ordenes por día
+          </h2>
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={barData}>
               <CartesianGrid strokeDasharray="3 3" />
@@ -204,7 +207,7 @@ const SellerOrdersTemplate = () => {
           </ResponsiveContainer>
         </div>
         <div className="flex">
-          <div>
+          <div className="w-1/2 p-2 md:p-8 border border-gray-200 rounded-lg shadow-lg m-4 flex flex-col items-center justify-center ">
             <h2 className="text-sm text-center font-semibold text-blue-gf mb-2">
               Estado de los productos
             </h2>
@@ -229,7 +232,7 @@ const SellerOrdersTemplate = () => {
               <Legend />
             </PieChart>
           </div>
-          <div>
+          <div className="w-1/2 p-2 md:p-8 border border-gray-200 rounded-lg shadow-lg m-4 flex flex-col items-center justify-center">
             <h2 className="text-sm text-center font-semibold text-blue-gf mb-2">
               Cantidad x producto vendido
             </h2>
@@ -248,9 +251,9 @@ const SellerOrdersTemplate = () => {
           </div>
         </div>
       </div>
-      <div className="w-full p-2 md:p-8 border border-gray-200 rounded-lg shadow-2xl">
+      <div className="w-full p-2 md:p-8 border border-gray-200 rounded-lg shadow-lg">
         <div className="mb-8 flex flex-col gap-y-4">
-          <h1 className="text-xl sm:text-2xl mt-2 font-bold text-gray-700">
+          <h1 className="md:text-xl text-2xl mt-2 font-bold text-gray-700">
             Ordenes de la tienda
           </h1>
         </div>
