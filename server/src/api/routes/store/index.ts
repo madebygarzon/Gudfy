@@ -37,6 +37,7 @@ import { postAddTickets } from "./tickets/post-add-ticket";
 import Image from "../../middlewares/images-tickests";
 import { getMessagesTickets } from "./tickets/get-data-messages-ticket";
 import binancepay_webhook from "./binancepay_webhook";
+import coinpal_webhook from "./binancepay_webhook";
 import getListSerialCodes from "./serial-codes/get-list-serial-codes";
 import deleteCart from "./cart/delete-cart";
 import updateReview from "./update-review";
@@ -178,6 +179,7 @@ export function attachStoreRoutes(storeRouter: Router) {
     "/binance_pay/webhook/:id/order",
     wrapHandler(binancepay_webhook)
   );
+  router.post("/coinpal/webhook/:id/order", wrapHandler(coinpal_webhook));
 
   //-----------------------------serialCodes---------------------------
   router.get("/account/list-serial-codes", wrapHandler(getListSerialCodes));

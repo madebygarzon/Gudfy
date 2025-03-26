@@ -1,30 +1,42 @@
 import { Request, Response } from "express";
 import axios from "axios";
 import crypto from "crypto";
+import coinpal from "coinpal-sdk";
+
+// Configuración de CoinPal
+coinpal
+  .setMchId(process.env.COINPAL_MCH_ID)
+  .setApiKey(process.env.COINPAL_API_KEY);
 
 export default async (req: Request, res: Response): Promise<void> => {
   const { payment_method, order_id } = req.body;
-
   const cartId = req.params.id;
   const cartMarketService = req.scope.resolve("cartMarketService");
   const cartItems = await cartMarketService.recoveryCart(cartId);
+
   var result = null;
   try {
     switch (payment_method) {
       case "automatic_binance_pay":
         result = await autoBinancePay(cartItems, order_id);
         break;
-
-      default:
+      case "coinpal_pay":
+        result = await autoCoinPalPay(cartItems, order_id);
         break;
+      default:
+        throw new Error(`Método de pago no soportado: ${payment_method}`);
     }
     res.status(200).json({ result });
   } catch (error) {
-    console.log("error en el endpoint dew la solicito a binance:", error);
-    res.status(500).json({ error });
+    console.log("Error en el endpoint de pago:", error);
+    res.status(500).json({
+      error: error.message,
+      details: error.response?.data || error.details,
+    });
   }
 };
 
+// Función para Binance Pay (existente)
 const autoBinancePay = async (cartItems, order_id) => {
   const timestamp = new Date().getTime();
   const nonce = generateRandomString(32);
@@ -37,6 +49,7 @@ const autoBinancePay = async (cartItems, order_id) => {
       goodsDetail: item.description,
     };
   });
+
   const data = {
     env: {
       terminalType: "WEB",
@@ -60,13 +73,11 @@ const autoBinancePay = async (cartItems, order_id) => {
   };
 
   const body = JSON.stringify(data);
-
   const payload = `${timestamp}\n${nonce}\n${body}\n`;
   const hmac = crypto.createHmac("sha512", process.env.BINANCE_PAY_SECRET_KEY);
   hmac.update(payload);
   const signature = hmac.digest("hex").toUpperCase();
 
-  // const response = await axios.post(
   return axios
     .post("https://bpay.binanceapi.com/binancepay/openapi/v3/order", body, {
       headers: {
@@ -77,15 +88,54 @@ const autoBinancePay = async (cartItems, order_id) => {
         "BinancePay-Signature": signature,
       },
     })
-    .then((res) => {
-      return res.data;
-    })
+    .then((res) => res.data)
     .catch((e) => {
-      console.log("ERROR EN BINANCE:", e.response.data);
-      throw e.response.data;
+      console.log("ERROR EN BINANCE:", e.response?.data);
+      throw e.response?.data || e;
     });
 };
 
+// Nueva función para CoinPal usando el SDK
+const autoCoinPalPay = async (cartItems, order_id) => {
+  const totalAmount = handlerTotalPrice(cartItems);
+
+  const paymentInfo = {
+    version: "2",
+    requestId: `REQ${Date.now()}`,
+    merchantNo: process.env.COINPAL_MCH_ID,
+    orderNo: order_id,
+    orderCurrencyType: "fiat",
+    orderCurrency: "USD",
+    orderAmount: totalAmount.toString(),
+    accessToken: process.env.ACCESS_TOKEN,
+    notifyURL: `${process.env.BACKEND_URL}/store/coinpal/webhook/${order_id}/order`,
+    redirectURL: `${process.env.FRONT_URL}/account/orders`,
+  };
+
+  try {
+    const result = await coinpal.createPayment(paymentInfo);
+
+    if (result.nextStepContent) {
+      return {
+        paymentUrl: result.nextStepContent,
+        paymentId: result.reference,
+        status: "pending",
+        expiresAt: result.expireTime,
+      };
+    }
+
+    throw new Error("No se recibió URL de pago de CoinPal");
+  } catch (error) {
+    console.error("Error en CoinPal:", error);
+    throw {
+      message: "Error al procesar pago con CoinPal",
+      details: error.response?.data || error.message,
+      code: error.code,
+    };
+  }
+};
+
+// Funciones auxiliares (existentes)
 const handlerTotalPrice = (items) => {
   let total: number = 0;
   if (items?.length) {
@@ -93,8 +143,8 @@ const handlerTotalPrice = (items) => {
       total = total + item.unit_price * item.quantity;
     });
   }
-  total = total + total * 0.01; //Comicion de binance free y Gudfy free
-  return total + total * 0.01; //Comicion de y Gudfy free
+  total = total + total * 0.01; // Comisión de binance free y Gudfy free
+  return total + total * 0.01; // Comisión de y Gudfy free
 };
 
 const generateRandomString = (length) => {
