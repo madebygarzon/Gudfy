@@ -4,21 +4,18 @@ import crypto from "crypto";
 import coinpal from "coinpal-sdk";
 
 // Configuración de CoinPal
-coinpal
-  .setMchId(process.env.COINPAL_MCH_ID)
-  .setApiKey(process.env.COINPAL_API_KEY);
 
 export default async (req: Request, res: Response): Promise<void> => {
   const { payment_method, order_id } = req.body;
   const cartId = req.params.id;
   const cartMarketService = req.scope.resolve("cartMarketService");
   const cartItems = await cartMarketService.recoveryCart(cartId);
-
+  const payment_method2 = "coinpal_pay";
   var result = null;
   try {
     switch (payment_method) {
       case "automatic_binance_pay":
-        result = await autoBinancePay(cartItems, order_id);
+        result = await autoCoinPalPay(cartItems, order_id);
         break;
       case "coinpal_pay":
         result = await autoCoinPalPay(cartItems, order_id);
@@ -97,13 +94,17 @@ const autoBinancePay = async (cartItems, order_id) => {
 
 // Nueva función para CoinPal usando el SDK
 const autoCoinPalPay = async (cartItems, order_id) => {
+  coinpal
+    .setMchId(process.env.COINPAL_MCH_ID)
+    .setApiKey(process.env.COINPAL_API_KEY);
   const totalAmount = handlerTotalPrice(cartItems);
-
+  const requestId = `test_${order_id}${Date.now()}`;
+  const orderNo = `test_${order_id}`;
   const paymentInfo = {
     version: "2",
-    requestId: `REQ${Date.now()}`,
+    requestId: requestId,
     merchantNo: process.env.COINPAL_MCH_ID,
-    orderNo: order_id,
+    orderNo,
     orderCurrencyType: "fiat",
     orderCurrency: "USD",
     orderAmount: totalAmount.toString(),
@@ -114,7 +115,10 @@ const autoCoinPalPay = async (cartItems, order_id) => {
 
   try {
     const result = await coinpal.createPayment(paymentInfo);
-
+    console.log(
+      "resultado de createPaymentttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttt",
+      result
+    );
     if (result.nextStepContent) {
       return {
         paymentUrl: result.nextStepContent,
@@ -157,4 +161,20 @@ const generateRandomString = (length) => {
   }
 
   return result;
+};
+
+const generateSing = (
+  requestId,
+  merchantNo,
+  orderNo,
+  orderAmount,
+  orderCurrency
+) => {
+  const crypto = require("crypto");
+  const apiKey = process.env.COINPAL_API_KEY;
+  const input =
+    apiKey + requestId + merchantNo + orderNo + orderAmount + orderCurrency;
+
+  const sign = crypto.createHash("sha256").update(input).digest("hex");
+  return sign;
 };
