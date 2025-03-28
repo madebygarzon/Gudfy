@@ -188,7 +188,6 @@ const ReclamosListado = () => {
   const handlerGetListClaim = () => {
     setIsLoading(true);
     getListClaim().then((data) => {
-      
       setDataCustomer({
         dataClaim: data,
         dataFilter: [],

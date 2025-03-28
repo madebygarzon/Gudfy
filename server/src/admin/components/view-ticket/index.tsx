@@ -4,6 +4,7 @@ import { Image } from "@medusajs/medusa";
 import { getDataMessagesTicket } from "../../actions/tickets/get-data-message-ticket";
 import { Button, Input, Textarea } from "@medusajs/ui";
 import { addTicketMessage } from "../../actions/tickets/post-add-message-ticket";
+import InputFile from "./input-file";
 
 interface ContactFormValues {
   id_ticket: string;
@@ -111,6 +112,14 @@ const ViewTicket = ({ handlerReset, ticketId, subject, status }: Props) => {
             {errors.message && (
               <p className="text-red-500 text-xs">El mensaje es requerido</p>
             )}
+            <InputFile
+              type="Normal"
+              alt="Image"
+              label="Adjuntar imagen"
+              file={image}
+              setFile={setImage}
+              accept="image/*"
+            />
 
             <Button type="submit" color="primary" className="mt-4 w-full">
               Enviar

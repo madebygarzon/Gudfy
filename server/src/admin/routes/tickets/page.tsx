@@ -1,21 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Table, Drawer } from "@medusajs/ui";
-import {
-  PencilSquare,
-  XMark,
-  Eye,
-  Check,
-  ArrowLongRight,
-  ArrowLongLeft,
-  TriangleDownMini,
-  ChatBubble,
-  ArrowPathMini,
-  BellAlert,
-} from "@medusajs/icons";
+import { XMark, ArrowLongRight, ArrowLongLeft } from "@medusajs/icons";
 import Spinner from "../../components/shared/spinner";
 import { Input, Select, Button, Heading } from "@medusajs/ui";
-import clsx from "clsx";
-import { ModalComment } from "../../components/seller-application/modal-commet";
 import { RouteConfig } from "@medusajs/admin";
 import { getListTickets } from "../../actions/tickets/get-list-tickets";
 import ViewTicket from "../../components/view-ticket";
