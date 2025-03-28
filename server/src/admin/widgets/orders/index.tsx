@@ -14,11 +14,10 @@ import {
   IconButton,
   Drawer,
 } from "@medusajs/ui";
-
 import { formatDate } from "../../utils/format-date";
 import { getListStoreOrder } from "../../actions/orders/get-list-store-orders";
-import OrderCancel from "./order-cancel";
-import OrderDetail from "./order-detail";
+import OrderCancel from "../../components/orders/order-cancel";
+import OrderDetail from "../../components/orders/order-detail";
 
 export interface order {
   id: string;

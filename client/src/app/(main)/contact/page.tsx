@@ -115,9 +115,9 @@ const Contact: React.FC = () => {
       </h2>
       <p className="text-gray-700 text-center">
         ¿Tienes alguna consulta, sugerencia o propuesta para mejorar tu
-        experiencia en GudfyP2P? Ya sea que estés interesado en convertirte en
-        vendedor, buscar soporte sobre tus transacciones o simplemente necesites
-        más información sobre cómo empezar, estamos aquí para ayudarte.
+        experiencia en GudfyP2P? Deja tu mensaje y uno de nuestros especialistas
+        se pondrá en contacto contigo lo antes posible. ¡Juntos podemos hacer
+        crecer nuestra comunidad de comercio digital! 😊
       </p>
       <form
         className="w-full font[400] shadow-xl rounded-3xl p-10 flex flex-col items-center"

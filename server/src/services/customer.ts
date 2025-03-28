@@ -1,5 +1,10 @@
 import { Lifetime } from "awilix";
-import { CustomerService as MedusaCustomerService } from "@medusajs/medusa";
+import {
+  Customer as CustomerMedusa,
+  FindConfig,
+  CustomerService as MedusaCustomerService,
+  Selector,
+} from "@medusajs/medusa";
 import { Customer } from "../models/customer";
 import {
   UpdateCustomerInput as MedusaUpdateCustomerInput,
@@ -104,7 +109,66 @@ class CustomerService extends MedusaCustomerService {
 
     return count || 0;
   }
+
+  async listAndCount(
+    selector: Selector<Customer> & { q?: string; groups?: string[] },
+    config: FindConfig<Customer> = { skip: 0, take: 50 }
+  ): Promise<[Customer[], number]> {
+    const customerRepository = this.manager_.withRepository(
+      this.customerRepository_
+    );
+
+    // Creamos un query builder básico para añadir filtros dinámicamente
+    const qb = customerRepository.createQueryBuilder("customer");
+
+    // Aplicar filtros de búsqueda si existen
+    if (selector.q) {
+      qb.where(
+        "customer.email ILIKE :q OR customer.first_name ILIKE :q OR customer.last_name ILIKE :q",
+        {
+          q: `%${selector.q}%`,
+        }
+      );
+    }
+
+    // Filtrar por grupos si se especifican
+    if (selector.groups && selector.groups.length > 0) {
+      qb.andWhere("customer.group_id IN (:...groups)", {
+        groups: selector.groups,
+      });
+    }
+
+    // Agregar cualquier otro filtro pasado en selector
+    Object.keys(selector).forEach((key) => {
+      if (["q", "groups"].includes(key)) return; // ya aplicados arriba
+      qb.andWhere(`customer.${key} = :${key}`, { [key]: selector[key] });
+    });
+
+    // Aplicar configuraciones como relaciones, ordenamiento, paginación
+    if (config.relations) {
+      for (const relation of config.relations) {
+        qb.leftJoinAndSelect(`customer.${relation}`, relation);
+      }
+    }
+
+    if (config.order) {
+      qb.orderBy(config.order);
+    }
+
+    if (typeof config.skip === "number") {
+      qb.skip(config.skip);
+    }
+
+    if (typeof config.take === "number") {
+      qb.take(config.take);
+    }
+
+    const [customers, count] = await qb.getManyAndCount();
+
+    return [customers, count];
+  }
 }
+
 const adjectives = [
   "Happy",
   "Sad",
