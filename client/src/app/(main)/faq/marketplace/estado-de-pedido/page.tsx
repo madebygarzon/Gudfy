@@ -14,7 +14,7 @@ const OrderStatusGuide = () => {
       </p>
       <p className="text-gray-700 mb-6">
         Si aún no tienes una cuenta en GudfyP2P, puedes registrarte{" "}
-        <a href="#" className="text-blue-500 underline">
+        <a href="/account" className="text-blue-500 underline">
           AQUÍ
         </a>
         .

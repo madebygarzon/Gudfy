@@ -5,6 +5,8 @@ import StoreOrderRepository from "../repositories/store-order";
 import StoreVariantOrderRepository from "../repositories/store-variant-order";
 import StoreXVariantRepository from "../repositories/store-x-variant";
 import SerialCodeRepository from "src/repositories/serial-code";
+import CustomerRepository from "src/repositories/customer";
+import { In } from "typeorm";
 
 class StoreOrderAdminService extends TransactionBaseService {
   static LIFE_TIME = Lifetime.SCOPED;
@@ -12,6 +14,7 @@ class StoreOrderAdminService extends TransactionBaseService {
   protected readonly storeVariantOrderRepository_: typeof StoreVariantOrderRepository;
   protected readonly storeXVariantRepository_: typeof StoreXVariantRepository;
   protected readonly serialCodeRepository_: typeof SerialCodeRepository;
+  protected readonly customerRepository_: typeof CustomerRepository;
 
   constructor(container) {
     // @ts-expect-error prefer-rest-params
@@ -20,6 +23,7 @@ class StoreOrderAdminService extends TransactionBaseService {
     this.storeVariantOrderRepository_ = container.storeVariantOrderRepository;
     this.storeXVariantRepository_ = container.storeXVariantRepository;
     this.serialCodeRepository_ = container.serialCodeRepository;
+    this.customerRepository_ = container.customerRepository;
   }
 
   async listCustomersOrders() {
@@ -119,6 +123,90 @@ class StoreOrderAdminService extends TransactionBaseService {
     });
     return serialCodesForProduct;
   }
-}
 
+  async listMetricsCustomers() {
+    const repoCustomer = this.activeManager_.withRepository(
+      this.customerRepository_
+    );
+
+    const listOrder = await repoCustomer
+      .createQueryBuilder("cus")
+      .innerJoinAndSelect("cus.customerorder", "so")
+      .where("so.order_status_id IN (:...status_ids)", {
+        status_ids: ["Finished_ID", "Completed_ID"],
+      })
+      .select([
+        "cus.id AS id",
+        "cus.email AS email",
+        "cus.first_name AS first_name",
+        "cus.last_name AS last_name",
+        "cus.created_at AS created_at",
+        "so.quantity_products AS quantity_products",
+        "so.total_price AS total_price",
+      ])
+      .getRawMany();
+
+    const dataMap = new Map();
+
+    for (const order of listOrder) {
+      const { quantity_products, total_price, first_name, last_name, ...rest } =
+        order;
+
+      if (!dataMap.has(order.id)) {
+        // Inicializar el cliente en el Map si no existe
+        dataMap.set(order.id, {
+          ...rest,
+          customer_name: first_name + " " + last_name,
+          num_orders: 0,
+          num_products: 0,
+          mvp_order: 0,
+          expenses: 0,
+        });
+      }
+
+      // Obtener el cliente actual del Map
+      const customer = dataMap.get(order.id);
+
+      // Actualizar las métricas
+      customer.num_orders += 1;
+      customer.num_products += parseFloat(quantity_products);
+      customer.mvp_order = Math.max(
+        customer.mvp_order,
+        parseFloat(total_price)
+      );
+      customer.expenses += parseFloat(total_price);
+    }
+
+    // Convertir el Map a un array de resultados
+    const result = Array.from(dataMap.values());
+    const resultMetricsOrder = await this.listMetricsOrders();
+    const addResults = {
+      customer_metrics: result,
+      order_metrics: resultMetricsOrder,
+    };
+    return addResults;
+  }
+
+  async listMetricsOrders() {
+    const repoOrder = this.activeManager_.withRepository(
+      this.storeOrderRepository_
+    );
+
+    const listMetrics = await repoOrder
+      .createQueryBuilder("order")
+      .select([
+        "TO_CHAR(order.created_at, 'Month YYYY') as month",
+        "SUM(order.total_price) as total_spent",
+        "COUNT(order.id) as total_orders",
+      ])
+      .where("order.order_status_id IN (:...statuses)", {
+        statuses: ["Finished_ID", "Completed_ID"],
+      })
+      .groupBy("month")
+      .orderBy("month", "ASC")
+      .getRawMany();
+
+    return listMetrics;
+  }
+}
 export default StoreOrderAdminService;

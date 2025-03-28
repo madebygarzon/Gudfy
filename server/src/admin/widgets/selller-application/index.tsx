@@ -875,6 +875,13 @@ const ModalViewSellerData: React.FC<{
               <a href={viweDataSeller.supplier_documents} target="_blank">
                 Ver Documento
               </a>
+              <a
+                href={viweDataSeller.supplier_documents}
+                download
+                className="text-green-600 underline ml-2"
+              >
+                Descargar
+              </a>
             </div>
 
             <p className="font-bold text-gray-800 text-lg text-center mt-2 py-2 col-span-2 border-t border-gray-300">
@@ -910,6 +917,13 @@ const ModalViewSellerData: React.FC<{
               <a href={viweDataSeller.front_identity_document} target="_blank">
                 Ver Documento
               </a>
+              <a
+                href={viweDataSeller.front_identity_document}
+                download
+                className="text-green-600 underline ml-2"
+              >
+                Descargar
+              </a>
             </div>
             <div>
               <p className="font-bold">
@@ -918,11 +932,25 @@ const ModalViewSellerData: React.FC<{
               <a href={viweDataSeller.revers_identity_document} target="_blank">
                 Ver Documento
               </a>
+              <a
+                href={viweDataSeller.revers_identity_document}
+                download
+                className="text-green-600 underline ml-2"
+              >
+                Descargar
+              </a>
             </div>
             <div>
               <p className="font-bold">Comprobante de domicilio</p>
               <a href={viweDataSeller.address_proof} target="_blank">
                 Ver Documento
+              </a>
+              <a
+                href={viweDataSeller.address_proof}
+                download
+                className="text-green-600 underline ml-2"
+              >
+                Descargar
               </a>
             </div>
 
@@ -1023,7 +1051,7 @@ function DateFormat(fechaString: string): string {
   return `${dia} ${mes} ${año}`;
 }
 export const config: WidgetConfig = {
-  zone: "customer.list.after",
+  zone: "customer.list.before",
 };
 
 export default SellerApplication;

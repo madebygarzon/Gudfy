@@ -265,13 +265,16 @@ class CartMarketService extends TransactionBaseService {
       }
     }
 
+    let totalComiBina = total_price + total_price * 0.01;
+    let totalWhitComissionGudfy = totalComiBina + totalComiBina * 0.01;
+
     const createOrder = await storeOrderRepo.create({
       id: `${prefix}${newIdNumber}`,
       customer_id: customer_id,
       // pay_method_id: "",
       order_status_id: "Payment_Pending_ID",
       quantity_products: quantity,
-      total_price: total_price * 0.01,
+      total_price: totalWhitComissionGudfy,
       // name: "",
       // last_name: "",
       // email: "",
