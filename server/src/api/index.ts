@@ -52,6 +52,11 @@ export default (rootDirectory: string): Router | Router[] => {
     cors(binanceWebhookCorsOptions),
     bodyParser.json()
   );
+  router.use(
+    "/store/coinpal/webhook/:id/order",
+    cors(binanceWebhookCorsOptions),
+    bodyParser.json()
+  );
 
   // Add authentication to all admin routes *except* auth and account invite ones
   router.use(/\/admin\/((?!auth)(?!invites).*)/, authenticate());

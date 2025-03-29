@@ -10,7 +10,6 @@ export default async (req: Request, res: Response): Promise<void> => {
   const cartId = req.params.id;
   const cartMarketService = req.scope.resolve("cartMarketService");
   const cartItems = await cartMarketService.recoveryCart(cartId);
-  const payment_method2 = "coinpal_pay";
   var result = null;
   try {
     switch (payment_method) {
@@ -99,7 +98,7 @@ const autoCoinPalPay = async (cartItems, order_id) => {
     .setApiKey(process.env.COINPAL_API_KEY);
   const totalAmount = handlerTotalPrice(cartItems);
   const requestId = `test_${order_id}${Date.now()}`;
-  const orderNo = `test_${order_id}`;
+  const orderNo = `${order_id}`;
   const paymentInfo = {
     version: "2",
     requestId: requestId,
@@ -109,22 +108,31 @@ const autoCoinPalPay = async (cartItems, order_id) => {
     orderCurrency: "USD",
     orderAmount: totalAmount.toString(),
     accessToken: process.env.ACCESS_TOKEN,
-    notifyURL: `${process.env.BACKEND_URL}/store/coinpal/webhook/${order_id}/order`,
-    redirectURL: `${process.env.FRONT_URL}/account/orders`,
+    notifyURL: `${
+      process.env.BACKEND_URL.includes("localhost")
+        ? "http://gudfyp2p.com:9000"
+        : process.env.BACKEND_URL
+    }/store/coinpal/webhook/${order_id}/order`,
+    redirectURL: `${
+      process.env.FRONT_URL.includes("localhost")
+        ? "http://gudfyp2p.com:8000"
+        : process.env.FRONT_URL
+    }/account/orders`,
   };
+
+  console.log("ESTO ES LO QUE ENVIA A COINPAL", paymentInfo);
 
   try {
     const result = await coinpal.createPayment(paymentInfo);
-    console.log(
-      "resultado de createPaymentttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttt",
-      result
-    );
+    console.log("resultado de createPaymentttt", result);
     if (result.nextStepContent) {
       return {
-        paymentUrl: result.nextStepContent,
-        paymentId: result.reference,
-        status: "pending",
-        expiresAt: result.expireTime,
+        nextStepContent: result.nextStepContent,
+        reference: result.reference,
+        status: result.status,
+        orderAmount: result.orderAmount,
+        orderCurrency: result.orderCurrency,
+        orderNo: result.orderNo,
       };
     }
 
