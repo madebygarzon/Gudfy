@@ -5,15 +5,11 @@ import { useCartGudfy } from "@lib/context/cart-gudfy"
 import { orderDataForm, useOrderGudfy } from "@lib/context/order-context"
 import CheckoutSelectPayment from "../checkout-select-payment"
 import BinanceAutomaticPayment from "../binance-automatic-payment"
+import CoinPalPayment from "../coinpal"
 import { useMeCustomer } from "medusa-react"
 import Loader from "@lib/loader"
 
-const methodPayment = [
-  "automatic_binance_pay",
-  "manual_binance_pay",
-  "bitcoin_ethereum_litecoin_entrega_automatica",
-  "usdt_trc20_entrega_manual",
-]
+const methodPayment = ["automatic_binance_pay", "coinpal_pay"]
 const cripto = [
   { label: "Bitcoin (BTC)", value: "BTC" },
   { label: "Ethereum (ETH)", value: "ETH" },
@@ -76,13 +72,16 @@ const CheckoutForm = () => {
   return (
     <div>
       {isLoadingCurrentOrder ? (
-        <><Loader /></>
+        <>
+          <Loader />
+        </>
       ) : dataPay ? (
         <div
           className="flex justify-center items-center"
-          key={dataPay.prepayId}
+          key={dataPay.nextStepContent}
         >
-          <BinanceAutomaticPayment data={dataPay} currentOrder={currentOrder} />
+          <CoinPalPayment data={dataPay} currentOrder={currentOrder} />
+          {/* <BinanceAutomaticPayment data={dataPay} currentOrder={currentOrder} /> */}
         </div>
       ) : (
         <CheckoutSelectPayment
