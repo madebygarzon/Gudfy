@@ -7,12 +7,12 @@ export default async (req: Request, res: Response): Promise<void> => {
     req.params,
     req.query
   );
-  const { status, ordenNo } = req.body;
+  const { status, orderNo } = req.body;
   try {
     if (status === "paid") {
       const ordedPaymentService = req.scope.resolve("orderPaymentService");
 
-      const succes = await ordedPaymentService.successPayOrder(ordenNo);
+      const succes = await ordedPaymentService.successPayOrder(orderNo);
       if (succes) res.status(200).json();
     } else {
       res.status(200).json();
