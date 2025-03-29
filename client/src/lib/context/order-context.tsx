@@ -49,20 +49,29 @@ export type order = {
     }
   ]
 }
+// type dataPay = {
+//   currency: string
+//   totalFee: string
+//   fiatCurrency: string
+//   fiatAmount: string
+//   prepayId: string
+//   terminalType: string
+//   expireTime: number
+//   qrcodeLink: string
+//   qrContent: string
+//   checkoutUrl: string
+//   deeplink: string
+//   universalUrl: string
+// }
 type dataPay = {
-  currency: string
-  totalFee: string
-  fiatCurrency: string
-  fiatAmount: string
-  prepayId: string
-  terminalType: string
-  expireTime: number
-  qrcodeLink: string
-  qrContent: string
-  checkoutUrl: string
-  deeplink: string
-  universalUrl: string
+  nextStepContent: string
+  reference: string
+  status: string
+  orderAmount: string
+  orderCurrency: string
+  orderNo: string
 }
+
 export type orderClaim = {
   id: string
   status_order_claim_id: string
@@ -143,9 +152,7 @@ export const OrderGudfyProvider = ({
         setCurrentOrderr(e)
         setIsLoadingCurrentOrder(false)
       })
-      .catch((error) => {
-        console.log("error el la recuperacion de la orden")
-      })
+      .catch((error) => {})
   }
 
   const handlerOrderCancel = async (orederId: string) => {
@@ -196,7 +203,7 @@ export const OrderGudfyProvider = ({
       )
       .then((res) => {
         const result = res.data.result
-        setDataPay(result.data)
+        setDataPay(result)
         setIsLoadingCurrentOrder(false)
         // location.href = result.data.checkoutUrl //redirect user to pay link
       })
