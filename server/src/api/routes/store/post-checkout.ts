@@ -91,36 +91,53 @@ const autoBinancePay = async (cartItems, order_id) => {
     });
 };
 
+const generateSing = async (requestId, orderNo, orderAmount, orderCurrency) => {
+  const crypto = require("crypto");
+  const apiKey = process.env.COINPAL_API_KEY;
+  const merchantNo = process.env.COINPAL_MCH_ID;
+  const input =
+    apiKey + requestId + merchantNo + orderNo + orderAmount + orderCurrency;
+
+  const sign = crypto.createHash("sha256").update(input).digest("hex");
+  return sign;
+};
+
 // Nueva función para CoinPal usando el SDK
 const autoCoinPalPay = async (cartItems, order_id) => {
   coinpal
     .setMchId(process.env.COINPAL_MCH_ID)
     .setApiKey(process.env.COINPAL_API_KEY);
   const totalAmount = handlerTotalPrice(cartItems);
-  const requestId = `test_${order_id}${Date.now()}`;
+  const requestId = `${order_id}${Date.now()}`;
   const orderNo = `${order_id}`;
   const paymentInfo = {
-    version: "2",
+    version: "2.1",
     requestId: requestId,
     merchantNo: process.env.COINPAL_MCH_ID,
     orderNo,
-    orderCurrencyType: "fiat",
-    orderCurrency: "USD",
+    orderCurrencyType: "crypto",
+    orderCurrency: "USDT",
     orderAmount: totalAmount.toString(),
     accessToken: process.env.ACCESS_TOKEN,
     notifyURL: `${
       process.env.BACKEND_URL.includes("localhost")
         ? "http://gudfyp2p.com:9000"
         : process.env.BACKEND_URL
-    }/store/coinpal/webhook/${order_id}/order`,
+    }/store/coinpal/webhook/${order_id}${Date.now()}/order`,
     redirectURL: `${
       process.env.FRONT_URL.includes("localhost")
         ? "http://gudfyp2p.com:8000"
         : process.env.FRONT_URL
     }/account/orders`,
+    sing: await generateSing(requestId, orderNo, totalAmount, "USDT"),
   };
 
-  console.log("ESTO ES LO QUE ENVIA A COINPAL", paymentInfo);
+  console.log(
+    "ESTO ES LO QUE ENVIA A COINPAL",
+    paymentInfo,
+    totalAmount,
+    generateSing(requestId, orderNo, totalAmount, "USDT")
+  );
 
   try {
     const result = await coinpal.createPayment(paymentInfo);
@@ -169,20 +186,4 @@ const generateRandomString = (length) => {
   }
 
   return result;
-};
-
-const generateSing = (
-  requestId,
-  merchantNo,
-  orderNo,
-  orderAmount,
-  orderCurrency
-) => {
-  const crypto = require("crypto");
-  const apiKey = process.env.COINPAL_API_KEY;
-  const input =
-    apiKey + requestId + merchantNo + orderNo + orderAmount + orderCurrency;
-
-  const sign = crypto.createHash("sha256").update(input).digest("hex");
-  return sign;
 };
