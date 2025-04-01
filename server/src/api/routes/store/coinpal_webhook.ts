@@ -12,9 +12,10 @@ export default async (req: Request, res: Response): Promise<void> => {
   const { id } = req.params;
   try {
     const result = await coinpal
-      .queryOrder({ reference: id })
+      .queryOrder({ requestId: id })
       .then((result) => {
         console.log("request successful", result);
+        return result;
       })
       .catch((error) => {
         console.error("request failed", error);
