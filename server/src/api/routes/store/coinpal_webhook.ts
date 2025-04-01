@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+import coinpal from "coinpal-sdk";
 
 export default async (req: Request, res: Response): Promise<void> => {
   console.log(
@@ -7,12 +8,24 @@ export default async (req: Request, res: Response): Promise<void> => {
     req.params,
     req.query
   );
-  const { status, orderNo } = req.body;
+
+  const { id } = req.params;
   try {
-    if (status === "paid") {
+    const result = await coinpal
+      .queryOrder({ reference: id })
+      .then((result) => {
+        console.log("request successful", result);
+      })
+      .catch((error) => {
+        console.error("request failed", error);
+      });
+
+    console.log("resultado con el sdk", result);
+
+    if (result.status === "paid") {
       const ordedPaymentService = req.scope.resolve("orderPaymentService");
 
-      const succes = await ordedPaymentService.successPayOrder(orderNo);
+      const succes = await ordedPaymentService.successPayOrder(result.orderNo);
       if (succes) res.status(200).json();
     } else {
       res.status(200).json();
