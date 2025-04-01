@@ -37,6 +37,7 @@ export default (rootDirectory: string): Router | Router[] => {
   const binanceWebhookCorsOptions = {
     origin: "*", // Permitir cualquier origen solo para el webhook
     methods: ["POST"],
+
     //allowedHeaders: ['Content-Type', 'Binancepay-Signature']
   };
 
@@ -55,7 +56,7 @@ export default (rootDirectory: string): Router | Router[] => {
   router.use(
     "/store/coinpal/webhook/:id/order",
     cors(binanceWebhookCorsOptions),
-    bodyParser.json()
+    json()
   );
 
   // Add authentication to all admin routes *except* auth and account invite ones
