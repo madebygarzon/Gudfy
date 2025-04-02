@@ -8,6 +8,10 @@ require("./src/websocket");
 (async () => {
   async function start() {
     const app = express();
+
+    app.use(express.json());
+    app.use(express.urlencoded({ extended: true }));
+    
     const directory = process.cwd();
 
     try {
