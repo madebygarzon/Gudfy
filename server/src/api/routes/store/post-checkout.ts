@@ -129,20 +129,37 @@ const autoCoinPalPay = async (cartItems, order_id) => {
         ? "http://gudfyp2p.com:8000"
         : process.env.FRONT_URL
     }/account/orders`,
-    sing: await generateSing(requestId, orderNo, totalAmount, "USDT"),
+    sign: await generateSing(requestId, orderNo, totalAmount, "USDT"),
   };
 
-  console.log(
-    "ESTO ES LO QUE ENVIA A COINPAL",
-    paymentInfo,
-    totalAmount,
-    generateSing(requestId, orderNo, totalAmount, "USDT")
-  );
+  // try {
+  //   const result = await coinpal.createPayment(paymentInfo);
+  //   console.log("resultado de createPaymentttt", result);
+  //   if (result.nextStepContent) {
+  //     return {
+  //       nextStepContent: result.nextStepContent,
+  //       reference: result.reference,
+  //       status: result.status,
+  //       orderAmount: result.orderAmount,
+  //       orderCurrency: result.orderCurrency,
+  //       orderNo: result.orderNo,
+  //     };
+  //   }
+
+  //   throw new Error("No se recibió URL de pago de CoinPal");
+  // } catch (error) {
+  //   console.error("Error en CoinPal:", error);
+  //   throw {
+  //     message: "Error al procesar pago con CoinPal",
+  //     details: error.response?.data || error.message,
+  //     code: error.code,
+  //   };
+  // }
 
   try {
     const result = await coinpal.createPayment(paymentInfo);
-    console.log("resultado de createPaymentttt", result);
-    if (result.nextStepContent) {
+
+    if (result && result.nextStepContent) {
       return {
         nextStepContent: result.nextStepContent,
         reference: result.reference,
@@ -152,7 +169,6 @@ const autoCoinPalPay = async (cartItems, order_id) => {
         orderNo: result.orderNo,
       };
     }
-
     throw new Error("No se recibió URL de pago de CoinPal");
   } catch (error) {
     console.error("Error en CoinPal:", error);

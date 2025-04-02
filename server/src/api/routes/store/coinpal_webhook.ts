@@ -1,37 +1,68 @@
 import { Request, Response } from "express";
-import coinpal from "coinpal-sdk";
+import * as querystring from "querystring";
+import crypto from "crypto";
+
+const verifySignature = (data: any, secretKey: string): boolean => {
+  const {
+    version,
+    requestId,
+    merchantNo,
+    orderNo,
+    orderCurrency,
+    orderAmount,
+    sign,
+  } = data;
+  if (
+    !version ||
+    !requestId ||
+    !merchantNo ||
+    !orderNo ||
+    !orderCurrency ||
+    !orderAmount ||
+    !sign
+  ) {
+    return false;
+  }
+  const computedSignature = crypto
+    .createHash("sha256")
+    .update(
+      secretKey + requestId + merchantNo + orderNo + orderAmount + orderCurrency
+    )
+    .digest("hex");
+  return computedSignature === sign;
+};
 
 export default async (req: Request, res: Response): Promise<void> => {
-  console.log(
-    "Estos son los datos que llegan al endpoint del webhook",
-    req.body,
-    req.params,
-    req.query
-  );
+  const rawBody = req.body.toString();
 
-  const { id } = req.params;
-  try {
-    const result = await coinpal
-      .queryOrder({ requestId: id })
-      .then((result) => {
-        console.log("request successful", result);
-        return result;
-      })
-      .catch((error) => {
-        console.error("request failed", error);
-      });
+  const parsedData = querystring.parse(rawBody);
 
-    console.log("resultado con el sdk", result);
+  const secretKey = process.env.COINPAL_API_KEY;
+  if (!verifySignature(parsedData, secretKey)) {
+    res.status(401).json({ error: "Invalid signature" });
+    return;
+  }
 
-    if (result.status === "paid") {
-      const ordedPaymentService = req.scope.resolve("orderPaymentService");
-
-      const succes = await ordedPaymentService.successPayOrder(result.orderNo);
-      if (succes) res.status(200).json();
-    } else {
-      res.status(200).json();
+  if (parsedData.status === "paid") {
+    const orderPaymentService = req.scope.resolve("orderPaymentService");
+    try {
+      const success = await orderPaymentService.successPayOrder(
+        parsedData.orderNo as string
+      );
+      if (success) {
+        res.status(200).json({ message: "Pago procesado correctamente" });
+      } else {
+        res
+          .status(500)
+          .json({ error: "Error al actualizar el estado del pedido" });
+      }
+    } catch (error) {
+      console.error("Error procesando la actualización del pedido:", error);
+      res.status(500).json({ error: "Error interno del servidor" });
     }
-  } catch (error) {
-    console.log("ERROR EN EL SERVICIO DEL WEBHOOK DE COINTPAL", error);
+  } else {
+    res
+      .status(200)
+      .json({ message: `Estado del pedido: ${parsedData.status}` });
   }
 };
