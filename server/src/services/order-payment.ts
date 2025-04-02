@@ -272,7 +272,86 @@ class OrderPaymentService extends TransactionBaseService {
     return listPaymentOrder;
   }
 
-  async successPayOrder(order_id) {
+  // async successPayOrder(order_id) {
+  //   try {
+  //     const so = this.activeManager_.withRepository(this.storeOrderRepository_);
+  //     const svo = this.activeManager_.withRepository(
+  //       this.storeVariantOrderRepository_
+  //     );
+  //     const sv = this.activeManager_.withRepository(
+  //       this.storeXVariantRepository_
+  //     );
+  //     const sc = this.activeManager_.withRepository(this.serialCodeRepository_);
+  //     const codes = [];
+
+  //     const storeOrder = await so.findOne({ where: { id: order_id } });
+  //     if (storeOrder.order_status_id !== "Payment_Pending_ID")
+  //       throw new Error("Order status is not pending payment");
+
+  //     const ListSVO = await svo.find({
+  //       where: {
+  //         store_order_id: order_id,
+  //       },
+  //     });
+  //     for (const variant of ListSVO) {
+  //       const quantity = variant.quantity;
+  //       const id = variant.id;
+  //       const serialCodesToUpdate = await sc.find({
+  //         where: {
+  //           store_variant_order_id: null,
+  //           store_variant_id: variant.store_variant_id,
+  //         },
+  //         take: quantity,
+  //       });
+  //       const productVariant = await sv
+  //         .createQueryBuilder("sv")
+  //         .innerJoinAndSelect("sv.variant", "v")
+  //         .where("sv.id = :id", { id: variant.store_variant_id })
+  //         .select(["v.title AS title"])
+  //         .getRawMany();
+
+  //       for (const serialCode of serialCodesToUpdate) {
+  //         codes.push({
+  //           serialCodes: serialCode.serial,
+  //           title: productVariant[0].title,
+  //         });
+  //         await sc.update(serialCode.id, { store_variant_order_id: id });
+  //       }
+
+  //       const upDateSVO = await svo.update(variant.id, {
+  //         variant_order_status_id: "Completed_ID",
+  //       });
+  //       const storeVariant = await sv.findOneBy({
+  //         id: variant.store_variant_id,
+  //       });
+  //       const deleteReservation = await sv.update(variant.store_variant_id, {
+  //         quantity_reserved: storeVariant.quantity_reserved - quantity,
+  //       });
+  //     }
+
+  //     await EmailPurchaseCompleted({
+  //       email: storeOrder.email,
+  //       serialCodes: codes,
+  //       name: storeOrder.name + " " + storeOrder.last_name,
+  //       order: storeOrder.id,
+  //     });
+
+  //     const storeOrderUpdate = await so.update(order_id, {
+  //       order_status_id: "Completed_ID",
+  //     });
+
+  //     io.emit("success_pay_order", {
+  //       order_id: order_id,
+  //     });
+  //   } catch (error) {
+  //     console.log(
+  //       "error en el servicio para actualizar los datos en la confirmacion de la orden ",
+  //       error
+  //     );
+  //   }
+  // }
+
+  async successPayOrder(order_id: string) {
     try {
       const so = this.activeManager_.withRepository(this.storeOrderRepository_);
       const svo = this.activeManager_.withRepository(
@@ -285,17 +364,18 @@ class OrderPaymentService extends TransactionBaseService {
       const codes = [];
 
       const storeOrder = await so.findOne({ where: { id: order_id } });
-      if (storeOrder.order_status_id !== "Payment_Pending_ID")
+      if (!storeOrder) {
+        throw new Error("Order not found");
+      }
+      if (storeOrder.order_status_id !== "Payment_Pending_ID") {
         throw new Error("Order status is not pending payment");
+      }
 
-      const ListSVO = await svo.find({
-        where: {
-          store_order_id: order_id,
-        },
-      });
+      const ListSVO = await svo.find({ where: { store_order_id: order_id } });
       for (const variant of ListSVO) {
         const quantity = variant.quantity;
         const id = variant.id;
+
         const serialCodesToUpdate = await sc.find({
           where: {
             store_variant_order_id: null,
@@ -303,6 +383,7 @@ class OrderPaymentService extends TransactionBaseService {
           },
           take: quantity,
         });
+
         const productVariant = await sv
           .createQueryBuilder("sv")
           .innerJoinAndSelect("sv.variant", "v")
@@ -318,13 +399,13 @@ class OrderPaymentService extends TransactionBaseService {
           await sc.update(serialCode.id, { store_variant_order_id: id });
         }
 
-        const upDateSVO = await svo.update(variant.id, {
+        await svo.update(variant.id, {
           variant_order_status_id: "Completed_ID",
         });
         const storeVariant = await sv.findOneBy({
           id: variant.store_variant_id,
         });
-        const deleteReservation = await sv.update(variant.store_variant_id, {
+        await sv.update(variant.store_variant_id, {
           quantity_reserved: storeVariant.quantity_reserved - quantity,
         });
       }
@@ -336,24 +417,20 @@ class OrderPaymentService extends TransactionBaseService {
         order: storeOrder.id,
       });
 
-      const storeOrderUpdate = await so.update(order_id, {
-        order_status_id: "Completed_ID",
-      });
-
-      io.emit("success_pay_order", {
-        order_id: order_id,
-      });
+      await so.update(order_id, { order_status_id: "Completed_ID" });
+      io.emit("success_pay_order", { order_id: order_id });
     } catch (error) {
-      console.log(
-        "error en el servicio para actualizar los datos en la confirmacion de la orden ",
+      console.error(
+        "Error en el servicio para actualizar los datos en la confirmación de la orden:",
         error
       );
+      throw error;
     }
   }
 }
 export default OrderPaymentService;
 
-function truncateToThreeDecimals(value) {
+function truncateToThreeDecimals(value: number): number {
   return Math.floor(value * 1000) / 1000; // Trunca a 3 decimales
 }
 
