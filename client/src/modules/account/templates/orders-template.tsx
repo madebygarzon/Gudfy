@@ -110,7 +110,7 @@ const OrdersTemplate = () => {
       </div>
 
       <div className="flex w-full flex-col">
-        <Tabs aria-label="Options">
+        <Tabs aria-label="Options" defaultSelectedKey={"Compras"}>
           <Tab key="Orders" title="Mis órdenes">
             <Card className="shadow-white shadow-lg">
               <CardBody className="md:p-3 p-1">

@@ -380,10 +380,16 @@ class StoreOrderService extends TransactionBaseService {
 
   async updateOrderData(store_order_id, dataForm) {
     try {
-      if (dataForm.pay_method_id === "automatic_binance_pay") {
+      if (dataForm.pay_method_id === "coinpal_pay") {
         dataForm = {
           ...dataForm,
           pay_method_id: "Secondary_Method_BINANCE_ID",
+        };
+      }
+      if (dataForm.pay_method_id === "coinpal_pay") {
+        dataForm = {
+          ...dataForm,
+          pay_method_id: "Method_COINPAL_ID",
         };
       }
 
