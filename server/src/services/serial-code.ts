@@ -49,7 +49,9 @@ class SerialCodeService extends TransactionBaseService {
           "s.name AS store_name",
           "v.title AS product_name",
           "p.thumbnail AS thumbnail",
+          "svo.created_at as created_at",
         ])
+        .orderBy("svo.created_at", "DESC")
         .getRawMany();
 
       const serialMap = new Map();
@@ -64,6 +66,7 @@ class SerialCodeService extends TransactionBaseService {
             product_name: data.product_name,
             thumbnail: data.thumbnail,
             serial_codes: [data.serial_code],
+            created_at: data.created_at,
           });
         } else {
           serialMap.get(data.svo_id).serial_codes.push(data.serial_code);
