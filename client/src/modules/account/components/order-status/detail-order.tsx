@@ -26,6 +26,7 @@ import { AddStoreReview } from "@modules/account/actions/post-add-store-review"
 import clsx from "clsx"
 import ButtonLigth from "@modules/common/components/button_light"
 import DownloadButton from "@modules/common/components/download-button"
+import { calculeCommissionCoinpal } from "@lib/util/calcule-commission-coinpal"
 
 interface ModalOrderProps {
   orderData?: order
@@ -299,10 +300,17 @@ const ModalOrderDetail = ({
                   </tr>
                   <tr className="border-b border-slate-200">
                     <td className="py-2 px-4 border-r border-slate-200  ">
-                      Comisión de la pasarela de pago:
+                      Comisión de la pasarela de pago y de gudfy:
                     </td>
                     <td className="py-2 px-4 border-r border-slate-200 ">
-                      $0.23
+                      $
+                      {
+                        calculeCommissionCoinpal(
+                          orderData.store_variant.reduce((sum, p) => {
+                            return sum + parseFloat(p.total_price_for_product)
+                          }, 0)
+                        ).commission
+                      }
                     </td>
                   </tr>
                   <tr className="border-b border-slate-200">
@@ -310,7 +318,11 @@ const ModalOrderDetail = ({
                       Método de pago:
                     </td>
                     <td className="py-2 px-4 border-r border-slate-200 ">
-                      Binance Pay Entrega Automática
+                      {orderData.pay_method_id === "Secondary_Method_BINANCE_ID"
+                        ? "coinpaautomatic binance_pay pay"
+                        : orderData.pay_method_id === "Method_COINPAL_ID"
+                        ? "CoinPal"
+                        : " "}
                     </td>
                   </tr>
                   <tr className="border-b border-slate-200">
@@ -319,9 +331,13 @@ const ModalOrderDetail = ({
                     </td>
                     <td className="py-2 px-4 border-r border-slate-200 ">
                       $
-                      {orderData.store_variant.reduce((sum, p) => {
-                        return sum + parseFloat(p.total_price_for_product)
-                      }, 0.23)}
+                      {
+                        calculeCommissionCoinpal(
+                          orderData.store_variant.reduce((sum, p) => {
+                            return sum + parseFloat(p.total_price_for_product)
+                          }, 0)
+                        ).totalPrice
+                      }
                     </td>
                   </tr>
                 </tbody>
