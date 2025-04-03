@@ -1,12 +1,12 @@
 export function formatPrice(price: number) {
   let num = Number(price)
   if (isNaN(num)) {
-    return "Valor inválido"
+    return 0
   }
 
   if (Number.isInteger(price)) {
     return num
   }
 
-  return num.toFixed(2).replace(/\.?0+$/, "")
+  return parseFloat(num.toFixed(2).replace(/\.?0+$/, ""))
 }
