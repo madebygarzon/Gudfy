@@ -10,7 +10,7 @@ import {
   ModalBody,
   ModalFooter,
   useDisclosure,
-} from "@nextui-org/react"
+} from "@heroui/react"
 import handlerformatDate from "@lib/util/formatDate"
 import Timer from "@lib/util/timer-order"
 import { CheckMini, XMarkMini } from "@medusajs/icons"
@@ -150,7 +150,7 @@ const SellerOrderTable: React.FC = () => {
                         <Timer creationTime={order.created_at} />
                       ) : order.state_order === "Cancelada" ? (
                         // <XMarkMini className="text-red-600" />
-                        <p className="text-red-600">Expirado</p>
+                        (<p className="text-red-600">Expirado</p>)
                       ) : order.state_order === "Completado" ? (
                         <CheckMini className="text-green-600" />
                       ) : order.state_order === "Finalizado" ? (
@@ -207,7 +207,7 @@ const SellerOrderTable: React.FC = () => {
         onOpenChange={onOpenChange}
       />
     </div>
-  )
+  );
 }
 
 interface ModalOrder {

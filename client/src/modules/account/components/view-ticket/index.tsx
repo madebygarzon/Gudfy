@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react"
 import ButtonMedusa from "@modules/common/components/button"
-import { Input, Textarea } from "@nextui-org/react"
+import { Input, Textarea } from "@heroui/react"
 import { useForm } from "react-hook-form"
 import InputFile from "@modules/common/components/input-file"
 import { getDataMessagesTicket } from "@modules/account/actions/tikets/get-data-messages-ticket"

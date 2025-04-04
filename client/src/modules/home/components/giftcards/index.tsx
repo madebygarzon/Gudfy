@@ -5,7 +5,7 @@ import ProductVariantPreview from "@modules/product-variant/components/product-v
 import SkeletonProductStore from "@modules/skeletons/components/skeleton-store"
 import { useInView } from "react-intersection-observer"
 import { getListProductVariantWithSellers } from "@modules/home/actions/get-list-product-variant-with-sellers"
-import { Image } from "@nextui-org/react"
+import { Image } from "@heroui/react"
 const GiftCardSection = () => {
   const [products, setProducts] = useState<productVariant[]>([])
   const { ref, inView } = useInView()

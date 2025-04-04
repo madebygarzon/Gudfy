@@ -6,7 +6,7 @@ import {
   ModalBody,
   ModalFooter,
   Button,
-} from "@nextui-org/react"
+} from "@heroui/react"
 import Link from "next/link"
 import OrderRevie from "../order-review"
 import { updateCancelStoreOrder } from "@modules/account/actions/update-cancel-store-order"

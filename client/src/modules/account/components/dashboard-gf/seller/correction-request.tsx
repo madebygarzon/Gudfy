@@ -9,7 +9,7 @@ import {
   ModalFooter,
   Button,
   useDisclosure,
-} from "@nextui-org/react"
+} from "@heroui/react"
 import { Alert } from "@medusajs/ui"
 import type { SellerCredentials } from "types/global"
 import SellerUpdateRequest from "../../seller-update-request"

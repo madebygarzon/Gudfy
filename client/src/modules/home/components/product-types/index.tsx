@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react"
 import ButtonLigth from "@modules/common/components/button_light"
-import { Image } from "@nextui-org/react"
+import { Image } from "@heroui/react"
 import Link from "next/dist/client/link"
 import {
   Modal,
@@ -13,7 +13,7 @@ import {
   Button,
   useDisclosure,
   ModalProps,
-} from "@nextui-org/react"
+} from "@heroui/react"
 import ProductVariantPreview from "@modules/product-variant/components/product-variant-preview"
 import SkeletonProductPreview from "@modules/skeletons/components/skeleton-product-preview"
 import { getListProductVariantWithSellers } from "@modules/home/actions/get-list-product-variant-with-sellers"

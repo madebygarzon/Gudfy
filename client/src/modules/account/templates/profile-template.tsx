@@ -6,7 +6,7 @@ import ProfileName from "@modules/account/components/profile-name"
 import ProfilePassword from "@modules/account/components/profile-password"
 import ProfileBillingAddress from "../components/profile-billing-address"
 import ProfilePhone from "../components/profile-phone"
-import { Avatar } from "@nextui-org/react"
+import { Avatar } from "@heroui/react"
 import { Customer } from "@medusajs/medusa"
 
 const ProfileTemplate = () => {

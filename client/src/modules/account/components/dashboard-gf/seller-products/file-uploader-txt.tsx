@@ -1,6 +1,6 @@
 // components/FileUploader.tsx
 import InputFile from "@modules/common/components/input-file"
-import { Button, Tooltip } from "@nextui-org/react"
+import { Button, Tooltip } from "@heroui/react"
 import React, { useState, useEffect } from "react"
 
 interface CodesResult {

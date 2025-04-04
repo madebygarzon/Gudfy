@@ -3,7 +3,7 @@ import Link from "next/link"
 import { productVariant } from "types/global"
 import Thumbnail from "@modules/products/components/thumbnail"
 import Image from "next/image"
-import { Avatar } from "@nextui-org/react"
+import { Avatar } from "@heroui/react"
 
 const ProductPreview = ({
   title,

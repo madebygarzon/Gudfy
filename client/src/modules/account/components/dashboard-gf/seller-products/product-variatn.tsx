@@ -1,7 +1,7 @@
 import React from "react"
 import { variant, objetOptionVariant } from "./request-products"
-import { Select as SelectNext, SelectItem } from "@nextui-org/react"
-import { Input, Spinner } from "@nextui-org/react"
+import { Select as SelectNext, SelectItem } from "@heroui/react"
+import { Input, Spinner } from "@heroui/react"
 import { DotsIcon } from "@lib/util/icons"
 
 type variantType = {

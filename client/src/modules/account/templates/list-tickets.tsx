@@ -9,7 +9,7 @@ import {
   ModalBody,
   ModalFooter,
   useDisclosure,
-} from "@nextui-org/react"
+} from "@heroui/react"
 import TicketForm from "@modules/account/components/create_ticket"
 import { getListTickets } from "../actions/tikets/get-list-tikets"
 import ViewTicket from "../components/view-ticket"

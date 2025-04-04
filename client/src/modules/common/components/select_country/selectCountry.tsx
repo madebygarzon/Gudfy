@@ -6,7 +6,7 @@ import {
   DropdownMenu,
   DropdownItem,
   Button,
-} from "@nextui-org/react"
+} from "@heroui/react"
 import { getContries } from "@modules/account/actions/get-data-contryes"
 import Loader from "@lib/loader"
 

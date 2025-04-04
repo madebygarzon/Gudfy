@@ -6,7 +6,7 @@ import {
   ModalBody,
   ModalFooter,
   Button,
-} from "@nextui-org/react"
+} from "@heroui/react"
 import { useForm } from "react-hook-form"
 import Textarea from "@modules/common/components/textarea"
 import Input from "@modules/common/components/input"
