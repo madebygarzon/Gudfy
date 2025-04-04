@@ -122,9 +122,33 @@ const CheckoutSelectPayment: React.FC<CheckoutDetailsProps> = ({
           }}
         >
           <AccordionItem
+            key="coinpal_pay"
+            aria-label="Pago atravez de CoinPal"
+            title="CoinPal"
+            indicator={<></>}
+            className="font-medium"
+            startContent={
+              <Checkbox
+                defaultSelected
+                radius="full"
+                isSelected={checkbox == methodPayment[3]}
+              />
+            }
+          >
+            <div className="font-normal px-4 md:px-12 text-sm pb-5">
+              <p>Paga en USDT usando CoinPal y Binance Pay</p>
+              <br />
+              <p>
+                Importante: desde el 21 de septiembre Binance decidió fijar una
+                tasa del 1% de comisión en sus transacciones de Binance Pay.
+                Este método de pago tiene un <b>1% de comisión.</b>
+              </p>
+            </div>
+          </AccordionItem>
+          <AccordionItem
             key="automatic_binance_pay"
             aria-label="Binance Pay Entrega Automática"
-            title="CoinPal"
+            title="Binance Pay Entrega Automática"
             indicator={<></>}
             className="font-medium"
             startContent={
@@ -139,33 +163,6 @@ const CheckoutSelectPayment: React.FC<CheckoutDetailsProps> = ({
               <p>
                 Paga en USDT usando Binance Pay, sin comisiones, recibes los
                 códigos de manera inmediata.
-              </p>
-              <br />
-              <p>
-                Importante: desde el 21 de septiembre Binance decidió fijar una
-                tasa del 1% de comisión en sus transacciones de Binance Pay.
-                Este método de pago tiene un <b>1% de comisión.</b>
-              </p>
-            </div>
-          </AccordionItem>
-          <AccordionItem
-            key="coinpal_pay"
-            aria-label="Pago atravez de CoinPal"
-            title="Binance Pay Entrega Automática"
-            indicator={<></>}
-            className="font-medium"
-            startContent={
-              <Checkbox
-                defaultSelected
-                radius="full"
-                isSelected={checkbox == methodPayment[3]}
-              />
-            }
-          >
-            <div className="font-normal px-4 md:px-12 text-sm pb-5">
-              <p>
-                Paga en USDT usando CoinPal y Binance Pay, sin comisiones,
-                recibes los códigos de manera inmediata.
               </p>
               <br />
               <p>
