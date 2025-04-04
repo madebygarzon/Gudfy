@@ -6,7 +6,7 @@ import {
   CardFooter,
   Divider,
   Image,
-} from "@nextui-org/react"
+} from "@heroui/react"
 
 import { useAccount } from "@lib/context/account-context"
 import DropdownCard from "./dropdown-card"

@@ -1,6 +1,6 @@
 import { Customer } from "@medusajs/medusa"
 import Link from "next/link"
-import { Avatar } from "@nextui-org/react"
+import { Avatar } from "@heroui/react"
 import ButtonLigth from "@modules/common/components/button_light"
 import Cart from "@modules/common/icons/cart"
 import Image from "next/image"

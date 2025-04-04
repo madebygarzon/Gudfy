@@ -1,8 +1,8 @@
 import React, { useState } from "react"
 import ButtonMedusa from "@modules/common/components/button"
-import { Autocomplete, AutocompleteItem } from "@nextui-org/react"
+import { Autocomplete, AutocompleteItem } from "@heroui/react"
 //import Input from "@modules/common/components/input"
-import { Input } from "@nextui-org/react"
+import { Input } from "@heroui/react"
 import { FieldValues, useForm } from "react-hook-form"
 import { actionCreateSellerApplication } from "@modules/account/actions/action-seller-application"
 

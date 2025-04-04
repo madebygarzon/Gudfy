@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react"
 import DeleteSerialCode from "@modules/account/actions/serial-code/delete-serial-code"
 
-import { Modal, ModalContent, ModalBody } from "@nextui-org/react"
+import { Modal, ModalContent, ModalBody } from "@heroui/react"
 import ButtonLigth from "@modules/common/components/button_light"
 
 type props = {

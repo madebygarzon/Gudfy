@@ -5,7 +5,7 @@ import Image from "next/image"
 import { useState } from "react"
 import Thumbnail from "@modules/products/components/thumbnail"
 import { BlankIcon } from "@lib/util/icons"
-import { Avatar } from "@nextui-org/react"
+import { Avatar } from "@heroui/react"
 
 const SellerProductTable: React.FC<{ store: StoreData }> = ({ store }) => {
   const [searchTerm, setSearchTerm] = useState<string>("")

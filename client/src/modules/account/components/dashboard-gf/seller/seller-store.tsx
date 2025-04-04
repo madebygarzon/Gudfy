@@ -11,7 +11,7 @@ import {
   Button,
   Input,
   Tooltip,
-} from "@nextui-org/react"
+} from "@heroui/react"
 import ButtonGF from "@modules/common/components/button"
 import Cart from "@modules/common/icons/cart"
 import Edit from "@modules/common/icons/edit"
@@ -19,7 +19,7 @@ import Product from "@modules/common/icons/package"
 import { CiCircleCheck } from "react-icons/ci"
 import Image from "next/image"
 import { useCustomerOrders, useMeCustomer } from "medusa-react"
-import { Progress } from "@nextui-org/react"
+import { Progress } from "@heroui/react"
 import { useNotificationContext } from "@lib/context/notification-context"
 import Notification from "@modules/common/components/notification"
 import { getDataReviews } from "@modules/account/actions/reviews/get-data-reviews"
@@ -27,10 +27,10 @@ import handlerformatDate from "@lib/util/formatDate"
 import { getStoreReviews } from "@modules/account/actions/reviews/get-store-revioews"
 import clsx from "clsx"
 import { updateStoreName } from "@modules/account/actions/seller/update-name-store"
-import { Select, SelectItem } from "@nextui-org/react"
+import { Select, SelectItem } from "@heroui/react"
 import { adjectives, animals } from "@lib/util/list-name-store"
-import { Alert } from "@nextui-org/react"
-import { Popover, PopoverTrigger, PopoverContent } from "@nextui-org/react"
+import { Alert } from "@heroui/react"
+import { Popover, PopoverTrigger, PopoverContent } from "@heroui/react"
 import { listSellersAvatar } from "@lib/util/list-sellers-avatar"
 import { updateSellerAvatar } from "@modules/account/actions/seller/update-seller-avatar"
 import { EyeSeeIcon } from "@lib/util/icons"
@@ -222,7 +222,9 @@ const CardReviewProductDashboard: React.FC = () => {
           </div>
 
           <div className="sm:flex w-full justify-center gap-6 items-center px-2 mt-8 sm:mt-4">
-            <p className="sm:text-start text-center font-bold">Reseña más reciente: </p>
+            <p className="sm:text-start text-center font-bold">
+              Reseña más reciente:{" "}
+            </p>
             {dataReview?.latestComment ? (
               <div
                 key={dataReview?.latestComment?.id}
@@ -427,7 +429,6 @@ const CardPrefileDashboard: React.FC<CardPrefileDashboard> = ({
             <div className="flex items-center justify-center w-full my-2 p-2 text-sm">
               <Alert
                 color="secondary"
-                closeButton
                 description={
                   "Ten en cuenta que solo podrás modificar el nombre una única vez."
                 }
@@ -548,7 +549,10 @@ const ModalReviews = ({ isOpen, onOpenChange, onClose }: ModalProps) => {
                   {reviews.length > 0 ? (
                     <div className="max-h-[300px] space-y-4 overflow-y-auto">
                       {reviews.map((review) => (
-                        <div key={review.id} className="border border-gray-200 rounded-lg shadow-md p-4 bg-white">
+                        <div
+                          key={review.id}
+                          className="border border-gray-200 rounded-lg shadow-md p-4 bg-white"
+                        >
                           <div className="flex  justify-between items-center mb-2">
                             <div>
                               <p className="font-semibold">

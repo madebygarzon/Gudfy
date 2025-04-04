@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import React from "react"
-import { Modal, ModalContent, useDisclosure } from "@nextui-org/react"
+import { Modal, ModalContent, useDisclosure } from "@heroui/react"
 import { useMeCustomer } from "medusa-react"
 import type { order } from "../../templates/orders-template"
 import handlerformatDate from "@lib/util/formatDate"

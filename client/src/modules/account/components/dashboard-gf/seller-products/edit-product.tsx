@@ -8,7 +8,7 @@ import {
   ModalFooter,
   Button,
   useDisclosure,
-} from "@nextui-org/react"
+} from "@heroui/react"
 import FileUploader from "./file-uploader-txt"
 import { postAddCodesProduct } from "@modules/account/actions/serial-code/post-add-codes-store-variant"
 import ButtonLigth from "@modules/common/components/button_light"

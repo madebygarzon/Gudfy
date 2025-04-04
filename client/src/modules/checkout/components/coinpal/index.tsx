@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react"
-import { Card, CardHeader, CardBody, CardFooter } from "@nextui-org/react"
+import { Card, CardHeader, CardBody, CardFooter } from "@heroui/react"
 import Link from "next/link"
 import Image from "next/image"
 import { order, useOrderGudfy } from "@lib/context/order-context"

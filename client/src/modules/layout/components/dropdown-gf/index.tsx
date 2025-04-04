@@ -4,7 +4,7 @@ import Link from "next/link"
 import Image from "next/image"
 import { useAccount } from "@lib/context/account-context"
 import { useTranslation } from "react-i18next"
-import { Badge, Avatar } from "@nextui-org/react"
+import { Badge, Avatar } from "@heroui/react"
 import { useNotificationContext } from "@lib/context/notification-context"
 import Notification from "@modules/common/components/notification"
 

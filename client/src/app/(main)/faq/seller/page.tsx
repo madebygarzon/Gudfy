@@ -7,7 +7,7 @@ import {
   CardBody,
   Accordion,
   AccordionItem,
-} from "@nextui-org/react"
+} from "@heroui/react"
 import {
   FcClapperboard,
   FcVideoFile,

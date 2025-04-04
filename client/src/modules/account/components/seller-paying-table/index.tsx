@@ -10,7 +10,7 @@ import {
   ModalFooter,
   Button,
   useDisclosure,
-} from "@nextui-org/react"
+} from "@heroui/react"
 import { FaEye, FaArrowLeft } from "react-icons/fa6"
 import Image from "next/image"
 import { Button as ButtonMedusa } from "@medusajs/ui"

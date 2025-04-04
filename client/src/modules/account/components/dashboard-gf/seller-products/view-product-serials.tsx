@@ -10,12 +10,12 @@ import {
   Button,
   Input,
   useDisclosure,
-} from "@nextui-org/react"
+} from "@heroui/react"
 import { getListProductSerials } from "@modules/account/actions/serial-code/get-seller-product-serials"
 import ButtonLigth from "@modules/common/components/button_light"
 import Loader from "@lib/loader"
 import { DownloadIcon, GarbageIcon } from "@lib/util/icons"
-import { Snippet } from "@nextui-org/react"
+import { Snippet } from "@heroui/react"
 import { XMark, ArrowLongRight, ArrowLongLeft, Trash } from "@medusajs/icons"
 import { IconButton } from "@medusajs/ui"
 import DeleteSerialCode from "@modules/account/actions/serial-code/delete-serial-code"

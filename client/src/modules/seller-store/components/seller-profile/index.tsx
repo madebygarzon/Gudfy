@@ -1,5 +1,5 @@
 "use client"
-import { Avatar, useDisclosure } from "@nextui-org/react"
+import { Avatar, useDisclosure } from "@heroui/react"
 import { StoreVariant, StoreData } from "@modules/seller-store/templates"
 import { BsCart } from "react-icons/bs"
 import { MdOutlineStar } from "react-icons/md"

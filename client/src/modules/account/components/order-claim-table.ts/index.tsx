@@ -10,7 +10,7 @@ import {
   Button,
   useDisclosure,
   Input,
-} from "@nextui-org/react"
+} from "@heroui/react"
 import { ChatBubble, PlayMiniSolid, XMarkMini } from "@medusajs/icons"
 import { Button as ButtonMedusa } from "@medusajs/ui"
 import { useMeCustomer } from "medusa-react"

@@ -1,5 +1,5 @@
 "use client"
-import { Avatar } from "@nextui-org/react"
+import { Avatar } from "@heroui/react"
 import { Input } from "@medusajs/ui"
 import React from "react"
 import SellerProfile from "../components/seller-profile"

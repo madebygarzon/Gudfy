@@ -1,7 +1,7 @@
 "use client"
 import Image from "next/image"
 import React, { useState } from "react"
-import { Input } from "@nextui-org/react"
+import { Input } from "@heroui/react"
 import FileUploader from "./file-uploader-txt"
 import Button from "@modules/common/components/button"
 import { Button as ButtonM } from "@medusajs/ui"

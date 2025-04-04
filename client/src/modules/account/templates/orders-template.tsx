@@ -1,7 +1,7 @@
 "use client"
 import React, { useEffect, useState } from "react"
 import TableOrder from "../components/orders-table"
-import { Tabs, Tab, Card, CardBody } from "@nextui-org/react"
+import { Tabs, Tab, Card, CardBody } from "@heroui/react"
 import ClaimTable from "../components/order-claim-table.ts"
 import Notification from "@modules/common/components/notification"
 import { useNotificationContext } from "@lib/context/notification-context"
@@ -15,7 +15,7 @@ import {
   ModalFooter,
   Button,
   useDisclosure,
-} from "@nextui-org/react"
+} from "@heroui/react"
 import { Plus } from "@medusajs/icons"
 import TicketForm from "@modules/account/components/create_ticket"
 import { getListTickets } from "../actions/tikets/get-list-tikets"
@@ -111,6 +111,15 @@ const OrdersTemplate = () => {
 
       <div className="flex w-full flex-col">
         <Tabs aria-label="Options" defaultSelectedKey={"Compras"}>
+          <Tab key="Compras" title="Mis compras">
+            <Card className="shadow-white shadow-lg">
+              <CardBody className="md:p-3 p-1">
+                <div className="overflow-x-auto">
+                  <SerialCodeTable />
+                </div>
+              </CardBody>
+            </Card>
+          </Tab>
           <Tab key="Orders" title="Mis órdenes">
             <Card className="shadow-white shadow-lg">
               <CardBody className="md:p-3 p-1">
@@ -147,15 +156,6 @@ const OrdersTemplate = () => {
               <CardBody className="md:p-3 p-1">
                 <div className="overflow-x-auto">
                   <ClaimTable />
-                </div>
-              </CardBody>
-            </Card>
-          </Tab>
-          <Tab key="Compras" title="Mis compras">
-            <Card className="shadow-white shadow-lg">
-              <CardBody className="md:p-3 p-1">
-                <div className="overflow-x-auto">
-                  <SerialCodeTable />
                 </div>
               </CardBody>
             </Card>

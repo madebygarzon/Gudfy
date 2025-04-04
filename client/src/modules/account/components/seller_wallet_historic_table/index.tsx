@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import React from "react"
-import { useDisclosure } from "@nextui-org/react"
+import { useDisclosure } from "@heroui/react"
 import { getWallet } from "@modules/account/actions/get-wallet"
 import { getListPayOrders } from "@modules/account/actions/get-list-seller-pay-orders"
 import handlerformatDate from "@lib/util/formatDate"

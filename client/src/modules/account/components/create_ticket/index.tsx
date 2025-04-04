@@ -1,6 +1,6 @@
 import React, { useState } from "react"
 import ButtonMedusa from "@modules/common/components/button"
-import { Input, Textarea } from "@nextui-org/react"
+import { Input, Textarea } from "@heroui/react"
 import { useForm } from "react-hook-form"
 //import { actionCreateSellerApplication } from "@modules/account/actions/action-seller-application"
 import { useMeCustomer } from "medusa-react"

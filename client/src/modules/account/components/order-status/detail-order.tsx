@@ -9,7 +9,8 @@ import {
   useDisclosure,
   Accordion,
   AccordionItem,
-} from "@nextui-org/react"
+  Link,
+} from "@heroui/react"
 
 import type { order } from "../../templates/orders-template"
 import handlerformatDate from "@lib/util/formatDate"
@@ -21,12 +22,14 @@ import { validateComment } from "@modules/account/actions/get-validate-review"
 import { formatPrice } from "@lib/format-price"
 import { BlankIcon } from "@lib/util/icons"
 import { ThumbUp, ThumbDown, PauseSolid, Loader } from "@medusajs/icons"
-import { Button as ButtonIcon } from "@nextui-org/react"
+import { Button as ButtonIcon } from "@heroui/react"
 import { AddStoreReview } from "@modules/account/actions/post-add-store-review"
 import clsx from "clsx"
 import ButtonLigth from "@modules/common/components/button_light"
 import DownloadButton from "@modules/common/components/download-button"
 import { calculeCommissionCoinpal } from "@lib/util/calcule-commission-coinpal"
+import { updateCancelStoreOrder } from "@modules/account/actions/update-cancel-store-order"
+
 
 interface ModalOrderProps {
   orderData?: order
@@ -130,6 +133,12 @@ const ModalOrderDetail = ({
       handleReset()
     })
   }
+   async function handlerOrderCancel(orderId: string) {
+      updateCancelStoreOrder(orderId).then(() => {
+        onOpenChange()
+        handleReset()
+      })
+    }
 
   return (
     <>
@@ -372,6 +381,23 @@ const ModalOrderDetail = ({
           <>CARGANDO...</>
         )}
       </ModalBody>
+      {orderData?.state_order === "Pendiente de pago" && (
+        <ModalFooter>
+              <div className="flex gap-2 justify-center">
+                <Link href={"/checkout"}>
+                  <ButtonLigth className="bg-[#28A745] hover:bg-[#218838] text-white border-none">
+                    ir a pagar
+                  </ButtonLigth>
+                </Link>
+                <ButtonLigth
+                  className="bg-[#E74C3C] hover:bg-[#C0392B] text-white border-none"
+                  onClick={() => handlerOrderCancel(orderData.id)}
+                >
+                  Cancelar orden
+                </ButtonLigth>
+              </div>
+            </ModalFooter>
+            )}
       <div className="z-30">
         <ModalQualify
           isOpen={isOpen}
