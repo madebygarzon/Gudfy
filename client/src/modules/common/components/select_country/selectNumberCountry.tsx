@@ -7,7 +7,7 @@ import {
   DropdownItem,
   Button,
   Spinner,
-} from "@nextui-org/react"
+} from "@heroui/react"
 import { getContries } from "@modules/account/actions/get-data-contryes"
 import { use } from "chai"
 import Loader from "@lib/loader"

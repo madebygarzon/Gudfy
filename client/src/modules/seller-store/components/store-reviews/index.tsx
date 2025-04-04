@@ -9,7 +9,7 @@ import {
   Button,
   Input,
   Tooltip,
-} from "@nextui-org/react"
+} from "@heroui/react"
 import { getSellerStoreReviews } from "@modules/seller-store/actions/get-seller-store-reviews"
 import clsx from "clsx"
 import Image from "next/image"

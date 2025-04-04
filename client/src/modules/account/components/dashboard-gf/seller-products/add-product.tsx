@@ -8,10 +8,10 @@ import {
   Button,
   useDisclosure,
   Spinner,
-} from "@nextui-org/react"
+} from "@heroui/react"
 import { Plus, XMark } from "@medusajs/icons"
 import { Button as ButtonM } from "@medusajs/ui"
-import { Input } from "@nextui-org/react"
+import { Input } from "@heroui/react"
 import { getListProductVariant } from "../../../actions/get-list-product-variants"
 import { AddProductsVariant } from "../../../actions/post-add-product-variant"
 import Image from "next/image"

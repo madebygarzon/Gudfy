@@ -7,7 +7,7 @@ import { CartGudfyProvider } from "@lib/context/cart-gudfy"
 import { MobileMenuProvider } from "@lib/context/mobile-menu-context"
 import { StoreProvider } from "@lib/context/store-context"
 import { MedusaProvider, CartProvider } from "medusa-react"
-import { NextUIProvider } from "@nextui-org/react"
+import { HeroUIProvider } from "@heroui/react"
 import { CategoryProvider } from "@lib/context/category-context"
 import { OrderGudfyProvider } from "@lib/context/order-context"
 import { SellerStoreProvider } from "@lib/context/seller-store"
@@ -28,13 +28,13 @@ export default function Providers({ children }: { children: React.ReactNode }) {
               <StoreProvider>
                 <AccountProvider>
                   <OrderGudfyProvider>
-                    <NextUIProvider>
+                    <HeroUIProvider>
                       <SellerStoreProvider>
                         <NotificationProvider>
                           <CategoryProvider>{children}</CategoryProvider>
                         </NotificationProvider>
                       </SellerStoreProvider>
-                    </NextUIProvider>
+                    </HeroUIProvider>
                   </OrderGudfyProvider>
                 </AccountProvider>
               </StoreProvider>

@@ -1,9 +1,9 @@
 import { getListRequestProduct } from "@modules/account/actions/request-product/get-list-request-product"
 import { useMeCustomer } from "medusa-react"
 import React, { useEffect, useState } from "react"
-import { Modal, ModalContent } from "@nextui-org/react"
+import { Modal, ModalContent } from "@heroui/react"
 import ButtonLigth from "@modules/common/components/button_light"
-import { useDisclosure } from "@nextui-org/react"
+import { useDisclosure } from "@heroui/react"
 import { ListIcon } from "@lib/util/icons"
 
 type Product = {

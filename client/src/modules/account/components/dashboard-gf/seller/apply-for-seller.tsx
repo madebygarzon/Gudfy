@@ -9,7 +9,7 @@ import {
   ModalFooter,
   Button,
   useDisclosure,
-} from "@nextui-org/react"
+} from "@heroui/react"
 import SellerRequestPerson from "@modules/account/components/seller_request_person"
 import SellerRequestCompany from "@modules/account/components/seller_request_company"
 

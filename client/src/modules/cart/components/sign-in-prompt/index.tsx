@@ -7,7 +7,7 @@ import {
   ModalBody,
   ModalFooter,
   useDisclosure,
-} from "@nextui-org/modal"
+} from "@heroui/modal"
 import LoginLight from "@modules/account/components/login/login-light"
 import { useState } from "react"
 import RegisterLight from "@modules/account/components/register/register-light"

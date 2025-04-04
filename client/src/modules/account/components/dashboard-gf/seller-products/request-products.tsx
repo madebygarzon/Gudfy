@@ -1,6 +1,6 @@
 "use client"
 import React, { useState, useEffect } from "react"
-import { Input, Textarea } from "@nextui-org/react"
+import { Input, Textarea } from "@heroui/react"
 import Image from "next/image"
 import { addRequestProduct } from "@modules/account/actions/request-product/post-add-request-product"
 import { Plus } from "@medusajs/icons"
@@ -13,7 +13,7 @@ import {
   ModalBody,
   ModalFooter,
   useDisclosure,
-} from "@nextui-org/react"
+} from "@heroui/react"
 import { ProductCategory } from "@medusajs/medusa"
 import ButtonLigth from "@modules/common/components/button_light"
 import { useMeCustomer } from "medusa-react"

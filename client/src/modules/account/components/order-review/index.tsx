@@ -13,9 +13,9 @@ import {
   ModalBody,
   ModalFooter,
   useDisclosure,
-} from "@nextui-org/react"
+} from "@heroui/react"
 import { useState } from "react"
-import { Button as ButtonIcon } from "@nextui-org/react"
+import { Button as ButtonIcon } from "@heroui/react"
 import { Button } from "@medusajs/ui"
 import { ThumbUp, ThumbDown, PauseSolid, Loader } from "@medusajs/icons"
 import { AddStoreReview } from "@modules/account/actions/post-add-store-review"

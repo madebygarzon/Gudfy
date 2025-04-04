@@ -24,7 +24,7 @@ import {
   NavbarMenuItem,
   Link,
   Button,
-} from "@nextui-org/react"
+} from "@heroui/react"
 
 const Nav = () => {
   //Inicio Menu responsive
