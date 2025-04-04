@@ -1,6 +1,6 @@
 "use client"
 import React, { useEffect, useState } from "react"
-import { Tabs, Tab, Card, CardBody } from "@nextui-org/react"
+import { Tabs, Tab, Card, CardBody } from "@heroui/react"
 import ClaimSellerTable from "../components/order-claim-seller-table"
 import SellerOrderTable from "../components/seller-orders-table"
 import { useNotificationContext } from "@lib/context/notification-context"

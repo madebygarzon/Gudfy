@@ -11,7 +11,7 @@ import {
   ModalFooter,
   useDisclosure,
   Input,
-} from "@nextui-org/react"
+} from "@heroui/react"
 import { useMeCustomer } from "medusa-react"
 import type { order } from "../../templates/orders-template"
 import handlerformatDate from "@lib/util/formatDate"

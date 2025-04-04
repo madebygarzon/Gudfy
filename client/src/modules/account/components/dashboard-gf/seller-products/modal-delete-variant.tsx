@@ -7,7 +7,7 @@ import {
   ModalFooter,
   Button,
   useDisclosure,
-} from "@nextui-org/react"
+} from "@heroui/react"
 import { Trash } from "@medusajs/icons"
 import { IconButton } from "@medusajs/ui"
 type props = {

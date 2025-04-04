@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react"
-import { Input } from "@nextui-org/react"
+import { Input } from "@heroui/react"
 import { objetOptionVariant } from "./request-product"
 import { XCircleSolid, Trash } from "@medusajs/icons"
 import { IconButton } from "@medusajs/ui"

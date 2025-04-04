@@ -6,7 +6,7 @@ import Button from "@modules/common/components/button"
 import Input from "@modules/common/components/input"
 import Spinner from "@modules/common/icons/spinner"
 import NumberCountry from "@modules/common/components/select_country/selectNumberCountry"
-import { Textarea } from "@nextui-org/react"
+import { Textarea } from "@heroui/react"
 import axios from "axios"
 
 interface ContactFormValues extends FieldValues {

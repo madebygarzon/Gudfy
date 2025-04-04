@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import React from "react"
 import { XMarkMini } from "@medusajs/icons"
 
-import { Accordion, AccordionItem, Snippet } from "@nextui-org/react"
+import { Accordion, AccordionItem, Snippet } from "@heroui/react"
 import { FaEye } from "react-icons/fa6"
 import { updateCancelStoreOrder } from "@modules/account/actions/update-cancel-store-order"
 import { getListSerialCode } from "@modules/account/actions/serial-code/get-list-serial-code"

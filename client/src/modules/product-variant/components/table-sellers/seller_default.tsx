@@ -2,7 +2,7 @@ import React, { useState, useMemo } from "react"
 import { CheckCircleSolid } from "@medusajs/icons"
 import { Badge } from "@medusajs/ui"
 import { Table, DropdownMenu, IconButton, Input, Select } from "@medusajs/ui"
-import { Avatar } from "@nextui-org/react"
+import { Avatar } from "@heroui/react"
 import { HiOutlineShoppingCart } from "react-icons/hi2"
 
 interface Seller {

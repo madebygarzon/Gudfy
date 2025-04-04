@@ -15,7 +15,7 @@ import {
   Button,
   useDisclosure,
   Divider,
-} from "@nextui-org/react"
+} from "@heroui/react"
 import ButtonLigth from "@modules/common/components/button_light"
 import StarsReview from "./stars-review"
 import LoginLight from "@modules/account/components/login/login-light"

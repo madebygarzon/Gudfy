@@ -7,7 +7,7 @@ import {
   ModalFooter,
   Button,
   useDisclosure,
-} from "@nextui-org/react"
+} from "@heroui/react"
 import Link from "next/link"
 import type { order } from "../../templates/orders-template"
 import handlerformatDate from "@lib/util/formatDate"

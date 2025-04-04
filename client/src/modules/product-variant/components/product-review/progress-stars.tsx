@@ -1,5 +1,5 @@
 import React from "react"
-import { Progress } from "@nextui-org/react"
+import { Progress } from "@heroui/react"
 
 type props = {
   stars: Array<{ rating: number; cantidad: string }>

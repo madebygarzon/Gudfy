@@ -1,14 +1,14 @@
 "use client"
 import React, { useState, useEffect } from "react"
-import { Input, Spinner, Textarea } from "@nextui-org/react"
+import { Input, Spinner, Textarea } from "@heroui/react"
 import Image from "next/image"
 import { useForm } from "react-hook-form"
 // import { addRequestProduct } from "@modules/account/actions/post-add-request-product"
-import { Accordion, AccordionItem } from "@nextui-org/react"
+import { Accordion, AccordionItem } from "@heroui/react"
 import { Minus, Trash, Plus } from "@medusajs/icons"
 import { Button as ButtonM, FocusModal, IconButton } from "@medusajs/ui"
 import InputFile from "@modules/common/components/input-file"
-import { Select, SelectItem, Selection } from "@nextui-org/react"
+import { Select, SelectItem, Selection } from "@heroui/react"
 import {
   Modal,
   ModalContent,
@@ -17,7 +17,7 @@ import {
   ModalFooter,
   Button,
   useDisclosure,
-} from "@nextui-org/react"
+} from "@heroui/react"
 import { FiCornerDownRight } from "react-icons/fi"
 import getAllCategories from "@modules/account/actions/get-data-categories"
 import { ProductCategory } from "@medusajs/medusa"
@@ -408,11 +408,7 @@ export default function RequestProduct({ setReset }: Reset) {
                     >
                       {categories ? (
                         categories?.map((e) => (
-                          <SelectItem
-                            key={e.name}
-                            value={e.name}
-                            textValue={e.name}
-                          >
+                          <SelectItem key={e.name} textValue={e.name}>
                             <div className="flex gap-1">
                               {e.parent_category_id ? (
                                 <FiCornerDownRight />

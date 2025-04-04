@@ -63,14 +63,20 @@ export type order = {
 //   deeplink: string
 //   universalUrl: string
 // }
-type dataPay = {
-  nextStepContent: string
+type PaymentData = {
+  dataPay: {
+    nextStepContent: string
+    reference: string
+    status: string
+    orderAmount: string
+    orderCurrency: string
+    orderNo: string
+  }
   reference: string
-  status: string
-  orderAmount: string
-  orderCurrency: string
-  orderNo: string
+  order_id: string
 }
+
+type dataPay = PaymentData[]
 
 export type orderClaim = {
   id: string
@@ -107,8 +113,8 @@ interface orderContext {
     cart: Cart | undefined,
     order_id: string
   ) => Promise<void>
-  dataPay: dataPay | undefined
-  setDataPay: react.Dispatch<SetStateAction<dataPay | undefined>>
+  dataPay: dataPay
+  setDataPay: react.Dispatch<SetStateAction<dataPay>>
   listOrder: order[] | null
   currentOrder: order | null
   handlerListOrderClaim: () => void
@@ -126,7 +132,7 @@ export const OrderGudfyProvider = ({
   children: React.ReactNode
 }) => {
   const { customer } = useMeCustomer()
-  const [dataPay, setDataPay] = useState<dataPay>() // determina si hay algun pago pendiente
+  const [dataPay, setDataPay] = useState<dataPay>([]) // array de pagos pendientes
   const [isLoading, setIsLoading] = useState<boolean>(true)
   const [isLoadingClaim, setIsLoadingClaim] = useState<boolean>(true)
   const [isLoadingCurrentOrder, setIsLoadingCurrentOrder] =
@@ -203,7 +209,12 @@ export const OrderGudfyProvider = ({
       )
       .then((res) => {
         const result = res.data.result
-        setDataPay(result)
+        const newPayment = {
+          dataPay: result,
+          order_id: order_id,
+          reference: result.reference,
+        }
+        setDataPay((prev) => [...prev, newPayment])
         setIsLoadingCurrentOrder(false)
         // location.href = result.data.checkoutUrl //redirect user to pay link
       })
@@ -246,6 +257,24 @@ export const OrderGudfyProvider = ({
           setListOrderClaim(order.data)
           setIsLoadingClaim(false)
         })
+    } catch (error) {
+      console.error(
+        "Error al obtener los reclamos por parte del vendedor:",
+        error
+      )
+      throw error
+    }
+  }
+
+  const handlerRecoverPaymentOrders = async () => {
+    try {
+      const orders = await axios.get(
+        `${process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL}/store/payment/orders`,
+        {
+          withCredentials: true,
+        }
+      )
+      setDataPay(orders.data)
     } catch (error) {
       console.error(
         "Error al obtener los reclamos por parte del vendedor:",

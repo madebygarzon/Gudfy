@@ -1,5 +1,5 @@
 import React from "react"
-import { useDisclosure } from "@nextui-org/react"
+import { useDisclosure } from "@heroui/react"
 import {
   Dropdown,
   DropdownTrigger,
@@ -7,7 +7,7 @@ import {
   DropdownItem,
   Button,
   cn,
-} from "@nextui-org/react"
+} from "@heroui/react"
 
 import { EditDocumentIcon } from "./icons/edit-icon"
 import { DeleteDocumentIcon } from "./icons/delete-icon"
