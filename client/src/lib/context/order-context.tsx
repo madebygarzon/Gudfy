@@ -1,11 +1,8 @@
 "use client"
-
-import useToggleState from "@lib/hooks/use-toggle-state"
 import react, {
   createContext,
   SetStateAction,
   useContext,
-  useEffect,
   useState,
 } from "react"
 import axios from "axios"
@@ -49,20 +46,6 @@ export type order = {
     }
   ]
 }
-// type dataPay = {
-//   currency: string
-//   totalFee: string
-//   fiatCurrency: string
-//   fiatAmount: string
-//   prepayId: string
-//   terminalType: string
-//   expireTime: number
-//   qrcodeLink: string
-//   qrContent: string
-//   checkoutUrl: string
-//   deeplink: string
-//   universalUrl: string
-// }
 type PaymentData = {
   dataPay: {
     nextStepContent: string
@@ -72,11 +55,9 @@ type PaymentData = {
     orderCurrency: string
     orderNo: string
   }
-  reference: string
-  order_id: string
+  order: order
 }
-
-type dataPay = PaymentData[]
+type dataPay = PaymentData
 
 export type orderClaim = {
   id: string
@@ -121,7 +102,11 @@ interface orderContext {
   handlerListSellerOrderClaim: (id: string) => void
   isLoadingClaim: boolean
   listOrderClaim: orderClaim[] | null
-  handlerUpdateDataLastOrder: (dataForm: orderDataForm) => Promise<void>
+  handlerUpdateDataLastOrder: (dataForm: orderDataForm, orderId?: string) => Promise<void>
+  handlerRecoverPaymentOrders: (
+    customerid: string,
+    store_order_id: string
+  ) => Promise<void>
 }
 
 export const OrderContext = createContext<orderContext | null>(null)
@@ -132,7 +117,45 @@ export const OrderGudfyProvider = ({
   children: React.ReactNode
 }) => {
   const { customer } = useMeCustomer()
-  const [dataPay, setDataPay] = useState<dataPay>([]) // array de pagos pendientes
+  const [dataPay, setDataPay] = useState<dataPay>({
+    dataPay: {
+      nextStepContent: "",
+      reference: "",
+      status: "",
+      orderAmount: "",
+      orderCurrency: "",
+      orderNo: "",
+    },
+    order: {
+      id: "",
+      pay_method_id: "",
+      created_at: "",
+      sellerapproved: "",
+      customerapproved: "",
+      quantity_products: 0,
+      total_price: "",
+      person_name: "",
+      person_last_name: "",
+      email: "",
+      conty: "",
+      city: "",
+      phone: "",
+      state_order: "Pendiente de pago",
+      store_variant: [
+        {
+          store_id: "",
+          store_name: "",
+          store_variant_order_id: "",
+          produc_title: "",
+          price: "",
+          quantity: "",
+          total_price_for_product: "",
+          variant_order_status_id: "",
+          serial_code_products: [{ id: "", serial: "" }],
+        },
+      ],
+    },
+  }) // array de pagos pendientes
   const [isLoading, setIsLoading] = useState<boolean>(true)
   const [isLoadingClaim, setIsLoadingClaim] = useState<boolean>(true)
   const [isLoadingCurrentOrder, setIsLoadingCurrentOrder] =
@@ -166,16 +189,14 @@ export const OrderGudfyProvider = ({
     return true
   }
 
-  const handlerUpdateDataLastOrder = async (dataForm: orderDataForm) => {
-    if (!currentOrder?.id)
-      return alert(
-        "No se encontro una orden disponible, por favor cree otra orden"
-      )
-
+  const handlerUpdateDataLastOrder = async (dataForm: orderDataForm, orderId?: string) => {
+    if (!orderId) {
+      return alert("No se encontro una orden disponible, por favor cree otra orden")
+    }
     await axios.post(
       `${process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL}/store/order/uptade-data/`,
       {
-        store_order_id: currentOrder?.id,
+        store_order_id: orderId,
         dataForm: dataForm,
       },
       {
@@ -209,17 +230,14 @@ export const OrderGudfyProvider = ({
       )
       .then((res) => {
         const result = res.data.result
-        const newPayment = {
-          dataPay: result,
-          order_id: order_id,
-          reference: result.reference,
-        }
-        setDataPay((prev) => [...prev, newPayment])
+       
+        setDataPay(old => ({ ...old, dataPay:result }))
         setIsLoadingCurrentOrder(false)
         // location.href = result.data.checkoutUrl //redirect user to pay link
       })
       .catch((e) => {
-        alert(e)
+        
+        console.log("Error al realizar el pago:", e)
       })
   }
 
@@ -266,20 +284,27 @@ export const OrderGudfyProvider = ({
     }
   }
 
-  const handlerRecoverPaymentOrders = async () => {
+  const handlerRecoverPaymentOrders = async (
+    customerid: string,
+    store_order_id: string
+  ) => {
+    setIsLoadingCurrentOrder(true)
+    if (!store_order_id || !customerid) {
+      setIsLoadingCurrentOrder(false)
+      return
+}
     try {
       const orders = await axios.get(
-        `${process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL}/store/payment/orders`,
+        `${process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL}/store/orders/${customerid}/${store_order_id}/method-payment-pending`,
         {
           withCredentials: true,
         }
       )
+     
       setDataPay(orders.data)
+      setIsLoadingCurrentOrder(false)
     } catch (error) {
-      console.error(
-        "Error al obtener los reclamos por parte del vendedor:",
-        error
-      )
+      console.error("Error al obtener las ordenes pendientes de pago:", error)
       throw error
     }
   }
@@ -302,6 +327,7 @@ export const OrderGudfyProvider = ({
         listOrderClaim,
         isLoadingClaim,
         handlerUpdateDataLastOrder,
+        handlerRecoverPaymentOrders,
       }}
     >
       {children}
