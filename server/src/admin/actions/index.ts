@@ -1,2 +1,1 @@
-export const BACKEND =
-  process.env.MEDUSA_BACKEND_URL || "https://gudfyp2p.com";
+export const BACKEND = "https://gudfyp2p.com";
