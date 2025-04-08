@@ -14,17 +14,18 @@ type CompleteForm = {
   payment: boolean
   TermsConditions: boolean
 }
-const CheckoutForm = () => {
+const CheckoutForm = ({ orderId }: { orderId: string | undefined }) => {
   const { cart, deleteCart } = useCartGudfy()
   const { customer } = useMeCustomer()
 
   const {
     isLoadingCurrentOrder,
     dataPay,
-    currentOrder,
+    // currentOrder,
     handlersubmitPaymentMethod,
-    handlerCurrentOrder,
+    // handlerCurrentOrder,
     handlerUpdateDataLastOrder,
+    handlerRecoverPaymentOrders
   } = useOrderGudfy()
 
   const [checkbox, selectedCheckbox] = useState<string>("automatic_binance_pay")
@@ -39,21 +40,21 @@ const CheckoutForm = () => {
   })
 
   useEffect(() => {
-    handlerCurrentOrder()
+    // handlerCurrentOrder()
     setSelectedKeys(new Set([checkbox]))
     if (checkbox) setCompleteForm((com) => ({ ...com, payment: true }))
     else setCompleteForm((com) => ({ ...com, payment: false }))
+    handlerRecoverPaymentOrders(customer?.id || "", orderId || "")
   }, [customer])
-
   const handlersubmit = async (dataForm?: orderDataForm) => {
     if (!dataForm) {
       return
     }
-    handlerUpdateDataLastOrder({ ...dataForm, pay_method_id: checkbox }).then(
+    handlerUpdateDataLastOrder({ ...dataForm, pay_method_id: checkbox }, orderId).then(
       () => {
-        if (!currentOrder?.id) alert("error de orden , no se obtuvo la orden")
+        if (!orderId) alert("error de orden , no se obtuvo la orden")
         else {
-          handlersubmitPaymentMethod(checkbox, cart, currentOrder.id).then(
+          handlersubmitPaymentMethod(checkbox, cart, orderId).then(
             () => {
               deleteCart()
             }
@@ -69,20 +70,14 @@ const CheckoutForm = () => {
         <>
           <Loader />
         </>
-      ) : dataPay && dataPay.length > 0 ? (
+      ) : dataPay && dataPay.dataPay ? (
         <div className="flex flex-col gap-4">
-          {dataPay.map((payment) => (
-            <div
-              key={payment.reference}
-              className="flex justify-center items-center"
-            >
-              <CoinPalPayment 
-                data={payment.dataPay} 
-                currentOrder={currentOrder} 
-              />
-              {/* <BinanceAutomaticPayment data={payment} currentOrder={currentOrder} /> */}
-            </div>
-          ))}
+          <div className="flex justify-center items-center">
+            <CoinPalPayment 
+              data={dataPay.dataPay} 
+              currentOrder={dataPay.order} 
+            />
+          </div>
         </div>
       ) : (
         <CheckoutSelectPayment

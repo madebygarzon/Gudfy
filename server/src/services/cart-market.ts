@@ -149,7 +149,7 @@ class CartMarketService extends TransactionBaseService {
 
       const result = compararStock(items, dataVarianStock);
 
-      if (result.length) return result;
+      if (result.length) return {success: false, data: result};
 
       let auxTotalProce = 0;
       let auxTotalProducts = 0;
@@ -185,8 +185,9 @@ class CartMarketService extends TransactionBaseService {
           items[index].store_variant_id,
           items[index].quantity
         );
+        return {success: true, data: saveSVO};
       }
-      return;
+      
     } catch (error) {
       console.log("ERROR EN EL SERVICIO CREATE ORDER", error);
     }

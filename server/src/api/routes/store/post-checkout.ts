@@ -14,7 +14,7 @@ export default async (req: Request, res: Response): Promise<void> => {
   try {
     switch (payment_method) {
       case "automatic_binance_pay":
-        result = await autoCoinPalPay(cartItems, order_id);
+        result = await autoBinancePay(cartItems, order_id);
         break;
       case "coinpal_pay":
         result = await autoCoinPalPay(cartItems, order_id);
@@ -22,6 +22,8 @@ export default async (req: Request, res: Response): Promise<void> => {
       default:
         throw new Error(`Método de pago no soportado: ${payment_method}`);
     }
+    const storeOrderService = req.scope.resolve("storeOrderService");
+    await storeOrderService.postMethodPaymentOrder(order_id, payment_method, result.nextStepContent);
     res.status(200).json({ result });
   } catch (error) {
     console.log("Error en el endpoint de pago:", error);
@@ -132,29 +134,6 @@ const autoCoinPalPay = async (cartItems, order_id) => {
     sign: await generateSing(requestId, orderNo, totalAmount, "USDT"),
   };
 
-  // try {
-  //   const result = await coinpal.createPayment(paymentInfo);
-  //   console.log("resultado de createPaymentttt", result);
-  //   if (result.nextStepContent) {
-  //     return {
-  //       nextStepContent: result.nextStepContent,
-  //       reference: result.reference,
-  //       status: result.status,
-  //       orderAmount: result.orderAmount,
-  //       orderCurrency: result.orderCurrency,
-  //       orderNo: result.orderNo,
-  //     };
-  //   }
-
-  //   throw new Error("No se recibió URL de pago de CoinPal");
-  // } catch (error) {
-  //   console.error("Error en CoinPal:", error);
-  //   throw {
-  //     message: "Error al procesar pago con CoinPal",
-  //     details: error.response?.data || error.message,
-  //     code: error.code,
-  //   };
-  // }
 
   try {
     const result = await coinpal.createPayment(paymentInfo);
