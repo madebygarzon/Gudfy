@@ -50,6 +50,8 @@ import updateFinishVariantOrder from "./order/update-finish-variant-order";
 import postWelcomeEmail from "./post-welcome-email";
 import { getListProductVariantCategory } from "./get-list-product-variant-category";
 import postSendContactForm from "./post-send-contact-form";
+import getPaymentOrders from "./order/get-payment-orders";
+import postMethodPaymentOrder from "./order/post-method-payment-order";
 
 // Initialize a custom router
 const router = Router();
@@ -134,6 +136,9 @@ export function attachStoreRoutes(storeRouter: Router) {
   router.post("/order/:id/finished-order", wrapHandler(updateFinishedOrder));
   router.post("/order/uptade-data", wrapHandler(updateOrderData));
   router.post("/order/finish-variation", wrapHandler(updateFinishVariantOrder));
+
+  router.get("/orders/:id/:store_id/method-payment-pending", wrapHandler(getPaymentOrders));
+  router.post("/order/method-payment-pending", wrapHandler(postMethodPaymentOrder));
 
   //-----------------------------------Endpoins for Order Claim ------------------------------------------
   router.get("/claim/:id/orders", wrapHandler(getListClaim));

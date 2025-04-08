@@ -16,6 +16,7 @@ import { PayMethodGudfy } from "./pay-method-gudfy";
 import { OrderStatus } from "./order-state";
 import { OrderClaim } from "./order-claim";
 import { StoreReview } from "./store-review";
+import { DataMethodPayment } from "./data-method-payment";
 
 @Entity()
 export class StoreOrder extends BaseEntity {
@@ -69,4 +70,7 @@ export class StoreOrder extends BaseEntity {
 
   @OneToMany(() => StoreReview, (sr) => sr?.store_order_id)
   storeReviws?: StoreReview[];
+
+  @OneToMany(() => DataMethodPayment, (dmp) => dmp?.store_order)
+  data_method_payments?: DataMethodPayment[];
 }
