@@ -21,6 +21,7 @@ type dataPay = {
   orderAmount: string
   orderCurrency: string
   orderNo: string
+  coinpal?: string
 }
 
 const CoinPalPayment: React.FC<TransactionDetailsProps> = ({
@@ -125,11 +126,39 @@ const CoinPalPayment: React.FC<TransactionDetailsProps> = ({
         </div>
       </CardHeader>
       <CardBody>
-        <div className="rounded-lg shadow-lg">
-          <div className="">
-            <div className="p-8 bg-white w-full text-gray-800">
-              <div className="flex mb-1 gap-14 w-full">
-                <div>
+        {data?.coinpal? (
+          <div className="rounded-lg shadow-lg">
+            <div className="">
+              <div className="p-8 bg-white w-full text-gray-800">
+                <div className="flex mb-1 gap-14 w-full">
+                  <div>
+                  <p className="text-sm text-gray-500">NÚMERO DE PEDIDO:</p>
+                  <strong>{currentOrder?.id}</strong>
+                  </div>
+              </div>
+            </div>
+            <div>
+                <div className="w-full flex flex-col justify-center items-center">
+                  <Link href={data.coinpal}>Pagar en CoinPal</Link>
+                </div>
+            </div>
+          </div>
+          <div className="p-4">
+            {orderCancel || successPay ? (
+              <></>
+            ) : (
+              <>
+                <p className="text-center text-xs mb-4">
+                  Siga las instrucciones proporcionadas para completar su pago.
+                </p>
+              </>
+            )}
+          </div>
+        </div> ): ( <div className="rounded-lg shadow-lg">
+            <div className="">
+              <div className="p-8 bg-white w-full text-gray-800">
+                <div className="flex mb-1 gap-14 w-full">
+                  <div>
                   <p className="text-sm text-gray-500">NÚMERO DE PEDIDO:</p>
                   <strong>{currentOrder?.id}</strong>
                   <p className="text-sm text-gray-500">REFERENCIA DE PAGO:</p>
@@ -170,7 +199,7 @@ const CoinPalPayment: React.FC<TransactionDetailsProps> = ({
               </>
             )}
           </div>
-        </div>
+        </div>)}
       </CardBody>
       <CardFooter>
         {orderCancel || successPay ? (

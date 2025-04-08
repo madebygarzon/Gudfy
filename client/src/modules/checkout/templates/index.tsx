@@ -9,7 +9,7 @@ import Footer from "@modules/layout/templates/footer"
 import Nav from "@modules/layout/templates/nav"
 import { TaskProgressIndicatorCheckout } from "../../progress/index"
 
-const CheckoutTemplate = () => {
+const CheckoutTemplate = ({ orderId }: { orderId: string | undefined }) => {
   return (
     <CheckoutProvider>
       <Nav />
@@ -43,7 +43,7 @@ const CheckoutTemplate = () => {
         <div className="relative">
           <CheckoutLoader />
           <div className="w-full mt-6 small:mt-10 px-4 small:px-8">
-            <CheckoutForm />
+            <CheckoutForm orderId={orderId} />
           </div>
         </div>
       </div>

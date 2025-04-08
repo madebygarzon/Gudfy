@@ -5,6 +5,8 @@ import StoreOrderRepository from "../repositories/store-order";
 import StoreVariantOrderRepository from "../repositories/store-variant-order";
 import StoreXVariantRepository from "../repositories/store-x-variant";
 import SerialCodeRepository from "src/repositories/serial-code";
+import DataMethodPaymentRepository from "src/repositories/data-method-payment";
+import coinpal from "coinpal-sdk";
 
 class StoreOrderService extends TransactionBaseService {
   static LIFE_TIME = Lifetime.SCOPED;
@@ -12,7 +14,7 @@ class StoreOrderService extends TransactionBaseService {
   protected readonly storeVariantOrderRepository_: typeof StoreVariantOrderRepository;
   protected readonly storeXVariantRepository_: typeof StoreXVariantRepository;
   protected readonly serialCodeRepository_: typeof SerialCodeRepository;
-
+  protected readonly dataMethodPaymentRepository_: typeof DataMethodPaymentRepository;
   protected readonly loggedInCustomer_: Customer | null;
 
   constructor(container) {
@@ -23,6 +25,7 @@ class StoreOrderService extends TransactionBaseService {
     this.storeXVariantRepository_ = container.storeXVariantRepository;
     this.serialCodeRepository_ = container.serialCodeRepository;
     this.loggedInCustomer_ = container?.loggedInCustomer ?? null;
+    this.dataMethodPaymentRepository_ = container.dataMethodPaymentRepository;
   }
 
   async currentOrder(customerId) {
@@ -30,72 +33,99 @@ class StoreOrderService extends TransactionBaseService {
       const repoStoreOrder = this.activeManager_.withRepository(
         this.storeOrderRepository_
       );
+      const repoSerialCode = this.activeManager_.withRepository(
+        this.serialCodeRepository_
+      );
+
       const listOrder = await repoStoreOrder
         .createQueryBuilder("so")
-        .innerJoinAndSelect("so.order_status", "sso")
-        .leftJoinAndSelect("so.storeVariantOrder", "svo")
-        .leftJoinAndSelect("svo.store_variant", "sxv")
-        .innerJoinAndSelect("sxv.variant", "pv")
-        .leftJoinAndSelect("sxv.store", "s")
-        .where("so.customer_id = :customer_id ", {
+        .leftJoin("so.storeVariantOrder", "svo")
+        .leftJoin("svo.store_variant", "sxv")
+        .leftJoin("sxv.store", "s")
+        .where("so.customer_id = :customer_id AND so.order_status_id = :status", {
           customer_id: customerId || this.loggedInCustomer_?.id,
+          status: "Payment_Pending_ID"
         })
         .select([
-          "so.id AS id",
-          "so.pay_method_id AS pay_method_id ",
-          "so.quantity_products AS quantity_products ",
-          "so.total_price AS total_price",
-          "so.name AS person_name",
-          "so.last_name AS person_last_name",
-          "so.email AS email",
-          "so.contry AS contry",
-          "so.city AS city",
-          "so.phone AS phone",
-          "so.created_at AS created_at",
-          "svo.quantity AS quantity",
-          "svo.total_price AS total_price_for_product",
-          "sso.state AS state_order",
-          "pv.title AS produc_title",
-          "sxv.price AS price",
-          "s.name AS store_name",
+          "so.id",
+          "so.pay_method_id",
+          "so.created_at",
+          "so.sellerapproved",
+          "so.customerapproved",
+          "so.quantity_products",
+          "so.total_price",
+          "so.name as person_name",
+          "so.last_name as person_last_name",
+          "so.email",
+          "so.contry as conty",
+          "so.city",
+          "so.phone",
+          "so.order_status_id as state_order",
+          "svo.id as store_variant_order_id",
+          "s.id as store_id",
+          "s.name as store_name",
+          "sxv.produc_title",
+          "svo.price",
+          "svo.quantity",
+          "svo.total_price as total_price_for_product",
+          "svo.variant_order_status_id"
         ])
         .getRawMany();
-      const now = new Date();
-      const tenMinutesInMillis = 10 * 60 * 1000;
-      const validOrder = listOrder.find((order) => {
-        if (order.state_order === "Pendiente de pago") {
-          const createdAt = new Date(order.created_at);
-          return now.getTime() - createdAt.getTime() < tenMinutesInMillis;
+
+      // Agrupar las órdenes y sus variantes
+      const ordersMap = new Map();
+
+      for (const order of listOrder) {
+        if (!ordersMap.has(order.id)) {
+          // Crear nueva orden
+          ordersMap.set(order.id, {
+            id: order.id,
+            pay_method_id: order.pay_method_id,
+            created_at: order.created_at,
+            sellerapproved: order.sellerapproved,
+            customerapproved: order.customerapproved,
+            quantity_products: order.quantity_products,
+            total_price: order.total_price,
+            person_name: order.person_name,
+            person_last_name: order.person_last_name,
+            email: order.email,
+            conty: order.conty,
+            city: order.city,
+            phone: order.phone,
+            state_order: "Pendiente de pago",
+            store_variant: []
+          });
         }
-      });
-      if (!validOrder) {
-        return null; // No hay pedidos que cumplan con la condición
+
+        // Obtener códigos seriales para esta variante
+        const serialCodes = await repoSerialCode.find({
+          where: { store_variant_order_id: order.store_variant_order_id }
+        });
+
+        // Agregar variante a la orden
+        ordersMap.get(order.id).store_variant.push({
+          store_id: order.store_id,
+          store_name: order.store_name,
+          store_variant_order_id: order.store_variant_order_id,
+          produc_title: order.produc_title,
+          price: order.price,
+          quantity: order.quantity,
+          total_price_for_product: order.total_price_for_product,
+          variant_order_status_id: order.variant_order_status_id,
+          serial_code_products: serialCodes.map(code => ({
+            id: code.id,
+            serial: code.serial
+          }))
+        });
       }
 
-      const {
-        produc_title,
-        store_name,
-        price,
-        quantity,
-        total_price_for_product,
-        ...rest
-      } = validOrder;
-
-      const result = {
-        ...rest,
-        store_variant: [
-          {
-            produc_title,
-            quantity,
-            total_price_for_product,
-            price,
-            store_name,
-          },
-        ],
-      };
-      return result;
-    } catch (error) {}
+      return Array.from(ordersMap.values());
+    } catch (error) {
+      console.error("Error en currentOrder:", error);
+      throw error;
+    }
   }
+  
 
   async listCustomerOrders(customerId) {
     const repoStoreOrder = this.activeManager_.withRepository(
@@ -555,6 +585,57 @@ class StoreOrderService extends TransactionBaseService {
         order_status_id: "Finished_ID",
       });
     }
+  }
+
+  async getPaymentOrders(customer_id, order_id) {
+    const repoStoreOrder = this.activeManager_.withRepository(
+      this.storeOrderRepository_
+    );
+    const repoMethodPay = this.activeManager_.withRepository(
+      this.dataMethodPaymentRepository_
+    );
+
+    try {
+      const getOrder = await repoStoreOrder.findOne({
+        where: {
+          customer_id,
+          id: order_id,
+          order_status_id: "Payment_Pending_ID",
+        },
+      });
+      if (getOrder) {
+        const methodPay = await repoMethodPay.findOne({
+          where: {
+            order_id: getOrder.id,
+          },
+        });
+       return {order:getOrder, dataPay: methodPay};
+      }
+      else {
+        return {order: null, dartaPay: null};
+      }
+    } catch (error) {
+      console.log("error al buscar la orden de coinpal",error)
+    }
+  }
+
+  async postMethodPaymentOrder(
+    store_order_id: string,
+    method: string,
+    reference: string
+  ) {
+    const repoDataMethodPayment = this.activeManager_.withRepository(
+      this.dataMethodPaymentRepository_
+    );
+    if (method === "coinpal_pay") {
+      const data = await repoDataMethodPayment.create({
+        order_id: store_order_id,
+        coinpal: reference,
+      });
+      const saveData = await repoDataMethodPayment.save(data);
+      return saveData;
+    }
+    return;
   }
 }
 
