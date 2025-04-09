@@ -60,7 +60,7 @@ const CheckoutSelectPayment: React.FC<CheckoutDetailsProps> = ({
   handlersubmit,
 }) => {
   const [dataForm, setDataForm] = useState<orderDataForm>({
-    pay_method_id: "automatic_binance_pay",
+    pay_method_id: "coinpal_pay",
     name: "",
     last_name: "",
     email: "",
@@ -118,7 +118,7 @@ const CheckoutSelectPayment: React.FC<CheckoutDetailsProps> = ({
           selectedKeys={selectedKeys}
           onSelectionChange={(key) => {
             const checkbox = methodPayment.find((e) => e === Array.from(key)[0])
-            selectedCheckbox(checkbox || "automatic_binance_pay")
+            selectedCheckbox(checkbox || "coinpal_pay")
           }}
         >
           <AccordionItem
@@ -136,7 +136,7 @@ const CheckoutSelectPayment: React.FC<CheckoutDetailsProps> = ({
             }
           >
             <div className="font-normal px-4 md:px-12 text-sm pb-5">
-              <p>Paga en USDT usando CoinPal y Binance Pay</p>
+              <p>Paga en USDT usando CoinPal y paga con Binance Pay</p>
               <br />
               <p>
                 Importante: desde el 21 de septiembre Binance decidió fijar una
@@ -146,6 +146,7 @@ const CheckoutSelectPayment: React.FC<CheckoutDetailsProps> = ({
             </div>
           </AccordionItem>
           <AccordionItem
+          isDisabled
             key="automatic_binance_pay"
             aria-label="Binance Pay Entrega Automática"
             title="Binance Pay Entrega Automática"
@@ -153,7 +154,7 @@ const CheckoutSelectPayment: React.FC<CheckoutDetailsProps> = ({
             className="font-medium"
             startContent={
               <Checkbox
-                defaultSelected
+                isDisabled
                 radius="full"
                 isSelected={checkbox == methodPayment[0]}
               />

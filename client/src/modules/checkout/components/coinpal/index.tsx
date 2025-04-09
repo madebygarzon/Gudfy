@@ -139,7 +139,9 @@ const CoinPalPayment: React.FC<TransactionDetailsProps> = ({
             </div>
             <div>
                 <div className="w-full flex flex-col justify-center items-center">
-                  <Link href={data.coinpal}>Pagar en CoinPal</Link>
+                  <Link href={data.coinpal}>
+                  <ButtonLigth className="bg-blue-gf hover:bg-lila-gf text-white border-none">Pagar en CoinPal</ButtonLigth>
+                  </Link>
                 </div>
             </div>
           </div>
