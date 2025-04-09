@@ -50,10 +50,10 @@ const CoinPalPayment: React.FC<TransactionDetailsProps> = ({
       setOrderCancel(true)
     })
   }
-  const redirectCoinpla = {}
+ 
   useEffect(() => {
     if (data?.nextStepContent?.startsWith("http")) {
-      window.open(data.nextStepContent, "_blank", "noopener,noreferrer")
+      window.open(data.nextStepContent ?? data.coinpal, "_blank", "noopener,noreferrer")
     }
   }, [data?.nextStepContent])
 
@@ -118,7 +118,7 @@ const CoinPalPayment: React.FC<TransactionDetailsProps> = ({
               <p className="text-center text-base mb-4">
                 Total a pagar:{" "}
                 <span className="font-bold">
-                  {orderAmount} {orderCurrency}
+                  {orderAmount ?? currentOrder?.total_price} {orderCurrency ?? "USDT"}
                 </span>
               </p>
             </>
@@ -138,10 +138,10 @@ const CoinPalPayment: React.FC<TransactionDetailsProps> = ({
               </div>
             </div>
             <div>
-                <div className="w-full flex flex-col justify-center items-center">
-                  <Link href={data.coinpal}>
+               {orderCancel || successPay ? <></>: <Link href={data.coinpal}>
                   <ButtonLigth className="bg-blue-gf hover:bg-lila-gf text-white border-none">Pagar en CoinPal</ButtonLigth>
-                  </Link>
+                  </Link>} <div className="w-full flex flex-col justify-center items-center">
+                  
                 </div>
             </div>
           </div>
@@ -181,11 +181,13 @@ const CoinPalPayment: React.FC<TransactionDetailsProps> = ({
             </div>
 
             <div>
-              {orderCancel || successPay ? (
+              {successPay || orderCancel ? (
                 <></>
               ) : (
                 <div className="w-full flex flex-col justify-center items-center">
-                  <Link href={nextStepContent}>Pagar en CoinPal</Link>
+                  <Link href={nextStepContent}>
+                  <ButtonLigth className="bg-blue-gf hover:bg-lila-gf text-white border-none">Pagar en CoinPal</ButtonLigth>
+                  </Link>
                 </div>
               )}
             </div>

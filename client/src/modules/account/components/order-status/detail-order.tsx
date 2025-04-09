@@ -402,7 +402,7 @@ const ModalOrderDetail = ({
       {orderData?.state_order === "Pendiente de pago" && (
         <ModalFooter>
               <div className="flex gap-2 justify-center">
-                <Link href={`/checkout?orderid=${orderData.id}`}>
+                <Link href={`/checkout?orderid=${orderData.id}`} target="_blank">
                   <ButtonLigth className="bg-[#28A745] hover:bg-[#218838] text-white border-none">
                     ir a pagar
                   </ButtonLigth>
