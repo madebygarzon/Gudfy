@@ -28,6 +28,18 @@ const CoinPalPayment: React.FC<TransactionDetailsProps> = ({
   data,
   currentOrder,
 }) => {
+  const [isInitialLoad, setIsInitialLoad] = useState(true)
+
+  useEffect(() => {
+    if (data) {
+      setIsInitialLoad(false)
+    }
+  }, [data])
+
+  const [orderCancel, setOrderCancel] = useState<boolean>(false)
+  const [successPay, setSuccessPay] = useState<boolean>(false)
+  const [socket, setSocket] = useState<Socket | null>(null)
+
   if (!data) return <></>
 
   const {
@@ -39,9 +51,12 @@ const CoinPalPayment: React.FC<TransactionDetailsProps> = ({
     orderNo,
   } = data
 
-  const [orderCancel, setOrderCancel] = useState<boolean>(false)
-  const [successPay, setSuccessPay] = useState<boolean>(status === "completed")
-  const [socket, setSocket] = useState<Socket | null>(null)
+  // Actualizar successPay cuando tengamos data
+  useEffect(() => {
+    if (data) {
+      setSuccessPay(data.status === "completed")
+    }
+  }, [data])
 
   const { handlerOrderCancel } = useOrderGudfy()
 
@@ -50,12 +65,26 @@ const CoinPalPayment: React.FC<TransactionDetailsProps> = ({
       setOrderCancel(true)
     })
   }
- 
+
   useEffect(() => {
-    if (data?.nextStepContent?.startsWith("http")) {
-      window.open(data.nextStepContent ?? data.coinpal, "_blank", "noopener,noreferrer")
+    if (!isInitialLoad && data) {
+     
+      if (data.nextStepContent?.startsWith("http")) {
+        window.open(
+          data.nextStepContent,
+          "_blank",
+          "noopener,noreferrer"
+        )
+      }
+      if (data.coinpal?.startsWith("https")) {
+        window.open(
+          data.coinpal,
+          "_blank",
+          "noopener,noreferrer"
+        )
+      }
     }
-  }, [data?.nextStepContent])
+  }, [data, isInitialLoad])
 
   useEffect(() => {
     const socketIo = io(process.env.PORT_SOKET || "http://localhost:3001")
@@ -118,7 +147,8 @@ const CoinPalPayment: React.FC<TransactionDetailsProps> = ({
               <p className="text-center text-base mb-4">
                 Total a pagar:{" "}
                 <span className="font-bold">
-                  {orderAmount ?? currentOrder?.total_price} {orderCurrency ?? "USDT"}
+                  {orderAmount ?? currentOrder?.total_price}{" "}
+                  {orderCurrency ?? "USDT"}
                 </span>
               </p>
             </>
@@ -126,84 +156,98 @@ const CoinPalPayment: React.FC<TransactionDetailsProps> = ({
         </div>
       </CardHeader>
       <CardBody>
-        {data?.coinpal? (
+        {data?.coinpal && !orderCancel ? (
           <div className="rounded-lg shadow-lg">
             <div className="">
               <div className="p-8 bg-white w-full text-gray-800">
                 <div className="flex mb-1 gap-14 w-full">
                   <div>
-                  <p className="text-sm text-gray-500">NÚMERO DE PEDIDO:</p>
-                  <strong>{currentOrder?.id}</strong>
+                    <p className="text-sm text-gray-500">NÚMERO DE PEDIDO:</p>
+                    <strong>{currentOrder?.id}</strong>
                   </div>
+                </div>
+              </div>
+              <div>
+                {orderCancel || successPay ? (
+                  <></>
+                ) : (
+                  <Link
+                    href={data.coinpal}
+                    className="w-full flex flex-col justify-center items-center"
+                  >
+                    <ButtonLigth className="bg-blue-gf hover:bg-lila-gf text-white border-none">
+                      Pagar en CoinPal
+                    </ButtonLigth>
+                  </Link>
+                )}
               </div>
             </div>
-            <div>
-               {orderCancel || successPay ? <></>: <Link href={data.coinpal}>
-                  <ButtonLigth className="bg-blue-gf hover:bg-lila-gf text-white border-none">Pagar en CoinPal</ButtonLigth>
-                  </Link>} <div className="w-full flex flex-col justify-center items-center">
-                  
-                </div>
+            <div className="p-4">
+              {orderCancel || successPay ? (
+                <></>
+              ) : (
+                <>
+                  <p className="text-center text-xs mb-4">
+                    Siga las instrucciones proporcionadas para completar su
+                    pago.
+                  </p>
+                </>
+              )}
             </div>
           </div>
-          <div className="p-4">
-            {orderCancel || successPay ? (
-              <></>
-            ) : (
-              <>
-                <p className="text-center text-xs mb-4">
-                  Siga las instrucciones proporcionadas para completar su pago.
-                </p>
-              </>
-            )}
-          </div>
-        </div> ): ( <div className="rounded-lg shadow-lg">
+        ) : (
+          <div className="rounded-lg shadow-lg">
             <div className="">
               <div className="p-8 bg-white w-full text-gray-800">
                 <div className="flex mb-1 gap-14 w-full">
                   <div>
-                  <p className="text-sm text-gray-500">NÚMERO DE PEDIDO:</p>
-                  <strong>{currentOrder?.id}</strong>
-                  <p className="text-sm text-gray-500">REFERENCIA DE PAGO:</p>
-                  <strong>{reference}</strong>
-                </div>
+                    <p className="text-sm text-gray-500">NÚMERO DE PEDIDO:</p>
+                    <strong>{currentOrder?.id}</strong>
+                    <p className="text-sm text-gray-500">REFERENCIA DE PAGO:</p>
+                    <strong>{reference}</strong>
+                  </div>
 
-                <div>
-                  <p className="text-sm text-gray-500">MONTO:</p>
-                  <strong>
-                    {orderAmount} {orderCurrency}
-                  </strong>
+                  <div>
+                    <p className="text-sm text-gray-500">MONTO:</p>
+                    <strong>
+                      {orderAmount} {orderCurrency}
+                    </strong>
+                  </div>
+                </div>
+                <div className="mb-8">
+                  <p className="text-sm text-gray-400">ESTADO:</p>
+                  <strong>{status}</strong>
                 </div>
               </div>
-              <div className="mb-8">
-                <p className="text-sm text-gray-400">ESTADO:</p>
-                <strong>{status}</strong>
+
+              <div>
+                {successPay || orderCancel ? (
+                  <></>
+                ) : (
+                  <div className="w-full flex flex-col justify-center items-center">
+                    <Link href={nextStepContent}>
+                      <ButtonLigth className="bg-blue-gf hover:bg-lila-gf text-white border-none">
+                        Pagar en CoinPal
+                      </ButtonLigth>
+                    </Link>
+                  </div>
+                )}
               </div>
             </div>
-
-            <div>
-              {successPay || orderCancel ? (
+            <div className="p-4">
+              {orderCancel || successPay ? (
                 <></>
               ) : (
-                <div className="w-full flex flex-col justify-center items-center">
-                  <Link href={nextStepContent}>
-                  <ButtonLigth className="bg-blue-gf hover:bg-lila-gf text-white border-none">Pagar en CoinPal</ButtonLigth>
-                  </Link>
-                </div>
+                <>
+                  <p className="text-center text-xs mb-4">
+                    Siga las instrucciones proporcionadas para completar su
+                    pago.
+                  </p>
+                </>
               )}
             </div>
           </div>
-          <div className="p-4">
-            {orderCancel || successPay ? (
-              <></>
-            ) : (
-              <>
-                <p className="text-center text-xs mb-4">
-                  Siga las instrucciones proporcionadas para completar su pago.
-                </p>
-              </>
-            )}
-          </div>
-        </div>)}
+        )}
       </CardBody>
       <CardFooter>
         {orderCancel || successPay ? (
@@ -215,11 +259,8 @@ const CoinPalPayment: React.FC<TransactionDetailsProps> = ({
             </div>
             <div className="text-4xl font-semibold mb-2">
               {currentOrder?.created_at && (
-                <Timer creationTime={currentOrder.created_at} />
+                <Timer creationTime={currentOrder.created_at} hanclerOrderCancelController={hanclerOrderCancelController}/>
               )}
-            </div>
-            <div className="text-gray-500 mb-4">
-              <span>Minutos</span> : <span>Segundos</span>
             </div>
             <div className="flex justify-center gap-2">
               <ButtonLigth
