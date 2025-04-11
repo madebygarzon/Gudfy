@@ -137,9 +137,9 @@ const CoinPalPayment: React.FC<TransactionDetailsProps> = ({
                   </div>
               </div>
             </div>
-            <div>
+            <div className="w-full flex flex-col justify-center items-center">
                {orderCancel || successPay ? <></>: <Link href={data.coinpal}>
-                  <ButtonLigth className="bg-blue-gf hover:bg-lila-gf text-white border-none">Pagar en CoinPal</ButtonLigth>
+                  <ButtonLigth className="bg-blue-gf hover:bg-lila-gf text-white border-none">Continuar con el pago</ButtonLigth>
                   </Link>} <div className="w-full flex flex-col justify-center items-center">
                   
                 </div>
@@ -186,7 +186,7 @@ const CoinPalPayment: React.FC<TransactionDetailsProps> = ({
               ) : (
                 <div className="w-full flex flex-col justify-center items-center">
                   <Link href={nextStepContent}>
-                  <ButtonLigth className="bg-blue-gf hover:bg-lila-gf text-white border-none">Pagar en CoinPal</ButtonLigth>
+                  <ButtonLigth className="bg-blue-gf hover:bg-lila-gf text-white border-none">Continuar con el pago</ButtonLigth>
                   </Link>
                 </div>
               )}
