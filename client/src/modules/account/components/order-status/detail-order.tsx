@@ -167,7 +167,24 @@ const ModalOrderDetail = ({
                     <>
                       <tr className="border-b border-slate-200 ">
                         <td className="md:py-2 md:px-4  border-r border-slate-200 flex justify-between min-w-[250px]">
-                          <Accordion isCompact>
+                        {orderData?.state_order === "Pendiente de pago"? 
+                          <div className="w-full flex">
+                                  <div className="w-[60%] md:text-base text-xs">
+                                    <p>{`${p.produc_title} – ${p.price} USD x ${p.quantity}`}</p>{" "}
+                                  </div>
+                                  <div className="w-[40%] md:text-xs text-[10px]  text-center">
+                                    <p className="leading-tight ">
+                                      Vendido por:{p.store_name}
+                                    </p>
+                                    <span
+                                      className={`${getColorState(
+                                        p.variant_order_status_id
+                                      )}`}
+                                    >
+                                      {handlerState(p.variant_order_status_id)}
+                                    </span>
+                                  </div>
+                                </div> : <Accordion isCompact>
                             <AccordionItem
                               key={i}
                               aria-label="Accordion 1"
@@ -286,7 +303,8 @@ const ModalOrderDetail = ({
                                 </div>
                               </div>
                             </AccordionItem>
-                          </Accordion>
+                          </Accordion>}
+                          
                         </td>
                         <td className="py-2 px-4 border-b border-slate-200 md:text-base text-xs">
                           ${formatPrice(parseFloat(p.total_price_for_product))}{" "}
@@ -328,9 +346,9 @@ const ModalOrderDetail = ({
                     </td>
                     <td className="py-2 px-4 border-r border-slate-200 ">
                       {orderData.pay_method_id === "Secondary_Method_BINANCE_ID"
-                        ? "coinpaautomatic binance_pay pay"
+                        ? "Automatic Binance Pay"
                         : orderData.pay_method_id === "Method_COINPAL_ID"
-                        ? "CoinPal"
+                        ? "CoinPal Binance Pay"
                         : " "}
                     </td>
                   </tr>
@@ -384,7 +402,7 @@ const ModalOrderDetail = ({
       {orderData?.state_order === "Pendiente de pago" && (
         <ModalFooter>
               <div className="flex gap-2 justify-center">
-                <Link href={`/checkout?orderid=${orderData.id}`}>
+                <Link href={`/checkout?orderid=${orderData.id}`} target="_blank">
                   <ButtonLigth className="bg-[#28A745] hover:bg-[#218838] text-white border-none">
                     ir a pagar
                   </ButtonLigth>
