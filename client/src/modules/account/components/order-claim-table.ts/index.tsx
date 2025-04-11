@@ -11,8 +11,8 @@ import {
   useDisclosure,
   Input,
 } from "@heroui/react"
-import { ChatBubble, PlayMiniSolid, XMarkMini } from "@medusajs/icons"
-import { Button as ButtonMedusa } from "@medusajs/ui"
+import { ChatBubble, PlayMiniSolid, XMarkMini, ArrowLongLeft, ArrowLongRight } from "@medusajs/icons"
+import { Button as ButtonMedusa, Select, Input as InputMedusa, IconButton } from "@medusajs/ui"
 import { useMeCustomer } from "medusa-react"
 import type { order } from "../../templates/orders-template"
 import handlerformatDate from "@lib/util/formatDate"
@@ -36,32 +36,47 @@ type orders = {
   orders: order[]
 }
 
+const dataSelecterPage = [10, 20, 30]
+
 const ClaimTable: React.FC = () => {
   const { listOrderClaim, handlerListOrderClaim, isLoadingClaim } =
     useOrderGudfy()
   const [selectOrderClaim, setSelectOrderClaim] = useState<orderClaim>()
 
+  // Pagination controls
+  const [page, setPage] = useState(1)
+  const [rowsPerPage, setRowsPerPage] = useState(dataSelecterPage[0])
+  const [pageTotal, setPageTotal] = useState(1)
+  const [searchQuery, setSearchQuery] = useState('')
+
   const [filterStatus, setFilterStatus] = useState<
     "CERRADA" | "ABIERTA" | "RESUELTA" | "SIN RESOLVER" | "all"
   >("all")
 
-  const filteredOrderClaims =
-    filterStatus === "all"
-      ? listOrderClaim
-      : listOrderClaim?.filter((claim) => {
-          switch (filterStatus) {
-            case "CERRADA":
-              return claim.status_order_claim_id === "CANCEL_ID"
-            case "ABIERTA":
-              return claim.status_order_claim_id === "OPEN_ID"
-            case "RESUELTA":
-              return claim.status_order_claim_id === "SOLVED_ID"
-            case "SIN RESOLVER":
-              return claim.status_order_claim_id === "UNSOLVED_ID"
-            default:
-              return true
-          }
-        })
+  const filteredOrderClaims = listOrderClaim
+    ?.filter(claim => {
+      // Status filter
+      if (filterStatus !== "all") {
+        switch (filterStatus) {
+          case "CERRADA":
+            return claim.status_order_claim_id === "CANCEL_ID"
+          case "ABIERTA":
+            return claim.status_order_claim_id === "OPEN_ID"
+          case "RESUELTA":
+            return claim.status_order_claim_id === "SOLVED_ID"
+          case "SIN RESOLVER":
+            return claim.status_order_claim_id === "UNSOLVED_ID"
+          default:
+            return true
+        }
+      }
+      return true
+    })
+    // Search filter
+    .filter(claim => 
+      claim.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      claim.number_order.toLowerCase().includes(searchQuery.toLowerCase())
+    )
 
   const handleReset = () => {
     handlerListOrderClaim()
@@ -86,6 +101,16 @@ const ClaimTable: React.FC = () => {
     })
   }
 
+  // Update total pages when filtered data or rows per page changes
+  useEffect(() => {
+    if (!filteredOrderClaims) return
+    setPageTotal(Math.ceil(filteredOrderClaims.length / rowsPerPage))
+  }, [filteredOrderClaims, rowsPerPage])
+
+  // Get paginated data
+  const paginatedClaims = filteredOrderClaims
+    ?.slice((page - 1) * rowsPerPage, page * rowsPerPage)
+
   useEffect(() => {
     handlerListOrderClaim()
   }, [])
@@ -93,7 +118,16 @@ const ClaimTable: React.FC = () => {
   return (
     <div className="w-full p-1 md:p-6">
       <div className="flex flex-col gap-y-8 w-full">
-        <div className="flex justify-between mb-4">
+        <div className="flex flex-col md:flex-row justify-between items-end gap-4 mb-4">
+          <div className="w-full md:w-[170px]">
+            <InputMedusa
+              className="w-full bg-white h-[48px] hover:bg-gray-100 text-gray-600 text-sm border border-gray-300"
+              placeholder="Buscar"
+              id="search-input"
+              type="search"
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </div>
           <div>
             <label
               htmlFor="status-filter"
@@ -138,7 +172,7 @@ const ClaimTable: React.FC = () => {
             </thead>
             <tbody>
               {!isLoadingClaim ? (
-                filteredOrderClaims?.map((claim) => (
+                paginatedClaims?.map((claim) => (
                   <tr key={claim.id} className="hover:bg-gray-50">
                     <td>
                       {claim.status_order_claim_id === "OPEN_ID" ? (
@@ -209,10 +243,58 @@ const ClaimTable: React.FC = () => {
           </table>
           {!isLoadingClaim && !filteredOrderClaims?.length && (
             <div className="p-10 flex w-full text-center items-center justify-center text-lg">
-              <XMarkMini /> Sin reclamaciones
+              <XMarkMini /> {searchQuery ? 'No se encontraron resultados' : 'Sin reclamaciones'}
             </div>
           )}
         </div>
+
+        {/* Controles de paginación */}
+        {filteredOrderClaims && filteredOrderClaims.length > 0 && (
+          <div className="flex flex-col md:flex-row justify-between items-center p-4 mt-6 gap-4">
+            <div className="flex items-center gap-4">
+              <p className="md:text-sm text-xs whitespace-nowrap">{`${filteredOrderClaims.length} reclamos`}</p>
+              <Select onValueChange={(value) => {
+                const newRowsPerPage = parseInt(value)
+                setRowsPerPage(newRowsPerPage)
+                setPage(1)
+              }}>
+                <Select.Trigger className="bg-white text-gray-600">
+                  <Select.Value placeholder={rowsPerPage.toString()} />
+                </Select.Trigger>
+                <Select.Content>
+                  {dataSelecterPage.map((item) => (
+                    <Select.Item key={item} value={item.toString()}>
+                      {item}
+                    </Select.Item>
+                  ))}
+                </Select.Content>
+              </Select>
+            </div>
+            <div className="flex items-center gap-4 md:text-base text-sm">
+              <span>
+                {page} de {pageTotal}
+              </span>
+              <div className="flex gap-2">
+                <IconButton
+                  disabled={page === 1}
+                  onClick={() => setPage(p => Math.max(1, p - 1))}
+                  variant="transparent"
+                  className="disabled:opacity-50"
+                >
+                  <ArrowLongLeft />
+                </IconButton>
+                <IconButton
+                  disabled={page === pageTotal}
+                  onClick={() => setPage(p => Math.min(pageTotal, p + 1))}
+                  variant="transparent"
+                  className="disabled:opacity-50"
+                >
+                  <ArrowLongRight />
+                </IconButton>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
       <ModalClaimComment
         comments={comments}

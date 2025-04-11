@@ -2,7 +2,9 @@
 
 import { useState, useEffect } from "react"
 import React from "react"
-import { Modal, ModalContent, useDisclosure } from "@heroui/react"
+import { Modal, ModalContent, useDisclosure, Input } from "@heroui/react"
+import { IconButton, Select, Input as InputMedusa } from "@medusajs/ui"
+import { XMark, ArrowLongRight, ArrowLongLeft } from "@medusajs/icons"
 import { useMeCustomer } from "medusa-react"
 import type { order } from "../../templates/orders-template"
 import handlerformatDate from "@lib/util/formatDate"
@@ -26,9 +28,18 @@ type orders = {
 //   createdAt: string
 // }
 
+const dataSelecterPage = [10, 20, 30]
+
 const TicketTable: React.FC = () => {
   const { listOrder, handlerListOrder, isLoading } = useOrderGudfy()
   const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure()
+
+  // Pagination and search state
+  const [page, setPage] = useState(1)
+  const [rowsPerPage, setRowsPerPage] = useState(dataSelecterPage[0])
+  const [pageTotal, setPageTotal] = useState(1)
+  const [searchQuery, setSearchQuery] = useState('')
+
   const handleReset = (idResetOrder?: string) => {
     handlerListOrder()
     onClose()
@@ -48,10 +59,17 @@ const TicketTable: React.FC = () => {
 
   const [selectOrderData, setTelectOrderData] = useState<order>()
 
-  const filteredOrder =
-    filterStatus === "all"
-      ? listOrder
-      : listOrder?.filter((order) => order.state_order === filterStatus)
+  // Filter by status and search query
+  const filteredOrder = listOrder
+    ?.filter(order => {
+      if (filterStatus !== "all") {
+        return order.state_order === filterStatus
+      }
+      return true
+    })
+    .filter(order => 
+      order.id.toLowerCase().includes(searchQuery.toLowerCase())
+    )
 
   const getStatusColor = (
     status:
@@ -80,14 +98,33 @@ const TicketTable: React.FC = () => {
     }
   }
 
+  // Update total pages when filtered data or rows per page changes
+  useEffect(() => {
+    if (!filteredOrder) return
+    setPageTotal(Math.ceil(filteredOrder.length / rowsPerPage))
+  }, [filteredOrder, rowsPerPage])
+
+  // Get paginated data
+  const paginatedOrders = filteredOrder
+    ?.slice((page - 1) * rowsPerPage, page * rowsPerPage)
+
   useEffect(() => {
     handlerListOrder()
   }, [])
 
   return (
-    <div className="w-full p-1 md:p-6">
+    <div className="w-full ">
       <div className="flex flex-col gap-y-6">
-        <div className="flex flex-col md:flex-row justify-between gap-4">
+        <div className="flex flex-col md:flex-row justify-between items-end gap-4">
+          <div className="w-full md:w-[170px]">
+            <InputMedusa
+              className="w-full bg-white h-[48px] hover:bg-gray-100 text-gray-600 text-sm border border-gray-300"
+              placeholder="Buscar"
+              id="search-input"
+              type="search"
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </div>
           <div>
             <label
               htmlFor="status-filter"
@@ -147,7 +184,7 @@ const TicketTable: React.FC = () => {
             </thead>
             <tbody>
               {!isLoading ? (
-                filteredOrder?.map((order) => (
+                paginatedOrders?.map((order) => (
                   <tr key={order.id} className="hover:bg-gray-50">
                     <td className="px-4 py-2">
                       <span
@@ -197,10 +234,58 @@ const TicketTable: React.FC = () => {
           </table>
           {!isLoading && !filteredOrder?.length && (
             <div className="p-6 flex items-center justify-center text-gray-700 text-sm md:text-base">
-              <XMarkMini /> Aún no tienes órdenes.
+              <XMarkMini /> {searchQuery ? 'No se encontraron resultados' : 'Aún no tienes órdenes'}
             </div>
           )}
         </div>
+
+        {/* Controles de paginación */}
+        {filteredOrder && filteredOrder.length > 0 && (
+          <div className="flex flex-col md:flex-row justify-between items-center p-4 mt-6 gap-4">
+            <div className="flex items-center gap-4">
+              <p className="md:text-sm text-xs whitespace-nowrap">{`${filteredOrder.length} órdenes`}</p>
+              <Select onValueChange={(value) => {
+                const newRowsPerPage = parseInt(value)
+                setRowsPerPage(newRowsPerPage)
+                setPage(1)
+              }}>
+                <Select.Trigger className="bg-white text-gray-600">
+                  <Select.Value placeholder={rowsPerPage.toString()} />
+                </Select.Trigger>
+                <Select.Content>
+                  {dataSelecterPage.map((item) => (
+                    <Select.Item key={item} value={item.toString()}>
+                      {item}
+                    </Select.Item>
+                  ))}
+                </Select.Content>
+              </Select>
+            </div>
+            <div className="flex items-center gap-4 md:text-base text-sm">
+              <span>
+                {page} de {pageTotal}
+              </span>
+              <div className="flex gap-2">
+                <IconButton
+                  disabled={page === 1}
+                  onClick={() => setPage(p => Math.max(1, p - 1))}
+                  variant="transparent"
+                  className="disabled:opacity-50"
+                >
+                  <ArrowLongLeft />
+                </IconButton>
+                <IconButton
+                  disabled={page === pageTotal}
+                  onClick={() => setPage(p => Math.min(pageTotal, p + 1))}
+                  variant="transparent"
+                  className="disabled:opacity-50"
+                >
+                  <ArrowLongRight />
+                </IconButton>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
       <ModalOrder
         orderData={selectOrderData}

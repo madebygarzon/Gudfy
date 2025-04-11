@@ -175,13 +175,13 @@ export const OrderGudfyProvider = ({
     })
   }
   const handlerCurrentOrder = () => {
-    setIsLoadingCurrentOrder(true)
-    getCurrentOrder(customer?.id || "")
-      .then((e) => {
-        setCurrentOrderr(e)
-        setIsLoadingCurrentOrder(false)
-      })
-      .catch((error) => {})
+    // setIsLoadingCurrentOrder(true)
+    // getCurrentOrder(customer?.id || "")
+    //   .then((e) => {
+    //     setCurrentOrderr(e)
+    //     setIsLoadingCurrentOrder(false)
+    //   })
+    //   .catch((error) => {})
   }
 
   const handlerOrderCancel = async (orederId: string) => {
