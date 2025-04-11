@@ -195,18 +195,18 @@ const SellerApplication = () => {
       })
       .catch((e) => {});
     if (!dataApplication) return;
-    setPagetotal(Math.ceil(dataApplication.length / rowsPages));
+    setPagetotal(Math.ceil(dataApplication?.length / rowsPages));
     setDataCustomer({
       dataSellers: dataApplication,
       dataPreview: handlerPreviewSellerAplication(dataApplication, 1),
-      count: dataApplication.length,
+      count: dataApplication?.length,
     });
   };
 
   const handlerNextPage = (action) => {
     if (action == "NEXT")
       setPage((old) => {
-        const dataToUse = dataCustomer.dataFilter.length
+        const dataToUse = dataCustomer.dataFilter?.length
           ? dataCustomer.dataFilter
           : dataCustomer.dataSellers;
         setDataCustomer({
@@ -218,7 +218,7 @@ const SellerApplication = () => {
 
     if (action == "PREV")
       setPage((old) => {
-        const dataToUse = dataCustomer.dataFilter.length
+        const dataToUse = dataCustomer.dataFilter?.length
           ? dataCustomer.dataFilter
           : dataCustomer.dataSellers;
         setDataCustomer({
@@ -241,7 +241,7 @@ const SellerApplication = () => {
     const end = page * dataRowPage;
     const newArray = queryParams.slice(start, end);
     //setPage(1);
-    setPagetotal(Math.ceil(queryParams.length / dataRowPage));
+    setPagetotal(Math.ceil(queryParams?.length / dataRowPage));
     return newArray;
   };
 
@@ -336,7 +336,7 @@ const SellerApplication = () => {
     setDataCustomer({
       ...dataCustomer,
       dataPreview: handlerPreviewSellerAplication(dataFilter, 1),
-      dataFilter: dataFilter.length ? dataFilter : [],
+      dataFilter: dataFilter?.length ? dataFilter : [],
     });
   };
 
@@ -375,7 +375,7 @@ const SellerApplication = () => {
             <div className="min-h-[293px] flex items-center justify-center">
               <Spinner size="large" variant="secondary" />
             </div>
-          ) : dataCustomer.dataPreview.length ? (
+          ) : dataCustomer.dataPreview?.length ? (
             <div className="min-h-[293px]">
               <Table>
                 <Table.Header>

@@ -70,8 +70,10 @@ const CheckoutForm = ({ orderId }: { orderId: string | undefined }) => {
         <>
           <Loader />
         </>
-      ) : dataPay && dataPay.dataPay ? (
+      ) : dataPay && dataPay.dataPay && dataPay.order ? (
+        
         <div className="flex flex-col gap-4">
+         
           <div className="flex justify-center items-center">
             <CoinPalPayment 
               data={dataPay.dataPay} 
