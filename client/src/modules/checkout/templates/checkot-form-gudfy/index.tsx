@@ -28,7 +28,7 @@ const CheckoutForm = ({ orderId }: { orderId: string | undefined }) => {
     handlerRecoverPaymentOrders
   } = useOrderGudfy()
 
-  const [checkbox, selectedCheckbox] = useState<string>("automatic_binance_pay")
+  const [checkbox, selectedCheckbox] = useState<string>("coinpal_pay")
 
   const [selectedKeys, setSelectedKeys] = useState<Selection>(
     new Set([checkbox])
