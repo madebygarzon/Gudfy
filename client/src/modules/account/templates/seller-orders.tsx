@@ -117,16 +117,13 @@ const SellerOrdersTemplate = () => {
         }
       })
     })
-    console.log("estos son los datos de cantidad de productos", productCount)
+    
     // Convertimos en array para el gráfico
     const processedData = Object.keys(productCount).map((title) => ({
       name: title,
       quantity: productCount[title],
     }))
-    console.log(
-      "estos son los datos de cantidad de productos 222222",
-      processedData
-    )
+   
     setProductData(processedData)
   }
 

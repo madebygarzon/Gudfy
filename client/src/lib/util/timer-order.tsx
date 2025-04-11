@@ -3,9 +3,10 @@ import { useOrderGudfy } from "@lib/context/order-context"
 
 interface TimerProps {
   creationTime: string
+  hanclerOrderCancelController?: () => void
 }
 
-const Timer: React.FC<TimerProps> = ({ creationTime }) => {
+const Timer: React.FC<TimerProps> = ({ creationTime, hanclerOrderCancelController }) => {
   const [timeLeft, setTimeLeft] = useState<number>(600) // 10 minutos en segundos
   const [isCancelled, setIsCancelled] = useState<boolean>(false)
   const { handlerListOrder } = useOrderGudfy()
@@ -36,6 +37,7 @@ const Timer: React.FC<TimerProps> = ({ creationTime }) => {
   }, [creationTime])
 
   if (isCancelled) {
+    hanclerOrderCancelController?.()
     return <div>Cancelado</div>
   }
 
