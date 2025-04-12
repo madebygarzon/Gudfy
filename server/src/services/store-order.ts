@@ -7,6 +7,7 @@ import StoreXVariantRepository from "../repositories/store-x-variant";
 import SerialCodeRepository from "src/repositories/serial-code";
 import DataMethodPaymentRepository from "src/repositories/data-method-payment";
 import coinpal from "coinpal-sdk";
+import { formatCommisionCoinpal } from "./utils/formatCommision";
 
 class StoreOrderService extends TransactionBaseService {
   static LIFE_TIME = Lifetime.SCOPED;
@@ -42,10 +43,13 @@ class StoreOrderService extends TransactionBaseService {
         .leftJoin("so.storeVariantOrder", "svo")
         .leftJoin("svo.store_variant", "sxv")
         .leftJoin("sxv.store", "s")
-        .where("so.customer_id = :customer_id AND so.order_status_id = :status", {
-          customer_id: customerId || this.loggedInCustomer_?.id,
-          status: "Payment_Pending_ID"
-        })
+        .where(
+          "so.customer_id = :customer_id AND so.order_status_id = :status",
+          {
+            customer_id: customerId || this.loggedInCustomer_?.id,
+            status: "Payment_Pending_ID",
+          }
+        )
         .select([
           "so.id",
           "so.pay_method_id",
@@ -68,7 +72,7 @@ class StoreOrderService extends TransactionBaseService {
           "svo.price",
           "svo.quantity",
           "svo.total_price as total_price_for_product",
-          "svo.variant_order_status_id"
+          "svo.variant_order_status_id",
         ])
         .getRawMany();
 
@@ -93,13 +97,13 @@ class StoreOrderService extends TransactionBaseService {
             city: order.city,
             phone: order.phone,
             state_order: "Pendiente de pago",
-            store_variant: []
+            store_variant: [],
           });
         }
 
         // Obtener códigos seriales para esta variante
         const serialCodes = await repoSerialCode.find({
-          where: { store_variant_order_id: order.store_variant_order_id }
+          where: { store_variant_order_id: order.store_variant_order_id },
         });
 
         // Agregar variante a la orden
@@ -112,10 +116,10 @@ class StoreOrderService extends TransactionBaseService {
           quantity: order.quantity,
           total_price_for_product: order.total_price_for_product,
           variant_order_status_id: order.variant_order_status_id,
-          serial_code_products: serialCodes.map(code => ({
+          serial_code_products: serialCodes.map((code) => ({
             id: code.id,
-            serial: code.serial
-          }))
+            serial: code.serial,
+          })),
         });
       }
 
@@ -125,7 +129,6 @@ class StoreOrderService extends TransactionBaseService {
       throw error;
     }
   }
-  
 
   async listCustomerOrders(customerId) {
     const repoStoreOrder = this.activeManager_.withRepository(
@@ -602,6 +605,7 @@ class StoreOrderService extends TransactionBaseService {
           id: order_id,
           order_status_id: "Payment_Pending_ID",
         },
+        relations: ["storeVariantOrder"],
       });
       if (getOrder) {
         const methodPay = await repoMethodPay.findOne({
@@ -609,13 +613,16 @@ class StoreOrderService extends TransactionBaseService {
             order_id: getOrder.id,
           },
         });
-       return {order:getOrder, dataPay: methodPay};
-      }
-      else {
-        return {order: null, dartaPay: null};
+        
+        let total = getOrder.storeVariantOrder.map((sv) => {
+          return  typeof sv.total_price === "string" ? parseFloat(sv.total_price) : sv.total_price}).reduce((a, b) => a + b, 0);
+        total = formatCommisionCoinpal(total);
+        return { order: {...getOrder,total_price: total }, dataPay: methodPay };
+      } else {
+        return { order: null, dartaPay: null };
       }
     } catch (error) {
-      console.log("error al buscar la orden de coinpal",error)
+      console.log("error al buscar la orden de coinpal", error);
     }
   }
 
