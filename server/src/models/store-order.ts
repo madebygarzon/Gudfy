@@ -44,7 +44,7 @@ export class StoreOrder extends BaseEntity {
   @Column({ nullable: false })
   quantity_products?: number;
 
-  @Column({ nullable: false })
+  @Column({ type: 'decimal', precision: 10, scale: 4, nullable: false })
   total_price?: number;
 
   @Column({ nullable: true })
