@@ -61,9 +61,6 @@ class StoreOrderAdminService extends TransactionBaseService {
           "sxv.price AS price",
           "s.name AS store_name",
           "s.id AS store_id",
-          "c.first_name AS person_name",
-          "c.last_name AS person_last_name",
-          "c.email AS email",
         ])
         .getRawMany();
 
