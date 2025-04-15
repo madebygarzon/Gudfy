@@ -50,7 +50,7 @@ const Summary = ({ items, setModifyProduct }: ItemsTemplateProps) => {
           })
           setModifyProduct(e.data)
         } else {
-          router.push(`/checkout?orderid=${e.data.store_order_id}`)
+          router.push(`/checkout?orderid=${e.data.id}`)
         }
       })
     }
