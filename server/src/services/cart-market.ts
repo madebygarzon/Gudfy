@@ -6,6 +6,7 @@ import CartRepository from "@medusajs/medusa/dist/repositories/cart";
 import StoreXVariantRepository from "../repositories/store-x-variant";
 import StoreOrderRepository from "../repositories/store-order";
 import StoreVariantOrderRepository from "../repositories/store-variant-order";
+import { formatPrice } from "./utils/format-price";
 
 class CartMarketService extends TransactionBaseService {
   static LIFE_TIME = Lifetime.SCOPED;
@@ -154,10 +155,10 @@ class CartMarketService extends TransactionBaseService {
       let auxTotalProce = 0;
       let auxTotalProducts = 0;
 
-      items.map((item) => {
-        auxTotalProce += parseInt(item.unit_price) * item.quantity;
+      items.forEach((item) => {
+        auxTotalProce += parseFloat(item.unit_price) * item.quantity;
       });
-      items.map((item) => {
+      items.forEach((item) => {
         auxTotalProducts += item.quantity;
       });
 
@@ -170,17 +171,18 @@ class CartMarketService extends TransactionBaseService {
       const storeVariantOrderRepo = this.activeManager_.withRepository(
         this.storeVariantOrderRepository_
       );
-
+      
       for (let index = 0; index < items.length; index++) {
+
         const newSVO = await storeVariantOrderRepo.create({
           store_variant_id: items[index].store_variant_id,
           store_order_id: newOrder.id,
           quantity: items[index].quantity,
           variant_order_status_id: "Payment_Pending_ID",
-          total_price: items[index].unit_price * items[index].quantity,
+          total_price: formatPrice((items[index].unit_price) * items[index].quantity),
         });
         const saveSVO = await storeVariantOrderRepo.save(newSVO);
-
+        
         await this.reserverStock(
           items[index].store_variant_id,
           items[index].quantity
@@ -275,7 +277,7 @@ class CartMarketService extends TransactionBaseService {
       // pay_method_id: "",
       order_status_id: "Payment_Pending_ID",
       quantity_products: quantity,
-      total_price: totalWhitComissionGudfy,
+      total_price: formatPrice(totalWhitComissionGudfy),
       // name: "",
       // last_name: "",
       // email: "",
