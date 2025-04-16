@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import axios from "axios";
 import crypto from "crypto";
 import coinpal from "coinpal-sdk";
+import { formatPrice } from "../../utils/format-price";
 
 // Configuración de CoinPal
 
@@ -168,7 +169,7 @@ const handlerTotalPrice = (items) => {
     });
   }
   total = total + total * 0.01; // Comisión de binance free y Gudfy free
-  return total + total * 0.01; // Comisión de y Gudfy free
+  return formatPrice(total + total * 0.01); // Comisión de y Gudfy free
 };
 
 const generateRandomString = (length) => {
