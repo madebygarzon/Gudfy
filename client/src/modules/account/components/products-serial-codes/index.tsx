@@ -19,6 +19,7 @@ type SerialCodes = {
   product_name: string
   thumbnail: string
   serial_codes: string[]
+  created_at: string
 }
 
 const dataSelecterPage = [10, 20, 30]
@@ -27,7 +28,7 @@ const SerialCodeTable: React.FC = () => {
   const [isLoading, setLoading] = useState(true)
   const [listSerialCodes, setListSerialCodes] = useState<SerialCodes[]>()
   const [filteredCodes, setFilteredCodes] = useState<SerialCodes[]>()
-  const [searchQuery, setSearchQuery] = useState('')
+  const [searchQuery, setSearchQuery] = useState("")
 
   // Pagination controls
   const [page, setPage] = useState(1)
@@ -58,10 +59,11 @@ const SerialCodeTable: React.FC = () => {
   useEffect(() => {
     if (!listSerialCodes) return
 
-    const filtered = listSerialCodes.filter(code => 
-      code.product_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      code.order_number.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      code.store_name.toLowerCase().includes(searchQuery.toLowerCase())
+    const filtered = listSerialCodes.filter(
+      (code) =>
+        code.product_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        code.order_number.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        code.store_name.toLowerCase().includes(searchQuery.toLowerCase())
     )
     setFilteredCodes(filtered)
     setPage(1) // Reset to first page when search changes
@@ -87,32 +89,34 @@ const SerialCodeTable: React.FC = () => {
     setPage(1)
   }
 
-  const paginatedCodes = filteredCodes
-    ?.slice((page - 1) * rowsPerPage, page * rowsPerPage)
+  const paginatedCodes = filteredCodes?.slice(
+    (page - 1) * rowsPerPage,
+    page * rowsPerPage
+  )
 
   return (
     <div className="w-full">
       <div className="flex flex-col gap-y-8 w-full">
         {/* Search bar */}
         <div className="flex flex-col md:flex-row gap-4 items-end">
-              <div className="w-full md:w-[170px]">
-                <Input
-                  className="w-full bg-white h-[48px] hover:bg-gray-100 text-gray-600 text-sm border border-gray-300"
-                  placeholder="Buscar"
-                  id="search-input"
-                  type="search"
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                />
-              </div>
-            </div>
+          <div className="w-full md:w-[170px]">
+            <Input
+              className="w-full bg-white h-[48px] hover:bg-gray-100 text-gray-600 text-sm border border-gray-300"
+              placeholder="Buscar"
+              id="search-input"
+              type="search"
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </div>
+        </div>
         <div className="overflow-x-auto">
           <table className="min-w-full bg-white  rounded-lg shadow-md md:text-base text-xs">
             <thead>
               <tr>
-                <th className="flex items-center px-4 py-2 text-left ">
-                  Producto
-                </th>
                 <th className="px-4 py-2 text-left">Numero orden</th>
+                <th className="px-4 py-2 text-left">Fecha</th>
+                <th className="px-4 py-2 text-left">Producto</th>
+
                 <th className="px-4 py-2 text-left">Nombre de la tienda</th>
                 <th className="px-4 py-2 text-left">Items</th>
                 <th className="px-4 py-2 text-left">Descargar</th>
@@ -123,19 +127,33 @@ const SerialCodeTable: React.FC = () => {
                 paginatedCodes?.map((code, i) => (
                   <tr
                     key={code.store_variant_order}
-                    className="hover:bg-gray-50"
+                    className="hover:bg-gray-50 items-center"
                   >
-                    <td className=" py-2 flex items-center justify-start">
-                      <Thumbnail thumbnail={code.thumbnail} size="bsmall" />
-
-                      <p className="text-gray-700 font-bold">
-                        {code.product_name}
-                      </p>
+                    {/* <td className="md:px-4 py-2 px-2 ">{code.created_at}</td> */}
+                    <td className="md:px-4 py-2 px-2 text-sm">
+                      {code.order_number}
                     </td>
-                    <td className="md:px-4 py-2 px-2 ">{code.order_number}</td>
-                    <td className="md:px-4 py-2 px-2">{code.store_name}</td>
+                    <td className="md:px-4 py-2 px-2 text-sm">
+                      {new Date(code.created_at).toLocaleString("es-CO", {
+                        year: "numeric",
+                        month: "2-digit",
+                        day: "2-digit",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                        second: "2-digit",
+                        hour12: false,
+                        timeZone: "America/Bogota",
+                      })}
+                    </td>
+                    <td className=" md:px-4 py-2 px-2 font-bold text-sm">
+                      {code.product_name}
+                    </td>
 
-                    <td className="md:px-4 py-2 px-2 text-center">
+                    <td className="md:px-4 py-2 px-2 text-sm text-lila-gf ">
+                      {code.store_name}
+                    </td>
+
+                    <td className="md:px-4 py-2 px-2 text-center text-sm">
                       <Accordion
                         showDivider={false}
                         className="p-2 flex flex-col gap-1 w-full "
@@ -143,23 +161,21 @@ const SerialCodeTable: React.FC = () => {
                         itemClasses={itemClasses}
                       >
                         <AccordionItem
-                          className="text-xs md:text-base"
+                          className="text-sm md:text-base"
                           key={i}
                           aria-label="Items"
                           startContent={<FaEye className="text-lila-gf" />}
                           subtitle={
-                            <p className="flex text-xs md:text-base min-w-[100px]">
+                            <p className="flex text-sm min-w-[100px]">
                               {code.serial_codes.length}
                               {" Items - "}
-                              <span className="text-lila-gf ml-1 md:text-base text-[10px]">
+                              <span className="text-lila-gf ml-1 text-sm ">
                                 Ver más
                               </span>
                             </p>
                           }
                           title={
-                            <p className="flex text-xs md:text-base">
-                              Listado de ítems
-                            </p>
+                            <p className="flex text-sm">Listado de ítems</p>
                           }
                         >
                           {code.serial_codes.map((code) => (
@@ -193,7 +209,8 @@ const SerialCodeTable: React.FC = () => {
           </table>
           {!isLoading && !filteredCodes?.length && (
             <div className="p-10 flex w-full text-center items-center justify-center text-lg">
-              <XMarkMini /> {searchQuery ? 'No se encontraron resultados' : 'Sin compras'}
+              <XMarkMini />{" "}
+              {searchQuery ? "No se encontraron resultados" : "Sin compras"}
             </div>
           )}
         </div>
