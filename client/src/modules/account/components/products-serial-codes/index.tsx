@@ -168,14 +168,12 @@ const SerialCodeTable: React.FC = () => {
                           subtitle={
                             <p className="flex text-sm min-w-[100px]">
                               {code.serial_codes.length}
-                              {" Items - "}
-                              <span className="text-lila-gf ml-1 text-sm ">
-                                Ver más
-                              </span>
+                              {" Items "}
                             </p>
                           }
+                          
                           title={
-                            <p className="flex text-sm">Listado de ítems</p>
+                            <p className="flex text-sm"></p>
                           }
                         >
                           {code.serial_codes.map((code) => (
