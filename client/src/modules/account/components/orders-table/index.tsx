@@ -52,7 +52,6 @@ const TicketTable: React.FC = () => {
     | "Completado"
     | "En discusión"
     | "Finalizado"
-    | "Pagado"
     | "Pendiente de pago"
     | "all"
   >("all")
@@ -77,7 +76,6 @@ const TicketTable: React.FC = () => {
       | "Completado"
       | "En discusión"
       | "Finalizado"
-      | "Pagado"
       | "Pendiente de pago"
   ): string => {
     switch (status) {
@@ -89,8 +87,7 @@ const TicketTable: React.FC = () => {
         return "bg-yellow-400 text-white"
       case "Finalizado":
         return "bg-green-500 text-white"
-      case "Pagado":
-        return "bg-teal-500 text-white"
+     
       case "En discusión":
         return "bg-orange-500 text-white"
       default:
@@ -143,7 +140,6 @@ const TicketTable: React.FC = () => {
                     | "Completado"
                     | "En discusión"
                     | "Finalizado"
-                    | "Pagado"
                     | "Pendiente de pago"
                 )
               }
@@ -154,7 +150,6 @@ const TicketTable: React.FC = () => {
               <option value="Completado">Completado</option>
               <option value="Finalizado">Finalizado</option>
               <option value="En discusión">En discusión</option>
-              <option value="Pagado">Pagado</option>
             </select>
           </div>
         </div>
