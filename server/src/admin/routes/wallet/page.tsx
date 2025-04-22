@@ -88,6 +88,7 @@ const WalletListado = () => {
   const [page, setPage] = useState(1);
   const [rowsPages, setRowsPages] = useState(5);
   const [isLoading, setIsLoading] = useState(false);
+  const [shouldRefresh, setShouldRefresh] = useState(0);
 
   const handlerNextPage = (action) => {
     if (action === "NEXT")
@@ -205,6 +206,7 @@ const WalletListado = () => {
   const handlerSubmitPay = () => {
     postDataOrderPay(dataPay, voucher, products).then(() => {
       handlerResetSubmit();
+      setShouldRefresh((prev) => prev + 1);
     });
   };
 
@@ -232,9 +234,6 @@ const WalletListado = () => {
 
   useEffect(() => {
     handlerGetListStore();
-  }, []);
-
-  useEffect(() => {
     handlerResetSubmit();
   }, []);
 
@@ -592,7 +591,7 @@ const WalletListado = () => {
 
                                 <Container className=" mt-4">
                                   <h3 className="my-4">Histórico de pagos</h3>
-                                  <ListPayStore idStore={data.store_id} />
+                                  <ListPayStore idStore={data.store_id} shouldRefresh={shouldRefresh} />
                                 </Container>
                               </div>
                             </Drawer.Body>

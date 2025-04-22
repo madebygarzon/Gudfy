@@ -1,5 +1,5 @@
 import { Lifetime } from "awilix";
-import { LessThan } from "typeorm";
+import { In, LessThan } from "typeorm";
 import { TransactionBaseService, Customer } from "@medusajs/medusa";
 import StoreOrderRepository from "../repositories/store-order";
 import StoreVariantOrderRepository from "../repositories/store-variant-order";
@@ -557,12 +557,20 @@ class StoreOrderService extends TransactionBaseService {
       this.storeVariantOrderRepository_
     );
 
+    const getDtaSVO = await repoStoreVariantOrder.findOne({
+      where: {
+        id: store_variant_order_id,
+      },
+    });
+
     const upDateFinish = await repoStoreVariantOrder.update(
       store_variant_order_id,
       {
         variant_order_status_id: "Finished_ID",
       }
     );
+
+    await this.validateOrderreadyToFinished(getDtaSVO.store_order_id);
 
     return upDateFinish;
   }
@@ -579,7 +587,7 @@ class StoreOrderService extends TransactionBaseService {
     const getClamis = await repoStoreVariantOrder.find({
       where: {
         store_order_id: store_order_id,
-        variant_order_status_id: "Completed_ID",
+        variant_order_status_id: In(["Completed_ID", "Discussion_ID"]),
       },
     });
 
