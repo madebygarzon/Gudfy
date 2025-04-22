@@ -44,12 +44,11 @@ export function PurchaseCompleted(props: SentProps) {
 
             {/* Body */}
             <div className="bg-white px-10 py-8 text-gray-800">
-              <h2 className="text-2xl font-semibold mb-6">Estimado {name},</h2>
+              <h2 className="text-2xl font-semibold mb-6">Hola {name},</h2>
               <p className="leading-relaxed mb-4">
-                ¡Tu compra ha sido completada con éxito! Muchas gracias por tu
-                pedido con el número de orden <strong>{order}</strong>.
+              ¡Listo! Tu compra se procesó sin contratiempos.<br/>
+              Resumen del pedido #<strong>{order}</strong>.
               </p>
-              <p className="mb-4">Te compartimos los detalles de los productos adquiridos:</p>
               <ul className="list-disc list-inside bg-gray-100 p-4 rounded-md shadow-sm mb-6">
                 {serialCodes.map((item, index) => (
                   <li key={index} className="mb-2">
@@ -58,12 +57,11 @@ export function PurchaseCompleted(props: SentProps) {
                 ))}
               </ul>
               <p className="leading-relaxed mb-6">
-                Si tienes alguna pregunta o necesitas asistencia, no dudes en
-                contactarnos.
+              ¿Dudas o necesitas ayuda? Respóndenos a este correo o escribe info@gudfy.com; estamos atentos.
               </p>
-              <p className="mt-6 font-medium text-gf">¡Gracias por confiar en Gudfy!</p>
-              <p className="font-medium text-gray-800">Atentamente,</p>
-              <p className="font-medium text-gray-800">El equipo de Gudfy</p>
+              <p className="mt-6 font-medium text-gf">Gracias por elegir Gudfy. </p>
+              <p className="font-medium text-gray-800">Un saludo,</p>
+              <p className="font-medium text-gray-800">Equipo Gudfy</p>
             </div>
 
             {/* Footer */}

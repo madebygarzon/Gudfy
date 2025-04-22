@@ -101,9 +101,9 @@ const Nav = () => {
                 <Link href="/">
                   <Image
                     alt="gudfy"
-                    src="/header/gudfy_logo.svg"
-                    width={167.84}
-                    height={54.42}
+                    src="/header/gudfy_logo.png"
+                    width={220}
+                    height={70}
                   />
                 </Link>
               </div>
@@ -153,7 +153,7 @@ const Nav = () => {
               <Link href="/">
                 <Image
                   alt="gudfy"
-                  src="/header/gudfy_logo.svg"
+                  src="/header/gudfy_logo.png"
                   width={110}
                   height={38}
                 />

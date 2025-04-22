@@ -19,14 +19,14 @@ const FooterCTA = () => {
               <Image
                 className="ml-auto mr-auto transition ease-in-out delay-150 hover:-translate-y-1 hover:scale-110 duration-300"
                 alt="gudfy"
-                src="/footer/gudfy_logo_2.svg"
-                width={251.76}
-                height={81.63}
+                src="/footer/gudfy_logo.png"
+                width={350}
+                height={90}
               />
             </Link>
           </div>
           <div className="text-[#C7C7C7] font-[300] text-sm/[14px] grid grid-cols-1 gap-y-4">
-            <p className="ml-auto mr-auto mt-10 ">
+            <p className="ml-auto mr-auto ">
               Copyright © <CurrentYear /> | Powered by Gudfy
             </p>
             <div className="ml-auto mr-auto flex items-center justify-between w-28 mb-10">

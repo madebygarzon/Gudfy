@@ -20,7 +20,7 @@ export async function EmailPurchaseCompleted({
   const options = {
     from: process.env.SENDGRID_FROM,
     to: email,
-    subject: `Compra completada de la orden ${order}`,
+    subject: `Confirmación de compra – Pedido ${order}`,
     html: emailHtml,
   };
   sendgrid.send(options);
