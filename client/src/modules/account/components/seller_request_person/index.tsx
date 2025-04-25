@@ -556,7 +556,7 @@ const SellerRequestPerson = ({ onClose, handlerReset }: props) => {
         En el siguiente campo, por favor ingrese la dirección exacta de su billetera virtual. Esta dirección es necesaria para procesar los pagos de sus ventas y asegurar que los fondos se transfieran correctamente.
         </p>
         <Input
-          label="Campo 1 "
+          label="Dirección de tu Wallet"
           {...register("field_payment_method_1", {
             required: "Campo requerido",
           })}
@@ -567,7 +567,7 @@ const SellerRequestPerson = ({ onClose, handlerReset }: props) => {
         {}
         Confirmar dirección de wallet
         <Input
-          label="Campo 2 "
+          label="Dirección de tu Wallet"
           {...register("field_payment_method_2", {
             required: "Campo requerido",
           })}
@@ -575,7 +575,7 @@ const SellerRequestPerson = ({ onClose, handlerReset }: props) => {
           //errors={errors}
           onChange={handleInputChange}
         />
-        {formData.field_payment_method_1 !== formData.field_payment_method_2 && <p className="text-base my-3 font-bold text-red-600">Dirección de wallet incorrecta</p> }
+        {formData.field_payment_method_1 !== formData.field_payment_method_2 && <p className="text-base my-3 font-bold text-red-600">⛓️‍💥 Los campos no coinciden</p> }
         <p className="text-base my-3 font-bold text-red-600">
           {error.fileAddressProod ||
           error.fileFrontDocument ||
