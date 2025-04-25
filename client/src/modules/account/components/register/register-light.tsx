@@ -191,8 +191,8 @@ const RegisterLight = () => {
           Crear
         </Button>
       </form>
-      <p className="my-2 font[900] text-sm">O ingresa con:</p>
-      <SocialButtons />
+      {/* <p className="my-2 font[900] text-sm">O ingresa con:</p> */}
+      {/* <SocialButtons /> */}
     </div>
   )
 }
