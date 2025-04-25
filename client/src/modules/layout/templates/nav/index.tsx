@@ -10,6 +10,7 @@ import Image from "next/image"
 import { usePathname } from "next/navigation"
 import CountrySelect from "../../components/country-select"
 import DropdownGudFy from "@modules/layout/components/dropdown-gf"
+import DropdownGudFyLog from "@modules/layout/components/dropdown-gf-log"
 // import Link from "next/link"
 import Wallet from "@modules/layout/components/wallet-nav"
 import NavList from "@modules/layout/components/nav-list"
@@ -123,10 +124,7 @@ const Nav = () => {
                     items={propsDropDown.items}
                   />
                 ) : (
-                  <DropdownGudFy
-                    name={customer?.first_name}
-                    items={propsDropDownLog.items}
-                  />
+                  <DropdownGudFyLog name={customer?.first_name} />
                 )}
               </div>
               <div>
@@ -176,10 +174,7 @@ const Nav = () => {
                     items={propsDropDown.items}
                   />
                 ) : (
-                  <DropdownGudFy
-                    name={customer?.first_name}
-                    items={propsDropDownLog.items}
-                  />
+                  <DropdownGudFyLog name={customer?.first_name} />
                 )}
               </div>
             </div>
