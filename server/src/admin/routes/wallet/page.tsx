@@ -347,6 +347,7 @@ const WalletListado = () => {
                                         Cantidad
                                       </Table.HeaderCell>
                                       <Table.HeaderCell>Valor</Table.HeaderCell>
+                                      <Table.HeaderCell>Total</Table.HeaderCell>
                                       <Table.HeaderCell>
                                         Fecha pago
                                       </Table.HeaderCell>
@@ -386,6 +387,12 @@ const WalletListado = () => {
                                           <Table.Cell>
                                             {product.price}
                                           </Table.Cell>
+                                          <Table.Cell>
+                                            {formatPrice(
+                                              product.price *
+                                                product.quantity 
+                                            )}
+                                          </Table.Cell>
                                           <Table.Cell>--</Table.Cell>
                                           <Table.Cell>
                                             {formatPrice(
@@ -413,7 +420,7 @@ const WalletListado = () => {
                                             ) : (
                                               <>Cancelado</>
                                             )}
-                                            0
+                                            
                                           </Table.Cell>
                                           <Table.Cell>
                                             {formatPrice(
