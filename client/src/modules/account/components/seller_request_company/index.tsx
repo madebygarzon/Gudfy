@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useRef, useState } from "react"
 import ButtonMedusa from "@modules/common/components/button"
 import { Autocomplete, AutocompleteItem } from "@heroui/react"
 //import Input from "@modules/common/components/input"
@@ -71,6 +71,7 @@ const SellerRequestCompany = () => {
     formState: { errors, isSubmitting },
     setError,
   } = useForm()
+  const first = useRef<HTMLDivElement>(null);
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -123,7 +124,7 @@ const SellerRequestCompany = () => {
 
   return (
     <form onSubmit={onSubmit} className="">
-      <div className="flex flex-col w-full gap-y-2 text-sm ml-auto">
+      <div className="flex flex-col w-full gap-y-2 text-sm ml-auto" ref={first}>
         <p className="text-xl font-extrabold  text-center">
           Información Básica
         </p>
@@ -226,6 +227,11 @@ const SellerRequestCompany = () => {
 
         <Autocomplete
           //variant={variant}
+          popoverProps={{
+            shouldBlockScroll: true,
+            shouldCloseOnScroll: false,
+            portalContainer: first.current ?? undefined
+          }}
           defaultItems={tipo_proveedor}
           label="Tipo de proveedor"
           {...register("tipo_proveedor", {
@@ -297,6 +303,12 @@ const SellerRequestCompany = () => {
 
         <Autocomplete
           //variant={variant}
+          
+          popoverProps={{
+            shouldBlockScroll: true,
+            shouldCloseOnScroll: false,
+            portalContainer: first.current ?? undefined
+          }}
           defaultItems={cuantos_productos}
           label="¿Cuántos productos venderás?"
           {...register("productos_diferentes", {
@@ -324,6 +336,11 @@ const SellerRequestCompany = () => {
 
         <Autocomplete
           //variant={variant}
+          popoverProps={{
+            shouldBlockScroll: true,
+            shouldCloseOnScroll: false,
+            portalContainer: first.current ?? undefined
+          }}
           defaultItems={elementos_por_producto}
           label="Cantidad de productos de elementos por producto"
           {...register("productos_diferentes", {
