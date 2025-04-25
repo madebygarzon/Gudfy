@@ -133,8 +133,8 @@ const LoginComponente = () => {
           Acceder</Button>
         </div>
       </form>
-      <p className="my-5 font[900] text-sm">O ingresa con:</p>
-      <SocialButtons />
+      {/* <p className="my-5 font[900] text-sm">O ingresa con:</p> */}
+      {/* <SocialButtons /> */}
     </div>
   ) : (
     <RecoverAccount setIsRecovery={setIsRecovery} />
