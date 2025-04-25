@@ -14,14 +14,14 @@ const DesktopSearchModal = () => {
   const { t } = useTranslation('common');
   return (
     <>
-      <div className="flex sm:max-w-[100%] sm:h-[48px] h-[30px] border rounded-[5px] items-center px-5 gap-x-3">
+      {/* <div className="flex sm:max-w-[100%] sm:h-[48px] h-[30px] border rounded-[5px] items-center px-5 gap-x-3">
         <Image alt="icon-search" src="/header/icon-search.svg" width={16.69} height={16.69}/>
         <input 
           type="text" 
           className=" w-full bg-transparent border-none text-white focus:outline-none " 
           placeholder="Buscar..."
           />
-      </div>
+      </div> */}
       {/* 
         Original
       <button onClick={open} className="flex items-center gap-x-2 h-full">

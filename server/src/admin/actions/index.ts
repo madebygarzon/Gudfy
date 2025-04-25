@@ -1,1 +1,1 @@
-export const BACKEND = "http://localhost:9000";
+export const BACKEND = "https://gudfyp2p.com";
