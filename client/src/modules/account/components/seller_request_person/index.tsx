@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useRef, useState } from "react"
 import ButtonMedusa from "@modules/common/components/button"
 import { Autocomplete, AutocompleteItem } from "@heroui/react"
 //import Input from "@modules/common/components/input"
@@ -82,6 +82,7 @@ const SellerRequestPerson = ({ onClose, handlerReset }: props) => {
     formState: { errors, isSubmitting },
     setError,
   } = useForm()
+  const first = useRef<HTMLDivElement>(null);
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -226,7 +227,7 @@ const SellerRequestPerson = ({ onClose, handlerReset }: props) => {
   }
   return (
     <form onSubmit={onSubmit} className="">
-      <div className="flex flex-col w-full gap-y-2 text-sm ml-auto">
+      <div className="flex flex-col w-full gap-y-2 text-sm ml-auto" ref={first}>
         <p className="text-xl font-extrabold  text-center">
           Información Básica
         </p>
@@ -333,6 +334,11 @@ const SellerRequestPerson = ({ onClose, handlerReset }: props) => {
 
         <Autocomplete
           //variant={variant}
+          popoverProps={{
+            shouldBlockScroll: true,
+            shouldCloseOnScroll: false,
+            portalContainer: first.current ?? undefined
+          }}
           defaultItems={tipo_proveedor}
           label="Tipo de proveedor"
           {...register("supplier_type", {
@@ -340,6 +346,8 @@ const SellerRequestPerson = ({ onClose, handlerReset }: props) => {
           })}
           className="max-w"
           onInputChange={(e) => handleAutocompletChange(e, "supplier_type")}
+          onChange={(e) => {}}
+          onOpenChange={(e) => {}}
         >
           {(item) => (
             <AutocompleteItem key={item.value}>{item.label}</AutocompleteItem>
@@ -404,6 +412,11 @@ const SellerRequestPerson = ({ onClose, handlerReset }: props) => {
 
         <Autocomplete
           //variant={variant}
+          popoverProps={{
+            shouldBlockScroll: true,
+            shouldCloseOnScroll: false,
+            portalContainer: first.current ?? undefined
+          }}
           defaultItems={cuantos_productos}
           label="¿Cuántos productos venderás?"
           {...register("quantity_products_sale", {
@@ -465,6 +478,11 @@ const SellerRequestPerson = ({ onClose, handlerReset }: props) => {
         /> */}
 
         <Autocomplete
+          popoverProps={{
+            shouldBlockScroll: true,
+            shouldCloseOnScroll: false,
+            portalContainer: first.current ?? undefined
+          }}
           //variant={variant}
           defaultItems={elementos_por_producto}
           label="Cantidad de productos de elementos por producto"

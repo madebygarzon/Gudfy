@@ -62,10 +62,12 @@ const ApplyForSeller: React.FC<props> = ({ handlerReset }) => {
       {}
       <>
         <Modal
+        isDismissable={false}
+        isKeyboardDismissDisabled={true}
           className=""
           isOpen={isOpen}
           onOpenChange={onOpenChange}
-          scrollBehavior={scrollBehavior}
+          scrollBehavior='inside'
         >
           <ModalContent>
             <ModalHeader className="flex flex-col gap-1 mr-auto ml-auto">
@@ -81,6 +83,8 @@ const ApplyForSeller: React.FC<props> = ({ handlerReset }) => {
         </Modal>
 
         <Modal
+         isDismissable={false}
+         isKeyboardDismissDisabled={true}
           className=""
           isOpen={isOpen2}
           onOpenChange={onOpenChange2}
