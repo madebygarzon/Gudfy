@@ -479,11 +479,23 @@ class StoreOrderService extends TransactionBaseService {
       this.storeXVariantRepository_
     );
 
+    const storeOrder = await repoStoreOrder.findOne({
+      where: {
+        id: orderId,
+      },
+    });
+
+    if (storeOrder.order_status_id !== "Payment_Pending_ID") {
+      throw new Error("No se puedo cancelar la orden porque su estado es diferente a Payment_Pending_ID");
+    }
+
     await this.restaureStock(repoStoreXVariant, repoStoreVariantOrder, orderId);
 
     const cancelOrder = await repoStoreOrder.update(orderId, {
       order_status_id: "Cancel_ID",
     });
+
+    return cancelOrder;
   }
 
   async getListSerialCodeforCustomer() {
