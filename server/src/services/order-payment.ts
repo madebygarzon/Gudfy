@@ -10,6 +10,7 @@ import ProductVariantRepository from "@medusajs/medusa/dist/repositories/product
 import { TransactionBaseService } from "@medusajs/medusa";
 import { io } from "../websocket";
 import { EmailPurchaseCompleted } from "../admin/components/email/payments";
+import { IsNull } from "typeorm";
 
 class OrderPaymentService extends TransactionBaseService {
   static LIFE_TIME = Lifetime.SCOPED;
@@ -272,7 +273,9 @@ class OrderPaymentService extends TransactionBaseService {
     return listPaymentOrder;
   }
 
-  // async successPayOrder(order_id) {
+ 
+
+  // async successPayOrder(order_id: string) {
   //   try {
   //     const so = this.activeManager_.withRepository(this.storeOrderRepository_);
   //     const svo = this.activeManager_.withRepository(
@@ -285,24 +288,19 @@ class OrderPaymentService extends TransactionBaseService {
   //     const codes = [];
 
   //     const storeOrder = await so.findOne({ where: { id: order_id } });
-  //     if (storeOrder.order_status_id !== "Payment_Pending_ID")
+  //     if (!storeOrder) {
+  //       throw new Error("Order not found");
+  //     }
+  //     if (storeOrder.order_status_id !== "Payment_Pending_ID") {
   //       throw new Error("Order status is not pending payment");
+  //     }
 
-  //     const ListSVO = await svo.find({
-  //       where: {
-  //         store_order_id: order_id,
-  //       },
-  //     });
+  //     const ListSVO = await svo.find({ where: { store_order_id: order_id } });
+
   //     for (const variant of ListSVO) {
   //       const quantity = variant.quantity;
   //       const id = variant.id;
-  //       const serialCodesToUpdate = await sc.find({
-  //         where: {
-  //           store_variant_order_id: null,
-  //           store_variant_id: variant.store_variant_id,
-  //         },
-  //         take: quantity,
-  //       });
+
   //       const productVariant = await sv
   //         .createQueryBuilder("sv")
   //         .innerJoinAndSelect("sv.variant", "v")
@@ -310,21 +308,37 @@ class OrderPaymentService extends TransactionBaseService {
   //         .select(["v.title AS title"])
   //         .getRawMany();
 
-  //       for (const serialCode of serialCodesToUpdate) {
-  //         codes.push({
-  //           serialCodes: serialCode.serial,
-  //           title: productVariant[0].title,
-  //         });
-  //         await sc.update(serialCode.id, { store_variant_order_id: id });
-  //       }
+  //       console.log("esta es la informacion que llega",variant)
+  //         for(let i = 0; i < quantity; i++){
+  //           // Usar IsNull de TypeORM para garantizar que store_variant_order_id sea exactamente null
+  //           const serialCodesToUpdate = await sc.findOne({
+  //             where: {
+  //               store_variant_order_id: IsNull(),
+  //               store_variant_id: variant.store_variant_id,
+  //             },
+  //           });
 
-  //       const upDateSVO = await svo.update(variant.id, {
+  //           if (!serialCodesToUpdate) {
+  //             throw new Error("No available serial codes");
+  //           }
+            
+  //           console.log("serialCodesToUpdate",serialCodesToUpdate)
+  //           await sc.update(serialCodesToUpdate.id, { store_variant_order_id: id });
+  //           codes.push({
+  //             serialCodes: serialCodesToUpdate.serial,
+  //             title: productVariant[0].title,
+  //           });
+  //         }
+
+  //         console.log("esta es la informaciondel seriales ",codes)
+
+  //       await svo.update(variant.id, {
   //         variant_order_status_id: "Completed_ID",
   //       });
   //       const storeVariant = await sv.findOneBy({
   //         id: variant.store_variant_id,
   //       });
-  //       const deleteReservation = await sv.update(variant.store_variant_id, {
+  //       await sv.update(variant.store_variant_id, {
   //         quantity_reserved: storeVariant.quantity_reserved - quantity,
   //       });
   //     }
@@ -336,18 +350,15 @@ class OrderPaymentService extends TransactionBaseService {
   //       order: storeOrder.id,
   //     });
 
-  //     const storeOrderUpdate = await so.update(order_id, {
-  //       order_status_id: "Completed_ID",
-  //     });
-
-  //     io.emit("success_pay_order", {
-  //       order_id: order_id,
-  //     });
+  //     await so.update(order_id, { order_status_id: "Completed_ID" });
+  //     io.emit("success_pay_order", { order_id: order_id });
+  //     return true;
   //   } catch (error) {
-  //     console.log(
-  //       "error en el servicio para actualizar los datos en la confirmacion de la orden ",
+  //     console.error(
+  //       "Error en el servicio para actualizar los datos en la confirmación de la orden:",
   //       error
   //     );
+  //     throw error;
   //   }
   // }
 
@@ -376,6 +387,41 @@ class OrderPaymentService extends TransactionBaseService {
         const quantity = variant.quantity;
         const id = variant.id;
 
+        // const serialCodesToUpdate = await sc.find({
+        //   where: {
+        //     store_variant_order_id: IsNull(),
+        //     store_variant_id: variant.store_variant_id,
+        //   },
+        //   take: quantity,
+        // });
+
+        const result = await sc
+          .createQueryBuilder()
+          .update()
+          .set({ store_variant_order_id: id })
+          .where(
+            `id IN (
+              SELECT id
+              FROM serial_code
+              WHERE store_variant_order_id IS NULL
+                AND store_variant_id = :svId
+              LIMIT :q
+              FOR UPDATE SKIP LOCKED
+            )`,
+            { svId: variant.store_variant_id, q: quantity }
+          )
+          .returning(["id", "serial"])   // ← Postgres devuelve las filas aquí
+          .execute();
+
+          console.log("resultttttttt", result);
+        const serialCodesToUpdate = result.raw as { id: string; serial: string }[];
+
+        if (serialCodesToUpdate.length < quantity) {
+          throw new Error(
+            `Stock insuficiente: pidió ${quantity} y sólo había ${serialCodesToUpdate.length}`
+          );
+        }
+
         const productVariant = await sv
           .createQueryBuilder("sv")
           .innerJoinAndSelect("sv.variant", "v")
@@ -383,22 +429,13 @@ class OrderPaymentService extends TransactionBaseService {
           .select(["v.title AS title"])
           .getRawMany();
 
-          for(let i = 0; i < quantity; i++){
-            const serialCodesToUpdate = await sc.findOne({
-              where: {
-                store_variant_order_id: null,
-                store_variant_id: variant.store_variant_id,
-              },
-            });
-
-            await sc.update(serialCodesToUpdate.id, { store_variant_order_id: id });
-            codes.push({
-              serialCodes: serialCodesToUpdate.serial,
-              title: productVariant[0].title,
-            });
-          }
-
-        
+        for (const serialCode of serialCodesToUpdate) {
+          codes.push({
+            serialCodes: serialCode.serial,
+            title: productVariant[0].title,
+          });
+          await sc.update(serialCode.id, { store_variant_order_id: id });
+        }
 
         await svo.update(variant.id, {
           variant_order_status_id: "Completed_ID",
@@ -420,6 +457,7 @@ class OrderPaymentService extends TransactionBaseService {
 
       await so.update(order_id, { order_status_id: "Completed_ID" });
       io.emit("success_pay_order", { order_id: order_id });
+      return true;
     } catch (error) {
       console.error(
         "Error en el servicio para actualizar los datos en la confirmación de la orden:",
