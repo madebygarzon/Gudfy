@@ -376,14 +376,6 @@ class OrderPaymentService extends TransactionBaseService {
         const quantity = variant.quantity;
         const id = variant.id;
 
-        const serialCodesToUpdate = await sc.find({
-          where: {
-            store_variant_order_id: null,
-            store_variant_id: variant.store_variant_id,
-          },
-          take: quantity,
-        });
-
         const productVariant = await sv
           .createQueryBuilder("sv")
           .innerJoinAndSelect("sv.variant", "v")
@@ -391,13 +383,22 @@ class OrderPaymentService extends TransactionBaseService {
           .select(["v.title AS title"])
           .getRawMany();
 
-        for (const serialCode of serialCodesToUpdate) {
-          codes.push({
-            serialCodes: serialCode.serial,
-            title: productVariant[0].title,
-          });
-          await sc.update(serialCode.id, { store_variant_order_id: id });
-        }
+          for(let i = 0; i < quantity; i++){
+            const serialCodesToUpdate = await sc.findOne({
+              where: {
+                store_variant_order_id: null,
+                store_variant_id: variant.store_variant_id,
+              },
+            });
+
+            await sc.update(serialCodesToUpdate.id, { store_variant_order_id: id });
+            codes.push({
+              serialCodes: serialCodesToUpdate.serial,
+              title: productVariant[0].title,
+            });
+          }
+
+        
 
         await svo.update(variant.id, {
           variant_order_status_id: "Completed_ID",
