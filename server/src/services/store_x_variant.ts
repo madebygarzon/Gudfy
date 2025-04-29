@@ -297,6 +297,17 @@ class StoreXVariantService extends TransactionBaseService {
 
     return updateProduct;
   }
+
+  async updatePrice(idSxv: string, price: number) {
+    const storeXVaraintRepository = this.manager_.withRepository(
+      this.storeXVariantRepository_
+    );
+    const updateProduct = await storeXVaraintRepository.update(idSxv, {
+      price: price,
+    });
+    
+    return updateProduct;
+  }
 }
 
 export default StoreXVariantService;

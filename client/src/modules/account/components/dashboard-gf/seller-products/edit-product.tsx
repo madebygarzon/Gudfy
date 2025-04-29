@@ -11,8 +11,10 @@ import {
 } from "@heroui/react"
 import FileUploader from "./file-uploader-txt"
 import { postAddCodesProduct } from "@modules/account/actions/serial-code/post-add-codes-store-variant"
+import { Input } from "@heroui/react"
 import ButtonLigth from "@modules/common/components/button_light"
 import Thumbnail from "@modules/products/components/thumbnail"
+import { postUpdatePriceProduct } from "@modules/account/actions/serial-code/uptade-product-price"
 
 type props = {
   productData: StoreProducVariant
@@ -53,9 +55,19 @@ export default function EditProduct({
 }: props) {
   const [Error, setError] = useState<boolean>(false)
   const [addResult, setAddResult] = useState<CodesResult[]>([])
+  const [updatedPrice, setUpdatedPrice] = useState<string>(productData?.price || '')
   useEffect(() => {
     setError(false)
-  }, [])
+    setUpdatedPrice(productData?.price || '')
+  }, [productData])
+
+  const updatePrice = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value
+    // Only allow numeric input with decimal point
+    if (/^\d*\.?\d*$/.test(value) || value === '') {
+      setUpdatedPrice(value)
+    }
+  }
 
   const onSubmit = () => {
     if (Error) return
@@ -66,11 +78,22 @@ export default function EditProduct({
       productvariantid: productData.storexvariantid,
       codes: code,
     }
-   
+   if(productData?.price !== updatedPrice){
+    const price = {
+      productvariantid: productData.storexvariantid,
+      price: Number(updatedPrice),
+    }
+    postUpdatePriceProduct(price).then(() => {
+      setReset((reset) => !reset)
+      onClose()
+    })
+   }
+   if(code?.length){
     postAddCodesProduct(codes).then(() => {
       setReset((reset) => !reset)
       onClose()
     })
+   }
   }
 
   return (
@@ -97,6 +120,21 @@ export default function EditProduct({
                       <span className="font-bold">Seriales vendidos:</span>{" "}
                       {productData.serialCodeCount}
                     </p>
+                    <p className="mt-2">
+                      <span className="font-bold">Precio actual:</span>{" "}
+                      ${productData.price}
+                    </p>
+                    <div className="mt-2">
+                      <label htmlFor="price-update" className="font-bold block mb-1">Actualizar precio:</label>
+                      <input 
+                        id="price-update"
+                        type="text" 
+                        value={updatedPrice} 
+                        onChange={updatePrice}
+                        className="border border-gray-300 rounded-md px-3 py-2 w-full max-w-[200px]"
+                        placeholder="Nuevo precio"
+                      />
+                    </div>
                   </div>
                   <h4 className="font-bold mt-8 text-lg mb-1">
                     Agregar inventario
@@ -124,7 +162,7 @@ export default function EditProduct({
                 Cancelar
               </ButtonLigth>
               <ButtonLigth
-                disabled={addResult.length === 0 || Error}
+                disabled={(addResult.length === 0 || Error) && updatedPrice === productData.price}
                 color="primary"
                 className="bg-[#28A745] hover:bg-[#218838] text-white border-none w-full sm:w-auto"
                 onClick={onSubmit}
