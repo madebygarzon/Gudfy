@@ -7,6 +7,8 @@ import StoreXVariantRepository from "../repositories/store-x-variant";
 import SerialCodeRepository from "src/repositories/serial-code";
 import CustomerRepository from "src/repositories/customer";
 import { In } from "typeorm";
+import { EmailPurchaseCompleted } from "../admin/components/email/payments";
+import { io } from "../websocket";
 
 class StoreOrderAdminService extends TransactionBaseService {
   static LIFE_TIME = Lifetime.SCOPED;
@@ -205,5 +207,154 @@ class StoreOrderAdminService extends TransactionBaseService {
 
     return listMetrics;
   }
+
+  async UpdateOrderToComplete(order_id) {
+    try {
+      const so = this.activeManager_.withRepository(this.storeOrderRepository_);
+      const svo = this.activeManager_.withRepository(
+        this.storeVariantOrderRepository_
+      );
+      const sv = this.activeManager_.withRepository(
+        this.storeXVariantRepository_
+      );
+      const sc = this.activeManager_.withRepository(this.serialCodeRepository_);
+      const codes = [];
+
+      console.log("llega al servicio",order_id);
+
+      const storeOrder = await so.findOne({ where: { id: order_id } });
+      if (!storeOrder) {
+        throw new Error("Order not found");
+      }
+
+      const ListSVO = await svo.find({ where: { store_order_id: order_id } });
+
+      // Array to collect variants with insufficient stock
+      const insufficientStockVariants = [];
+
+      console.log("Listado de variantes",ListSVO)
+      // First validate and collect all variants with insufficient quantity_store
+      for (const variant of ListSVO) {
+        const quantity = variant.quantity;
+        const storeVariant = await sv.findOneBy({
+          id: variant.store_variant_id,
+        });
+
+        console.log("Variante",storeVariant);
+
+        if (!storeVariant || storeVariant.quantity_store < quantity) {
+          // Get variant information for better error message
+          const variantInfo = await sv
+            .createQueryBuilder("sv")
+            .innerJoinAndSelect("sv.variant", "v")
+            .where("sv.id = :id", { id: variant.store_variant_id })
+            .select(["v.title AS title"])
+            .getRawOne();
+
+          const variantTitle = variantInfo ? variantInfo.title : 'Unknown variant';
+          insufficientStockVariants.push({
+            title: variantTitle,
+            requested: quantity,
+            available: storeVariant ? storeVariant.quantity_store : 0,
+            variant_id: variant.store_variant_id
+          });
+        }
+      }
+
+      // If there are variants with insufficient stock, return the array with details
+      if (insufficientStockVariants.length > 0) {
+        console.log("Variante insuficiente",insufficientStockVariants);
+        return {
+          success: false,
+          message: "No hay suficiente stock para algunas variaciones",
+          insufficientStockVariants
+        };
+      }
+
+      // If all variants have sufficient quantity_store, proceed with code assignment
+      for (const variant of ListSVO) {
+        const quantity = variant.quantity;
+        const id = variant.id;
+
+        const result = await sc
+          .createQueryBuilder()
+          .update()
+          .set({ store_variant_order_id: id })
+          .where(
+            `id IN (
+              SELECT id
+              FROM serial_code
+              WHERE store_variant_order_id IS NULL
+                AND store_variant_id = :svId
+              LIMIT :q
+              FOR UPDATE SKIP LOCKED
+            )`,
+            { svId: variant.store_variant_id, q: quantity }
+          )
+          .returning(["id", "serial"])
+          .execute();
+
+        const serialCodesToUpdate = result.raw as { id: string; serial: string }[];
+
+        if (serialCodesToUpdate.length < quantity) {
+          throw new Error(
+            `Stock insuficiente: pidió ${quantity} y sólo había ${serialCodesToUpdate.length} códigos disponibles`
+          );
+        }
+
+        const productVariant = await sv
+          .createQueryBuilder("sv")
+          .innerJoinAndSelect("sv.variant", "v")
+          .where("sv.id = :id", { id: variant.store_variant_id })
+          .select(["v.title AS title"])
+          .getRawMany();
+
+        for (const serialCode of serialCodesToUpdate) {
+          codes.push({
+            serialCodes: serialCode.serial,
+            title: productVariant[0].title,
+          });
+          await sc.update(serialCode.id, { store_variant_order_id: id });
+        }
+
+        await svo.update(variant.id, {
+          variant_order_status_id: "Completed_ID",
+        });
+        const storeVariant = await sv.findOneBy({
+          id: variant.store_variant_id,
+        });
+        await sv.update(variant.store_variant_id, {
+          quantity_store: storeVariant.quantity_store - quantity,
+        });
+      }
+
+      await EmailPurchaseCompleted({
+        email: storeOrder.email,
+        serialCodes: codes,
+        name: storeOrder.name + " " + storeOrder.last_name,
+        order: storeOrder.id,
+      });
+
+      await so.update(order_id, { order_status_id: "Completed_ID" });
+      io.emit("success_pay_order", { order_id: order_id });
+      return {
+        success: true,
+        message: "Orden completada exitosamente",
+        order_id,
+        codes
+      };
+    } catch (error) {
+      console.error(
+        "Error en el servicio para actualizar los datos en la confirmación de la orden:",
+        error
+      );
+      return {
+        success: false,
+        message: error.message || "Error desconocido al procesar la orden",
+        error: error.toString()
+      };
+    }
+  }
+  
 }
 export default StoreOrderAdminService;

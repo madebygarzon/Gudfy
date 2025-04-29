@@ -22,9 +22,10 @@ import { updateNameStore } from "./update-name-store";
 import { updateSellerAvatar } from "./update-seller-avatar";
 import { addRequestProduct } from "./request-product/post-request-product";
 import { getListRequestProduct } from "./request-product/get-list-request-product-from-seller";
-import { getListProductSerials } from "./product-serial/get-list-product-serial";
-import { DeleteSerialCodes } from "./product-serial/delete-serials-code";
-import { getListSoldProductSerials } from "./product-serial/get-list-sold-product-serial";
+import { getListProductSerials } from "./product/get-list-product-serial";
+import { DeleteSerialCodes } from "./product/delete-serials-code";
+import { getListSoldProductSerials } from "./product/get-list-sold-product-serial";
+import { postUpdatePriceProduct } from "./product/update-product-price";
 
 const router = Router();
 
@@ -53,6 +54,10 @@ export function attachSellerRoutes(customerRouter: Router) {
   router.post(
     "/add-codes-store-variant",
     wrapHandler(postAddCodesStoreVariant)
+  );
+  router.post(
+    "/update-product-price",
+    wrapHandler(postUpdatePriceProduct)
   );
   router.get(
     "/get-list-product-serials/:id",
