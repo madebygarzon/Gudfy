@@ -1,23 +1,21 @@
 import React, { useState } from "react"
 
-const PendingRequest: React.FC = ({}) => {
-  return (
-    <>
-      <div className=" flex flex-col w-full space-y-10 items-center">
-        <h1 className="text-center text-[38px] font-black">
-          ¡ Gracias por aplicar a Gudfy !
-        </h1>
+const PendingRequest: React.FC = () => (
+  <section className="flex items-center justify-center min-h-[60dvh]  w-full px-4">
+    <div className="flex flex-col items-center space-y-8 text-center">
+      <h1 className="text-3xl md:text-4xl font-black">
+        ¡Gracias por aplicar a Gudfys!
+      </h1>
 
-        <p className=" text-center text-[18px] font-light max-w-[700px]">
-          ¡Gracias por tu interés en convertirte en vendedor en GUDFY! Hemos
-          recibido tu solicitud y estamos revisándola cuidadosamente. Por favor,
-          ten en cuenta que este proceso puede tardar hasta 3 días hábiles.
-          ¡Pronto te daremos noticias sobre el estado de tu solicitud!
-          ¡Bienvenido a nuestra comunidad!
-        </p>
-      </div>
-    </>
-  )
-}
+      <p className="max-w-xl text-base md:text-lg font-light">
+        ¡Gracias por tu interés en convertirte en vendedor en GUDFY! Hemos
+        recibido tu solicitud y estamos revisándola cuidadosamente. Por favor,
+        ten en cuenta que este proceso puede tardar hasta 3&nbsp;días hábiles.
+        ¡Pronto te daremos noticias sobre el estado de tu solicitud! ¡Bienvenido
+        a nuestra comunidad!
+      </p>
+    </div>
+  </section>
+)
 
 export default PendingRequest
