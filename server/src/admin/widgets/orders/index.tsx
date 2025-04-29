@@ -82,6 +82,9 @@ const dataSelecFilter = [
     value: "En discusión",
     label: "En discusión",
   },
+  { value: "Pendiente de pago", 
+    label: "Pendiente de pago" 
+  }
 ];
 const registerNumber = [20, 50, 100];
 // numero de filas por pagina predeterminado
@@ -183,43 +186,18 @@ const SellerApplication = () => {
     handlerGetListOrder();
   }, []);
 
-  const handlerFilter = (value) => {
+  const handlerFilter = (value: string) => {
     setPage(1);
-    let dataFilter;
-    switch (value) {
-      case dataSelecFilter[1].value:
-        dataFilter = dataOrder.dataOrders.filter(
-          (data) => data.state_order === dataSelecFilter[1].value
-        );
-        break;
-      case dataSelecFilter[2].value:
-        dataFilter = dataOrder.dataOrders.filter(
-          (data) => data.state_order === dataSelecFilter[2].value
-        );
-        break;
-      case dataSelecFilter[3].value:
-        dataFilter = dataOrder.dataOrders.filter(
-          (data) => data.state_order === dataSelecFilter[3].value
-        );
-        break;
-      case dataSelecFilter[4].value:
-        dataFilter = dataOrder.dataOrders.filter(
-          (data) => data.state_order === dataSelecFilter[4].value
-        );
-        break;
-      case dataSelecFilter[5].value:
-        dataFilter = dataOrder.dataOrders.filter(
-          (data) => data.state_order === dataSelecFilter[5].value
-        );
-        break;
-      default:
-        dataFilter = dataOrder.dataOrders;
-        break;
-    }
+  
+    const dataFilter =
+      value === "All"
+        ? dataOrder.dataOrders
+        : dataOrder.dataOrders.filter((order) => order.state_order === value);
+  
     setDataCustomer({
       ...dataOrder,
       dataPreview: handlerPreviewSellerAplication(dataFilter, 1),
-      dataFilter: value === dataSelecFilter[0].value ? [] : dataFilter,
+      dataFilter: value === "All" ? [] : dataFilter,
     });
   };
   const handlerRowsNumber = (value) => {
@@ -256,23 +234,32 @@ const SellerApplication = () => {
     }
   };
 
-  const handlerSearcherbar = (e: string) => {
-    const dataFilter = dataOrder.dataOrders.filter((data) => {
-      const nameIncludes = data.email.toLowerCase().includes(e.toLowerCase());
-      const emailIncludes = data.id.toLowerCase().includes(e.toLowerCase());
-      const name = (data.person_name + " " + data.person_last_name)
-        .toLowerCase()
-        .toLowerCase()
-        .includes(e.toLowerCase());
-      // Devuelve true si la palabra enviada está incluida en el nombre o el correo electrónico
-      return nameIncludes || emailIncludes || name;
+  const handlerSearcherbar = (value: string) => {
+    // 1) Búsqueda en minúsculas
+    const query = (value ?? "").toLowerCase();
+  
+    const dataFilter = dataOrder.dataOrders.filter((order) => {
+      const email   = (order.email ?? "").toLowerCase();
+      const orderId = (order.id ?? "").toLowerCase();
+      const fullName = `${order.person_name ?? ""} ${order.person_last_name ?? ""}`
+        .trim()
+        .toLowerCase();
+  
+      return (
+        email.includes(query) ||
+        orderId.includes(query) ||
+        fullName.includes(query)
+      );
     });
+  
+    setPage(1); 
     setDataCustomer({
       ...dataOrder,
       dataPreview: handlerPreviewSellerAplication(dataFilter, 1),
       dataFilter: dataFilter.length ? dataFilter : [],
     });
   };
+  
 
   return (
     <div className=" bg-white p-8 border border-gray-200 rounded-lg ">
@@ -284,7 +271,7 @@ const SellerApplication = () => {
               <div className="w-[156px] ">
                 <Select onValueChange={handlerFilter}>
                   <Select.Trigger>
-                    <Select.Value placeholder="Filtar por: " />
+                    <Select.Value placeholder="Filtrar por estado: " />
                   </Select.Trigger>
                   <Select.Content>
                     {dataSelecFilter.map((item) => (
@@ -297,7 +284,7 @@ const SellerApplication = () => {
               </div>
               <div className="w-[250px]">
                 <Input
-                  placeholder="Buscar por nombre"
+                  placeholder="Comprador, Email, Orden"
                   id="search-input"
                   type="search"
                   onChange={(e) => handlerSearcherbar(e.target.value)}
