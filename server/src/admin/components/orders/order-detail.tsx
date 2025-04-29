@@ -79,9 +79,9 @@ const OrderDetail = ({ orderData, customer }: ModalOrderProps) => {
           <div className="my-2  text-base ">
 
             <p className="text-lg">
-              El pedido
+              El pedido{" "}
               <span className=" ">#{orderData.id}</span>
-              se realizó el
+              {" "}se realizó el{" "}
               <span className="font-bold ">
                 {formatDate(orderData.created_at)}
               </span>
