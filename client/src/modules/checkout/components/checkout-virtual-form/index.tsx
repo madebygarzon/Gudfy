@@ -9,6 +9,7 @@ import { useMeCustomer } from "medusa-react"
 import React, { Dispatch, SetStateAction, useEffect, useState } from "react"
 import { orderDataForm } from "@lib/context/order-context"
 import Country from "@modules/common/components/select_country/selectCountry"
+import CustomSelectCountry from "@modules/common/components/select_country/customSelectCountry";
 
 type CompleteForm = {
   form: boolean
@@ -72,7 +73,22 @@ const CheckautVirtualForm: React.FC<props> = ({
     return true
   }
 
+  // Extract country code from phone number if available
+  const extractCountryCode = (phone: string | undefined) => {
+    if (!phone) return 57; // Default to Colombia (+57)
+    const codeMatch = phone.match(/\(\+(\d+)\)/);
+    return codeMatch ? parseInt(codeMatch[1]) : 57;
+  }
+
   useEffect(() => {
+    console.log("customer", customer)
+    
+    // Extract country code from phone if available
+    if (customer?.phone) {
+      const extractedCode = extractCountryCode(customer.phone);
+      setcodeFlag(extractedCode);
+    }
+    
     setDataForm((prevData) => ({
       ...prevData,
       name: customer?.first_name || "",
@@ -117,7 +133,8 @@ const CheckautVirtualForm: React.FC<props> = ({
       />
 
       <div className="grid grid-cols-2 gap-x-2">
-        <Country
+        <CustomSelectCountry
+          initialCode={codeflag}
           setCodeFlag={setcodeFlag}
           setSelectCountry={handlerSelectCountry}
         />
@@ -133,6 +150,7 @@ const CheckautVirtualForm: React.FC<props> = ({
       </div>
 
       <Input
+        value={dataForm.phone}
         type="number"
         contentStar={`(+${codeflag})`}
         label="Telefono"
