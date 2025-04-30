@@ -150,7 +150,6 @@ const CheckautVirtualForm: React.FC<props> = ({
       </div>
 
       <Input
-        value={dataForm.phone}
         type="number"
         contentStar={`(+${codeflag})`}
         label="Telefono"
