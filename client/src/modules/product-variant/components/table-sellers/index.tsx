@@ -87,7 +87,7 @@ const TableSeller: React.FC<TableProps> = ({
                   className="border border-[#7b39c4]"
                   content={`Ver la tienda de ${seller.store_name}`}
                 >
-                  <Link href={`/seller/store/${seller.store_id}`}>
+                  <Link href={`/seller-store/${seller.store_id}`}>
                     <div className="flex flex-row gap-2 items-center">
                       <div className="flex items-center">
                         <Avatar
