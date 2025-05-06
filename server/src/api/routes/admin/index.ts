@@ -30,6 +30,7 @@ import getListStoreOrders from "./orders/get-list-store-order";
 import getListMetricsCustomer from "./metrics/get-list-metrics-customer";
 import getListMetricsSeller from "./metrics/get-list-metrics-seller";
 import UpdateOrderToCompleted from "./orders/update-order-to-completed";
+import UpdateOrderToCancel from "./orders/update-order-to-cancel";
 
 // Initialize a custom router
 const router = Router();
@@ -111,6 +112,7 @@ export function attachAdminRoutes(adminRouter: Router) {
   //---------------orders-------------------
   router.get("/orders/list-orders", wrapHandler(getListStoreOrders));
   router.post("/orders/update-order-to-completed", wrapHandler(UpdateOrderToCompleted));
+  router.post("/orders/update-order-to-cancel", wrapHandler(UpdateOrderToCancel));
 
   //---------------Metrics-----------------
   router.get(

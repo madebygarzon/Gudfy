@@ -249,44 +249,54 @@ class CartMarketService extends TransactionBaseService {
   }
 
   private async createStoreOrder(total_price, quantity, customer_id) {
-    const storeOrderRepo = this.activeManager_.withRepository(
-      this.storeOrderRepository_
-    );
-    let newIdNumber = 1001;
-    let prefix = "MPG-";
+    // Usamos atomicPhase_ para asegurarnos de que toda la operación está dentro de una transacción
+    return await this.atomicPhase_(async (manager) => {
+      // Usamos el manager proporcionado por atomicPhase_ para asegurarnos de que estamos en la misma transacción
+      const storeOrderRepo = manager.getRepository(this.storeOrderRepository_.target);
+      
+      let newIdNumber = 1001;
+      let prefix = "MPG-";
 
-    const lastOrder = await storeOrderRepo
-      .createQueryBuilder("store_order")
-      .orderBy("store_order.created_at", "DESC")
-      .getOne();
+      // Ahora podemos usar setLock sin problemas porque estamos en una transacción
+      const lastOrder = await storeOrderRepo
+        .createQueryBuilder("store_order")
+        .orderBy("store_order.created_at", "DESC")
+        .setLock("pessimistic_write")
+        .getOne();
 
-    if (lastOrder && lastOrder.id) {
-      const lastIdNumber = parseInt(lastOrder.id.replace(`${prefix}`, ""), 10);
+      if (lastOrder && lastOrder.id) {
+        const lastIdNumber = parseInt(lastOrder.id.replace(`${prefix}`, ""), 10);
 
-      if (!isNaN(lastIdNumber)) {
-        newIdNumber = lastIdNumber + 1;
+        if (!isNaN(lastIdNumber)) {
+          newIdNumber = lastIdNumber + 1;
+        }
       }
-    }
 
-    let totalComiBina = total_price + total_price * 0.01;
-    let totalWhitComissionGudfy = totalComiBina + totalComiBina * 0.01;
+      let totalComiBina = total_price + total_price * 0.01;
+      let totalWhitComissionGudfy = totalComiBina + totalComiBina * 0.01;
 
-    const createOrder = await storeOrderRepo.create({
-      id: `${prefix}${newIdNumber}`,
-      customer_id: customer_id,
-      // pay_method_id: "",
-      order_status_id: "Payment_Pending_ID",
-      quantity_products: quantity,
-      total_price: formatPrice(totalWhitComissionGudfy),
-      // name: "",
-      // last_name: "",
-      // email: "",
-      // conty: "",
-      // city: "",
-      // phone: "",
+      const createOrder = storeOrderRepo.create({
+        id: `${prefix}${newIdNumber}`,
+        customer_id: customer_id,
+        // pay_method_id: "",
+        order_status_id: "Payment_Pending_ID",
+        quantity_products: quantity,
+        total_price: formatPrice(totalWhitComissionGudfy),
+        // name: "",
+        // last_name: "",
+        // email: "",
+        // conty: "",
+        // city: "",
+        // phone: "",
+      });
+      
+      // Guardamos la orden dentro de la misma transacción
+      const saveOrder = await storeOrderRepo.save(createOrder);
+      return saveOrder;
+      
+      // La transacción se confirma automáticamente cuando atomicPhase_ se completa
+      // Si hubiera un error, automáticamente se hace rollback
     });
-    const saveOrder = await storeOrderRepo.save(createOrder);
-    return saveOrder;
   }
 }
 interface Item {

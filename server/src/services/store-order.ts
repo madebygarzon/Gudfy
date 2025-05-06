@@ -664,6 +664,36 @@ class StoreOrderService extends TransactionBaseService {
     }
     return;
   }
+
+
+  async updateOrderDataWhitManualPay(formData: any, store_order_id: string, image: any) {
+   
+    try {
+     
+      if (formData.pay_method_id === "manual_binance_pay") {
+        formData = {
+          ...formData,
+          pay_method_id: "Method_Manual_Pay_ID",
+          proof_of_payment: image.path,
+        };
+      }
+      else{
+        return false;
+      }
+
+      const repoStoreOrder = this.activeManager_.withRepository(
+        this.storeOrderRepository_
+      );
+
+      const updateData = await repoStoreOrder.update(store_order_id, {
+        ...formData,
+      });
+      return true;
+    } catch (error) {
+      console.log("error al actualizar la orden", error);
+    }
+    
+  }
 }
 
 export default StoreOrderService;

@@ -6,6 +6,7 @@ import { useCartGudfy } from "@lib/context/cart-gudfy"
 import { orderDataForm, useOrderGudfy } from "@lib/context/order-context"
 import CheckoutSelectPayment from "../../components/checkout-select-payment"
 import CoinPalPayment from "../../components/coinpal"
+import ManualBinancePay from "../../components/manual-pay"
 import { useMeCustomer } from "medusa-react"
 import Loader from "@lib/loader"
 
@@ -14,6 +15,12 @@ type CompleteForm = {
   payment: boolean
   TermsConditions: boolean
 }
+type methodPayment =
+  | "automatic_binance_pay"
+  | "manual_binance_pay"
+  | "bitcoin_ethereum_litecoin_entrega_automatica"
+  | "coinpal_pay"
+
 const CheckoutForm = ({ orderId }: { orderId: string | undefined }) => {
   const { cart, deleteCart } = useCartGudfy()
   const { customer } = useMeCustomer()
@@ -25,11 +32,21 @@ const CheckoutForm = ({ orderId }: { orderId: string | undefined }) => {
     handlersubmitPaymentMethod,
     // handlerCurrentOrder,
     handlerUpdateDataLastOrder,
-    handlerRecoverPaymentOrders
+    handlerRecoverPaymentOrders,
   } = useOrderGudfy()
-
-  const [checkbox, selectedCheckbox] = useState<string>("coinpal_pay")
-
+  const [dataForm, setDataForm] = useState<orderDataForm>({
+    pay_method_id: "coinpal_pay",
+    name: "",
+    last_name: "",
+    email: "",
+    contry: "",
+    city: "",
+    phone: "",
+  })
+  const [checkbox, selectedCheckbox] = useState<methodPayment>("coinpal_pay")
+  const [viewPaymentMethod, setViewPaymentMethod] = useState<
+    methodPayment | undefined
+  >(undefined)
   const [selectedKeys, setSelectedKeys] = useState<Selection>(
     new Set([checkbox])
   )
@@ -50,18 +67,22 @@ const CheckoutForm = ({ orderId }: { orderId: string | undefined }) => {
     if (!dataForm) {
       return
     }
-    handlerUpdateDataLastOrder({ ...dataForm, pay_method_id: checkbox }, orderId).then(
-      () => {
-        if (!orderId) alert("error de orden , no se obtuvo la orden")
-        else {
-          handlersubmitPaymentMethod(checkbox, cart, orderId).then(
-            () => {
-              deleteCart()
-            }
-          )
-        }
+    if (checkbox == "manual_binance_pay") {
+      setViewPaymentMethod(checkbox)
+      return
+    }
+
+    handlerUpdateDataLastOrder(
+      { ...dataForm, pay_method_id: checkbox },
+      orderId
+    ).then(() => {
+      if (!orderId) alert("error de orden , no se obtuvo la orden")
+      else {
+        handlersubmitPaymentMethod(checkbox, cart, orderId).then(() => {
+          deleteCart()
+        })
       }
-    )
+    })
   }
 
   return (
@@ -71,16 +92,16 @@ const CheckoutForm = ({ orderId }: { orderId: string | undefined }) => {
           <Loader />
         </>
       ) : dataPay && dataPay.dataPay && dataPay.order ? (
-        
         <div className="flex flex-col gap-4">
-         
           <div className="flex justify-center items-center">
-            <CoinPalPayment 
-              data={dataPay.dataPay} 
-              currentOrder={dataPay.order} 
+            <CoinPalPayment
+              data={dataPay.dataPay}
+              currentOrder={dataPay.order}
             />
           </div>
         </div>
+      ) : viewPaymentMethod === "manual_binance_pay" ? (
+        <ManualBinancePay dataForm={dataForm} storeOrder={orderId} />
       ) : (
         <CheckoutSelectPayment
           cart={cart}
@@ -91,6 +112,8 @@ const CheckoutForm = ({ orderId }: { orderId: string | undefined }) => {
           selectedKeys={selectedKeys}
           setSelectedKeys={setSelectedKeys}
           handlersubmit={handlersubmit}
+          dataForm={dataForm}
+          setDataForm={setDataForm}
         />
       )}
     </div>

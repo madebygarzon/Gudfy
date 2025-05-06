@@ -30,10 +30,19 @@ type CheckoutDetailsProps = {
   completedForm: CompleteForm
   setCompleteForm: React.Dispatch<React.SetStateAction<CompleteForm>>
   checkbox: string
-  selectedCheckbox: React.Dispatch<React.SetStateAction<string>>
+  selectedCheckbox: React.Dispatch<
+    React.SetStateAction<
+      | "automatic_binance_pay"
+      | "manual_binance_pay"
+      | "bitcoin_ethereum_litecoin_entrega_automatica"
+      | "coinpal_pay"
+    >
+  >
   selectedKeys: Selection
   setSelectedKeys: React.Dispatch<React.SetStateAction<Selection>>
   handlersubmit: (dataForm?: orderDataForm) => Promise<void>
+  dataForm: orderDataForm
+  setDataForm: React.Dispatch<React.SetStateAction<orderDataForm>>
 }
 
 const methodPayment = [
@@ -41,12 +50,6 @@ const methodPayment = [
   "manual_binance_pay",
   "bitcoin_ethereum_litecoin_entrega_automatica",
   "coinpal_pay",
-]
-
-const cripto = [
-  { label: "Bitcoin (BTC)", value: "BTC" },
-  { label: "Ethereum (ETH)", value: "ETH" },
-  { label: "Litecoin (LTC)", value: "LTC" },
 ]
 
 const CheckoutSelectPayment: React.FC<CheckoutDetailsProps> = ({
@@ -58,17 +61,9 @@ const CheckoutSelectPayment: React.FC<CheckoutDetailsProps> = ({
   selectedKeys,
   setSelectedKeys,
   handlersubmit,
+  dataForm,
+  setDataForm,
 }) => {
-  const [dataForm, setDataForm] = useState<orderDataForm>({
-    pay_method_id: "coinpal_pay",
-    name: "",
-    last_name: "",
-    email: "",
-    contry: "",
-    city: "",
-    phone: "",
-  })
-
   const { register, formState, trigger, setValue } = useForm<orderDataForm>({
     defaultValues: {
       name: dataForm.name,
@@ -118,7 +113,14 @@ const CheckoutSelectPayment: React.FC<CheckoutDetailsProps> = ({
           selectedKeys={selectedKeys}
           onSelectionChange={(key) => {
             const checkbox = methodPayment.find((e) => e === Array.from(key)[0])
-            selectedCheckbox(checkbox || "coinpal_pay")
+            selectedCheckbox(
+              (checkbox || "coinpal_pay") as
+                | "automatic_binance_pay"
+                | "manual_binance_pay"
+                | "bitcoin_ethereum_litecoin_entrega_automatica"
+                | "coinpal_pay"
+            )
+            setSelectedKeys(key)
           }}
         >
           <AccordionItem
@@ -129,9 +131,19 @@ const CheckoutSelectPayment: React.FC<CheckoutDetailsProps> = ({
             className="font-medium"
             startContent={
               <Checkbox
+                className={`${checkbox != methodPayment[3] ? "hidden" : ""}`}
                 defaultSelected
                 radius="full"
                 isSelected={checkbox == methodPayment[3]}
+                onChange={() => {
+                  selectedCheckbox(
+                    methodPayment[3] as
+                      | "automatic_binance_pay"
+                      | "manual_binance_pay"
+                      | "bitcoin_ethereum_litecoin_entrega_automatica"
+                      | "coinpal_pay"
+                  )
+                }}
               />
             }
           >
@@ -146,30 +158,41 @@ const CheckoutSelectPayment: React.FC<CheckoutDetailsProps> = ({
             </div>
           </AccordionItem>
           <AccordionItem
-          isDisabled
-            key="automatic_binance_pay"
-            aria-label="Binance Pay Entrega Automática"
-            title="Binance Pay Entrega Automática"
-            indicator={<></>}
+            key="manual_binance_pay"
+            aria-label="Binance Pay Entrega Manual Pay ID 202554183"
+            title="Binance Pay Entrega Manual Pay ID 202554183"
             className="font-medium"
             startContent={
               <Checkbox
-                isDisabled
+                className={`${checkbox != methodPayment[1] ? "hidden" : ""}`}
                 radius="full"
-                isSelected={checkbox == methodPayment[0]}
+                isSelected={checkbox == methodPayment[1]}
+                onChange={() => {
+                  selectedCheckbox(
+                    methodPayment[1] as
+                      | "automatic_binance_pay"
+                      | "manual_binance_pay"
+                      | "bitcoin_ethereum_litecoin_entrega_automatica"
+                      | "coinpal_pay"
+                  )
+                }}
               />
             }
           >
-            <div className="font-normal px-4 md:px-12 text-sm pb-5">
+            <div className="font-normal px-12 text-sm pb-5">
               <p>
-                Paga en USDT usando Binance Pay, sin comisiones, recibes los
-                códigos de manera inmediata.
-              </p>
-              <br />
-              <p>
-                Importante: desde el 21 de septiembre Binance decidió fijar una
-                tasa del 1% de comisión en sus transacciones de Binance Pay.
-                Este método de pago tiene un <b>1% de comisión.</b>
+                Por favor use Binance Pay ID 202554183 o escanee el código QR
+                con su aplicación de Binance. Se debe subir el comprobante de
+                pago en la siguiente página, todos los pagos serán comprobados
+                manualmente.
+                <div className="m-5 flex justify-center">
+                  <Image
+                    src="/pay/BinancePayId.webp"
+                    alt="Binance Pay ID 202554183"
+                    width={300}
+                    height={300}
+                  />
+                </div>
               </p>
             </div>
           </AccordionItem>

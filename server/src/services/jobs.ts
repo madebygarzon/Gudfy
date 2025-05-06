@@ -1,5 +1,5 @@
 import { Lifetime } from "awilix";
-import { LessThan } from "typeorm";
+import { LessThan, Not } from "typeorm";
 import { TransactionBaseService, Customer } from "@medusajs/medusa";
 import StoreOrderRepository from "../repositories/store-order";
 import StoreVariantOrderRepository from "../repositories/store-variant-order";
@@ -67,6 +67,7 @@ class JobsService extends TransactionBaseService {
       where: {
         created_at: LessThan(date),
         order_status_id: "Payment_Pending_ID",
+        pay_method_id: Not("Method_Manual_Pay_ID"),
       },
     });
   }
