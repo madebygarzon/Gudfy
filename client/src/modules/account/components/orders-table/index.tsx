@@ -197,7 +197,7 @@ const TicketTable: React.FC = () => {
                       {handlerformatDate(order.created_at)}
                     </td>
                     <td className="px-4 py-2 text-sm md:text-base">
-                      {order.state_order === "Pendiente de pago" ? (
+                      {order.proof_of_payment !== null ? "- -" : order.state_order === "Pendiente de pago" ? (
                         <Timer creationTime={order.created_at} />
                       ) : order.state_order === "Cancelada" ? (
                         <p className="text-red-600">Expirado</p>
