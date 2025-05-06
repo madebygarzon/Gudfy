@@ -273,7 +273,6 @@ class CartMarketService extends TransactionBaseService {
       }
 
       let totalComiBina = total_price + total_price * 0.01;
-      let totalWhitComissionGudfy = totalComiBina + totalComiBina * 0.01;
 
       const createOrder = storeOrderRepo.create({
         id: `${prefix}${newIdNumber}`,
@@ -281,7 +280,7 @@ class CartMarketService extends TransactionBaseService {
         // pay_method_id: "",
         order_status_id: "Payment_Pending_ID",
         quantity_products: quantity,
-        total_price: formatPrice(totalWhitComissionGudfy),
+        total_price: formatPrice(totalComiBina),
         // name: "",
         // last_name: "",
         // email: "",

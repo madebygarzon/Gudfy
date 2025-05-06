@@ -6,6 +6,7 @@ import { orderDataForm } from "@lib/context/order-context"
 import { handlerUpdateDataLastOrderWithManualPay } from "@modules/checkout/actions/post-add-order-whit-manual-pay"
 import InputFile from "@modules/common/components/input-file"
 import { useOrderGudfy } from "@lib/context/order-context"
+import { useCartGudfy } from "@lib/context/cart-gudfy"
 
 type UploadedFile = {
   file: File
@@ -16,6 +17,7 @@ const ManualBinancePay: React.FC<{
   dataForm: orderDataForm
   storeOrder?: string
 }> = ({ dataForm, storeOrder }) => {
+  const { cart, deleteCart } = useCartGudfy()
   const {currentOrder} = useOrderGudfy()
   const [uploadedImage, setUploadedImage] = useState<File | undefined>()
   const [isUploading, setIsUploading] = useState<boolean>(false)
@@ -44,6 +46,7 @@ const ManualBinancePay: React.FC<{
         (res) => {
           if (res.success) {
             setIsSuccess(true)
+            deleteCart()
           }
         }
       )
