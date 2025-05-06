@@ -95,7 +95,7 @@ const OrderDetails = ({ orderData, onClose }: props) => {
                       Vendido por:{" "}
                       <Link
                         className="text-blue-500 capitalize"
-                        href={`/seller/store/${p.store_id}`}
+                        href={`/seller-store/${p.store_id}`}
                       >
                         {p.store_name}
                       </Link>

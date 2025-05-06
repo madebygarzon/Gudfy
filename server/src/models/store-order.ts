@@ -65,6 +65,9 @@ export class StoreOrder extends BaseEntity {
   @Column({ nullable: true })
   phone?: string;
 
+  @Column({ nullable: true })
+  proof_of_payment?: string;
+
   @OneToMany(() => StoreVariantOrder, (spo) => spo?.store_order)
   storeVariantOrder?: StoreVariantOrder[];
 

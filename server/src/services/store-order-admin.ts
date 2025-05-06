@@ -9,6 +9,7 @@ import CustomerRepository from "src/repositories/customer";
 import { In } from "typeorm";
 import { EmailPurchaseCompleted } from "../admin/components/email/payments";
 import { io } from "../websocket";
+import JobsService from "./jobs";
 
 class StoreOrderAdminService extends TransactionBaseService {
   static LIFE_TIME = Lifetime.SCOPED;
@@ -17,6 +18,7 @@ class StoreOrderAdminService extends TransactionBaseService {
   protected readonly storeXVariantRepository_: typeof StoreXVariantRepository;
   protected readonly serialCodeRepository_: typeof SerialCodeRepository;
   protected readonly customerRepository_: typeof CustomerRepository;
+  protected readonly jobsService_: JobsService;
 
   constructor(container) {
     // @ts-expect-error prefer-rest-params
@@ -26,6 +28,7 @@ class StoreOrderAdminService extends TransactionBaseService {
     this.storeXVariantRepository_ = container.storeXVariantRepository;
     this.serialCodeRepository_ = container.serialCodeRepository;
     this.customerRepository_ = container.customerRepository;
+    this.jobsService_ = container.jobsService;
   }
 
   async listCustomersOrders() {
@@ -54,6 +57,7 @@ class StoreOrderAdminService extends TransactionBaseService {
           "so.phone AS phone",
           "so.created_at AS created_at",
           "so.order_status_id AS status_id",
+          "so.proof_of_payment AS proof_of_payment",
           "svo.id AS store_variant_order_id",
           "svo.quantity AS quantity",
           "svo.total_price AS total_price_for_product",
@@ -220,7 +224,7 @@ class StoreOrderAdminService extends TransactionBaseService {
       const sc = this.activeManager_.withRepository(this.serialCodeRepository_);
       const codes = [];
 
-      console.log("llega al servicio",order_id);
+      
 
       const storeOrder = await so.findOne({ where: { id: order_id } });
       if (!storeOrder) {
@@ -232,7 +236,7 @@ class StoreOrderAdminService extends TransactionBaseService {
       // Array to collect variants with insufficient stock
       const insufficientStockVariants = [];
 
-      console.log("Listado de variantes",ListSVO)
+     
       // First validate and collect all variants with insufficient quantity_store
       for (const variant of ListSVO) {
         const quantity = variant.quantity;
@@ -240,7 +244,7 @@ class StoreOrderAdminService extends TransactionBaseService {
           id: variant.store_variant_id,
         });
 
-        console.log("Variante",storeVariant);
+        
 
         if (!storeVariant || storeVariant.quantity_store < quantity) {
           // Get variant information for better error message
@@ -263,7 +267,7 @@ class StoreOrderAdminService extends TransactionBaseService {
 
       // If there are variants with insufficient stock, return the array with details
       if (insufficientStockVariants.length > 0) {
-        console.log("Variante insuficiente",insufficientStockVariants);
+       
         return {
           success: false,
           message: "No hay suficiente stock para algunas variaciones",
@@ -328,6 +332,8 @@ class StoreOrderAdminService extends TransactionBaseService {
         });
       }
 
+     
+
       await EmailPurchaseCompleted({
         email: storeOrder.email,
         serialCodes: codes,
@@ -354,6 +360,10 @@ class StoreOrderAdminService extends TransactionBaseService {
         error: error.toString()
       };
     }
+  }
+  async UpdateOrderToCancel(order_id){
+    const result = await this.jobsService_.deleteOrder(order_id);
+    return result;
   }
   
 }

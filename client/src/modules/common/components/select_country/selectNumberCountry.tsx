@@ -8,9 +8,8 @@ import {
   Button,
   Spinner,
 } from "@heroui/react"
-import { getContries } from "@modules/account/actions/get-data-contryes"
-import { use } from "chai"
-import Loader from "@lib/loader"
+
+import { ArrayCountries } from "@lib/util/array-country-data"
 
 interface CountryData {
   name: string
@@ -22,14 +21,15 @@ interface PropsChildren {
 }
 
 const Country: React.FC<PropsChildren> = ({ setCodeFlag }) => {
-  const [dataCuntries, setDataCountres] = useState<Array<CountryData>>()
+
   const [dataFlag, setDataFlag] = useState<CountryData>({
     name: "Colombia",
     flags: "https://flagcdn.com/co.svg",
     callingCodes: "57",
   })
+ 
   useEffect(() => {
-    getContries().then((e) => setDataCountres(e))
+    setDataFlag(ArrayCountries.filter((country) => country.callingCodes === "57")[0])
   }, [])
 
   return (
@@ -57,8 +57,8 @@ const Country: React.FC<PropsChildren> = ({ setCodeFlag }) => {
           className="h-[250px] max-w-[300px] overflow-y-auto "
           aria-label="Action event example"
         >
-          {dataCuntries ? (
-            dataCuntries.map((coun, i) => (
+          {
+            ArrayCountries.map((coun, i) => (
               <DropdownItem
                 key={i}
                 onPress={(e) => {
@@ -79,9 +79,7 @@ const Country: React.FC<PropsChildren> = ({ setCodeFlag }) => {
                 </div>
               </DropdownItem>
             ))
-          ) : (
-            <><Loader /></>
-          )}
+          }
         </DropdownMenu>
       </Dropdown>
     </>

@@ -1,13 +1,8 @@
 import React, { useState, useEffect, SetStateAction, useRef } from "react"
 import Image from "next/image"
 import { getContries } from "@modules/account/actions/get-data-contryes"
+import { ArrayCountries } from "@lib/util/array-country-data"
 
-
-const Loader = () => (
-  <div className="flex justify-center items-center">
-    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-gf"></div>
-  </div>
-)
 
 interface CountryData {
   name: string
@@ -16,65 +11,31 @@ interface CountryData {
 }
 
 interface CustomSelectCountryProps {
-  initialCode?: number 
+  initialCode?: number | string
   setCodeFlag: React.Dispatch<SetStateAction<number>>
   setSelectCountry: (e: string) => void
 }
 
 const CustomSelectCountry: React.FC<CustomSelectCountryProps> = ({
-  initialCode = 57, 
+  initialCode, 
   setCodeFlag,
   setSelectCountry,
 }) => {
-  const [countries, setCountries] = useState<Array<CountryData>>([])
-  const [selectedCountry, setSelectedCountry] = useState<CountryData>({
-    name: "Colombia",
-    flags: "https://flagcdn.com/co.svg",
-    callingCodes: "57",
-  })
+
+  const [selectedCountry, setSelectedCountry] = useState<CountryData>(ArrayCountries.filter((country) => country.callingCodes === initialCode?.toString())[0])
   const [isOpen, setIsOpen] = useState<boolean>(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
 
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setIsOpen(false)
-      }
-    }
-
-    document.addEventListener("mousedown", handleClickOutside)
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside)
-    }
-  }, [])
-
-
-  useEffect(() => {
-    getContries().then((data) => {
-      setCountries(data)
-      
-   
-      if (initialCode && data && data.length > 0) {
-        const matchingCountry = data.find(
-          (country: CountryData) => parseInt(country.callingCodes) === initialCode
-        )
-        
-        if (matchingCountry) {
-          setSelectedCountry(matchingCountry)
-          setSelectCountry(matchingCountry.name)
-        }
-      }
-    })
-  }, [initialCode, setSelectCountry])
-
-  // Handle country selection
   const handleCountrySelect = (country: CountryData) => {
     setSelectedCountry(country)
     setCodeFlag(parseInt(country.callingCodes))
     setSelectCountry(country.name)
     setIsOpen(false)
   }
+
+  useEffect(() => {
+    setSelectedCountry(ArrayCountries.filter((country) => country.callingCodes === initialCode?.toString())[0])
+  }, [initialCode])
 
   return (
     <div className="relative" ref={dropdownRef}>
@@ -83,8 +44,8 @@ const CustomSelectCountry: React.FC<CustomSelectCountryProps> = ({
         type="button"
         className="flex items-center gap-2 bg-white border rounded-[50px] py-[8px] px-5 w-full"
         onClick={() => setIsOpen(!isOpen)}
-      >
-        <Image src={selectedCountry.flags} alt="" width={40} height={35} />
+      > 
+            <Image src={selectedCountry.flags} alt="" width={40} height={35} />
         <span className="flex-grow text-left">{selectedCountry.name}</span>
         <svg
           className="h-5 w-5 text-blue-gf"
@@ -104,9 +65,9 @@ const CustomSelectCountry: React.FC<CustomSelectCountryProps> = ({
      
       {isOpen && (
         <div className="absolute z-10 mt-1 w-full bg-white border rounded-md shadow-lg max-h-[450px] overflow-y-auto">
-          {countries.length > 0 ? (
+          
             <ul className="py-2">
-              {countries.map((country, index) => (
+              {ArrayCountries.map((country, index) => (
                 <li
                   key={index}
                   className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
@@ -125,11 +86,8 @@ const CustomSelectCountry: React.FC<CustomSelectCountryProps> = ({
                 </li>
               ))}
             </ul>
-          ) : (
-            <div className="p-4">
-              <Loader />
-            </div>
-          )}
+          
+    
         </div>
       )}
     </div>

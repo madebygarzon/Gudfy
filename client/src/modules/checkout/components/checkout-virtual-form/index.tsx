@@ -81,7 +81,7 @@ const CheckautVirtualForm: React.FC<props> = ({
   }
 
   useEffect(() => {
-    console.log("customer", customer)
+   
     
     // Extract country code from phone if available
     if (customer?.phone) {
