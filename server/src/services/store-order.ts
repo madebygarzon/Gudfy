@@ -29,7 +29,7 @@ class StoreOrderService extends TransactionBaseService {
     this.dataMethodPaymentRepository_ = container.dataMethodPaymentRepository;
   }
 
-  async currentOrder(customerId) {
+  async currentOrder(store_order_id) {
     try {
       const repoStoreOrder = this.activeManager_.withRepository(
         this.storeOrderRepository_
@@ -42,37 +42,36 @@ class StoreOrderService extends TransactionBaseService {
         .createQueryBuilder("so")
         .leftJoin("so.storeVariantOrder", "svo")
         .leftJoin("svo.store_variant", "sxv")
+        .innerJoinAndSelect("sxv.variant", "pv")
         .leftJoin("sxv.store", "s")
         .where(
-          "so.customer_id = :customer_id AND so.order_status_id = :status",
+          "so.id = :store_order_id AND so.order_status_id = :status",
           {
-            customer_id: customerId || this.loggedInCustomer_?.id,
+            store_order_id: store_order_id,
             status: "Payment_Pending_ID",
           }
         )
         .select([
-          "so.id",
-          "so.pay_method_id",
-          "so.created_at",
-          "so.sellerapproved",
-          "so.customerapproved",
-          "so.quantity_products",
-          "so.total_price",
-          "so.name as person_name",
-          "so.last_name as person_last_name",
-          "so.email",
-          "so.contry as conty",
-          "so.city",
-          "so.phone",
-          "so.order_status_id as state_order",
-          "svo.id as store_variant_order_id",
-          "s.id as store_id",
-          "s.name as store_name",
-          "sxv.produc_title",
-          "svo.price",
-          "svo.quantity",
-          "svo.total_price as total_price_for_product",
-          "svo.variant_order_status_id",
+          "so.id AS id",
+          "so.pay_method_id AS pay_method_id ",
+          "so.quantity_products AS quantity_products ",
+          "so.total_price AS total_price",
+          "so.name AS person_name",
+          "so.last_name AS person_last_name",
+          "so.email AS email",
+          "so.contry AS contry",
+          "so.city AS city",
+          "so.phone AS phone",
+          "so.created_at AS created_at",
+          "so.order_status_id AS status_id",
+          "svo.id AS store_variant_order_id",
+          "svo.quantity AS quantity",
+          "svo.total_price AS total_price_for_product",
+          "svo.variant_order_status_id AS variant_order_status_id",
+          "pv.title AS produc_title",
+          "sxv.price AS price",
+          "s.name AS store_name",
+          "s.id AS store_id",
         ])
         .getRawMany();
 
@@ -86,14 +85,12 @@ class StoreOrderService extends TransactionBaseService {
             id: order.id,
             pay_method_id: order.pay_method_id,
             created_at: order.created_at,
-            sellerapproved: order.sellerapproved,
-            customerapproved: order.customerapproved,
             quantity_products: order.quantity_products,
             total_price: order.total_price,
             person_name: order.person_name,
             person_last_name: order.person_last_name,
             email: order.email,
-            conty: order.conty,
+            contry: order.contry,
             city: order.city,
             phone: order.phone,
             state_order: "Pendiente de pago",
@@ -663,6 +660,36 @@ class StoreOrderService extends TransactionBaseService {
       return saveData;
     }
     return;
+  }
+
+
+  async updateOrderDataWhitManualPay(formData: any, store_order_id: string, image: any) {
+   
+    try {
+     
+      if (formData.pay_method_id === "manual_binance_pay") {
+        formData = {
+          ...formData,
+          pay_method_id: "Method_Manual_Pay_ID",
+          proof_of_payment: image.path,
+        };
+      }
+      else{
+        return false;
+      }
+
+      const repoStoreOrder = this.activeManager_.withRepository(
+        this.storeOrderRepository_
+      );
+
+      const updateData = await repoStoreOrder.update(store_order_id, {
+        ...formData,
+      });
+      return true;
+    } catch (error) {
+      console.log("error al actualizar la orden", error);
+    }
+    
   }
 }
 

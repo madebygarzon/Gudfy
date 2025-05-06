@@ -52,6 +52,7 @@ import { getListProductVariantCategory } from "./get-list-product-variant-catego
 import postSendContactForm from "./post-send-contact-form";
 import getPaymentOrders from "./order/get-payment-orders";
 import postMethodPaymentOrder from "./order/post-method-payment-order";
+import updateOrderDataWhitManualPay from "./update-order-data-whit-manual-pay";
 
 // Initialize a custom router
 const router = Router();
@@ -130,6 +131,13 @@ export function attachStoreRoutes(storeRouter: Router) {
   router.post("/cart/update-item", wrapHandler(updateLine_item));
   router.post("/cart/add-order", wrapHandler(postAddOrder));
 
+  // ------------------------------- Endpoins Checkout ------------------------------------------
+  router.post(
+    "/order/update-data-with-manual-pay",
+    Image.single("image"),
+    wrapHandler(updateOrderDataWhitManualPay)
+  );
+
   //-----------------------------------Endpoins for Store Order ------------------------------------------
   router.post("/order/:id/cancel-order", wrapHandler(updateCancelStoreOrder));
   router.delete("/order/:id/order", wrapHandler(deleteStoreOrder));
@@ -137,8 +145,14 @@ export function attachStoreRoutes(storeRouter: Router) {
   router.post("/order/uptade-data", wrapHandler(updateOrderData));
   router.post("/order/finish-variation", wrapHandler(updateFinishVariantOrder));
 
-  router.get("/orders/:id/:store_id/method-payment-pending", wrapHandler(getPaymentOrders));
-  router.post("/order/method-payment-pending", wrapHandler(postMethodPaymentOrder));
+  router.get(
+    "/orders/:id/:store_id/method-payment-pending",
+    wrapHandler(getPaymentOrders)
+  );
+  router.post(
+    "/order/method-payment-pending",
+    wrapHandler(postMethodPaymentOrder)
+  );
 
   //-----------------------------------Endpoins for Order Claim ------------------------------------------
   router.get("/claim/:id/orders", wrapHandler(getListClaim));

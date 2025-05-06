@@ -82,7 +82,7 @@ const ModalOrderComplete = ({
                                 Vendido por:{" "}
                                 <Link
                                   className="text-lila-gf capitalize"
-                                  href={`/seller/store/${p.store_id}`}
+                                  href={`/seller-store/${p.store_id}`}
                                 >
                                   {p.store_name}
                                 </Link>

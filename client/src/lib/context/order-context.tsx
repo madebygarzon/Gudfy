@@ -87,7 +87,7 @@ interface orderContext {
   isLoading: boolean
   isLoadingCurrentOrder: boolean
   handlerListOrder: () => void
-  handlerCurrentOrder: () => void
+  handlerCurrentOrder: (store_order_id?: string) => void
   handlerOrderCancel: (orederId: string) => Promise<boolean>
   handlersubmitPaymentMethod: (
     checkbox: string,
@@ -102,7 +102,10 @@ interface orderContext {
   handlerListSellerOrderClaim: (id: string) => void
   isLoadingClaim: boolean
   listOrderClaim: orderClaim[] | null
-  handlerUpdateDataLastOrder: (dataForm: orderDataForm, orderId?: string) => Promise<void>
+  handlerUpdateDataLastOrder: (
+    dataForm: orderDataForm,
+    orderId?: string
+  ) => Promise<void>
   handlerRecoverPaymentOrders: (
     customerid: string,
     store_order_id: string
@@ -174,14 +177,15 @@ export const OrderGudfyProvider = ({
       setIsLoading(false)
     })
   }
-  const handlerCurrentOrder = () => {
-    // setIsLoadingCurrentOrder(true)
-    // getCurrentOrder(customer?.id || "")
-    //   .then((e) => {
-    //     setCurrentOrderr(e)
-    //     setIsLoadingCurrentOrder(false)
-    //   })
-    //   .catch((error) => {})
+  const handlerCurrentOrder = (store_order_id?: string) => {
+    setIsLoadingCurrentOrder(true)
+    getCurrentOrder(store_order_id || "")
+      .then((e) => {
+       
+        setCurrentOrderr(e)
+        setIsLoadingCurrentOrder(false)
+      })
+      .catch((error) => {})
   }
 
   const handlerOrderCancel = async (orederId: string) => {
@@ -189,9 +193,14 @@ export const OrderGudfyProvider = ({
     return true
   }
 
-  const handlerUpdateDataLastOrder = async (dataForm: orderDataForm, orderId?: string) => {
+  const handlerUpdateDataLastOrder = async (
+    dataForm: orderDataForm,
+    orderId?: string
+  ) => {
     if (!orderId) {
-      return alert("No se encontro una orden disponible, por favor cree otra orden")
+      return alert(
+        "No se encontro una orden disponible, por favor cree otra orden"
+      )
     }
     await axios.post(
       `${process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL}/store/order/uptade-data/`,
@@ -230,14 +239,13 @@ export const OrderGudfyProvider = ({
       )
       .then((res) => {
         const result = res.data.result
-       
-        setDataPay(old => ({ ...old, dataPay:result }))
+
+        setDataPay((old) => ({ ...old, dataPay: result }))
         setIsLoadingCurrentOrder(false)
         // location.href = result.data.checkoutUrl //redirect user to pay link
       })
       .catch((e) => {
         
-        console.log("Error al realizar el pago:", e)
       })
   }
 
@@ -292,7 +300,7 @@ export const OrderGudfyProvider = ({
     if (!store_order_id || !customerid) {
       setIsLoadingCurrentOrder(false)
       return
-}
+    }
     try {
       const orders = await axios.get(
         `${process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL}/store/orders/${customerid}/${store_order_id}/method-payment-pending`,
@@ -300,7 +308,7 @@ export const OrderGudfyProvider = ({
           withCredentials: true,
         }
       )
-     
+
       setDataPay(orders.data)
       setIsLoadingCurrentOrder(false)
     } catch (error) {
