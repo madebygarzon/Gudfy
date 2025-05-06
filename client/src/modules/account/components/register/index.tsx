@@ -160,6 +160,7 @@ const Register = () => {
             </div>
             <div className="w-[75%]">
               <Input
+                type="number"
                 contentStar={`(+${codeflag})`}
                 label="Telefono"
                 {...register("phone")}

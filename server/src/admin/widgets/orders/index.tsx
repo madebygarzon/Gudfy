@@ -13,11 +13,13 @@ import {
   Heading,
   IconButton,
   Drawer,
+  Tooltip,
 } from "@medusajs/ui";
 import { formatDate } from "../../utils/format-date";
 import { getListStoreOrder } from "../../actions/orders/get-list-store-orders";
 import OrderCancel from "../../components/orders/order-cancel";
 import OrderDetail from "../../components/orders/order-detail";
+import { BACKEND } from "../../actions";
 
 export interface order {
   id: string;
@@ -33,6 +35,8 @@ export interface order {
   conty: string;
   city: string;
   phone: string;
+  proof_of_payment: string;
+  status_id: string;
   state_order:
     | "Completado"
     | "Cancelada"
@@ -88,9 +92,7 @@ const dataSelecFilter = [
 ];
 const registerNumber = [20, 50, 100];
 // numero de filas por pagina predeterminado
-const APPROVED = "APPROVED";
-const REJECTED = "REJECTED";
-const CORRECT = "CORRECT";
+
 
 const SellerApplication = () => {
   //manejo de la tabla --------------
@@ -104,19 +106,10 @@ const SellerApplication = () => {
   const [page, setPage] = useState(1);
   const [rowsPages, setRowsPages] = useState<number>(20);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [orderDate, setOrderDate] = useState<boolean>(true);
+  
   const [selectOrderData, setTelectOrderData] = useState<order>();
   //----------------------------------
 
-  //datos para el control y actualizacion del status
-  const [filterStatus, setFilterStatus] = useState<
-    | "Cancelada"
-    | "Completado"
-    | "En discusión"
-    | "Finalizado"
-    | "Pendiente de pago"
-    | "all"
-  >("all");
 
   //modal para ver el detalle de la orden
   const [open, onOpenChange] = useState(false);
@@ -304,7 +297,8 @@ const SellerApplication = () => {
                     <Table.HeaderCell>Estado</Table.HeaderCell>
                     <Table.HeaderCell>Número de orden</Table.HeaderCell>
                     <Table.HeaderCell>Usuario</Table.HeaderCell>
-                    <Table.HeaderCell>Email Cliente</Table.HeaderCell>
+                    <Table.HeaderCell>Precio</Table.HeaderCell>
+                    <Table.HeaderCell>Comprobante</Table.HeaderCell>
                     <Table.HeaderCell>Fecha y hora</Table.HeaderCell>
                     <Table.HeaderCell>Detalle</Table.HeaderCell>
                   </Table.Row>
@@ -322,7 +316,27 @@ const SellerApplication = () => {
                         <Table.Cell>
                           {data.person_name + " " + data.person_last_name}
                         </Table.Cell>
-                        <Table.Cell>{data.email}</Table.Cell>
+                        <Table.Cell>{data.total_price}</Table.Cell>
+                        <Table.Cell>
+                          {data.proof_of_payment ? (
+                            <Tooltip maxWidth={450} content={<img
+                              src={BACKEND + "/" + data.proof_of_payment}
+                              alt="Comprobante de pago"
+                              width={350}
+                              height={350} />}>
+                            <img
+                              src={BACKEND + "/" + data.proof_of_payment}
+                              alt="Comprobante de pago"
+                              width={50}
+                              height={50}
+                            />
+                          </Tooltip>
+                      
+                            
+                          ) : (
+                            "CoinPal Pago Automatico"
+                          )}
+                        </Table.Cell>
                         <Table.Cell>{formatDate(data.created_at)}</Table.Cell>
                         <Table.Cell>
                           <IconButton

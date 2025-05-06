@@ -3,9 +3,11 @@ import React, { useEffect, useState } from "react";
 import type { order } from "../../widgets/orders/index";
 import { formatDate } from "../../utils/format-date";
 import { Customer } from "@medusajs/medusa";
+import { updateOrderToCompleted } from "../../actions/orders/update-order-to-completed";
 
 import clsx from "clsx";
 import { formatPrice } from "../../handlers/format-price";
+import { updateOrderToCancel } from "../../actions/orders/update-order-cancel";
 
 interface ModalOrderProps {
   orderData?: order;
@@ -24,6 +26,9 @@ type propsStoreReviwe = {
 const OrderDetail = ({ orderData, customer }: ModalOrderProps) => {
   // para las ordenes que ya estan finalizadas
   const [loading, setLoading] = useState<boolean>(true);
+  const [orderResult, setOrderResult] = useState<any>(null);
+  const [completingOrder, setCompletingOrder] = useState<boolean>(false);
+  const [cancelOrder, setCancelOrder] = useState<boolean>(false);
 
   useEffect(() => {}, [loading]);
 
@@ -71,17 +76,43 @@ const OrderDetail = ({ orderData, customer }: ModalOrderProps) => {
     }
   };
 
+  const handlerUpdateOrder = async () => {
+    try {
+      setCompletingOrder(true);
+      const result = await updateOrderToCompleted(orderData.id);
+      setOrderResult(result);
+    } catch (error) {
+      console.error("Error al completar la orden:", error);
+      setOrderResult({
+        success: false,
+        message: "Error al procesar la solicitud",
+      });
+    } finally {
+      setCompletingOrder(false);
+    }
+  };
+  const handlerUpdateCancelOrder = async () => {
+    try {
+      setCompletingOrder(true);
+      const result = await updateOrderToCancel(orderData.id);
+      setOrderResult(result);
+    } catch (error) {
+      console.error("Error al cancelar la orden:", error);
+      setOrderResult({
+        success: false,
+        message: "Error al procesar la solicitud",
+      });
+    } finally {
+      setCompletingOrder(false);
+    }
+  };
   return (
     <>
       {orderData ? (
-
         <div className="w-full md:container  mx-auto p-2 large:p-4">
           <div className="my-2  text-base ">
-
             <p className="text-lg">
-              El pedido{" "}
-              <span className=" ">#{orderData.id}</span>
-              {" "}se realizó el{" "}
+              El pedido <span className=" ">#{orderData.id}</span> se realizó el{" "}
               <span className="font-bold ">
                 {formatDate(orderData.created_at)}
               </span>
@@ -92,7 +123,6 @@ const OrderDetail = ({ orderData, customer }: ModalOrderProps) => {
           </div>
 
           <div className="overflow-y-scroll min-h-[350px] ">
-
             <table className="min-w-full rounded-lg shadow-2xl p-4">
               <thead className="bg-gray-100">
                 <tr>
@@ -183,6 +213,121 @@ const OrderDetail = ({ orderData, customer }: ModalOrderProps) => {
       ) : (
         <>CARGANDO...</>
       )}
+      {/* Botón para completar la orden y componente de resultados */}
+      {orderData.proof_of_payment && orderData.status_id === "Payment_Pending_ID" && <div className="flex flex-col gap-4 p-4">
+        <button
+          onClick={async () => {
+            handlerUpdateOrder();
+          }}
+          disabled={completingOrder}
+          className={`py-2 px-4 rounded-lg font-medium text-white ${
+            completingOrder ? "bg-gray-400" : "bg-blue-600 hover:bg-blue-700"
+          }`}
+        >
+          {completingOrder ? "Procesando..." : "Completar Orden"}
+        </button>
+        <button
+          onClick={async () => {
+            handlerUpdateCancelOrder();
+          }}
+          disabled={completingOrder}
+          className={`py-2 px-4 rounded-lg font-medium text-white ${
+            completingOrder ? "bg-gray-400" : "bg-red-600 hover:bg-red-700"
+          }`}
+        >
+          {completingOrder ? "Procesando..." : "Cancelar Orden"}
+        </button>
+          {cancelOrder && (
+           <div> <p>Orden Cancelada</p></div>
+          )}
+        {orderResult && (
+          <div
+            className={`mt-4 p-4 rounded-lg ${
+              orderResult.success
+                ? "bg-green-100 border border-green-400"
+                : "bg-red-100 border border-red-400"
+            }`}
+          >
+            <p
+              className={`text-lg font-medium ${
+                orderResult.success ? "text-green-700" : "text-red-700"
+              }`}
+            >
+              {orderResult.message}
+            </p>
+
+            {/* Mostrar variaciones con stock insuficiente */}
+            {!orderResult.success &&
+              orderResult.insufficientStockVariants &&
+              orderResult.insufficientStockVariants.length > 0 && (
+                <div className="mt-3">
+                  <p className="font-medium text-red-700 mb-2">
+                    Variaciones con stock insuficiente:
+                  </p>
+                  <div className="max-h-60 overflow-y-auto">
+                    <table className="w-full border-collapse">
+                      <thead>
+                        <tr className="bg-red-200">
+                          <th className="py-2 px-3 text-left">Variación</th>
+                          <th className="py-2 px-3 text-right">Solicitado</th>
+                          <th className="py-2 px-3 text-right">Disponible</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {orderResult.insufficientStockVariants.map(
+                          (variant, idx) => (
+                            <tr key={idx} className="border-t border-red-300">
+                              <td className="py-2 px-3">{variant.title}</td>
+                              <td className="py-2 px-3 text-right">
+                                {variant.requested}
+                              </td>
+                              <td className="py-2 px-3 text-right">
+                                {variant.available}
+                              </td>
+                            </tr>
+                          )
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
+
+            {/* Mostrar códigos asignados si la orden fue completada con éxito */}
+            {orderResult.success &&
+              orderResult.codes &&
+              orderResult.codes.length > 0 && (
+                <div className="mt-3">
+                  <p className="font-medium text-green-700 mb-2">
+                    Códigos asignados:
+                  </p>
+                  <div className="max-h-60 overflow-y-auto">
+                    <table className="w-full border-collapse">
+                      <thead>
+                        <tr className="bg-green-200">
+                          <th className="py-2 px-3 text-left">Producto</th>
+                          <th className="py-2 px-3 text-left">Código</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {orderResult.codes.map((code, idx) => (
+                          <tr key={idx} className="border-t border-green-300">
+                            <td className="py-2 px-3">{code.title}</td>
+                            <td className="py-2 px-3">
+                              <code className="bg-gray-100 px-2 py-1 rounded">
+                                {code.serialCodes}
+                              </code>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
+          </div>
+        )}
+      </div>}
     </>
   );
 };

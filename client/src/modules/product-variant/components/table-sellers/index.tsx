@@ -87,7 +87,7 @@ const TableSeller: React.FC<TableProps> = ({
                   className="border border-[#7b39c4]"
                   content={`Ver la tienda de ${seller.store_name}`}
                 >
-                  <Link href={`/seller/store/${seller.store_id}`}>
+                  <Link href={`/seller-store/${seller.store_id}`}>
                     <div className="flex flex-row gap-2 items-center">
                       <div className="flex items-center">
                         <Avatar
@@ -107,18 +107,14 @@ const TableSeller: React.FC<TableProps> = ({
                         <p className="text-xs font-normal text-gray-500">
                           Vendedor excelente
                         </p>
-                        <p className="text-xs font-normal text-gray-500">
-                          <span className="font-bold">
-                            {seller.parameters?.rating
-                              ? `${seller.parameters?.rating}% Comentarios positivos`
-                              : "Sin compras"}
-                          </span>
-                        </p>
-                      </div>
-                      <div className="hidden mt-2 md:mt-0 md:flex items-center gap-2">
-                        | <HiOutlineShoppingCart size={15} />{" "}
+                        <p className="font-bold text-xs text-gray-500">
+                        <div className="hidden mt-2 md:mt-0 md:flex items-center">
+                        <HiOutlineShoppingCart size={15} />Ventas:{" "} 
                         {seller.parameters?.sales ?? 0}
                       </div>
+                        </p>
+                      </div>
+                      
                     </div>
                   </Link>
                 </Tooltip>

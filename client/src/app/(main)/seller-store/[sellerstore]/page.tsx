@@ -11,12 +11,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const store = await getSellerStoreData(params.sellerstore)
 
   return {
-    title: `${store.store_name} store`,
-    description: `tienda del vendedor`,
+    title: `${store.store_name} seller-store`,
+    description: `Tienda del vendedor`,
     openGraph: {
       title: `${store.store_name} | Gudfy `,
     },
   }
+  
 }
 
 export default async function CollectionPage({ params }: Props) {
