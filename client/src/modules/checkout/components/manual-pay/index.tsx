@@ -5,6 +5,7 @@ import { Label } from "@medusajs/ui"
 import { orderDataForm } from "@lib/context/order-context"
 import { handlerUpdateDataLastOrderWithManualPay } from "@modules/checkout/actions/post-add-order-whit-manual-pay"
 import InputFile from "@modules/common/components/input-file"
+import { useOrderGudfy } from "@lib/context/order-context"
 
 type UploadedFile = {
   file: File
@@ -15,6 +16,7 @@ const ManualBinancePay: React.FC<{
   dataForm: orderDataForm
   storeOrder?: string
 }> = ({ dataForm, storeOrder }) => {
+  const {currentOrder} = useOrderGudfy()
   const [uploadedImage, setUploadedImage] = useState<File | undefined>()
   const [isUploading, setIsUploading] = useState<boolean>(false)
   const [isSuccess, setIsSuccess] = useState<boolean>(false)
@@ -77,6 +79,13 @@ const ManualBinancePay: React.FC<{
       ): <div className="flex flex-col md:flex-row md:gap-8">
       {/* Columna izquierda - Instrucciones y QR */}
       <div className="font-normal text-sm pb-5 md:w-1/2">
+      {currentOrder && (
+        <div className="mb-4 p-4 border rounded-md border-lila-gf font-bold text-xl">
+        
+        <p>Total a pagar: {currentOrder.total_price}</p>
+        <p>Orden: {currentOrder.id}</p>
+
+      </div>)}
         <p className="mb-4">
           Por favor use <strong>Binance Pay ID 202554183</strong> o escanee el
           código QR con su aplicación de Binance. Se debe subir el comprobante

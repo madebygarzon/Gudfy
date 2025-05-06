@@ -17,7 +17,7 @@ import type { Selection } from "@heroui/react"
 import Button from "@modules/common/components/button"
 import { useForm } from "react-hook-form"
 import { useCartGudfy } from "@lib/context/cart-gudfy"
-import { orderDataForm } from "@lib/context/order-context"
+import { orderDataForm, useOrderGudfy } from "@lib/context/order-context"
 
 type CompleteForm = {
   form: boolean
@@ -64,6 +64,8 @@ const CheckoutSelectPayment: React.FC<CheckoutDetailsProps> = ({
   dataForm,
   setDataForm,
 }) => {
+
+  const {currentOrder} = useOrderGudfy()
   const { register, formState, trigger, setValue } = useForm<orderDataForm>({
     defaultValues: {
       name: dataForm.name,
@@ -106,6 +108,60 @@ const CheckoutSelectPayment: React.FC<CheckoutDetailsProps> = ({
 
       {/* Forma de pago */}
       <div className="w-full md:w-1/2 bg-white p-4 md:p-5">
+     {/* seccion orden de pago */}
+        {currentOrder && (
+          <div className="mb-4 p-4 border rounded-md border-lila-gf">
+            <h3 className="font-semibold text-lg mb-3 text-center">Información de la orden</h3>
+            
+            {/* Order summary - top section in grid */}
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-2 text-sm mb-3">
+              <div className=" flex gap-2 p-2 rounded">
+                <span className="font-medium block">N° de orden:</span> 
+                <span className="truncate block font-bold">{currentOrder.id}</span>
+              </div>
+              <div className=" flex gap-2 p-2 rounded">
+                <span className="font-medium block">Fecha:</span> 
+                <span className="font-bold">{new Date(currentOrder.created_at).toLocaleDateString()}</span>
+              </div>
+              <div className=" flex gap-2 p-2 rounded">
+                <span className="font-medium block">Productos:</span> 
+                <span className="font-bold">{currentOrder.quantity_products}</span>
+              </div>
+              <div className=" flex gap-2 p-2 rounded ">
+                <span className="font-medium block">Precio total:</span> 
+                <span className="text-lg font-bold">${currentOrder.total_price}</span>
+              </div>
+            </div>
+            
+            {/* Products section */}
+            {currentOrder.store_variant && currentOrder.store_variant.length > 0 && (
+              <div className="mt-3">
+                <h4 className="font-medium mb-2 border-b pb-1">Detalle de productos</h4>
+                
+                {currentOrder.store_variant.map((item: any, index: number) => (
+                  <div key={index} className="bg-white p-3 rounded-md mb-2 shadow-sm">
+                    <div className="flex justify-between items-center mb-2">
+                      <span className="font-semibold text-base">{item.produc_title}</span>
+                      <span className="font-bold">${item.total_price_for_product}</span>
+                    </div>
+                    
+                    <div className="grid grid-cols-2 gap-2 text-sm">
+                      <div>
+                        <span className="font-medium text-gray-600">Tienda:</span> {item.store_name}
+                      </div>
+                      <div>
+                        <span className="font-medium text-gray-600">Precio unitario:</span> ${item.price}
+                      </div>
+                      <div>
+                        <span className="font-medium text-gray-600">Cantidad:</span> {item.quantity}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
         <h2 className="text-xl md:text-2xl font-bold text-center my-3">
           Forma de pago
         </h2>

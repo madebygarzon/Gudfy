@@ -28,9 +28,9 @@ const CheckoutForm = ({ orderId }: { orderId: string | undefined }) => {
   const {
     isLoadingCurrentOrder,
     dataPay,
-    // currentOrder,
+     currentOrder,
     handlersubmitPaymentMethod,
-    // handlerCurrentOrder,
+    handlerCurrentOrder,
     handlerUpdateDataLastOrder,
     handlerRecoverPaymentOrders,
   } = useOrderGudfy()
@@ -57,7 +57,7 @@ const CheckoutForm = ({ orderId }: { orderId: string | undefined }) => {
   })
 
   useEffect(() => {
-    // handlerCurrentOrder()
+     handlerCurrentOrder(orderId )
     setSelectedKeys(new Set([checkbox]))
     if (checkbox) setCompleteForm((com) => ({ ...com, payment: true }))
     else setCompleteForm((com) => ({ ...com, payment: false }))
