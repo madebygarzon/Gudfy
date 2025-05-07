@@ -11,6 +11,7 @@ import { updateOrderToCompleted } from "../../actions/orders/update-order-to-com
 
 type props = {
   orderData: order;
+  handlerReset: () => void;
 };
 type propsStoreReviwe = {
   store_name: string;
@@ -21,10 +22,11 @@ type propsStoreReviwe = {
   customer_id: string;
   content: string;
 };
-const OrderCancel = ({ orderData }: props) => {
+const OrderCancel = ({ orderData, handlerReset }: props) => {
   const [loading, setLoading] = useState<boolean>(true);
   const [completingOrder, setCompletingOrder] = useState<boolean>(false);
   const [orderResult, setOrderResult] = useState<any>(null);
+  const [successOrder, setSuccessOrder] = useState<boolean>(false);
 
   const [storeReviewData, setStoreReviewData] = useState<propsStoreReviwe>({
     store_name: " ",
@@ -41,6 +43,9 @@ const OrderCancel = ({ orderData }: props) => {
       setCompletingOrder(true);
       const result = await updateOrderToCompleted(orderData.id);
       setOrderResult(result);
+      if (result.success) {
+        setSuccessOrder(true);
+      }
     } catch (error) {
       console.error("Error al completar la orden:", error);
       setOrderResult({
@@ -50,6 +55,12 @@ const OrderCancel = ({ orderData }: props) => {
     } finally {
       setCompletingOrder(false);
     }
+  }
+  
+  const handleReset = () => {
+    setSuccessOrder(false);
+    setOrderResult(null);
+    handlerReset();
   }
   return (
     <div className="w-full md:container  mx-auto p-0 md:p-4">
@@ -104,15 +115,31 @@ const OrderCancel = ({ orderData }: props) => {
       
       {/* Botón para completar la orden y componente de resultados */}
       <div className="mt-6 flex flex-col gap-4 p-4">
-        <button
-          onClick={async () => {
-           handlerUpdateOrder();
-          }}
-          disabled={completingOrder}
-          className={`py-2 px-4 rounded-lg font-medium text-white ${completingOrder ? 'bg-gray-400' : 'bg-blue-600 hover:bg-blue-700'}`}
-        >
-          {completingOrder ? "Procesando..." : "Completar Orden"}
-        </button>
+        {!successOrder && (
+          <button
+            onClick={async () => {
+             handlerUpdateOrder();
+            }}
+            disabled={completingOrder}
+            className={`py-2 px-4 rounded-lg font-medium text-white ${completingOrder ? 'bg-gray-400' : 'bg-blue-600 hover:bg-blue-700'}`}
+          >
+            {completingOrder ? "Procesando..." : "Completar Orden"}
+          </button>
+        )}
+        
+        {successOrder && (
+          <>
+            <button
+              onClick={handleReset}
+              className="py-2 px-4 rounded-lg font-medium text-white bg-green-600 hover:bg-green-700"
+            >
+              Reiniciar
+            </button>
+            <div className="mt-2 p-2 bg-green-100 text-green-700 rounded-md">
+              <p>Orden Completada</p>
+            </div>
+          </>
+        )}
         
         {orderResult && (
           <div className={`mt-4 p-4 rounded-lg ${orderResult.success ? 'bg-green-100 border border-green-400' : 'bg-red-100 border border-red-400'}`}>

@@ -129,7 +129,7 @@ const ManualBinancePay: React.FC<{
             alt="Comprobante de pago"
           />
           <p className="mt-1 text-xs text-gray-500">
-            Formatos aceptados: JPG, PNG, PDF (máx. 5MB)
+            Formatos aceptados: JPG, PNG, PDF (máx. 2MB)
           </p>
         </div>
 

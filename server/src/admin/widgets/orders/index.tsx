@@ -114,7 +114,11 @@ const SellerApplication = () => {
   //modal para ver el detalle de la orden
   const [open, onOpenChange] = useState(false);
 
-  const handlerReset = () => {};
+  const handlerReset = () => {
+    handlerGetListOrder();
+    onOpenChange(false);
+    setPage(1);
+  };
 
   const handlerGetListOrder = async () => {
     setIsLoading(true);
@@ -319,16 +323,16 @@ const SellerApplication = () => {
                         <Table.Cell>{data.total_price}</Table.Cell>
                         <Table.Cell>
                           {data.proof_of_payment ? (
-                            <Tooltip maxWidth={450} content={<img
+                            <Tooltip maxWidth={300} content={<img
                               src={BACKEND + "/" + data.proof_of_payment}
                               alt="Comprobante de pago"
-                              width={350}
-                              height={350} />}>
+                              width={250}
+                              height={250} />}>
                             <img
                               src={BACKEND + "/" + data.proof_of_payment}
                               alt="Comprobante de pago"
-                              width={50}
-                              height={50}
+                              width={300}
+                              height={300}
                             />
                           </Tooltip>
                       
@@ -431,11 +435,12 @@ function FocusModalDemo({
         </Drawer.Header>
         <Drawer.Body className="flex flex-col  py-5">
           {orderData?.state_order === "Cancelada" ? (
-            <OrderCancel orderData={orderData} />
+            <OrderCancel orderData={orderData} handlerReset={handleReset} />
           ) : (
             <OrderDetail
               customer={orderData?.person_name + orderData?.person_last_name}
               orderData={orderData}
+              handlerReset={handleReset}
             />
           )}
         </Drawer.Body>
