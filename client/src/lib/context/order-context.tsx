@@ -26,6 +26,7 @@ export type order = {
   conty: string
   city: string
   phone: string
+  proof_of_payment: string
   state_order:
     | "Completado"
     | "Cancelada"
@@ -144,6 +145,7 @@ export const OrderGudfyProvider = ({
       city: "",
       phone: "",
       state_order: "Pendiente de pago",
+      proof_of_payment: "",
       store_variant: [
         {
           store_id: "",

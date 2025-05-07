@@ -123,12 +123,7 @@ const InputFile: React.FC<InputProps> = ({
               id={label}
               className="hidden"
               accept=".txt"
-              onChange={(e) => {
-                if (e.target.files) {
-                  setFile(e.target.files[0])
-                }
-                if (onChange) onChange(e)
-              }}
+              onChange={handleFileChange}
             />
           </>
         )}
@@ -176,12 +171,7 @@ const InputFile: React.FC<InputProps> = ({
               id={label}
               className="hidden"
               accept=".txt"
-              onChange={(e) => {
-                if (e.target.files) {
-                  setFile(e.target.files[0])
-                }
-                if (onChange) onChange(e)
-              }}
+              onChange={handleFileChange}
             />
           </>
         )}
@@ -222,12 +212,7 @@ const InputFile: React.FC<InputProps> = ({
               id={label}
               className="hidden"
               accept=".jpg, .jpeg, .png, .webp"
-              onChange={(e) => {
-                if (e.target.files) {
-                  setFile(e.target.files[0])
-                }
-                if (onChange) onChange(e)
-              }}
+              onChange={handleFileChange}
             />
           </>
         )}

@@ -150,6 +150,7 @@ class StoreOrderService extends TransactionBaseService {
         "so.contry AS contry",
         "so.city AS city",
         "so.phone AS phone",
+        "so.proof_of_payment AS proof_of_payment",
         "so.created_at AS created_at",
         "so.order_status_id AS status_id",
         "svo.id AS store_variant_order_id",

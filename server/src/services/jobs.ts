@@ -1,5 +1,5 @@
 import { Lifetime } from "awilix";
-import { LessThan, Not } from "typeorm";
+import { LessThan, Not, Or, IsNull } from "typeorm";
 import { TransactionBaseService, Customer } from "@medusajs/medusa";
 import StoreOrderRepository from "../repositories/store-order";
 import StoreVariantOrderRepository from "../repositories/store-variant-order";
@@ -63,13 +63,13 @@ class JobsService extends TransactionBaseService {
       this.storeOrderRepository_
     );
 
-    return await repoStoreOrder.find({
+     const listOrders = await repoStoreOrder.find({
       where: {
         created_at: LessThan(date),
         order_status_id: "Payment_Pending_ID",
-        pay_method_id: Not("Method_Manual_Pay_ID"),
       },
     });
+    return listOrders.filter((order) => order.pay_method_id !== "Method_Manual_Pay_ID" || order.pay_method_id === null );
   }
 
   private async restaureStock(
@@ -116,9 +116,9 @@ class JobsService extends TransactionBaseService {
         },
       });
       for (const order of listOrdersCompleted) {
-        console.log("orden " + order.id + " a finalizar");
+        
         await this.updateOrdersCompleted(order);
-        console.log("Actualizada...");
+        
       }
 
       await this.updateVariantOrdersCompleted(date);
