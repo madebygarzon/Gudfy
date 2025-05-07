@@ -12,6 +12,7 @@ import { updateOrderToCancel } from "../../actions/orders/update-order-cancel";
 interface ModalOrderProps {
   orderData?: order;
   customer: string;
+  handlerReset: () => void;
 }
 type propsStoreReviwe = {
   store_name: string;
@@ -23,14 +24,15 @@ type propsStoreReviwe = {
   content: string;
 };
 
-const OrderDetail = ({ orderData, customer }: ModalOrderProps) => {
+const OrderDetail = ({ orderData, customer, handlerReset }: ModalOrderProps) => {
   // para las ordenes que ya estan finalizadas
   const [loading, setLoading] = useState<boolean>(true);
   const [orderResult, setOrderResult] = useState<any>(null);
   const [completingOrder, setCompletingOrder] = useState<boolean>(false);
-  const [cancelOrder, setCancelOrder] = useState<boolean>(false);
+  const [successOrder, setSuccessOrder] = useState<{cancel: boolean, complete: boolean}>({cancel: false, complete: false});
 
-  useEffect(() => {}, [loading]);
+  useEffect(() => {
+  }, [successOrder, loading]);
 
   const handlerState = (state_id: string) => {
     let state = "algo";
@@ -81,6 +83,9 @@ const OrderDetail = ({ orderData, customer }: ModalOrderProps) => {
       setCompletingOrder(true);
       const result = await updateOrderToCompleted(orderData.id);
       setOrderResult(result);
+      if (result.success) {
+        setSuccessOrder(prev => ({ ...prev, complete: true }));
+      }
     } catch (error) {
       console.error("Error al completar la orden:", error);
       setOrderResult({
@@ -95,7 +100,9 @@ const OrderDetail = ({ orderData, customer }: ModalOrderProps) => {
     try {
       setCompletingOrder(true);
       const result = await updateOrderToCancel(orderData.id);
-      setOrderResult(result);
+      const processedResult = result || { success: false, message: "No se recibió respuesta del servidor" };
+      setOrderResult(processedResult);
+      setSuccessOrder(prev => ({ ...prev, cancel: true }));
     } catch (error) {
       console.error("Error al cancelar la orden:", error);
       setOrderResult({
@@ -105,6 +112,12 @@ const OrderDetail = ({ orderData, customer }: ModalOrderProps) => {
     } finally {
       setCompletingOrder(false);
     }
+  };
+  
+  const handleReset = () => {
+    setSuccessOrder({ cancel: false, complete: false });
+    setOrderResult(null);
+    handlerReset();
   };
   return (
     <>
@@ -214,32 +227,46 @@ const OrderDetail = ({ orderData, customer }: ModalOrderProps) => {
         <>CARGANDO...</>
       )}
       {/* Botón para completar la orden y componente de resultados */}
-      {orderData.proof_of_payment && orderData.status_id === "Payment_Pending_ID" && <div className="flex flex-col gap-4 p-4">
-        <button
-          onClick={async () => {
-            handlerUpdateOrder();
-          }}
-          disabled={completingOrder}
-          className={`py-2 px-4 rounded-lg font-medium text-white ${
-            completingOrder ? "bg-gray-400" : "bg-blue-600 hover:bg-blue-700"
-          }`}
-        >
-          {completingOrder ? "Procesando..." : "Completar Orden"}
-        </button>
-        <button
-          onClick={async () => {
-            handlerUpdateCancelOrder();
-          }}
-          disabled={completingOrder}
-          className={`py-2 px-4 rounded-lg font-medium text-white ${
-            completingOrder ? "bg-gray-400" : "bg-red-600 hover:bg-red-700"
-          }`}
-        >
-          {completingOrder ? "Procesando..." : "Cancelar Orden"}
-        </button>
-          {cancelOrder && (
-           <div> <p>Orden Cancelada</p></div>
-          )}
+      {orderData?.proof_of_payment && orderData?.status_id === "Payment_Pending_ID" && <div className="flex flex-col gap-4 p-4">
+        {/* Solo mostrar botones si no hay una operación exitosa */}
+        {!successOrder.cancel && !successOrder.complete && (
+          <>
+            <button
+              onClick={async () => {
+                handlerUpdateOrder();
+              }}
+              disabled={completingOrder}
+              className={`py-2 px-4 rounded-lg font-medium text-white ${
+                completingOrder ? "bg-gray-400" : "bg-blue-600 hover:bg-blue-700"
+              }`}
+            >
+              {completingOrder ? "Procesando..." : "Completar Orden"}
+            </button>
+            <button
+              onClick={async () => {
+                handlerUpdateCancelOrder();
+              }}
+              disabled={completingOrder}
+              className={`py-2 px-4 rounded-lg font-medium text-white ${
+                completingOrder ? "bg-gray-400" : "bg-red-600 hover:bg-red-700"
+              }`}
+            >
+              {completingOrder ? "Procesando..." : "Cancelar Orden"}
+            </button>
+          </>
+        )}
+        {(successOrder.cancel || successOrder.complete) && (
+          <button
+            onClick={handleReset}
+            className="py-2 px-4 rounded-lg font-medium text-white bg-green-600 hover:bg-green-700"
+          >
+            Reiniciar
+          </button>
+        )}
+      
+        {successOrder.complete && (
+         <div className="mt-2 p-2 bg-green-100 text-green-700 rounded-md"> <p>Orden Completada</p></div>
+        )}
         {orderResult && (
           <div
             className={`mt-4 p-4 rounded-lg ${
@@ -252,7 +279,9 @@ const OrderDetail = ({ orderData, customer }: ModalOrderProps) => {
               className={`text-lg font-medium ${
                 orderResult.success ? "text-green-700" : "text-red-700"
               }`}
-            >
+            > {successOrder.cancel && (
+              <div className="mt-2 p-2 bg-red-100 text-red-700 rounded-md"> <p>Orden Cancelada</p></div>
+             )}
               {orderResult.message}
             </p>
 
