@@ -203,7 +203,7 @@ const OrderDetail = ({ orderData, customer, handlerReset }: ModalOrderProps) => 
                     Método de pago:
                   </td>
                   <td className="py-2 px-4 border-r border-slate-200 ">
-                    Binance Pay Entrega Automática
+                    {orderData?.proof_of_payment ? "Pago Manual" : "CoinPal Binance Pago Automático"}
                   </td>
                 </tr>
                 <tr className="border-b border-slate-200">
