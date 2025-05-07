@@ -326,13 +326,13 @@ const SellerApplication = () => {
                             <Tooltip maxWidth={300} content={<img
                               src={BACKEND + "/" + data.proof_of_payment}
                               alt="Comprobante de pago"
-                              width={250}
-                              height={250} />}>
+                              width={300}
+                              height={0} />}>
                             <img
                               src={BACKEND + "/" + data.proof_of_payment}
                               alt="Comprobante de pago"
-                              width={300}
-                              height={300}
+                              width={50}
+                              height={50}
                             />
                           </Tooltip>
                       
