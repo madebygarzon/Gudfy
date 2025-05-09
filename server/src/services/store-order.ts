@@ -8,6 +8,7 @@ import SerialCodeRepository from "src/repositories/serial-code";
 import DataMethodPaymentRepository from "src/repositories/data-method-payment";
 import coinpal from "coinpal-sdk";
 import { formatCommisionCoinpal } from "./utils/formatCommision";
+import { formatPrice } from "./utils/format-price";
 
 class StoreOrderService extends TransactionBaseService {
   static LIFE_TIME = Lifetime.SCOPED;
@@ -109,7 +110,7 @@ class StoreOrderService extends TransactionBaseService {
           store_name: order.store_name,
           store_variant_order_id: order.store_variant_order_id,
           produc_title: order.produc_title,
-          price: order.price,
+          price: formatPrice(order.price + order.price * Number(process.env.COMMISSION)),
           quantity: order.quantity,
           total_price_for_product: order.total_price_for_product,
           variant_order_status_id: order.variant_order_status_id,
@@ -188,9 +189,9 @@ class StoreOrderService extends TransactionBaseService {
         store_name,
         store_variant_order_id,
         produc_title,
-        price,
+        price: formatPrice(price + price * Number(process.env.COMMISSION)),
         quantity,
-        total_price_for_product,
+        total_price_for_product: formatPrice(Number(total_price_for_product) + Number(total_price_for_product) * Number(process.env.COMMISSION)),
         variant_order_status_id,
         serial_code_products:
           order.status_id === "Completed_ID" ||
@@ -266,7 +267,7 @@ class StoreOrderService extends TransactionBaseService {
               quantity: orderData.quantity,
               total_price: orderData.total_price_for_product,
               produc_title: orderData.produc_title,
-              price: orderData.price,
+              price: formatPrice(orderData.price ),
               serial_code_products:
                 orderData.status_id === "Completed_ID" ||
                 orderData.status_id === "Finished_ID" ||
@@ -286,7 +287,7 @@ class StoreOrderService extends TransactionBaseService {
           quantity: orderData.quantity,
           total_price: orderData.total_price_for_product,
           produc_title: orderData.produc_title,
-          price: orderData.price,
+          price: formatPrice(orderData.price ),
           serial_code_products:
             orderData.status_id === "Completed_ID" ||
             orderData.status_id === "Finished_ID" ||
@@ -554,7 +555,7 @@ class StoreOrderService extends TransactionBaseService {
         store_name,
         store_variant_order_id,
         produc_title,
-        price,
+        price : formatPrice(price + price * Number(process.env.COMMISSION)),
         quantity,
         total_price_for_product,
       });

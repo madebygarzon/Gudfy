@@ -11,6 +11,7 @@ import { useCart } from "medusa-react"
 import { useCartGudfy } from "@lib/context/cart-gudfy"
 import Link from "next/link"
 import { useCartDropdown } from "@lib/context/cart-dropdown-context"
+import { formatPrice } from "@lib/util/formatPrice"
 
 type ProductVariantTemplateProps = {
   product: storeProductVariant
@@ -49,9 +50,9 @@ const ProductTemplate: React.FC<ProductVariantTemplateProps> = ({
 
   const handlerPrice = (amountvalue: number) => {
     setPrice(
-      roundToTwoDecimals(
-        selectedSeller ? selectedSeller.price * amountvalue : 0
-      )
+      
+        selectedSeller ? formatPrice(selectedSeller.price * amountvalue) : 0
+    
     )
   }
 
@@ -69,12 +70,7 @@ const ProductTemplate: React.FC<ProductVariantTemplateProps> = ({
     }
   }
 
-  const roundToTwoDecimals = (num: number) => {
-    let tempNum = num * 1000
-    tempNum = Math.round(tempNum)
-    tempNum = tempNum / 10
-    return tempNum / 100
-  }
+ 
 
   const handlerAddCart = () => {
     addItem(
@@ -153,7 +149,7 @@ const ProductTemplate: React.FC<ProductVariantTemplateProps> = ({
                 />
 
                 <p className="bg-[#ececec] rounded-[10px] mt-6 p-2">
-                  Precio: $ {price || 0}
+                  Precio: $ {formatPrice(price || 0)}
                 </p>
               </div>
             ) : (

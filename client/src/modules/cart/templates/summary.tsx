@@ -26,17 +26,14 @@ const Summary = ({ items, setModifyProduct }: ItemsTemplateProps) => {
   const { customer } = useMeCustomer()
   const [success, setSuccess] = useState<{ success: false; data: string[] }>()
   const router = useRouter()
-  const handlerTotalPrice = (commission: boolean) => {
+  const handlerTotalPrice = () => {
     let total = 0
     if (items?.length) {
       items?.forEach((item) => {
         total = total + item.unit_price * item.quantity
       })
     }
-    total = parseFloat(total.toFixed(2))
-
-    if (commission) return (total = total + total * 0.01)
-
+    
     return total
   }
 
@@ -56,12 +53,15 @@ const Summary = ({ items, setModifyProduct }: ItemsTemplateProps) => {
     }
   }
   return (
-    <div className="grid grid-cols-1 gap-y-6 p-6">
+    <div className="grid grid-cols-1 gap-y-6 p-6 ">
       <div className="text-gray-800">
         <h3 className="text-2xl font-semibold text-gray-900 mb-4">
-          Total del carrito
+          Total del carrito :
+          <span className="font-medium text-gray-900 ml-2">
+            $ {handlerTotalPrice()}
+          </span>
         </h3>
-        <div className="flex items-center justify-between text-lg text-gray-700 mb-4">
+        {/* <div className="flex items-center justify-between text-lg text-gray-700 mb-4">
           <span>Subtotal:</span>
 
           <span className="font-medium text-gray-900">
@@ -72,16 +72,8 @@ const Summary = ({ items, setModifyProduct }: ItemsTemplateProps) => {
           <strong> ✨Comisión Gudfy Fee: 1%</strong> Esta comisión nos ayuda a
           mantener un servicio seguro, confiable y de alta calidad para todos
           nuestros usuarios.
-        </p>
-        <div className="flex items-center justify-between text-lg text-gray-700 mb-4"></div>
-
-        <div className="h-px w-full border-t border-gray-300 my-4"></div>
-        <div className="flex items-center justify-between text-lg text-gray-700">
-          <span className="font-medium ">Total:</span>
-          <span className="text-lg font-semibold">
-            {handlerTotalPrice(true)}
-          </span>
-        </div>
+        </p> */}
+        
         <div className="mt-6">
           <Button
             className="w-full rounded-3xl"

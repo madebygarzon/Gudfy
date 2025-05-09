@@ -5,6 +5,7 @@ import StoreXVariantRepository from "../repositories/store-x-variant";
 import { StoreReviewRepository } from "../repositories/store-review";
 import { IsNull, Not } from "typeorm";
 import StoreService from "./store";
+import { formatPrice } from "./utils/format-price";
 
 class StoreXVariantService extends TransactionBaseService {
   static LIFE_TIME = Lifetime.SCOPED;
@@ -77,7 +78,7 @@ class StoreXVariantService extends TransactionBaseService {
                 store_name: variant.store_name,
                 email: variant.customer_email,
                 quantity: variant.quantity,
-                price: variant.price,
+                price: formatPrice(variant.price + variant.price * Number(process.env.COMMISSION)),
                 avatar: variant.avatar,
                 parameters: {
                   rating: await this.storeService_.getSellerRating(
@@ -95,7 +96,7 @@ class StoreXVariantService extends TransactionBaseService {
             store_name: variant.store_name,
             email: variant.customer_email,
             quantity: variant.quantity,
-            price: variant.price,
+            price: formatPrice(variant.price + variant.price * Number(process.env.COMMISSION)),
             avatar: variant.avatar,
             parameters: {
               rating: await this.storeService_.getSellerRating(

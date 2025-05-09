@@ -196,7 +196,7 @@ const ModalOrderDetail = ({
                                   </div>
                                   <div className="w-[40%] md:text-xs text-[10px]  text-center">
                                     <p className="leading-tight ">
-                                      Vendido por:{p.store_name}
+                                      Vendido por: {p.store_name}
                                     </p>
                                     <span
                                       className={`${getColorState(
@@ -325,7 +325,7 @@ const ModalOrderDetail = ({
                       USD
                     </td>
                   </tr>
-                  <tr className="border-b border-slate-200">
+                  {/* <tr className="border-b border-slate-200">
                     <td className="py-2 px-4 border-r border-slate-200  ">
                       Comisión de la pasarela de pago y de gudfy:
                     </td>
@@ -339,7 +339,7 @@ const ModalOrderDetail = ({
                         ).commission
                       }
                     </td>
-                  </tr>
+                  </tr> */}
                   <tr className="border-b border-slate-200">
                     <td className="py-2 px-4 border-r border-slate-200 ">
                       Método de pago:
@@ -349,7 +349,9 @@ const ModalOrderDetail = ({
                         ? "Automatic Binance Pay"
                         : orderData.pay_method_id === "Method_COINPAL_ID"
                         ? "CoinPal Binance Pay"
-                        : " "}
+                        : orderData.pay_method_id === "Method_Manual_Pay_ID"
+                        ? "Manual Binance Pay"
+                        : "Sin seleccionar "}
                     </td>
                   </tr>
                   <tr className="border-b border-slate-200">
