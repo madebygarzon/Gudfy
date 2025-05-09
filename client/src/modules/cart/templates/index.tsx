@@ -20,10 +20,7 @@ const CartTemplate = () => {
   const { items } = useCartGudfy()
   const [modifyProduct, setModifyProduct] = useState<string[]>([])
 
-  // if (isLoading) {
-  //   console.log("entra al if")
-  //   return <SkeletonCartPage />
-  // }
+
 
   return (
     <div className="bg-gray-50 md:pb-12 pb-4">
@@ -51,7 +48,7 @@ const CartTemplate = () => {
               <ItemsTemplate items={items} modifyProduct={modifyProduct} />
             </div>
             <div className="w-full small:w-auto relative">
-              <div className="flex flex-col gap-y-8 sticky top-36 small:mr-8">
+              <div className="flex flex-col gap-y-8 sticky top-36 small:mr-8 justify-center">
                 <div className="bg-white md:p-6 p-0">
                   <Summary items={items} setModifyProduct={setModifyProduct} />
                 </div>

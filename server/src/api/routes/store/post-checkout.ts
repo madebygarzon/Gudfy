@@ -168,8 +168,8 @@ const handlerTotalPrice = (items) => {
       total = total + item.unit_price * item.quantity;
     });
   }
-  total = total + total * 0.01; // Comisión de binance free y Gudfy free
-  return formatPrice(total + total * 0.01); // Comisión de y Gudfy free
+  
+  return formatPrice(total + total * 0.01); 
 };
 
 const generateRandomString = (length) => {

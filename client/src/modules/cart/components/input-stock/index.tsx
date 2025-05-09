@@ -50,7 +50,7 @@ const InputSelectStock: React.FC<InputSelectStock> = ({
         />
       </span>
       <span className="text-lg mt-5  text-center font-bold">
-        Total: ${price.toFixed(2)}
+        Total: ${price}
       </span>
     </div>
   )

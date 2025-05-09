@@ -7,6 +7,7 @@ import {
 import ProductRepository from "@medusajs/medusa/dist/repositories/product";
 import StoreXVariantRepository from "../repositories/store-x-variant";
 import ProductVariantRepository from "@medusajs/medusa/dist/repositories/product-variant";
+import { formatPrice } from "./utils/format-price";
 
 class StoreProductVariantService extends TransactionBaseService {
   static LIFE_TIME = Lifetime.SCOPED;
@@ -93,9 +94,9 @@ class StoreProductVariantService extends TransactionBaseService {
         if (!variantMap.has(variant.id)) {
           variantMap.set(variant.id, {
             ...variant,
-            prices: [variant.price],
+            prices: [formatPrice(variant.price + variant.price * Number(process.env.COMMISSION))],
           });
-        } else variantMap.get(variant.id).prices.push(variant.price);
+        } else variantMap.get(variant.id).prices.push(formatPrice(variant.price + variant.price * Number(process.env.COMMISSION)));
       });
 
       const listVariant = Array.from(variantMap.values()).map((variant) => {
