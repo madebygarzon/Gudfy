@@ -272,7 +272,7 @@ class CartMarketService extends TransactionBaseService {
         }
       }
 
-      let totalComiBina = total_price + total_price * 0.01;
+      let totalComiBina = total_price ;
 
       const createOrder = storeOrderRepo.create({
         id: `${prefix}${newIdNumber}`,
