@@ -356,16 +356,35 @@ const ModalOrderDetail = ({
                   </tr>
                   <tr className="border-b border-slate-200">
                     <td className="py-2 px-4 border-r border-slate-200 ">
+                      Comisión de la pasarela de pago:
+                    </td>
+                    <td className="py-2 px-4 border-r border-slate-200 ">
+                      $
+                      {orderData.pay_method_id === "Method_COINPAL_ID"
+                        ? calculeCommissionCoinpal(
+                            orderData.store_variant.reduce((sum, p) => {
+                              return sum + parseFloat(p.total_price_for_product)
+                            }, 0)
+                          ).commission
+                        : "0"
+                      }
+                    </td>
+                  </tr>
+                  <tr className="border-b border-slate-200">
+                    <td className="py-2 px-4 border-r border-slate-200 ">
                       Total:
                     </td>
                     <td className="py-2 px-4 border-r border-slate-200 ">
                       $
-                      {
-                        calculeCommissionCoinpal(
-                          orderData.store_variant.reduce((sum, p) => {
+                      {orderData.pay_method_id === "Method_COINPAL_ID"
+                        ? calculeCommissionCoinpal(
+                            orderData.store_variant.reduce((sum, p) => {
+                              return sum + parseFloat(p.total_price_for_product)
+                            }, 0)
+                          ).totalPrice
+                        : orderData.store_variant.reduce((sum, p) => {
                             return sum + parseFloat(p.total_price_for_product)
                           }, 0)
-                        ).totalPrice
                       }
                     </td>
                   </tr>
