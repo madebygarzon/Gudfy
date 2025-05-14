@@ -17,7 +17,7 @@ import { CheckMini, XMarkMini } from "@medusajs/icons"
 import { SellerOrder, useSellerStoreGudfy } from "@lib/context/seller-store"
 import { EyeSeeIcon } from "@lib/util/icons"
 import Loader from "@lib/loader"
-import { formatPrice } from "@lib/format-price"
+import { formatPrice } from "@lib/util/formatPrice"
 import DownloadButton from "@modules/common/components/download-button"
 
 const SellerOrderTable: React.FC = () => {

@@ -30,7 +30,7 @@ type orders = {
 
 const dataSelecterPage = [10, 20, 30]
 
-const TicketTable: React.FC = () => {
+const OrderTable: React.FC = () => {
   const { listOrder, handlerListOrder, isLoading } = useOrderGudfy()
   const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure()
 
@@ -39,12 +39,23 @@ const TicketTable: React.FC = () => {
   const [rowsPerPage, setRowsPerPage] = useState(dataSelecterPage[0])
   const [pageTotal, setPageTotal] = useState(1)
   const [searchQuery, setSearchQuery] = useState('')
+  const [selectOrderData, setTelectOrderData] = useState<order>()
 
-  const handleReset = (idResetOrder?: string) => {
-    handlerListOrder()
-    onClose()
-    onOpen()
-    onOpenChange()
+  const handleReset = async() => {
+    await handlerListOrder().then(()=>{
+      if (selectOrderData) {
+        // Use a small timeout to ensure the list is updated first
+        
+          // Find the updated order data with the same ID
+          const updatedOrder = listOrder?.find(order => order.id === selectOrderData.id)
+          if (updatedOrder) {
+            setTelectOrderData(updatedOrder)
+          }
+        
+      }
+    })
+    // If there's a selected order, update its data after refreshing the list
+    
   }
 
   const [filterStatus, setFilterStatus] = useState<
@@ -56,7 +67,7 @@ const TicketTable: React.FC = () => {
     | "all"
   >("all")
 
-  const [selectOrderData, setTelectOrderData] = useState<order>()
+  
 
   // Filter by status and search query
   const filteredOrder = listOrder
@@ -297,7 +308,7 @@ interface ModalOrder {
   orderData?: order
   isOpen: boolean
   onOpenChange: () => void
-  handleReset: () => void
+  handleReset: () => Promise<void>
   onClose: () => void
 }
 
@@ -309,17 +320,25 @@ const ModalOrder = ({
   onClose,
 }: ModalOrder) => {
   const { customer } = useMeCustomer()
-  async function handlerOrderCancel(orderId: string) {
-    updateCancelStoreOrder(orderId).then(() => {
-      onOpenChange()
-      handleReset()
-    })
-  }
+  const { listOrder } = useOrderGudfy()
+  
+  // Inicializar el estado con orderData
   const [orderState, setOrderState] = useState<order | undefined>(orderData)
 
+  // Actualizar orderState cuando cambia orderData
   useEffect(() => {
     setOrderState(orderData)
   }, [orderData])
+  
+  // Actualizar orderState cuando cambia listOrder y hay un orderData seleccionado
+  useEffect(() => {
+    if (orderData && listOrder) {
+      const updatedOrder = listOrder.find(order => order.id === orderData.id)
+      if (updatedOrder) {
+        setOrderState(updatedOrder)
+      }
+    }
+  }, [listOrder, orderData])
 
   return (
     <Modal
@@ -334,14 +353,14 @@ const ModalOrder = ({
             <ModalOrderCancel
               handleReset={handleReset}
               onOpenChange={onOpenChange}
-              orderData={orderData}
+              orderData={orderState}
             />
           ) : (
             <ModalOrderDetail
               customer={customer}
               handleReset={handleReset}
               onOpenChangeMain={onOpenChange}
-              orderData={orderData}
+              orderData={orderState}
             />
           )
         }
@@ -350,4 +369,4 @@ const ModalOrder = ({
   )
 }
 
-export default TicketTable
+export default OrderTable

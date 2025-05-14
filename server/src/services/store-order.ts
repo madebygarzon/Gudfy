@@ -191,7 +191,7 @@ class StoreOrderService extends TransactionBaseService {
         produc_title,
         price: formatPrice(price + price * Number(process.env.COMMISSION)),
         quantity,
-        total_price_for_product: formatPrice(Number(total_price_for_product) + Number(total_price_for_product) * Number(process.env.COMMISSION)),
+        total_price_for_product: formatPrice(Number(total_price_for_product) ),
         variant_order_status_id,
         serial_code_products:
           order.status_id === "Completed_ID" ||

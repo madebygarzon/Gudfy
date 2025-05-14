@@ -12,6 +12,7 @@ import {
 } from "@heroui/react"
 import SellerRequestPerson from "@modules/account/components/seller_request_person"
 import SellerRequestCompany from "@modules/account/components/seller_request_company"
+import SellerRequestSimple from "@modules/account/components/seller_request_simple"
 
 type props = {
   handlerReset: () => void
@@ -74,10 +75,14 @@ const ApplyForSeller: React.FC<props> = ({ handlerReset }) => {
               Solicitud comerciante individual
             </ModalHeader>
             <ModalBody>
-              <SellerRequestPerson
+              <SellerRequestSimple
                 onClose={onClose}
                 handlerReset={handlerReset}
               />
+              {/* <SellerRequestPerson
+                onClose={onClose}
+                handlerReset={handlerReset}
+              /> */}
             </ModalBody>
           </ModalContent>
         </Modal>

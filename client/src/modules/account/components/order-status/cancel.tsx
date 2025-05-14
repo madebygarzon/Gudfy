@@ -16,7 +16,7 @@ import Loader from "@lib/loader"
 interface ModalOrderProps {
   orderData?: order
   onOpenChange: () => void
-  handleReset: () => void
+  handleReset: () => Promise<void>
 }
 
 const ModalOrderCancel = ({
