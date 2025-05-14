@@ -19,7 +19,7 @@ import { addClaim } from "@modules/account/actions/post-add-claim"
 import { postFinishTheVariation } from "@modules/account/actions/orders/post-finish-the-variation"
 import InputFile from "@modules/common/components/input-file"
 import { validateComment } from "@modules/account/actions/get-validate-review"
-import { formatPrice } from "@lib/format-price"
+import { formatPrice } from "@lib/util/formatPrice"
 import { BlankIcon } from "@lib/util/icons"
 import { ThumbUp, ThumbDown, PauseSolid, Loader } from "@medusajs/icons"
 import { Button as ButtonIcon } from "@heroui/react"
@@ -34,7 +34,7 @@ import { updateCancelStoreOrder } from "@modules/account/actions/update-cancel-s
 interface ModalOrderProps {
   orderData?: order
   onOpenChangeMain: () => void
-  handleReset: () => void
+  handleReset: () => Promise<void>
   customer: Omit<Customer, "password_hash"> | undefined
 }
 type propsStoreReviwe = {
@@ -65,6 +65,8 @@ const ModalOrderDetail = ({
   // para las ordenes que ya estan finalizadas
   const [loading, setLoading] = useState<boolean>(true)
   const [stores, setStore] = useState<string[]>([]) // para saber si la tienda ya ha sido comentada
+  const [isResetting, setIsResetting] = useState<boolean>(false) // Estado para controlar el loader durante reset
+  const [accordionKeys, setAccordionKeys] = useState<string[]>([]) // Estado para controlar qué acordeones están abiertos
   const [storeReviewData, setStoreReviewData] = useState<propsStoreReviwe>({
     store_name: " ",
     store_id: " ",
@@ -82,7 +84,18 @@ const ModalOrderDetail = ({
         setLoading(false)
       })
     }
-  }, [loading])
+  }, [loading,])
+
+  useEffect(() => {
+    // Cuando cambian los datos de la orden, reiniciamos la validación de comentarios
+    if (orderData) {
+      setLoading(true)
+      validateComment(orderData.id).then((e) => {
+        setStore(e)
+        setLoading(false)
+      })
+    }
+  }, [orderData])
 
   const handlerState = (state_id: string) => {
     let state = "algo"
@@ -129,21 +142,65 @@ const ModalOrderDetail = ({
   }
 
   const handlerFinishTheVariation = (product: product) => {
+    setIsResetting(true) // Activar loader
+    setAccordionKeys([]) // Cerrar todos los acordeones
+    
     postFinishTheVariation(product.store_variant_order_id).then(() => {
-      handleReset()
+      handleReset().then(()=>{
+        setProductSelect(null)
+        // Usar setTimeout para mantener el loader por 3 segundos
+        setTimeout(() => {
+          setIsResetting(false) // Desactivar loader después de 3 segundos
+        }, 7000)
+      }).catch(() => {
+        setIsResetting(false) // Desactivar en caso de error
+      })
+    }).catch(() => {
+      setIsResetting(false) // Desactivar en caso de error
     })
   }
    async function handlerOrderCancel(orderId: string) {
+      setIsResetting(true) // Activar loader
+      setAccordionKeys([]) // Cerrar todos los acordeones
+      
       updateCancelStoreOrder(orderId).then(() => {
-        onOpenChange()
-        handleReset()
+        handleReset().then(() => {
+          // Usar setTimeout para mantener el loader por 3 segundos
+          setTimeout(() => {
+            setIsResetting(false) // Desactivar loader después de 3 segundos
+            onOpenChange()
+          }, 3000)
+        }).catch(() => {
+          setIsResetting(false) // Desactivar en caso de error
+        })
+      }).catch(() => {
+        setIsResetting(false) // Desactivar en caso de error
       })
     }
 
+  // Función para manejar la apertura/cierre de acordeones
+  const handleAccordionChange = (key: string) => {
+    if (accordionKeys.includes(key)) {
+      // Si ya está abierto, lo cerramos
+      setAccordionKeys(accordionKeys.filter(k => k !== key))
+    } else {
+      // Si está cerrado, lo abrimos
+      setAccordionKeys([...accordionKeys, key])
+    }
+  }
+
   return (
-    <>
+    <div data-modal-detail="true">
       <ModalHeader className="flex flex-col gap-1"></ModalHeader>
       <ModalBody className="md:px-6 px-1 py-1">
+        {isResetting && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+            <div className="bg-white p-4 rounded-lg shadow-lg flex items-center gap-3">
+              <Loader className="animate-spin" />
+              <span>Actualizando...</span>
+            </div>
+          </div>
+        )}
         {orderData ? (
           <div className="max-w-4xl md:container  mx-auto p-0 md:p-4">
             <h2 className="text-center text-2xl my-4 font-bold text-gray-700 ">
@@ -184,10 +241,14 @@ const ModalOrderDetail = ({
                                       {handlerState(p.variant_order_status_id)}
                                     </span>
                                   </div>
-                                </div> : <Accordion isCompact>
+                                </div> : <Accordion 
+                                  isCompact 
+                                  selectedKeys={accordionKeys}
+                                  onSelectionChange={(keys) => setAccordionKeys(Array.from(keys) as string[])}
+                                >
                             <AccordionItem
-                              key={i}
-                              aria-label="Accordion 1"
+                              key={`accordion-${i}`}
+                              aria-label={`Accordion ${i}`}
                               // indicator={}
                               title={
                                 <div className="w-full flex">
@@ -356,16 +417,35 @@ const ModalOrderDetail = ({
                   </tr>
                   <tr className="border-b border-slate-200">
                     <td className="py-2 px-4 border-r border-slate-200 ">
+                      Comisión de la pasarela de pago:
+                    </td>
+                    <td className="py-2 px-4 border-r border-slate-200 ">
+                      $
+                      {orderData.pay_method_id === "Method_COINPAL_ID"
+                        ? calculeCommissionCoinpal(
+                            orderData.store_variant.reduce((sum, p) => {
+                              return sum + parseFloat(p.total_price_for_product)
+                            }, 0)
+                          ).commission
+                        : "0"
+                      }
+                    </td>
+                  </tr>
+                  <tr className="border-b border-slate-200">
+                    <td className="py-2 px-4 border-r border-slate-200 ">
                       Total:
                     </td>
                     <td className="py-2 px-4 border-r border-slate-200 ">
                       $
-                      {
-                        calculeCommissionCoinpal(
-                          orderData.store_variant.reduce((sum, p) => {
+                      {orderData.pay_method_id === "Method_COINPAL_ID"
+                        ? calculeCommissionCoinpal(
+                            orderData.store_variant.reduce((sum, p) => {
+                              return sum + parseFloat(p.total_price_for_product)
+                            }, 0)
+                          ).totalPrice
+                        : orderData.store_variant.reduce((sum, p) => {
                             return sum + parseFloat(p.total_price_for_product)
                           }, 0)
-                        ).totalPrice
                       }
                     </td>
                   </tr>
@@ -427,6 +507,7 @@ const ModalOrderDetail = ({
           idCustomer={customer?.id}
           handleReset={handleReset}
           onClose={onClose}
+          setProductSelect={setProductSelect}
         />
         <ModalReviw
           isOpen={isOpen2}
@@ -436,7 +517,7 @@ const ModalOrderDetail = ({
           setLoading={setLoading}
         />
       </div>
-    </>
+    </div>
   )
 }
 
@@ -458,7 +539,8 @@ interface ModalOrder {
   isOpen: boolean
   onClose: () => void
   onOpenChange: () => void
-  handleReset: () => void
+  handleReset: () => Promise<void>
+  setProductSelect: React.Dispatch<React.SetStateAction<product | null>>
 }
 
 const ModalQualify = ({
@@ -469,29 +551,89 @@ const ModalQualify = ({
   idCustomer,
   handleReset,
   onClose,
+  setProductSelect,
 }: ModalOrder) => {
   const [viewComment, setViewComment] = useState<boolean>(false)
   const [comment, setComment] = useState<string>("")
   const [image, setImage] = useState<File | undefined>()
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false) // Estado para controlar si la reclamación está en proceso
 
   const handlerAddClaim = () => {
-    if (!product) return
-
+    // Activar loader y deshabilitar botón
+    setIsSubmitting(true)
+    
+    // Activar loader y cerrar acordeones
+    if (setProductSelect) {
+      setProductSelect(null)
+    }
+    
+    // Verificamos la implementación correcta de addClaim
+    if (!product || !idOrder) {
+      setIsSubmitting(false)
+      return
+    }
+    
+    // Acceder al estado isResetting del componente padre
+    const modalDetail = document.querySelector('[data-modal-detail]');
+    if (modalDetail) {
+      const detailComponent = (modalDetail as any).__reactFiber$;
+      if (detailComponent && detailComponent.child && detailComponent.child.stateNode) {
+        const detailInstance = detailComponent.child.stateNode;
+        if (typeof detailInstance.setIsResetting === 'function') {
+          detailInstance.setIsResetting(true);
+          if (typeof detailInstance.setAccordionKeys === 'function') {
+            detailInstance.setAccordionKeys([]);
+          }
+        }
+      }
+    }
+    
     addClaim(
-      idOrder || " ",
+      idOrder,
       { ...product, comment },
       idCustomer || " ",
       image
     ).then(() => {
-      setViewComment(false)
-      handleReset()
-      onClose()
+      // Usar setTimeout para mantener el loader por 3 segundos
+      setTimeout(() => {
+        setIsSubmitting(false) // Desactivar el estado de envío después de 3 segundos
+        
+        // Desactivar el loader del componente padre después de 3 segundos
+        if (modalDetail) {
+          const detailComponent = (modalDetail as any).__reactFiber$;
+          if (detailComponent && detailComponent.child && detailComponent.child.stateNode) {
+            const detailInstance = detailComponent.child.stateNode;
+            if (typeof detailInstance.setIsResetting === 'function') {
+              detailInstance.setIsResetting(false);
+            }
+          }
+        }
+        
+        setViewComment(false)
+        handleReset()
+        onClose()
+      }, 3000)
+    }).catch((error) => {
+      console.error("Error al añadir reclamo:", error)
+      setIsSubmitting(false) // Desactivar el estado de envío en caso de error
+      
+      // En caso de error, desactivamos el loader del componente padre
+      if (modalDetail) {
+        const detailComponent = (modalDetail as any).__reactFiber$;
+        if (detailComponent && detailComponent.child && detailComponent.child.stateNode) {
+          const detailInstance = detailComponent.child.stateNode;
+          if (typeof detailInstance.setIsResetting === 'function') {
+            detailInstance.setIsResetting(false);
+          }
+        }
+      }
     })
   }
   useEffect(() => {
     setComment("")
   }, [viewComment])
   return (
+    // ... resto del código
     <Modal isOpen={isOpen} onOpenChange={onOpenChange} size="2xl">
       <ModalContent>
         <>
@@ -544,21 +686,29 @@ const ModalQualify = ({
               <div className="flex justify-center gap-2">
                 <ButtonLigth
                   className={`${
-                    !comment.length
-                      ? "bg-[#a76963] hover:bg-[#744843] text-white border-none"
+                    !comment.length || isSubmitting
+                      ? "bg-[#a76963] hover:bg-[#744843] text-white border-none cursor-not-allowed opacity-70"
                       : "   bg-[#E74C3C] hover:bg-[#C0392B] text-white border-none"
                   }`}
                   // variant="transparent"
-
-                  onClick={() => handlerAddClaim()}
+                  disabled={!comment.length || isSubmitting}
+                  onClick={() => !isSubmitting && handlerAddClaim()}
                 >
-                  Presentar reclamo
+                  {isSubmitting ? (
+                    <div className="flex items-center gap-2">
+                      <Loader className="animate-spin h-4 w-4" />
+                      <span>Procesando...</span>
+                    </div>
+                  ) : (
+                    "Presentar reclamo"
+                  )}
                 </ButtonLigth>
                 <ButtonLigth
                   // variant="transparent"
-                  className="bg-[#28A745] hover:bg-[#218838] text-white border-none"
+                  className={`bg-[#28A745] hover:bg-[#218838] text-white border-none ${isSubmitting ? 'opacity-70 cursor-not-allowed' : ''}`}
+                  disabled={isSubmitting}
                   onClick={() => {
-                    onClose()
+                    if (!isSubmitting) onClose()
                   }}
                 >
                   Atras

@@ -1,5 +1,6 @@
 import React, { useState } from "react"
 import { Input } from "@heroui/react"
+import { formatPrice } from "@lib/util/formatPrice"
 
 type InputSelectStock = {
   currentQuantity: number
@@ -50,7 +51,7 @@ const InputSelectStock: React.FC<InputSelectStock> = ({
         />
       </span>
       <span className="text-lg mt-5  text-center font-bold">
-        Total: ${price}
+        Total: {formatPrice(price)}
       </span>
     </div>
   )
