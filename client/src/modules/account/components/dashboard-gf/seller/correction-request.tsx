@@ -13,7 +13,7 @@ import {
 import { Alert } from "@medusajs/ui"
 import type { SellerCredentials } from "types/global"
 import SellerUpdateRequest from "../../seller-update-request"
-
+import SellerUpdateRequestSimple from "../../seller-update-request-simple"
 type props = {
   comment: string
   data: SellerCredentials & { id: string }
@@ -37,7 +37,7 @@ const CorrectionApplication: React.FC<props> = ({
         </h1>
         <Alert
           variant="warning"
-          className=" text-center text-[18px] font-light max-w-[700px]"
+          className=" text-center text-[18px] font-light max-w-[700px] bg-white"
         >
           {comment.charAt(0).toUpperCase() + comment.slice(1)}
         </Alert>
@@ -64,11 +64,16 @@ const CorrectionApplication: React.FC<props> = ({
               Solicitud comerciante individual
             </ModalHeader>
             <ModalBody>
-              <SellerUpdateRequest
+              <SellerUpdateRequestSimple
                 data={data}
                 onClose={onClose}
                 handlerReset={handlerReset}
               />
+              {/* <SellerUpdateRequest
+                data={data}
+                onClose={onClose}
+                handlerReset={handlerReset}
+              /> */}
             </ModalBody>
           </ModalContent>
         </Modal>

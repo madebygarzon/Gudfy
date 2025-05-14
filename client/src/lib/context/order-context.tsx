@@ -87,7 +87,7 @@ export type orderDataForm = {
 interface orderContext {
   isLoading: boolean
   isLoadingCurrentOrder: boolean
-  handlerListOrder: () => void
+  handlerListOrder: () => Promise<void>
   handlerCurrentOrder: (store_order_id?: string) => void
   handlerOrderCancel: (orederId: string) => Promise<boolean>
   handlersubmitPaymentMethod: (
@@ -172,7 +172,7 @@ export const OrderGudfyProvider = ({
 
   const [currentOrder, setCurrentOrderr] = useState<order | null>(null)
 
-  const handlerListOrder = () => {
+  const handlerListOrder = async() => {
     setIsLoading(true)
     getListOrders(customer?.id || "").then((e) => {
       setLisOrder(e)

@@ -1,11 +1,7 @@
 import React, { useEffect, useState } from "react";
-
 import type { order } from "../../widgets/orders/index";
 import { formatDate } from "../../utils/format-date";
-import { Customer } from "@medusajs/medusa";
 import { updateOrderToCompleted } from "../../actions/orders/update-order-to-completed";
-
-import clsx from "clsx";
 import { formatPrice } from "../../handlers/format-price";
 import { updateOrderToCancel } from "../../actions/orders/update-order-cancel";
 

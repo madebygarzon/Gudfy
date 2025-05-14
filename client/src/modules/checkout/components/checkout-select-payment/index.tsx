@@ -1,6 +1,6 @@
 import React from "react"
 import { useCart } from "medusa-react"
-import { useEffect, useState } from "react"
+import { useEffect, useState, useMemo } from "react"
 import axios from "axios"
 import Payment from "@modules/checkout/components/payment"
 import CheckautVirtualForm from "../checkout-virtual-form"
@@ -18,6 +18,7 @@ import Button from "@modules/common/components/button"
 import { useForm } from "react-hook-form"
 import { useCartGudfy } from "@lib/context/cart-gudfy"
 import { orderDataForm, useOrderGudfy } from "@lib/context/order-context"
+
 
 type CompleteForm = {
   form: boolean
@@ -73,6 +74,26 @@ const CheckoutSelectPayment: React.FC<CheckoutDetailsProps> = ({
       email: dataForm.email,
     },
   })
+
+  const formatPriceTotal = (number: number)=>{
+    if (Number.isInteger(number)) {
+      return number;
+    }
+    
+    const numStr = number.toString();
+    
+    if (numStr.includes('.')) {
+      const [_, parteDecimal] = numStr.split('.');
+      
+      if (parteDecimal.length > 2) {
+        return Math.round(number * 10000) / 10000;
+      }
+    }
+    return number;
+  }
+  
+  // Estado para controlar la comisión de Coinpal (1%)
+  const isCoinpalSelected = checkbox === "coinpal_pay"
 
   useEffect(() => {
     if (dataForm.name) {
@@ -162,10 +183,30 @@ const CheckoutSelectPayment: React.FC<CheckoutDetailsProps> = ({
                 </div>
               </div>
             )}
-            <div className=" flex gap-2 p-2 rounded ">
-                <span className="font-bold block">Total a Pagar:</span> 
-                <span className="text-lg font-bold">${currentOrder.total_price}</span>
-              </div>
+            {/* Sección de totales */}
+            <div className="mt-4 border-t pt-2">
+              {isCoinpalSelected ? (
+                <>
+                  <div className="flex justify-between p-1 rounded">
+                    <span className="font-medium block">Subtotal:</span> 
+                    <span className="font-bold">${formatPriceTotal(Number(currentOrder.total_price))}</span>
+                  </div>
+                  <div className="flex justify-between p-1 rounded">
+                    <span className="font-medium block">Comisión Coinpal (1%):</span> 
+                    <span className="font-bold">${formatPriceTotal(Number(currentOrder.total_price) * 0.01)}</span>
+                  </div>
+                  <div className="flex justify-between p-2 rounded bg-gray-50 mt-2">
+                    <span className="font-bold block">Total a Pagar:</span> 
+                    <span className="text-lg font-bold">${formatPriceTotal(Number(currentOrder.total_price) * 1.01)}</span>
+                  </div>
+                </>
+              ) : (
+                <div className="flex justify-between p-2 rounded">
+                  <span className="font-bold block">Total a Pagar:</span> 
+                  <span className="text-lg font-bold">${formatPriceTotal(Number(currentOrder.total_price))}</span>
+                </div>
+              )}
+            </div>
           </div>
         )}
         <h2 className="text-xl md:text-2xl font-bold text-center my-3">

@@ -6,6 +6,7 @@ import Link from "next/link"
 import React, { useState } from "react"
 import { useRouter } from "next/navigation"
 import { useMeCustomer } from "medusa-react"
+import { formatPrice } from "@lib/util/formatPrice"
 
 interface lineItem
   extends Omit<
@@ -34,7 +35,7 @@ const Summary = ({ items, setModifyProduct }: ItemsTemplateProps) => {
       })
     }
     
-    return total
+    return formatPrice(total)
   }
 
   const handlerAddOrder = async () => {

@@ -16,6 +16,14 @@ export function formatPrice(price: number): number {
   const decimalIndex = strNum.indexOf('.');
   if (decimalIndex === -1) return num; // Si no hay punto decimal, retornar el número original
   
+  // Obtener la parte decimal
+  const parteDecimal = strNum.substring(decimalIndex + 1);
+  
+  // Si tiene más de 4 decimales, redondear a 4 decimales
+  if (parteDecimal.length > 4) {
+    return Math.round(num * 10000) / 10000;
+  }
+  
   // Buscar dos ceros consecutivos en la parte decimal
   for (let i = decimalIndex + 1; i < strNum.length - 1; i++) {
     if (strNum[i] === '0' && strNum[i + 1] === '0') {
