@@ -314,7 +314,6 @@ class StoreOrderService extends TransactionBaseService {
       .createQueryBuilder("so")
       .leftJoinAndSelect("so.storeVariantOrder", "svo")
       .leftJoinAndSelect("svo.variant_order_status", "vos")
-      .leftJoinAndSelect("so.customer", "c")
       .leftJoinAndSelect("svo.store_variant", "sxv")
       .innerJoinAndSelect("sxv.variant", "pv")
       .where(
@@ -333,8 +332,6 @@ class StoreOrderService extends TransactionBaseService {
         "vos.state AS state",
         "pv.title AS produc_title",
         "sxv.price AS unit_price",
-        "c.first_name AS customer_name",
-        "c.last_name AS customer_last_name",
       ])
       .orderBy("so.created_at", "DESC")
       .getRawMany();

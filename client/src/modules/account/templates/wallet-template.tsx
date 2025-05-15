@@ -61,14 +61,7 @@ const WalletTemplate = () => {
       <div>
         <div className="flex w-full flex-col">
           <Tabs aria-label="Options">
-            <Tab
-              key="Historico"
-              title={
-                <h3 className="md:text-sm text-xs">
-                  Histórico de transacciones
-                </h3>
-              }
-            >
+            <Tab key="Historico" title={<h3 className="md:text-sm text-xs">Histórico de transacciones</h3>}>
               <Card className="shadow-white shadow-lg">
                 <CardBody className="p-0">
                   <div className="flex w-full flex-col">
@@ -77,13 +70,8 @@ const WalletTemplate = () => {
                 </CardBody>
               </Card>
             </Tab>
-            <Tab
-              key="Pagos"
-              title={
-                <h3 className="md:text-sm text-xs">
-                  Histórico de transacciones
-                </h3>
-              }
+            <Tab key="Pagos"
+              title={<h3 className="md:text-sm text-xs">Histórico de pagos</h3>}
               className="relative"
             >
               <Card className="shadow-white shadow-lg">

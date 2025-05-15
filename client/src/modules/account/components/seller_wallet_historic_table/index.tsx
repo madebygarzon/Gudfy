@@ -131,7 +131,6 @@ const WalletTable = ({ wallet, setWallet }: props) => {
                 <th className="px-4 py-2 w-[10%] text-left">Valor</th>
                 <th className="px-4 py-2 w-[10%] text-left">Comisión</th>
                 <th className="px-4 py-2 w-[10%] text-left">Neto</th>
-                <th className="px-4 py-2 w-[15%] text-left">Cliente</th>
                 <th className="px-4 py-2 w-[10%] text-left">Fecha</th>
                 <th className="px-4 py-2 w-[10%] text-left">Estado</th>
               </tr>
@@ -164,9 +163,6 @@ const WalletTable = ({ wallet, setWallet }: props) => {
                           order.unit_price * order.quantity -
                           order.total_price_for_product * commission
                         ).toFixed(2)}
-                      </td>
-                      <td className="px-4 py-2">
-                        {order.customer_name + " " + order.customer_last_name}
                       </td>
                       <td className="px-4 py-2">
                         {handlerformatDate(order.created_date)}

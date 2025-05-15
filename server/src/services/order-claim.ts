@@ -205,7 +205,6 @@ class OrderClaimService extends TransactionBaseService {
       .leftJoinAndSelect("svo.store_variant", "sxv")
       .leftJoinAndSelect("sxv.store", "s")
       .leftJoinAndSelect("sxv.variant", "v")
-      .leftJoinAndSelect("oc.customer", "c")
       .where("s.id = :store_id", { store_id: idStore })
       .select([
         "oc.id AS id",
@@ -216,9 +215,6 @@ class OrderClaimService extends TransactionBaseService {
         "sxv.price AS price_unit",
         "s.name AS store_name",
         "v.title AS product_name",
-        "c.first_name AS customer_name",
-        "c.last_name AS customer_last_name",
-        "c.email AS customer_email",
       ])
       .orderBy("oc.created_at", "DESC")
       .getRawMany();
@@ -264,75 +260,83 @@ class OrderClaimService extends TransactionBaseService {
   }
 
   async updateClaimStatus(idClaim, status) {
-    const repoOrderClaim = this.activeManager_.withRepository(
-      this.orderClaimRepository_
-    );
-    const repoNotification = this.activeManager_.withRepository(
-      this.notificationGudfyRepository_
-    );
-    const repoStoreVariantOrder = this.activeManager_.withRepository(
-      this.storeVariantOrderRepository_
-    );
-
-    const dataClaim = await repoOrderClaim
-      .createQueryBuilder("oc")
-      .innerJoinAndSelect("oc.store_variant_order", "svo")
-      .innerJoinAndSelect("oc.customer", "c")
-      .innerJoinAndSelect("svo.store_variant", "sv")
-      .innerJoinAndSelect("sv.variant", "pv")
-      .innerJoinAndSelect("sv.store", "s")
-      .where("oc.id = :id", { id: idClaim })
-      .select([
-        "pv.title AS product_name",
-        "c.first_name AS customer_name",
-        "c.last_name AS customer_last_name",
-        "s.name AS store_name",
-      ])
-      .getRawMany();
-
-    if (status == "UNSOLVED_ID") {
-      const update = await repoOrderClaim.update(idClaim, {
-        status_order_claim_id: status,
-      });
-
-      const newNotification = await repoNotification.create({
-        order_claim_id: idClaim,
-        notification_type_id: "NOTI_CLAIM_ADMIN_ID",
-        seen_status: true,
-      });
-
-      await repoNotification.save(newNotification);
-
-      await EmailOrderClaimAdmin({
-        product_name: dataClaim[0].product_name,
-        customer_name:
-          dataClaim[0].customer_name + " " + dataClaim[0].customer_last_name,
-        store_name: dataClaim[0].store_name,
-      });
+   
+    try {
+      const repoOrderClaim = this.activeManager_.withRepository(
+        this.orderClaimRepository_
+      );
+      const repoNotification = this.activeManager_.withRepository(
+        this.notificationGudfyRepository_
+      );
+      const repoStoreVariantOrder = this.activeManager_.withRepository(
+        this.storeVariantOrderRepository_
+      );
+  
+      const dataClaim = await repoOrderClaim
+        .createQueryBuilder("oc")
+        .innerJoinAndSelect("oc.store_variant_order", "svo")
+        .innerJoinAndSelect("oc.customer", "c")
+        .innerJoinAndSelect("svo.store_variant", "sv")
+        .innerJoinAndSelect("sv.variant", "pv")
+        .innerJoinAndSelect("sv.store", "s")
+        .where("oc.id = :id", { id: idClaim })
+        .select([
+          "pv.title AS product_name",
+          "c.first_name AS customer_name",
+          "c.last_name AS customer_last_name",
+          "s.name AS store_name",
+        ])
+        .getRawMany();
+  
+      if (status == "UNSOLVED_ID") {
+        const update = await repoOrderClaim.update(idClaim, {
+          status_order_claim_id: status,
+        });
+  
+        const newNotification = await repoNotification.create({
+          order_claim_id: idClaim,
+          notification_type_id: "NOTI_CLAIM_ADMIN_ID",
+          seen_status: true,
+        });
+  
+        await repoNotification.save(newNotification);
+  
+        await EmailOrderClaimAdmin({
+          product_name: dataClaim[0].product_name,
+          customer_name:
+            dataClaim[0].customer_name + " " + dataClaim[0].customer_last_name,
+          store_name: dataClaim[0].store_name,
+        });
+      }
+      if (status == "CANCEL_ID") {
+        //estado de la reclamacion si es CANCEL_ID significa que se cierra la reclamacion
+        //  y su estado pasa a finalizado
+        
+        const updateCla = await repoOrderClaim.update(idClaim, {
+          status_order_claim_id: status,
+        });
+  
+        const getClaim = await repoOrderClaim.findOne({
+          where: {
+            id: idClaim,
+          },
+        });
+        const svo = await repoStoreVariantOrder.findOne({
+          where: {
+            id: getClaim.store_variant_order_id,
+          },
+        });
+  
+        const update = await repoStoreVariantOrder.update(svo.id, {
+          variant_order_status_id: "Finished_ID",
+        });
+        if (update) this.validateOrderreadyToComplete(svo.store_order_id);
+      }
+      
+    } catch (error) {
+      console.log("error en la actualizacion de la reclamacion", error);
     }
-    if (status == "CANCEL_ID") {
-      //estado de la reclamacion si es CANCEL_ID significa que se cierra la reclamacion
-      //  y su estado pasa a finalizado
-      const updateCla = await repoOrderClaim.update(idClaim, {
-        status_order_claim_id: status,
-      });
-
-      const getClaim = await repoOrderClaim.findOne({
-        where: {
-          id: idClaim,
-        },
-      });
-      const svo = await repoStoreVariantOrder.findOne({
-        where: {
-          id: getClaim.store_variant_order_id,
-        },
-      });
-
-      const update = await repoStoreVariantOrder.update(svo.id, {
-        variant_order_status_id: "Finished_ID",
-      });
-      if (update) this.validateOrderreadyToComplete(svo.store_order_id);
-    }
+    
   }
 
   async validateOrderreadyToComplete(store_order_id) {
