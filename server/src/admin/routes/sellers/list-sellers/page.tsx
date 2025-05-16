@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import React, { useState, useEffect } from "react";
-import { Table, IconButton, Drawer, Button } from "@medusajs/ui";
+import { Table, IconButton, Drawer, Button, DatePicker } from "@medusajs/ui";
+import { Eye } from "@medusajs/icons";
 import { Thumbnail } from "../../../components/thumbnail";
 import {
   PencilSquare,
@@ -15,6 +16,11 @@ import { RouteConfig } from "@medusajs/admin";
 import SellersList from "../../../actions/sellers/get-sellers-list";
 import { updateSellerReview } from "../../../actions/sellers/update-seller-review";
 import getSellersReviewsList from "../../../actions/sellers/get-seller-reviews";
+import {
+  getStoreProducts,
+  type StoreProductsResponse,
+} from "../../../actions/sellers/get-store-products";
+import { ListBullet } from "@medusajs/icons";
 
 type Seller = {
   store_id: string;
@@ -24,6 +30,8 @@ type Seller = {
   email: string;
   phone: string;
   review: number;
+  product_count: number;
+  stock_total: number;
   // review: [
   //   {
   //     id_review: string;
@@ -79,7 +87,27 @@ const SellerApplication = () => {
   const [rowsPages, setRowsPages] = useState<number>(15);
   const [isLoading2, setIsLoading] = useState<boolean>(true);
   const [orderDate, setOrderDate] = useState<boolean>(true);
+
+  const [storeData, setStoreData] = useState<StoreProductsResponse | null>(
+    null
+  );
+
+  const [productList, setProductList] = useState<
+    Array<{ id: string; title: string; inventory: number }>
+  >([]);
+  const [openProducts, setOpenProducts] = useState(false);
+  const [loadingProducts, setLoadingProducts] = useState(false);
+
   //----------------------------------
+
+  const handleOpenProducts = (storeId: string) => {
+    setLoadingProducts(true);
+    getStoreProducts(storeId).then((data) => {
+      setStoreData(data); // <-- aquí guardas summary + details
+      setOpenProducts(true); // abre el modal
+      setLoadingProducts(false);
+    });
+  };
 
   const handlerGetListSellers = async (order?: string) => {
     setIsLoading(true);
@@ -221,7 +249,7 @@ const SellerApplication = () => {
   return (
     <div className=" bg-white p-8 border border-gray-2 00 rounded-lg mb-10">
       <div className="mt-2 h-[120px] flex justify-between">
-        <h1 className=" text-xl font-bold"> Vendedores </h1>
+        <h1 className=" text-xl font-bold"> Tiendas </h1>
         <div className="flex gap-5 h-full items-end py-4">
           <div className="w-[156px] ">
             {/* <Select onValueChange={handlerFilter}>
@@ -272,6 +300,7 @@ const SellerApplication = () => {
                 <Table.HeaderCell>Numero de telefono</Table.HeaderCell>
                 <Table.HeaderCell>Email</Table.HeaderCell>
                 <Table.HeaderCell>Comentarios</Table.HeaderCell>
+                <Table.HeaderCell>Inventario</Table.HeaderCell>
                 <Table.HeaderCell></Table.HeaderCell>
               </Table.Row>
             </Table.Header>
@@ -286,9 +315,18 @@ const SellerApplication = () => {
                       <div className="flex gap-2">{data.store_name}</div>
                     </Table.Cell>
                     <Table.Cell>{data.seller_name}</Table.Cell>
-                    <Table.Cell>{"-"}</Table.Cell>
+                    <Table.Cell>{data.phone}</Table.Cell>
                     <Table.Cell>{data.email}</Table.Cell>
                     <Table.Cell>{data.review}</Table.Cell>
+                    <Table.Cell>
+                      <IconButton
+                        className="hover:bg-gray-100 hover:scale-110 transition-all"
+                        variant="transparent"
+                        onClick={() => handleOpenProducts(data.store_id)}
+                      >
+                        <Eye className="text-ui-fg-subtle" />
+                      </IconButton>
+                    </Table.Cell>
                     <Table.Cell className="flex gap-x-2 items-center">
                       <IconButton
                         onClick={() => handlerOpenModal(data.store_id)}
@@ -353,6 +391,70 @@ const SellerApplication = () => {
         open={open}
         handlerReset={handlerReset}
       />
+      <Drawer open={openProducts} onOpenChange={setOpenProducts}>
+        <Drawer.Content className="p-6">
+          {loadingProducts ? (
+            <Spinner size="large" variant="secondary" />
+          ) : storeData && storeData.summary ? (
+            <>
+              {/* Resumen */}
+              <h2 className="text-xl font-bold mb-2">
+                Inventario — {storeData.summary.store_name}
+              </h2>
+              <div className="grid grid-cols-2 gap-4 mb-6 text-sm">
+                <div>
+                  <strong>Total variaciones:</strong>{" "}
+                  {storeData.summary.total_variants}
+                </div>
+                <div>
+                  <strong>Total inventario:</strong>{" "}
+                  {storeData.summary.total_inventory}
+                </div>
+                <div>
+                  <strong>Reservado:</strong> {storeData.summary.total_reserved}
+                </div>
+                <div>
+                  <strong>Disponible:</strong>{" "}
+                  {storeData.summary.total_available}
+                </div>
+              </div>
+
+              {/* Detalle */}
+              <div className="overflow-x-auto">
+                <table className="w-full min-w-[520px] text-sm">
+                  <thead className="bg-gray-50 text-left">
+                    <tr>
+                      <th className="py-2 px-3">Producto</th>
+                      <th className="py-2 px-3">Variante</th>
+                      <th className="py-2 px-3">Inventario</th>
+                      <th className="py-2 px-3">Reservado</th>
+                      <th className="py-2 px-3">Disponible</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {storeData.details.map((d, idx) => (
+                      <tr key={idx} className="border-b">
+                        <td className="py-2 px-3">{d.product}</td>
+                        <td className="py-2 px-3">{d.variant}</td>
+                        <td className="py-2 px-3">{d.inventory}</td>
+                        <td className="py-2 px-3">{d.reserved}</td>
+                        <td className="py-2 px-3">{d.available}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </>
+          ) : (
+            <p>Esta tienda aún no ha agregado productos.</p>
+          )}
+          <Drawer.Footer>
+            <Drawer.Close asChild>
+              <Button variant="secondary">Cerrar</Button>
+            </Drawer.Close>
+          </Drawer.Footer>
+        </Drawer.Content>
+      </Drawer>
     </div>
   );
 };
@@ -422,7 +524,7 @@ const ModalComments = ({
 
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
-      <Drawer.Content>
+      <Drawer.Content >
         <Drawer.Header className="flex flex-col gap-1"></Drawer.Header>
         <Drawer.Body>
           {loading ? (

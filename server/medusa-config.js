@@ -175,7 +175,7 @@ const modules = {
 
 /** @type {import('@medusajs/medusa').ConfigModule["projectConfig"]} */
 const projectConfig = {
-  cookie_domain: '.localhost:8000',
+  cookie_domain: 'localhost',
   cookie_same_site: 'lax',
   jwtSecret: process.env.JWT_SECRET,
   cookieSecret: process.env.COOKIE_SECRET,
