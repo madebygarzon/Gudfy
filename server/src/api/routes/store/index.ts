@@ -53,6 +53,7 @@ import postSendContactForm from "./post-send-contact-form";
 import getPaymentOrders from "./order/get-payment-orders";
 import postMethodPaymentOrder from "./order/post-method-payment-order";
 import updateOrderDataWhitManualPay from "./update-order-data-whit-manual-pay";
+import sso from "./sso";
 
 // Initialize a custom router
 const router = Router();
@@ -154,6 +155,9 @@ export function attachStoreRoutes(storeRouter: Router) {
     wrapHandler(postMethodPaymentOrder)
   );
 
+   //-----------------------------------Endpoins for Auth ------------------------------------------
+    storeRouter.use("/", router, json());
+    sso(router);
   //-----------------------------------Endpoins for Order Claim ------------------------------------------
   router.get("/claim/:id/orders", wrapHandler(getListClaim));
   router.get("/claim/:id/seller/orders", wrapHandler(getListSellerClaim));

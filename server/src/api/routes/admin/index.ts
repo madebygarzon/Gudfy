@@ -31,6 +31,7 @@ import getListMetricsCustomer from "./metrics/get-list-metrics-customer";
 import getListMetricsSeller from "./metrics/get-list-metrics-seller";
 import UpdateOrderToCompleted from "./orders/update-order-to-completed";
 import UpdateOrderToCancel from "./orders/update-order-to-cancel";
+import storeProducts from "./get-store-products";
 
 // Initialize a custom router
 const router = Router();
@@ -38,11 +39,7 @@ const router = Router();
 export function attachAdminRoutes(adminRouter: Router) {
   // Attach our router to a custom path on the admin router
   adminRouter.use("/", router, registerLoggedInCustomer);
-
-  // Define a GET endpoint on the root route of our custom path
-
-  //router.get("/", wrapHandler(customRouteHandler));
-
+  router.use(storeProducts);
   //Listado de solicitudes a vendedores
   router.get("/sellerapplication", wrapHandler(getListApplication));
 
@@ -111,8 +108,14 @@ export function attachAdminRoutes(adminRouter: Router) {
 
   //---------------orders-------------------
   router.get("/orders/list-orders", wrapHandler(getListStoreOrders));
-  router.post("/orders/update-order-to-completed", wrapHandler(UpdateOrderToCompleted));
-  router.post("/orders/update-order-to-cancel", wrapHandler(UpdateOrderToCancel));
+  router.post(
+    "/orders/update-order-to-completed",
+    wrapHandler(UpdateOrderToCompleted)
+  );
+  router.post(
+    "/orders/update-order-to-cancel",
+    wrapHandler(UpdateOrderToCancel)
+  );
 
   //---------------Metrics-----------------
   router.get(

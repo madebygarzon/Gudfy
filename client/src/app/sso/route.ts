@@ -51,7 +51,7 @@ export async function GET(req: NextRequest) {
     // Garantiza Path=/ y dominio .gudfyp2p.com
     const cookieBrowser = setCookie
       .replace(/Path=\/store/gi, 'Path=/')
-      .replace(/Domain=[^;]+/i, 'Domain=.gudfyp2p.com')
+      .replace(/Domain=[^;]+/i, 'Domain=localhost')
 
     res.headers.set('set-cookie', cookieBrowser)
   }

@@ -154,8 +154,7 @@ export default function ProductsTable() {
   }
 
   const handlerPreviewProducts = (queryParams: any, page: any, rows?: any) => {
-    // cadena de array para filtrar segun la pagina , se debe de pensar en cambiar el llamado a la api para poder
-    // solicitar unicamente los que se estan pidiendo en la paginacion
+   
     if (!Array.isArray(queryParams)) return []
     const dataRowPage = rows || rowsPerPages
     const start = (page - 1) * dataRowPage

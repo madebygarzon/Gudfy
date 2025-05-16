@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken'
 
 export default (root: Router) => {
   const route = Router()
-  root.use('/store/sso', route)          // ==>  🔗  POST https://api.gudfy.com/store/sso
+  root.use('/sso', route)          // ==>  🔗  POST https://api.gudfy.com/store/sso
 
   route.post('/', async (req, res) => {
     const { token } = req.body
