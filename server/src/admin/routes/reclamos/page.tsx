@@ -81,6 +81,8 @@ const ReclamosListado = () => {
   const [page, setPage] = useState(1);
   const [rowsPages, setRowsPages] = useState(10);
   const [isLoading, setIsLoading] = useState(true);
+  // Estado para almacenar la reclamación seleccionada
+  const [selectedClaimId, setSelectedClaimId] = useState<string>("");
 
   const formatStatus = (status) => {
     return status.charAt(0).toUpperCase() + status.slice(1).toLowerCase();
@@ -201,7 +203,7 @@ const ReclamosListado = () => {
 
   // COMENTARIOS DE LA RECLAMACION ----------------
 
-  const [comments, setComments] = useState<ClaimComments[]>();
+  const [comments, setComments] = useState<ClaimComments[]>([]);
   const [open, setOpen] = useState(false);
   const [isLoadingComment, setIsLoadingComment] = useState<boolean>(true);
 
@@ -209,36 +211,20 @@ const ReclamosListado = () => {
     handlerGetListClaim();
   };
 
-  const handlerCommentsFromClaimOrder = (claim) => {
+  const handlerCommentsFromClaimOrder = (claim: string) => {
     setIsLoadingComment(true);
+    setSelectedClaimId(claim);
     getClaimComments(claim).then((e) => {
       setIsLoadingComment(false);
-      setComments(e);
+      setComments(e || []);
       setOpen(true);
     });
   };
 
-  const handlerStatusClaim = () => {
-    // setIsLoadingStatus((old) => {
-    //   let selectStatus
-    //   switch (status) {
-    //     case "CANCEL":
-    //       selectStatus = { ...old, cancel: true }
-    //       break
-    //     case "SOLVED":
-    //       selectStatus = { ...old, solved: true }
-    //       break
-    //     case "UNSOLVED":
-    //       selectStatus = { ...old, unsolved: true }
-    //       break
-    //     default:
-    //       selectStatus = old
-    //   }
-    //   return selectStatus
-    // })
-    updateStatusClaim(comments?.[0].order_claim_id || " ", "").then(() => {
+  const handlerStatusClaim = (claim: string, status: string) => {
+    updateStatusClaim(claim, status).then(() => {
       handleReset();
-      setOpen((old) => !old);
+      setOpen(false);
     });
   };
 
@@ -334,20 +320,13 @@ const ReclamosListado = () => {
                           <div className="relative">
                             {notification?.map((n) => {
                               if (n.order_claim_id === data.id) {
-                                return <Notification />;
+                                return <Notification key={n.id} />;
                               }
+                              return null;
                             })}
-                            <ModalComment
-                              claimId={data.id}
-                              open={open}
-                              setOpen={setOpen}
-                              comments={comments}
-                              handlerCommentsFromClaimOrder={
-                                handlerCommentsFromClaimOrder
-                              }
-                              handlerStatusClaim={handlerStatusClaim}
-                              setComments={setComments}
-                            />
+                            <IconButton onClick={() => handlerCommentsFromClaimOrder(data.id)}>
+                              <Eye className="text-ui-fg-subtle" />
+                            </IconButton>
                           </div>
                         </DropdownMenu>
 
@@ -402,6 +381,16 @@ const ReclamosListado = () => {
           </button>
         </div>
       </div>
+
+      {/* Modal único para todas las reclamaciones */}
+      <ModalComment
+        claimId={selectedClaimId}
+        open={open}
+        setOpen={setOpen}
+        comments={comments}
+        setComments={setComments}
+        handlerStatusClaim={handlerStatusClaim}
+      />
     </div>
   );
 };
@@ -411,53 +400,48 @@ interface ModalClaimComment {
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
   comments: ClaimComments[];
-  handlerCommentsFromClaimOrder: (claim: any) => void;
   setComments: React.Dispatch<React.SetStateAction<ClaimComments[]>>;
-  handlerStatusClaim: () => void;
+  handlerStatusClaim: (claim: string, status: string) => void;
 }
 
 const ModalComment = ({
   claimId,
   open,
   setOpen,
-  handlerCommentsFromClaimOrder,
   comments,
   setComments,
   handlerStatusClaim,
 }: ModalClaimComment) => {
-  const [newComment, setNewComment] = useState<string>();
+  const { user } = useAdminGetSession();
+  const [newComment, setNewComment] = useState("");
   const [socket, setSocket] = useState<Socket | null>(null);
-  const [isLoadingStatus, setIsLoadingStatus] = useState<{
-    solved: boolean;
-    cancel: boolean;
-    unsolved: boolean;
-  }>({ solved: false, cancel: false, unsolved: false });
-  const { user, isLoading } = useAdminGetSession();
-  const handlerSubmitComment = () => {
-    const dataComment = {
-      comment: newComment,
-      order_claim_id: comments?.[0].order_claim_id,
-      customer_id: "",
-      comment_owner_id: "COMMENT_ADMIN_ID",
+
+  useEffect(() => {
+    const socketIo = io("http://localhost:9000");
+    setSocket(socketIo);
+    return () => {
+      socketIo.disconnect();
     };
-    postAddComment(dataComment).then((e) => {
-      setNewComment("");
-      setComments((old) => {
-        return old?.length
-          ? [
-              ...old,
-              {
-                comment: newComment || " ",
-                comment_owner_id: "COMMENT_ADMIN_ID",
-              },
-            ]
-          : [
-              {
-                comment: newComment || " ",
-                comment_owner_id: "COMMENT_ADMIN_ID",
-              },
-            ];
-      });
+  }, []);
+
+  const handlerSubmitComment = () => {
+    if (!newComment.trim()) return;
+    const newCommentData = {
+      comment: newComment,
+      comment_owner_id: "COMMENT_ADMIN_ID",
+      order_claim_id: claimId,
+    };
+
+    postAddComment(newCommentData).then((response) => {
+      // Solo procesamos la respuesta si existe y tiene un ID
+      if (response && typeof response === 'object' && 'id' in response) {
+        setComments((old) => [...old, { ...newCommentData, id: response.id }]);
+        setNewComment("");
+        socket?.emit("comment-added", {
+          ...newCommentData,
+          id: response.id,
+        });
+      }
     });
   };
 
@@ -474,17 +458,11 @@ const ModalComment = ({
     return () => {
       socketIo.disconnect();
     };
-  }, [claimId]);
+  }, [claimId, setComments]);
 
   return (
     <FocusModal open={open} onOpenChange={setOpen}>
-      <FocusModal.Trigger
-        onClick={() => handlerCommentsFromClaimOrder(claimId)}
-      >
-        <IconButton>
-          <Eye className="text-ui-fg-subtle" />
-        </IconButton>
-      </FocusModal.Trigger>
+      {/* No necesitamos un trigger aquí ya que el modal se abre desde la tabla */}
 
       {/* Contenedor principal del modal, aplicando estilos similares a "rounded-2xl overflow-hidden shadow-lg" */}
       <FocusModal.Content className="w-[50%] h-[80%] mx-auto my-auto rounded-2xl overflow-hidden shadow-lg">
@@ -553,7 +531,7 @@ const ModalComment = ({
               <button
                 type="button"
                 className="py-2 btn btn-secondary btn-small flex items-center"
-                onClick={handlerStatusClaim}
+                onClick={()=>handlerStatusClaim(claimId, "CANCEL")}
               >
                 <ArchiveBox className="mr-2" />
                 Cerrar reclamación

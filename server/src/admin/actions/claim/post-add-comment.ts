@@ -9,7 +9,7 @@ type dataComment = {
 
 export const postAddComment = async (dataComment: dataComment) => {
   try {
-    const claim = await axios.post(
+    const response = await axios.post(
       `${BACKEND}/admin/claim/admin/add-comment`,
       dataComment,
       {
@@ -17,7 +17,7 @@ export const postAddComment = async (dataComment: dataComment) => {
         headers: { "Content-Type": "application/json" },
       }
     );
-    return;
+    return response.data;
   } catch (error: any) {
     console.log("error al agregar el reclamo", error.message);
   }
