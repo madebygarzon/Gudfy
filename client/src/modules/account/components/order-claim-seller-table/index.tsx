@@ -99,7 +99,7 @@ const ClaimSellerTable: React.FC = () => {
                 <th className="py-2 text-left">Estado </th>
                 <th className="py-2 text-left">Orden</th>
                 <th className="py-2 text-left">Detalles</th>
-                <th className="py-2 text-left">Cliente </th>
+             
                 <th className="py-2 text-left">Fecha</th>
                 <th className="py-2 text-left">Chat</th>
               </tr>
@@ -143,10 +143,7 @@ const ClaimSellerTable: React.FC = () => {
                         <p className="text-xs">por: {claim.store_name}</p>
                       </div>
                     </td>
-                    <td className="p-2">
-                      {`${claim.customer_name} ${claim.customer_last_name}`}
-                      <p className="text-xs">{claim.customer_email}</p>
-                    </td>
+                   
                     <td className="p-2">
                       {handlerformatDate(claim.created_at)}
                     </td>
@@ -330,10 +327,10 @@ const ModalClaimComment = ({
                     >
                       <p className="mb-1 text-xs font-bold">
                         {comment.comment_owner_id === "COMMENT_CUSTOMER_ID"
-                          ? customerName
+                          ? "Cliente"
                           : comment.comment_owner_id === "COMMENT_ADMIN_ID"
                           ? "Admin Gudfy"
-                          : storeName}
+                          : "Tienda"}
                       </p>
                       <p>{comment.comment}</p>
                       {comment.image ? (

@@ -27,8 +27,6 @@ interface SimpleFormData {
   phone: string
   contry: string
   example_product: string
-  field_payment_method_1: string
-  field_payment_method_2: string
 }
 
 type props = {
@@ -46,8 +44,6 @@ const SellerUpdateRequestSimple = ({ onClose, handlerReset, data }: props) => {
     phone: "",
     contry: "Colombia",
     example_product: "",
-    field_payment_method_1: "",
-    field_payment_method_2: "",
   })
   
   // Creamos archivos vacíos para cumplir con la firma de la función actionUpdateSellerApplication
@@ -99,8 +95,6 @@ const SellerUpdateRequestSimple = ({ onClose, handlerReset, data }: props) => {
         phone: data.phone || "",
         contry: data.contry || "Colombia",
         example_product: data.example_product || "",
-        field_payment_method_1: data.field_payment_method_1 || "",
-        field_payment_method_2: data.field_payment_method_2 || "",
       })
       
       // Inicializar los productos a vender
@@ -157,11 +151,10 @@ const SellerUpdateRequestSimple = ({ onClose, handlerReset, data }: props) => {
       example_product: formData.example_product,
       quantity_per_product: data && data.quantity_per_product ? data.quantity_per_product : "",
       current_stock_distribution: data && data.current_stock_distribution ? data.current_stock_distribution : "",
-      field_payment_method_1: formData.field_payment_method_1,
-      field_payment_method_2: formData.field_payment_method_2,
+      field_payment_method_1: data && data.field_payment_method_1 ? data.field_payment_method_1 : "",
+      field_payment_method_2: data && data.field_payment_method_2 ? data.field_payment_method_2 : "",
     }
     
-    console.log("sellerData", sellerData)
     
     // Usar la función de actualización con los parámetros requeridos
     actionUpdateSellerApplication(
@@ -294,42 +287,12 @@ const SellerUpdateRequestSimple = ({ onClose, handlerReset, data }: props) => {
           {error.valueInputOptions ? "** Ingresa al menos un producto **" : ""}
         </p>
 
-        <p className="font-semibold text-gray-800 text-sm text-center mt-4">
-          <strong>Dirección de tu Wallet</strong> 
-          <br />
-          En el siguiente campo, por favor ingrese la dirección exacta de su billetera virtual. Esta dirección es necesaria para procesar los pagos de sus ventas y asegurar que los fondos se transfieran correctamente.
-        </p>
-        <Input
-          label="Dirección de tu Wallet"
-          {...register("field_payment_method_1", {
-            required: "Campo requerido",
-          })}
-          value={formData.field_payment_method_1}
-          autoComplete="on"
-          onChange={handleInputChange}
-        />
-        
-        <p className="font-semibold text-gray-800 text-sm text-center">
-          Confirmar dirección de wallet
-        </p>
-        <Input
-          label="Dirección de tu Wallet"
-          {...register("field_payment_method_2", {
-            required: "Campo requerido",
-          })}
-          value={formData.field_payment_method_2}
-          autoComplete="on"
-          onChange={handleInputChange}
-        />
-        {formData.field_payment_method_1 !== formData.field_payment_method_2 && 
-          <p className="text-base my-3 font-bold text-red-600">⛓️‍💥 Los campos no coinciden</p>
-        }
+
 
         <ButtonMedusa
           className="mt-4 mb-4 rounded-[5px]"
           type="submit"
           color="primary"
-          disabled={formData.field_payment_method_1 !== formData.field_payment_method_2}
         >
           Actualizar solicitud
         </ButtonMedusa>
