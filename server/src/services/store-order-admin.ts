@@ -10,6 +10,7 @@ import { In } from "typeorm";
 import { EmailPurchaseCompleted } from "../admin/components/email/payments";
 import { io } from "../websocket";
 import JobsService from "./jobs";
+import { formatPrice } from "./utils/format-price";
 
 class StoreOrderAdminService extends TransactionBaseService {
   static LIFE_TIME = Lifetime.SCOPED;
@@ -136,24 +137,33 @@ class StoreOrderAdminService extends TransactionBaseService {
       .createQueryBuilder("cus")
       .innerJoinAndSelect("cus.customerorder", "so")
       .where("so.order_status_id IN (:...status_ids)", {
-        status_ids: ["Finished_ID", "Completed_ID"],
+        status_ids: ["Finished_ID", "Completed_ID" , "Discussion_ID"],
       })
       .select([
         "cus.id AS id",
         "cus.email AS email",
+        "cus.phone AS phone",
         "cus.first_name AS first_name",
         "cus.last_name AS last_name",
         "cus.created_at AS created_at",
         "so.quantity_products AS quantity_products",
         "so.total_price AS total_price",
+        "so.created_at AS order_date",
       ])
       .getRawMany();
 
     const dataMap = new Map();
 
     for (const order of listOrder) {
-      const { quantity_products, total_price, first_name, last_name, ...rest } =
-        order;
+      const {
+        quantity_products,
+        total_price,
+        first_name,
+        last_name,
+        phone,
+        order_date,
+        ...rest
+      } = order;
 
       if (!dataMap.has(order.id)) {
         // Inicializar el cliente en el Map si no existe
@@ -164,6 +174,9 @@ class StoreOrderAdminService extends TransactionBaseService {
           num_products: 0,
           mvp_order: 0,
           expenses: 0,
+          total_media_order: 0,
+          phone,
+          last_order_date: new Date(0), // Inicializar con fecha antigua para comparar
         });
       }
 
@@ -172,12 +185,21 @@ class StoreOrderAdminService extends TransactionBaseService {
 
       // Actualizar las métricas
       customer.num_orders += 1;
-      customer.num_products += parseFloat(quantity_products);
-      customer.mvp_order = Math.max(
+      customer.num_products += quantity_products;
+      customer.mvp_order = formatPrice(Math.max(
         customer.mvp_order,
         parseFloat(total_price)
-      );
-      customer.expenses += parseFloat(total_price);
+      ));
+      customer.expenses += formatPrice(parseFloat(total_price));
+      
+      // Calcular el promedio del total de órdenes para este cliente
+      customer.total_media_order = parseFloat((customer.expenses / customer.num_orders).toFixed(2));
+      
+      // Actualizar la fecha de la última orden si es más reciente
+      const orderDate = new Date(order_date);
+      if (orderDate > customer.last_order_date) {
+        customer.last_order_date = orderDate;
+      }
     }
 
     // Convertir el Map a un array de resultados
