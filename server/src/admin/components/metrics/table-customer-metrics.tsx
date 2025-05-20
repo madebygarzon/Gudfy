@@ -4,6 +4,7 @@ import { XMark, ArrowLongRight, ArrowLongLeft } from "@medusajs/icons";
 import Spinner from "../../components/shared/spinner";
 import { formatDate } from "../../utils/format-date";
 import { Select, Input } from "@medusajs/ui";
+import { formatPrice } from "../../utils/format-price";
 
 interface DataCustomerMetrics {
   id: string;
@@ -14,6 +15,9 @@ interface DataCustomerMetrics {
   num_products: number;
   mvp_order: number;
   expenses: string;
+  total_media_order: number;
+  phone?: string;
+  last_order_date: Date;
 }
 
 interface TableCustomerMetricsProps {
@@ -30,6 +34,9 @@ export interface dataCustomerMetrics {
   num_products: number;
   mvp_order: number;
   expenses: string;
+  total_media_order: number;
+  phone?: string;
+  last_order_date: Date;
 }
 type ListDataSellerApplication = {
   dataOrders: Array<dataCustomerMetrics>;
@@ -54,6 +61,9 @@ const TableCustomerMetrics: React.FC<TableCustomerMetricsProps> = ({
         num_products: 0,
         mvp_order: 0,
         expenses: "",
+        total_media_order: 0,
+        phone: "",
+        last_order_date: new Date(),
       },
     ],
     dataFilter: [
@@ -66,6 +76,9 @@ const TableCustomerMetrics: React.FC<TableCustomerMetricsProps> = ({
         num_products: 0,
         mvp_order: 0,
         expenses: "",
+        total_media_order: 0,
+        phone: "",
+        last_order_date: new Date(),
       },
     ],
     dataPreview: [
@@ -78,6 +91,9 @@ const TableCustomerMetrics: React.FC<TableCustomerMetricsProps> = ({
         num_products: 0,
         mvp_order: 0,
         expenses: "",
+        total_media_order: 0,
+        phone: "",
+        last_order_date: new Date(),
       },
     ],
     count: 0,
@@ -85,9 +101,11 @@ const TableCustomerMetrics: React.FC<TableCustomerMetricsProps> = ({
   const [pageTotal, setPagetotal] = useState<number>();
   const [page, setPage] = useState(1);
   const [rowsPages, setRowsPages] = useState<number>(20);
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc' | null>(null);
+  const [sortField, setSortField] = useState<'expenses' | 'average' | 'maxPrice' | 'registration' | 'lastOrder' | null>(null);
 
   const handlerGetListOrder = async () => {
-    console.log("entra a las metricas del customer", customer_metrics);
+    
     if (!customer_metrics?.length) return;
     setPagetotal(Math.ceil(customer_metrics.length / rowsPages));
     setDataCustomer({
@@ -148,6 +166,60 @@ const TableCustomerMetrics: React.FC<TableCustomerMetricsProps> = ({
     return newArray;
   };
 
+  const handleSort = (field: 'expenses' | 'average' | 'maxPrice' | 'registration' | 'lastOrder') => {
+    // Si se hace clic en el mismo campo, alternar dirección. Si se hace clic en un campo diferente, establecer ascendente
+    let newSortDirection: 'asc' | 'desc' | null = 'asc';
+    if (sortField === field) {
+      newSortDirection = sortDirection === 'asc' ? 'desc' : 'asc';
+    }
+    
+    setSortField(field);
+    setSortDirection(newSortDirection);
+    
+    // Obtener los datos actuales para ordenar (filtrados o todos)
+    const dataToSort = [...(dataOrder.dataFilter?.length ? dataOrder.dataFilter : dataOrder.dataOrders)];
+    
+    // Ordenar los datos según el campo seleccionado
+    const sortedData = dataToSort.sort((a, b) => {
+      if (field === 'expenses') {
+        const expensesA = parseFloat(a.expenses);
+        const expensesB = parseFloat(b.expenses);
+        return newSortDirection === 'asc' ? expensesA - expensesB : expensesB - expensesA;
+      } else if (field === 'average') {
+        const avgA = a.total_media_order;
+        const avgB = b.total_media_order;
+        return newSortDirection === 'asc' ? avgA - avgB : avgB - avgA;
+      } else if (field === 'maxPrice') {
+        const maxA = a.mvp_order;
+        const maxB = b.mvp_order;
+        return newSortDirection === 'asc' ? maxA - maxB : maxB - maxA;
+      } else if (field === 'registration') {
+        const dateA = new Date(a.created_at).getTime();
+        const dateB = new Date(b.created_at).getTime();
+        return newSortDirection === 'asc' ? dateA - dateB : dateB - dateA;
+      } else if (field === 'lastOrder') {
+        const dateA = new Date(a.last_order_date).getTime();
+        const dateB = new Date(b.last_order_date).getTime();
+        return newSortDirection === 'asc' ? dateA - dateB : dateB - dateA;
+      }
+      return 0;
+    });
+    
+    // Actualizar el estado con los datos ordenados
+    setDataCustomer({
+      ...dataOrder,
+      dataPreview: handlerPreviewSellerAplication(sortedData, page),
+      dataFilter: dataOrder.dataFilter?.length ? sortedData : undefined,
+      dataOrders: dataOrder.dataFilter?.length ? dataOrder.dataOrders : sortedData,
+    });
+  };
+  
+  const handlerSortByExpenses = () => handleSort('expenses');
+  const handlerSortByAverage = () => handleSort('average');
+  const handlerSortByMaxPrice = () => handleSort('maxPrice');
+  const handlerSortByRegistration = () => handleSort('registration');
+  const handlerSortByLastOrder = () => handleSort('lastOrder');
+  
   const handlerSearcherbar = (e: string) => {};
 
   useEffect(() => {
@@ -180,23 +252,85 @@ const TableCustomerMetrics: React.FC<TableCustomerMetricsProps> = ({
             <Table.Header>
               <Table.Row>
                 <Table.HeaderCell>Nombre</Table.HeaderCell>
-                <Table.HeaderCell>Correo electrónico</Table.HeaderCell>
-                <Table.HeaderCell>Fecha de Registro</Table.HeaderCell>
+                <Table.HeaderCell>Contancto</Table.HeaderCell>
+                <Table.HeaderCell>
+                  <button 
+                    onClick={handlerSortByRegistration}
+                    className="flex items-center gap-1 hover:text-ui-fg-base transition-colors"
+                  >
+                    Registro
+                    <div className="flex flex-col ml-1 text-[10px] leading-none">
+                      <span className={sortField === 'registration' && sortDirection === 'asc' ? 'text-blue-500 font-bold' : 'text-gray-400'}>▲</span>
+                      <span className={sortField === 'registration' && sortDirection === 'desc' ? 'text-blue-500 font-bold' : 'text-gray-400'}>▼</span>
+                    </div>
+                  </button>
+                </Table.HeaderCell>
+                <Table.HeaderCell>
+                  <button 
+                    onClick={handlerSortByLastOrder}
+                    className="flex items-center gap-1 hover:text-ui-fg-base transition-colors"
+                  >
+                    Última Orden
+                    <div className="flex flex-col ml-1 text-[10px] leading-none">
+                      <span className={sortField === 'lastOrder' && sortDirection === 'asc' ? 'text-blue-500 font-bold' : 'text-gray-400'}>▲</span>
+                      <span className={sortField === 'lastOrder' && sortDirection === 'desc' ? 'text-blue-500 font-bold' : 'text-gray-400'}>▼</span>
+                    </div>
+                  </button>
+                </Table.HeaderCell>
                 <Table.HeaderCell>Pedidos</Table.HeaderCell>
-                <Table.HeaderCell>Cantidad Productos</Table.HeaderCell>
-                <Table.HeaderCell>Gastos</Table.HeaderCell>
-                <Table.HeaderCell>VMP</Table.HeaderCell>
+                <Table.HeaderCell className="whitespace-nowrap">N°Productos</Table.HeaderCell>
+                <Table.HeaderCell>
+                  <button 
+                    onClick={handlerSortByExpenses}
+                    className="flex items-center gap-1 hover:text-ui-fg-base transition-colors"
+                  >
+                    Gastos
+                    <div className="flex flex-col ml-1 text-[10px] leading-none">
+                      <span className={sortField === 'expenses' && sortDirection === 'asc' ? 'text-blue-500 font-bold' : 'text-gray-400'}>▲</span>
+                      <span className={sortField === 'expenses' && sortDirection === 'desc' ? 'text-blue-500 font-bold' : 'text-gray-400'}>▼</span>
+                    </div>
+                  </button>
+                </Table.HeaderCell>
+                <Table.HeaderCell>
+                  <button 
+                    onClick={handlerSortByAverage}
+                    className="flex items-center gap-1 hover:text-ui-fg-base transition-colors"
+                  >
+                    Promedio
+                    <div className="flex flex-col ml-1 text-[10px] leading-none">
+                      <span className={sortField === 'average' && sortDirection === 'asc' ? 'text-blue-500 font-bold' : 'text-gray-400'}>▲</span>
+                      <span className={sortField === 'average' && sortDirection === 'desc' ? 'text-blue-500 font-bold' : 'text-gray-400'}>▼</span>
+                    </div>
+                  </button>
+                </Table.HeaderCell>
+                <Table.HeaderCell className="whitespace-nowrap">
+                  <button 
+                    onClick={handlerSortByMaxPrice}
+                    className="flex items-center gap-1 hover:text-ui-fg-base transition-colors"
+                  >
+                    Max. Pre.
+                    <div className="flex flex-col ml-1 text-[10px] leading-none">
+                      <span className={sortField === 'maxPrice' && sortDirection === 'asc' ? 'text-blue-500 font-bold' : 'text-gray-400'}>▲</span>
+                      <span className={sortField === 'maxPrice' && sortDirection === 'desc' ? 'text-blue-500 font-bold' : 'text-gray-400'}>▼</span>
+                    </div>
+                  </button>
+                </Table.HeaderCell>
               </Table.Row>
             </Table.Header>
             <Table.Body>
               {dataOrder.dataPreview.map((data) => (
                 <Table.Row key={data.id}>
                   <Table.Cell>{data.customer_name}</Table.Cell>
-                  <Table.Cell>{data.email}</Table.Cell>
+                  <Table.Cell>
+                    <p>{data.email}</p>
+                    <p>{data.phone}</p>
+                  </Table.Cell>
                   <Table.Cell>{formatDate(data.created_at)}</Table.Cell>
+                  <Table.Cell>{formatDate(data.last_order_date.toString())}</Table.Cell>
                   <Table.Cell>{data.num_orders}</Table.Cell>
                   <Table.Cell>{data.num_products}</Table.Cell>
-                  <Table.Cell>{data.expenses}</Table.Cell>
+                  <Table.Cell>{formatPrice(parseFloat(data.expenses))}</Table.Cell>
+                  <Table.Cell>${data.total_media_order}</Table.Cell>
                   <Table.Cell>{data.mvp_order}</Table.Cell>
                 </Table.Row>
               ))}

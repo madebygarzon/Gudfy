@@ -90,6 +90,26 @@ const dataSelecFilter = [
     label: "Pendiente de pago" 
   }
 ];
+
+const paymentMethodFilter = [
+  {
+    value: "All",
+    label: "Todos los métodos",
+  },
+  {
+    value: "CoinPal",
+    label: "CoinPal",
+  },
+  {
+    value: "Transferencia",
+    label: "Transferencia",
+  },
+  {
+    value: "Efectivo",
+    label: "Efectivo",
+  }
+];
+
 const registerNumber = [20, 50, 100];
 // numero de filas por pagina predeterminado
 
@@ -106,6 +126,8 @@ const SellerApplication = () => {
   const [page, setPage] = useState(1);
   const [rowsPages, setRowsPages] = useState<number>(20);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc' | null>(null);
+  const [sortField, setSortField] = useState<'price' | 'order' | null>(null);
   
   const [selectOrderData, setTelectOrderData] = useState<order>();
   //----------------------------------
@@ -197,6 +219,37 @@ const SellerApplication = () => {
       dataFilter: value === "All" ? [] : dataFilter,
     });
   };
+
+  const handlerFilterPaymentMethod = (value: string) => {
+    setPage(1);
+    
+    // Si ya hay un filtro aplicado, aplicar el filtro de método de pago sobre los datos ya filtrados
+    const dataToFilter = dataOrder.dataFilter?.length ? dataOrder.dataFilter : dataOrder.dataOrders;
+    
+    const dataFilter =
+      value === "All"
+        ? dataToFilter
+        : dataToFilter.filter((order) => {
+            // Comprueba si es CoinPal (no tiene comprobante de pago)
+            if (value === "CoinPal" && !order.proof_of_payment) {
+              return true;
+            }
+            // Comprueba si es transferencia (tiene comprobante de pago)
+            if (value === "Transferencia" && order.proof_of_payment) {
+              return true;
+            }
+            // Para otros métodos de pago, podemos agregar más condiciones aquí
+            return false;
+          });
+  
+    setDataCustomer({
+      ...dataOrder,
+      dataPreview: handlerPreviewSellerAplication(dataFilter, 1),
+      dataFilter: dataFilter,
+    });
+    
+    setPagetotal(Math.ceil(dataFilter.length / rowsPages));
+  };
   const handlerRowsNumber = (value) => {
     const valueInt = parseInt(value);
     setRowsPages(valueInt);
@@ -232,30 +285,72 @@ const SellerApplication = () => {
   };
 
   const handlerSearcherbar = (value: string) => {
-    // 1) Búsqueda en minúsculas
-    const query = (value ?? "").toLowerCase();
-  
-    const dataFilter = dataOrder.dataOrders.filter((order) => {
-      const email   = (order.email ?? "").toLowerCase();
-      const orderId = (order.id ?? "").toLowerCase();
-      const fullName = `${order.person_name ?? ""} ${order.person_last_name ?? ""}`
-        .trim()
-        .toLowerCase();
-  
-      return (
-        email.includes(query) ||
-        orderId.includes(query) ||
-        fullName.includes(query)
-      );
-    });
-  
-    setPage(1); 
+    if (value.length === 0) {
+      setDataCustomer({
+        ...dataOrder,
+        dataPreview: handlerPreviewSellerAplication(dataOrder.dataOrders, 1),
+        dataFilter: undefined,
+      });
+      setPage(1);
+      setPagetotal(Math.ceil(dataOrder.dataOrders.length / rowsPages));
+      return;
+    }
+
+    const filterData = dataOrder.dataOrders.filter(
+      (e) =>
+        e.id?.toLowerCase().includes(value?.toLowerCase() || '') ||
+        e.person_name?.toLowerCase().includes(value?.toLowerCase() || '') ||
+        e.person_last_name?.toLowerCase().includes(value?.toLowerCase() || '') ||
+        e.email?.toLowerCase().includes(value?.toLowerCase() || '')
+    );
+
     setDataCustomer({
       ...dataOrder,
-      dataPreview: handlerPreviewSellerAplication(dataFilter, 1),
-      dataFilter: dataFilter.length ? dataFilter : [],
+      dataPreview: handlerPreviewSellerAplication(filterData, 1),
+      dataFilter: filterData,
+    });
+    setPage(1);
+    setPagetotal(Math.ceil(filterData.length / rowsPages));
+  };
+
+  const handleSort = (field: 'price' | 'order') => {
+    // If clicking on the same field, toggle direction. If clicking on a different field, set to ascending
+    let newSortDirection: 'asc' | 'desc' | null = 'asc';
+    if (sortField === field) {
+      newSortDirection = sortDirection === 'asc' ? 'desc' : 'asc';
+    }
+    
+    setSortField(field);
+    setSortDirection(newSortDirection);
+    
+    // Get the current data to sort (either filtered or all data)
+    const dataToSort = [...(dataOrder.dataFilter?.length ? dataOrder.dataFilter : dataOrder.dataOrders)];
+    
+    // Sort the data based on the selected field
+    const sortedData = dataToSort.sort((a, b) => {
+      if (field === 'price') {
+        const priceA = parseFloat(a.total_price);
+        const priceB = parseFloat(b.total_price);
+        return newSortDirection === 'asc' ? priceA - priceB : priceB - priceA;
+      } else { // order
+        // Sort by order ID (alphanumeric)
+        return newSortDirection === 'asc' 
+          ? a.id.localeCompare(b.id) 
+          : b.id.localeCompare(a.id);
+      }
+    });
+    
+    // Update the state with sorted data
+    setDataCustomer({
+      ...dataOrder,
+      dataPreview: handlerPreviewSellerAplication(sortedData, page),
+      dataFilter: dataOrder.dataFilter?.length ? sortedData : undefined,
+      dataOrders: dataOrder.dataFilter?.length ? dataOrder.dataOrders : sortedData,
     });
   };
+  
+  const handlerSortByPrice = () => handleSort('price');
+  const handlerSortByOrder = () => handleSort('order');
   
 
   return (
@@ -272,6 +367,20 @@ const SellerApplication = () => {
                   </Select.Trigger>
                   <Select.Content>
                     {dataSelecFilter.map((item) => (
+                      <Select.Item key={item.value} value={item.value}>
+                        {item.label}
+                      </Select.Item>
+                    ))}
+                  </Select.Content>
+                </Select>
+              </div>
+              <div className="w-[156px] ">
+                <Select onValueChange={handlerFilterPaymentMethod}>
+                  <Select.Trigger>
+                    <Select.Value placeholder="Método de pago: " />
+                  </Select.Trigger>
+                  <Select.Content>
+                    {paymentMethodFilter.map((item) => (
                       <Select.Item key={item.value} value={item.value}>
                         {item.label}
                       </Select.Item>
@@ -299,9 +408,31 @@ const SellerApplication = () => {
                 <Table.Header>
                   <Table.Row>
                     <Table.HeaderCell>Estado</Table.HeaderCell>
-                    <Table.HeaderCell>Número de orden</Table.HeaderCell>
+                    <Table.HeaderCell>
+                      <button 
+                        onClick={handlerSortByOrder}
+                        className="flex items-center gap-1 hover:text-ui-fg-base transition-colors"
+                      >
+                        Número de orden
+                        <div className="flex flex-col ml-1 text-[10px] leading-none">
+                          <span className={sortField === 'order' && sortDirection === 'asc' ? 'text-blue-500 font-bold' : 'text-gray-400'}>▲</span>
+                          <span className={sortField === 'order' && sortDirection === 'desc' ? 'text-blue-500 font-bold' : 'text-gray-400'}>▼</span>
+                        </div>
+                      </button>
+                    </Table.HeaderCell>
                     <Table.HeaderCell>Usuario</Table.HeaderCell>
-                    <Table.HeaderCell>Precio</Table.HeaderCell>
+                    <Table.HeaderCell>
+                      <button 
+                        onClick={handlerSortByPrice}
+                        className="flex items-center gap-1 hover:text-ui-fg-base transition-colors"
+                      >
+                        Precio
+                        <div className="flex flex-col ml-1 text-[10px] leading-none">
+                          <span className={sortField === 'price' && sortDirection === 'asc' ? 'text-blue-500 font-bold' : 'text-gray-400'}>▲</span>
+                          <span className={sortField === 'price' && sortDirection === 'desc' ? 'text-blue-500 font-bold' : 'text-gray-400'}>▼</span>
+                        </div>
+                      </button>
+                    </Table.HeaderCell>
                     <Table.HeaderCell>Comprobante</Table.HeaderCell>
                     <Table.HeaderCell>Fecha y hora</Table.HeaderCell>
                     <Table.HeaderCell>Detalle</Table.HeaderCell>
@@ -368,7 +499,7 @@ const SellerApplication = () => {
       </div>
 
       <div className="flex p-6">
-        <div className="w-[35%]">{`${dataOrder.count || 0} solicitudes`}</div>
+        <div className="w-[35%]">{`${dataOrder.count || 0} Ordenes`}</div>
         <div className="flex w-[65%] gap-5 justify-end">
           <span className="text-[12px] mr-[4px]">{`N° Registros: `}</span>
           <div className="text-[12px] w-[50px]">

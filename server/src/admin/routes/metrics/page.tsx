@@ -21,7 +21,7 @@ export interface dataCustomerMetrics {
   num_orders: number;
   num_products: number;
   mvp_order: number;
-  expenses: string;
+  expenses: number;
 }
 
 const Metrics = ({ data }) => {

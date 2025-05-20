@@ -39,19 +39,19 @@ const FileUploader: React.FC<CodesArray> = ({
         .filter((code) => code !== "")
 
       // Example validation: check if all codes match a pattern (e.g., alphanumeric)
-      const isValid = codesArray.every(
-        (code) => /^[a-zA-Z0-9]+$/.test(code) && !/,/.test(code)
-      )
+      // const isValid = codesArray.every(
+      //   (code) => /^[a-zA-Z0-9]+$/.test(code) && !/,/.test(code)
+      // )
 
-      if (!isValid) {
-        setAddResult([])
-        setError(
-          "El formato de los códigos es incorrecto, por favor verifique e intente denuevo"
-        )
-        if (setError2) setError2(true)
-      } else {
-        if (setError2) setError2(false)
-      }
+      // if (!isValid) {
+      //   setAddResult([])
+      //   setError(
+      //     "El formato de los códigos es incorrecto, por favor verifique e intente denuevo"
+      //   )
+      //   if (setError2) setError2(true)
+      // } else {
+      //   if (setError2) setError2(false)
+      // }
 
       const codesCount: { [key: string]: number } = {}
       codesArray.forEach((code) => {
