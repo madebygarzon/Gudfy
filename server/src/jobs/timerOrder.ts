@@ -6,14 +6,14 @@ import {
 export default async function handler({ container }: ScheduledJobArgs) {
   const jobsService = container.resolve("jobsService");
 
-  console.log("Verificando órdenes expiradas...");
+
   const oneHourAgo = new Date(new Date().getTime() - 10 * 60 * 1000);
   const expiredOrders = await jobsService.getOrdersCreatedBefore(oneHourAgo);
 
   for (const order of expiredOrders) {
-    console.log(`Orden con ID ${order.id} a eliminar`);
+   
     await jobsService.deleteOrder(order.id);
-    console.log(`eliminada`);
+   
   }
 }
 
