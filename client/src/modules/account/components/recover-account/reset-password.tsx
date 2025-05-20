@@ -20,6 +20,8 @@ type tokenData = {
 
 const ResetPassword: React.FC<tokenData> = ({ token, email }) => {
   const [isRestored, setIsRestore] = React.useState<boolean>(false)
+  const [isLoading, setIsLoading] = React.useState<boolean>(false)
+  const [tokenExpired, setTokenExpired] = React.useState<boolean>(false)
   const emailCustomer = decodeURIComponent(email.replace("%40", "@"))
   const {
     register,
@@ -38,6 +40,9 @@ const ResetPassword: React.FC<tokenData> = ({ token, email }) => {
       return
     }
 
+    setIsLoading(true)
+    setTokenExpired(false)
+    
     medusaClient.customers
       .resetPassword({
         email: emailCustomer,
@@ -45,11 +50,14 @@ const ResetPassword: React.FC<tokenData> = ({ token, email }) => {
         token,
       })
       .then(({ customer }) => {
+        setIsLoading(false)
         setIsRestore(true)
         console.log(customer.id)
       })
       .catch((e) => {
-        console.log(e)
+        setIsLoading(false)
+        setTokenExpired(true)
+        console.log("Error al restablecer la contraseña", e)
       })
   }
 
@@ -61,28 +69,47 @@ const ResetPassword: React.FC<tokenData> = ({ token, email }) => {
         </div>
       )}
       <h1 className="text-large-semi  text-3xl">Cambiar Contraseña</h1>
-      <p className=" w-auto text-center mb-6">{`para la el usuario con el correo ${emailCustomer}`}</p>
-      <form
-        onSubmit={handleSubmit(resetPassword)}
-        onReset={() => reset()}
-        className="w-full font[400] shadow-xl border-2 rounded-3xl p-12 flex flex-col items-center "
-      >
-        <div className="flex flex-col w-full gap-y-2">
-          <Input
-            label="Nueva Contaseña"
-            type="password"
-            {...register("new_password", { required: true })}
-            errors={errors}
-          />
-          <Input
-            label="Confirmar Contraseña"
-            type="password"
-            {...register("confirm_password", { required: true })}
-            errors={errors}
-          />
+      <p className=" w-auto text-center mb-6">{`para el usuario con el correo ${emailCustomer}`}</p>
+      {tokenExpired ? (
+        <div className="w-full font[400] shadow-xl border-2 rounded-3xl p-12 flex flex-col items-center">
+          <p className="text-red-500 text-center mb-4">El enlace para restablecer la contraseña ha expirado o no es válido.</p>
+          <p className="text-center mb-6">Por favor, solicita un nuevo enlace para restablecer tu contraseña.</p>
+          <Link href="/account/login">
+            <Button className="mt-4 rounded-[5px]">Solicitar nuevo enlace</Button>
+          </Link>
         </div>
-        <Button className=" mt-6 rounded-[5px]">Restablecer</Button>
-      </form>
+      ) : (
+        <form
+          onSubmit={handleSubmit(resetPassword)}
+          onReset={() => reset()}
+          className="w-full font[400] shadow-xl border-2 rounded-3xl p-12 flex flex-col items-center "
+        >
+          <div className="flex flex-col w-full gap-y-2">
+            <Input
+              label="Nueva Contraseña"
+              type="password"
+              {...register("new_password", { required: true })}
+              errors={errors}
+            />
+            <Input
+              label="Confirmar Contraseña"
+              type="password"
+              {...register("confirm_password", { required: true })}
+              errors={errors}
+            />
+          </div>
+          <Button className="mt-6 rounded-[5px]" disabled={isLoading}>
+            {isLoading ? (
+              <div className="flex items-center justify-center">
+                <Spinner size={5} />
+                <span className="ml-2">Procesando...</span>
+              </div>
+            ) : (
+              "Restablecer"
+            )}
+          </Button>
+        </form>
+      )}
     </div>
   ) : (
     <div className="max-w-md w-full flex flex-col items-center shadow-xl rounded-3xl p-12 text-center">
