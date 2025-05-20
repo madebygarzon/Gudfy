@@ -18,6 +18,8 @@ export interface dataCustomerSeller {
   available_balance: number;
   outstanding_balance: number;
   balance_paid: number;
+  email: string;
+  phone: string;
 }
 type ListDataSellerApplication = {
   dataOrders: Array<dataCustomerSeller>;
@@ -43,6 +45,8 @@ const TableSellerMetrics: React.FC<TableCustomerMetricsProps> = ({
         available_balance: 0,
         outstanding_balance: 0,
         balance_paid: 0,
+        email: "",
+        phone: "",
       },
     ],
     dataFilter: [
@@ -55,6 +59,8 @@ const TableSellerMetrics: React.FC<TableCustomerMetricsProps> = ({
         available_balance: 0,
         outstanding_balance: 0,
         balance_paid: 0,
+        email: "",
+        phone: "",
       },
     ],
     dataPreview: [
@@ -67,6 +73,8 @@ const TableSellerMetrics: React.FC<TableCustomerMetricsProps> = ({
         available_balance: 0,
         outstanding_balance: 0,
         balance_paid: 0,
+        email: "",
+        phone: "",
       },
     ],
     count: 0,
@@ -76,10 +84,7 @@ const TableSellerMetrics: React.FC<TableCustomerMetricsProps> = ({
   const [rowsPages, setRowsPages] = useState<number>(20);
 
   const handlerGetListOrder = async () => {
-    console.log(
-      "estos son los datos de la tabla de la tienda",
-      sellerTableMetrics
-    );
+    
     if (!sellerTableMetrics?.length) return;
     setPagetotal(Math.ceil(sellerTableMetrics.length / rowsPages));
     setDataCustomer({
@@ -173,6 +178,7 @@ const TableSellerMetrics: React.FC<TableCustomerMetricsProps> = ({
             <Table.Header>
               <Table.Row>
                 <Table.HeaderCell>Nombre Tienda</Table.HeaderCell>
+                <Table.HeaderCell>Contacto</Table.HeaderCell>
                 <Table.HeaderCell>Creado</Table.HeaderCell>
                 <Table.HeaderCell>Dirección Wallet</Table.HeaderCell>
                 <Table.HeaderCell>Productos</Table.HeaderCell>
@@ -185,6 +191,7 @@ const TableSellerMetrics: React.FC<TableCustomerMetricsProps> = ({
               {dataOrder.dataPreview.map((data) => (
                 <Table.Row key={data.store_id}>
                   <Table.Cell>{data.store_name}</Table.Cell>
+                  <Table.Cell>{data.email} {data.phone}</Table.Cell>
                   <Table.Cell>{formatDate(data.date_order)}</Table.Cell>
                   <Table.Cell>{data.wallet_address}</Table.Cell>
                   <Table.Cell>{data.product}</Table.Cell>
