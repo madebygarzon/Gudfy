@@ -260,9 +260,8 @@ const ReclamosListado = () => {
                   <Select.Content>
                     <Select.Item value="All">Todos</Select.Item>
                     <Select.Item value="CERRADA">Cerrado</Select.Item>
-                    <Select.Item value="SIN RESOLVER">En proceso</Select.Item>
+                    <Select.Item value="SIN RESOLVER">Escalado</Select.Item>
                     <Select.Item value="ABIERTA">Abierto</Select.Item>
-                    <Select.Item value="RESUELTA">Resuelto</Select.Item>
                   </Select.Content>
                 </Select>
               </div>

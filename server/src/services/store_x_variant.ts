@@ -43,7 +43,7 @@ class StoreXVariantService extends TransactionBaseService {
         .innerJoinAndSelect("sxv.store", "s")
         .leftJoinAndSelect("s.members", "c")
         .where("pv.title ILIKE :title AND sxv.quantity_store > 0" , {
-          title: `%${variantProduct}%`,
+          title: `${variantProduct}`,
         })
         .select([
           "sxv.id AS id",
