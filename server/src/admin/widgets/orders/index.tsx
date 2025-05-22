@@ -101,13 +101,9 @@ const paymentMethodFilter = [
     label: "CoinPal",
   },
   {
-    value: "Transferencia",
-    label: "Transferencia",
+    value: "Pago Manual",
+    label: "Pago Manual",
   },
-  {
-    value: "Efectivo",
-    label: "Efectivo",
-  }
 ];
 
 const registerNumber = [20, 50, 100];
@@ -205,51 +201,57 @@ const SellerApplication = () => {
     handlerGetListOrder();
   }, []);
 
-  const handlerFilter = (value: string) => {
+  // Estado actual de los filtros
+  const [currentStateFilter, setCurrentStateFilter] = useState<string>("All");
+  const [currentPaymentMethodFilter, setCurrentPaymentMethodFilter] = useState<string>("All");
+
+  // Función para aplicar ambos filtros a la vez
+  const applyFilters = (stateFilter: string, paymentMethodFilter: string) => {
     setPage(1);
   
-    const dataFilter =
-      value === "All"
-        ? dataOrder.dataOrders
-        : dataOrder.dataOrders.filter((order) => order.state_order === value);
+    // Comenzamos con los datos originales
+    let filteredData = dataOrder.dataOrders;
   
+    // Aplicamos filtro de estado si no es "All"
+    if (stateFilter !== "All") {
+      filteredData = filteredData.filter(order => order.state_order === stateFilter);
+    }
+  
+    // Aplicamos filtro de método de pago si no es "All"
+    if (paymentMethodFilter !== "All") {
+      filteredData = filteredData.filter(order => {
+        // Comprueba si es CoinPal (no tiene comprobante de pago)
+        if (paymentMethodFilter === "CoinPal" && !order.proof_of_payment) {
+          return true;
+        }
+        // Comprueba si es transferencia (tiene comprobante de pago)
+        if (paymentMethodFilter === "Pago Manual" && order.proof_of_payment) {
+          return true;
+        }
+        return false;
+      });
+    }
+  
+    // Actualizamos el estado con los datos filtrados
     setDataCustomer({
       ...dataOrder,
-      dataPreview: handlerPreviewSellerAplication(dataFilter, 1),
-      dataFilter: value === "All" ? [] : dataFilter,
+      dataPreview: handlerPreviewSellerAplication(filteredData, 1),
+      dataFilter: filteredData,
     });
+  
+    setPagetotal(Math.ceil(filteredData.length / rowsPages));
+  };
+
+  const handlerFilter = (value: string) => {
+    setCurrentStateFilter(value);
+    applyFilters(value, currentPaymentMethodFilter);
   };
 
   const handlerFilterPaymentMethod = (value: string) => {
-    setPage(1);
-    
-    // Si ya hay un filtro aplicado, aplicar el filtro de método de pago sobre los datos ya filtrados
-    const dataToFilter = dataOrder.dataFilter?.length ? dataOrder.dataFilter : dataOrder.dataOrders;
-    
-    const dataFilter =
-      value === "All"
-        ? dataToFilter
-        : dataToFilter.filter((order) => {
-            // Comprueba si es CoinPal (no tiene comprobante de pago)
-            if (value === "CoinPal" && !order.proof_of_payment) {
-              return true;
-            }
-            // Comprueba si es transferencia (tiene comprobante de pago)
-            if (value === "Transferencia" && order.proof_of_payment) {
-              return true;
-            }
-            // Para otros métodos de pago, podemos agregar más condiciones aquí
-            return false;
-          });
-  
-    setDataCustomer({
-      ...dataOrder,
-      dataPreview: handlerPreviewSellerAplication(dataFilter, 1),
-      dataFilter: dataFilter,
-    });
-    
-    setPagetotal(Math.ceil(dataFilter.length / rowsPages));
+    setCurrentPaymentMethodFilter(value);
+    applyFilters(currentStateFilter, value);
   };
+
   const handlerRowsNumber = (value) => {
     const valueInt = parseInt(value);
     setRowsPages(valueInt);
