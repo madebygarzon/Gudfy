@@ -6,6 +6,7 @@ import Link from "next/link"
 import Image from "next/image"
 import CurrentYear from "@lib/util/current-year"
 import { useTranslation } from "react-i18next"
+import BotonSellIvitation from "@modules/common/components/cta-sellers/page"
 
 const FooterCTA = () => {
   const { collections } = useCollections()
@@ -320,8 +321,8 @@ const FooterCTA = () => {
             </div>
           </div>
         </div>
-
-        <BotonWhatsApp />
+        <BotonSellIvitation />
+        {/* <BotonWhatsApp /> */}
       </div>
     </div>
   )
