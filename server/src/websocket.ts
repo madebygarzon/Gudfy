@@ -1,12 +1,16 @@
 import { Server } from "socket.io";
-import { createServer } from "http";
+import { createServer } from "https";
 import express from "express";
+import fs from "fs";
 
 const app = express();
-const httpServer = createServer(app);
+const options = {
+  key: fs.readFileSync("/etc/letsencrypt/live/gudfyp2p.com/privkey.pem"),
+  cert: fs.readFileSync("/etc/letsencrypt/live/gudfyp2p.com/fullchain.pem"),
+};
 
-const BACKEND_URL = process.env.BACKEND_URL || "http://localhost:9000";
-const FRONT_URL = process.env.FRONT_URL || "http://localhost:8000";
+const httpServer = createServer(options, app);
+
 const WEBSOCKET_PORT = process.env.PORT_SOKET || 3001;
 
 const io = new Server(httpServer, {
@@ -19,7 +23,7 @@ const io = new Server(httpServer, {
 
 httpServer.listen(WEBSOCKET_PORT, () => {
   console.log(`WebSocket server listening on port ${WEBSOCKET_PORT}`);
-  console.log(`Allowed origins: ${BACKEND_URL}, ${FRONT_URL}`);
+  
 });
 
 export { io };
