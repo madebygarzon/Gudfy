@@ -11,6 +11,7 @@ import { TransactionBaseService } from "@medusajs/medusa";
 import { io } from "../websocket";
 import { EmailPurchaseCompleted } from "../admin/components/email/payments";
 import { IsNull } from "typeorm";
+import { formatPrice } from "./utils/format-price";
 
 class OrderPaymentService extends TransactionBaseService {
   static LIFE_TIME = Lifetime.SCOPED;
@@ -60,7 +61,7 @@ class OrderPaymentService extends TransactionBaseService {
           "svo.created_at AS date_order",
           "svo.quantity AS quantity",
           "svo.variant_order_status_id AS product_order_status",
-          "sxv.price AS price",
+          "svo.unit_price AS price",
           "so.id as order_id",
           "v.title AS product_name",
           "p.thumbnail AS thumbnail",
@@ -70,6 +71,10 @@ class OrderPaymentService extends TransactionBaseService {
         ])
         .orderBy("svo.created_at", "DESC")
         .getRawMany();
+
+      listStore.forEach((store) => {
+        store.price = formatPrice(store.price - store.price * 0.01);
+      });
 
       const storeMap = new Map();
 
@@ -225,7 +230,7 @@ class OrderPaymentService extends TransactionBaseService {
         "op.subtotal AS subtotal",
         "op.created_at AS payment_date",
         "pd.product_name AS product_name",
-        "pd.product_price AS product_price",
+        "svo.unit_price AS product_price",
         "pd.quantity AS  product_quantity",
         "svo.total_price AS total_price",
         "svo.store_order_id AS store_order_id",

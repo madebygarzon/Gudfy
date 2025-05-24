@@ -148,7 +148,7 @@ class OrderClaimService extends TransactionBaseService {
           "oc.created_at AS created_at",
           "svo.quantity AS quantity",
           "svo.store_order_id AS number_order",
-          "sxv.price AS price_unit",
+          "svo.unit_price AS price_unit",
           "s.name AS store_name",
           "v.title AS product_name",
           "c.first_name AS customer_name",
@@ -184,7 +184,7 @@ class OrderClaimService extends TransactionBaseService {
         "oc.created_at AS created_at",
         "svo.quantity AS quantity",
         "svo.store_order_id AS number_order",
-        "sxv.price AS price_unit",
+        "svo.unit_price AS price_unit",
         "s.name AS store_name",
         "v.title AS product_name",
       ])
@@ -212,7 +212,7 @@ class OrderClaimService extends TransactionBaseService {
         "oc.created_at AS created_at",
         "svo.quantity AS quantity",
         "svo.store_order_id AS number_order",
-        "sxv.price AS price_unit",
+        "svo.unit_price AS price_unit",
         "s.name AS store_name",
         "v.title AS product_name",
       ])

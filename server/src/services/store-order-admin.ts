@@ -61,11 +61,11 @@ class StoreOrderAdminService extends TransactionBaseService {
           "so.proof_of_payment AS proof_of_payment",
           "svo.id AS store_variant_order_id",
           "svo.quantity AS quantity",
+          "svo.unit_price AS price",
           "svo.total_price AS total_price_for_product",
           "svo.variant_order_status_id AS variant_order_status_id",
           "sso.state AS state_order",
           "pv.title AS produc_title",
-          "sxv.price AS price",
           "s.name AS store_name",
           "s.id AS store_id",
         ])

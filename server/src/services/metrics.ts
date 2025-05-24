@@ -63,7 +63,6 @@ class MetricsService extends TransactionBaseService {
         this.storeRepository_
       );
 
-      // Primero obtenemos todas las tiendas
       const allStores = await storeRepo
         .createQueryBuilder("s")
         .leftJoinAndSelect("s.wallet", "w")
@@ -80,7 +79,6 @@ class MetricsService extends TransactionBaseService {
         ])
         .getRawMany();
 
-      // Luego obtenemos los datos de productos y órdenes para las tiendas que los tienen
       const listStore = await storeRepo
         .createQueryBuilder("s")
         .leftJoinAndSelect("s.wallet", "w")
@@ -100,7 +98,7 @@ class MetricsService extends TransactionBaseService {
           "svo.created_at AS date_order",
           "svo.quantity AS quantity",
           "svo.variant_order_status_id AS product_order_status",
-          "sxv.price AS price",
+          "svo.unit_price AS price",
           "so.id as order_id",
           "c.first_name AS customer_name",
           "c.last_name AS custommer_last_name",

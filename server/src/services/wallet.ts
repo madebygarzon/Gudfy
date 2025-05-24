@@ -3,6 +3,7 @@ import WalletRepository from "../repositories/wallet";
 import PayMethodSellerRepository from "src/repositories/pay-method-seller";
 import StoreVariantOrderRepository from "src/repositories/store-variant-order";
 import { io } from "../websocket";
+import { formatPrice } from "./utils/format-price";
 
 export default class WalletService extends TransactionBaseService {
   protected readonly walletRepository_: typeof WalletRepository;
@@ -91,7 +92,7 @@ export default class WalletService extends TransactionBaseService {
       .select([
         "sxv.id AS storeXVariantId",
         "svo.quantity AS quantity",
-        "sxv.price AS price",
+        "svo.unit_price AS price",
         "sxv.store_id AS storeId",
         "sxv.variant_id AS variantId",
         "so.order_status_id AS status_id",
@@ -112,18 +113,22 @@ export default class WalletService extends TransactionBaseService {
     };
 
     listSVO.forEach((item) => {
+      item.price = formatPrice(item.price - item.price * 0.01);
+    })
+
+    listSVO.forEach((item) => {
       const totalProductPrice = item.price * item.quantity;
       if (item.variant_order_status_id === "Finished_ID") {
         // Si el pedido está en estado "Finished_ID"
-        prices.available_balance += totalProductPrice;
+        prices.available_balance += formatPrice(totalProductPrice - (totalProductPrice * 0.01));
       } else if (
         item.variant_order_status_id === "Discussion_ID" ||
         item.variant_order_status_id === "Completed_ID"
       ) {
         // Si el pedido está en estado "Discussion_ID" o "Completed_ID"
-        prices.outstanding_balance += totalProductPrice;
+        prices.outstanding_balance += formatPrice(totalProductPrice - (totalProductPrice * 0.01));
       } else if (item.variant_order_status_id == "Paid_ID") {
-        prices.balance_paid += totalProductPrice;
+        prices.balance_paid += formatPrice(totalProductPrice - (totalProductPrice * 0.01));
       }
     });
 
