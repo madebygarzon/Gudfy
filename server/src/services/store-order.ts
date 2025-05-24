@@ -70,7 +70,7 @@ class StoreOrderService extends TransactionBaseService {
           "svo.total_price AS total_price_for_product",
           "svo.variant_order_status_id AS variant_order_status_id",
           "pv.title AS produc_title",
-          "sxv.price AS price",
+          "svo.unit_price AS price",
           "s.name AS store_name",
           "s.id AS store_id",
         ])
@@ -160,11 +160,12 @@ class StoreOrderService extends TransactionBaseService {
         "svo.variant_order_status_id AS variant_order_status_id",
         "sso.state AS state_order",
         "pv.title AS produc_title",
-        "sxv.price AS price",
+        "svo.unit_price AS price",
         "s.name AS store_name",
         "s.id AS store_id",
       ])
       .getRawMany();
+
 
     const orderMap = new Map();
 
@@ -246,10 +247,18 @@ class StoreOrderService extends TransactionBaseService {
         "svo.variant_order_status_id AS variant_order_status_id",
         "sso.state AS state_order",
         "pv.title AS produc_title",
-        "sxv.price AS price",
+        "svo.unit_price AS price",
       ])
       .orderBy("so.created_at", "DESC")
       .getRawMany();
+
+
+     listOrder.forEach((order) => {
+      order.price = formatPrice(order.price - order.price * Number(process.env.COMMISSION));
+    }); 
+    listOrder.forEach((order) => {
+      order.total_price_for_product = formatPrice(order.total_price_for_product - order.total_price_for_product * Number(process.env.COMMISSION));
+    }); 
 
     const OrderMap = new Map();
 
@@ -331,10 +340,14 @@ class StoreOrderService extends TransactionBaseService {
         "svo.quantity AS quantity",
         "vos.state AS state",
         "pv.title AS produc_title",
-        "sxv.price AS unit_price",
+        "svo.unit_price AS unit_price",
       ])
       .orderBy("so.created_at", "DESC")
       .getRawMany();
+
+      listOrder.forEach((order) => {
+        order.unit_price = formatPrice(order.unit_price - order.unit_price * 0.01);
+      });
     return listOrder;
   }
 
@@ -525,7 +538,7 @@ class StoreOrderService extends TransactionBaseService {
         "svo.total_price AS total_price_for_product",
         "sso.state AS state_order",
         "pv.title AS produc_title",
-        "sxv.price AS price",
+        "svo.unit_price AS price",
         "s.name AS store_name",
         "s.id AS store_id",
       ])
