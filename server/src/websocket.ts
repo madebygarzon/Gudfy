@@ -1,15 +1,15 @@
 import { Server } from "socket.io";
-import { createServer } from "https";
+import { createServer } from "http";
 import express from "express";
 import fs from "fs";
 
 const app = express();
-const options = {
-  key: fs.readFileSync("/etc/letsencrypt/live/gudfyp2p.com/privkey.pem"),
-  cert: fs.readFileSync("/etc/letsencrypt/live/gudfyp2p.com/fullchain.pem"),
-};
+// const options = {
+//   key: fs.readFileSync("/etc/letsencrypt/live/gudfyp2p.com/privkey.pem"),
+//   cert: fs.readFileSync("/etc/letsencrypt/live/gudfyp2p.com/fullchain.pem"),
+// };
 
-const httpServer = createServer(options, app);
+const httpServer = createServer( app);
 
 const WEBSOCKET_PORT = process.env.PORT_SOKET || 3001;
 

@@ -46,6 +46,9 @@ export class StoreVariantOrder extends BaseEntity {
   quantity?: number;
 
   @Column({ type: 'decimal', precision: 10, scale: 4, nullable: true })
+  unit_price?: number;
+
+  @Column({ type: 'decimal', precision: 10, scale: 4, nullable: true })
   total_price?: number;
 
   @OneToMany(() => OrderClaim, (claim) => claim?.store_variant_order)

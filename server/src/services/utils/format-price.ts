@@ -1,18 +1,20 @@
+export function formatPrice(valor: number | string | null): number {
+  if (valor === null || valor === undefined) {
+    return 0;
+  }
 
-export function formatPrice(numero: number): number {
+  const numero = typeof valor === 'string' ? parseFloat(valor) : valor;
+  
+
+  if (isNaN(numero)) {
+    return 0;
+  }
+  
+
   if (Number.isInteger(numero)) {
     return numero;
   }
   
-  const numStr = numero.toString();
-  
-  if (numStr.includes('.')) {
-    const [_, parteDecimal] = numStr.split('.');
-    
-    if (parteDecimal.length > 2) {
-      return Math.round(numero * 100) / 100;
-    }
-  }
-  return numero;
-}
 
+  return Math.round(numero * 100) / 100;
+}

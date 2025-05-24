@@ -179,6 +179,7 @@ class CartMarketService extends TransactionBaseService {
           store_order_id: newOrder.id,
           quantity: items[index].quantity,
           variant_order_status_id: "Payment_Pending_ID",
+          unit_price: items[index].unit_price,
           total_price: formatPrice((items[index].unit_price) * items[index].quantity),
         });
         const saveSVO = await storeVariantOrderRepo.save(newSVO);
