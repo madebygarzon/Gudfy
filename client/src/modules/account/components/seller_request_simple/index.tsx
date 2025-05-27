@@ -5,6 +5,7 @@ import { Input } from "@heroui/react"
 import { FieldValues, useForm } from "react-hook-form"
 import { actionCreateSellerApplication } from "@modules/account/actions/action-seller-application"
 import { XCircleSolid } from "@medusajs/icons"
+import { Spinner } from "@medusajs/icons"
 import { useMeCustomer } from "medusa-react"
 import CustomSelectCountry from "@modules/common/components/select_country/customSelectCountry"
 import InputFile from "@modules/common/components/input-file"
@@ -58,7 +59,7 @@ const SellerRequestSimple = ({ onClose, handlerReset }: props) => {
     handleSubmit,
     formState: { errors, isSubmitting },
     setError,
-  } = useForm()
+  } = useForm({ mode: "onChange" })
   const first = useRef<HTMLDivElement>(null);
 
   const handleInputChange = (
@@ -125,18 +126,20 @@ const SellerRequestSimple = ({ onClose, handlerReset }: props) => {
       field_payment_method_2: "",
     }
     
-
-    // Usar la misma acción que el componente original con todos los parámetros requeridos
-    actionCreateSellerApplication(
-      sellerData,
-      fileFrontDocument,
-      fileRevertDocument,
-      fileAddressProod,
-      supplierDocuments
-    ).then((e) => {
+    try {
+      // Usar la misma acción que el componente original con todos los parámetros requeridos
+      await actionCreateSellerApplication(
+        sellerData,
+        fileFrontDocument,
+        fileRevertDocument,
+        fileAddressProod,
+        supplierDocuments
+      )
       onClose()
       handlerReset()
-    })
+    } catch (error) {
+      console.error("Error al enviar la solicitud:", error)
+    }
   })
 
   const handlerControlVariant = (e: any) => {
@@ -256,19 +259,20 @@ const SellerRequestSimple = ({ onClose, handlerReset }: props) => {
         <p className="text-base my-3 font-bold text-red-600">
           {error.valueInputOptions ? "** Ingresa al menos un producto **" : ""}
         </p>
-        
-
-
-
-
-
-
         <ButtonMedusa
           className="mt-4 mb-4 rounded-[5px]"
           type="submit"
           color="primary"
+          disabled={isSubmitting}
         >
-          Enviar solicitud
+          {isSubmitting ? (
+            <div className="flex items-center justify-center gap-x-2">
+              <Spinner className="animate-spin h-5 w-5" />
+              <span>Enviando...</span>
+            </div>
+          ) : (
+            "Enviar solicitud"
+          )}
         </ButtonMedusa>
       </div>
     </form>
