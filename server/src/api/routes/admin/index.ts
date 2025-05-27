@@ -30,6 +30,7 @@ import getListStoreOrders from "./orders/get-list-store-order";
 import getListMetricsCustomer from "./metrics/get-list-metrics-customer";
 import getListMetricsSeller from "./metrics/get-list-metrics-seller";
 import UpdateOrderToCompleted from "./orders/update-order-to-completed";
+import UpdateOrderToPendingToCompleted from "./orders/update-order-pending-to-completed";
 import UpdateOrderToCancel from "./orders/update-order-to-cancel";
 import storeProducts from "./get-store-products";
 
@@ -111,6 +112,10 @@ export function attachAdminRoutes(adminRouter: Router) {
   router.post(
     "/orders/update-order-to-completed",
     wrapHandler(UpdateOrderToCompleted)
+  );
+  router.post(
+    "/orders/update-order-pending-to-completed",
+    wrapHandler(UpdateOrderToPendingToCompleted)
   );
   router.post(
     "/orders/update-order-to-cancel",
