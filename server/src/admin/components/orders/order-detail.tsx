@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import type { order } from "../../widgets/orders/index";
 import { formatDate } from "../../utils/format-date";
-import { updateOrderToCompleted } from "../../actions/orders/update-order-to-completed";
+import { updateOrderToPendingToCompleted } from "../../actions/orders/update-order-pending-to-completed";
 import { formatPrice } from "../../handlers/format-price";
 import { updateOrderToCancel } from "../../actions/orders/update-order-cancel";
 
@@ -77,7 +77,7 @@ const OrderDetail = ({ orderData, customer, handlerReset }: ModalOrderProps) => 
   const handlerUpdateOrder = async () => {
     try {
       setCompletingOrder(true);
-      const result = await updateOrderToCompleted(orderData.id);
+      const result = await updateOrderToPendingToCompleted(orderData.id);
       setOrderResult(result);
       if (result.success) {
         setSuccessOrder(prev => ({ ...prev, complete: true }));
