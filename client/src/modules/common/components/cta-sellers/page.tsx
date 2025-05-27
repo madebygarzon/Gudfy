@@ -6,7 +6,7 @@ const BotonSellIvitation = () => {
     <div>
       <Link
         href="/account/seller"
-        className="fixed right-8 bottom-8 rounded-full p-3 transition ease-in-out delay-150 hover:-translate-y-1 hover:scale-110 duration-300 "
+        className="fixed z-10 right-8 bottom-8 rounded-full p-3 transition ease-in-out delay-150 hover:-translate-y-1 hover:scale-110 duration-300 "
       >
         <Image
           src="/footer/sell_whith_us.png"
