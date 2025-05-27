@@ -19,17 +19,17 @@ const Home = () => {
         <Banner />
       </div>
       <div className=" my-5 h-8">{/* <SelectedProducts /> */} </div>
-      <div className="">
+      {/* <div className="">
         <ProductsTypes />
-      </div>
+      </div> */}
       <div className="">
         <FeaturedProducts />
       </div>
       <div className="">
         <BannerSecondary />
       </div>
-      <div className="">
-        <FeaturedProductsSecond />
+      <div className="my-12">
+        {/* <FeaturedProductsSecond /> */}
       </div>
     </div>
   )

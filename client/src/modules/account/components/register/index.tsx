@@ -113,7 +113,7 @@ const Register = () => {
           .then(() => {
             WelcomeEmail({email: credentials.email, name: credentials.first_name + " " + credentials.last_name})
             refetchCustomer()
-            router.push("/account")
+            router.push("/account/seller")
           })
           .catch(handleError)
       }
