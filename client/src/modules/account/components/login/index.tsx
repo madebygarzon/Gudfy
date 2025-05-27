@@ -68,7 +68,7 @@ const LoginComponente = () => {
       .authenticate(credentials)
       .then(() => {
         refetchCustomer()
-        Pathname === "/account/login" ? router.push("/account") : ""
+        Pathname === "/account/login" ? router.push("/account/seller") : ""
       })
       .catch(handleError)
   })
