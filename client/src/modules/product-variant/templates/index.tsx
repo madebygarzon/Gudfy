@@ -45,6 +45,7 @@ const ProductTemplate: React.FC<ProductVariantTemplateProps> = ({
   )
   const [price, setPrice] = useState<number>()
   const [amount, setAmount] = useState<number>(1)
+  const [isLoading, setIsLoading] = useState(false)
 
   const { open } = useCartDropdown()
 
@@ -72,20 +73,28 @@ const ProductTemplate: React.FC<ProductVariantTemplateProps> = ({
 
  
 
-  const handlerAddCart = () => {
-    addItem(
-      {
-        description: product.title,
-        id: product.id,
-        thumbnail: product.thumbnail,
-        price: selectedSeller.price,
-        title: product.title,
-      },
-      amount,
-      selectedSeller.store_variant_id
-    ).then(() => {
-      open()
-    })
+  const handlerAddCart = async () => {
+    if (!isLoading && amount) {
+      setIsLoading(true)
+      try {
+        await addItem(
+          {
+            description: product.title,
+            id: product.id,
+            thumbnail: product.thumbnail,
+            price: selectedSeller.price,
+            title: product.title,
+          },
+          amount,
+          selectedSeller.store_variant_id
+        )
+        open()
+      } catch (error) {
+        console.error("Error adding item to cart:", error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
   }
 
   useEffect(() => {
@@ -165,7 +174,8 @@ const ProductTemplate: React.FC<ProductVariantTemplateProps> = ({
           )}
 
           <Button
-            disabled={amount ? false : true}
+            isLoading={isLoading}
+            disabled={(amount ? false : true) || isLoading}
             onPress={handlerAddCart}
             className="bg-[#402e72] hover:bg-blue-gf text-white rounded-[5px] mb-[10px]"
           >
