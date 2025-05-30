@@ -4,12 +4,14 @@ import PayMethodSellerRepository from "src/repositories/pay-method-seller";
 import StoreVariantOrderRepository from "src/repositories/store-variant-order";
 import { io } from "../websocket";
 import { formatPrice } from "./utils/format-price";
+import StoreRepository from "src/repositories/store";
 
 export default class WalletService extends TransactionBaseService {
   protected readonly walletRepository_: typeof WalletRepository;
   protected readonly payMethodSellerRepository_: typeof PayMethodSellerRepository;
   protected readonly storeVariantOrderRepository_: typeof StoreVariantOrderRepository;
   protected readonly loggedInCustomer_: Customer | null;
+  protected readonly storeRepository_: typeof StoreRepository;
 
   constructor(container, options) {
     // @ts-expect-error prefer-rest-params
@@ -18,6 +20,7 @@ export default class WalletService extends TransactionBaseService {
     this.payMethodSellerRepository_ = container.payMethodSellerRepository;
     this.storeVariantOrderRepository_ = container.storeVariantOrderRepository;
     this.loggedInCustomer_ = container.loggedInCustomer || "";
+    this.storeRepository_ = container.storeRepository;
   }
 
   async create(idSotore, payMethod) {
@@ -59,6 +62,9 @@ export default class WalletService extends TransactionBaseService {
     const walletRepository = this.activeManager_.withRepository(
       this.walletRepository_
     );
+    const storeRepository = this.activeManager_.withRepository(
+      this.storeRepository_
+    );
     const store_wallet_id = await walletRepository.findOne({
       where: { store_id: this.loggedInCustomer_.store_id },
     });
@@ -70,7 +76,28 @@ export default class WalletService extends TransactionBaseService {
     const updatedWallet = await walletRepository.findOne({
       where: { id: store_wallet_id.id },
     });
-    return updatedWallet;
+
+   
+    const store = await storeRepository.findOne({
+      where: { id: this.loggedInCustomer_.store_id },
+    });
+    return {...updatedWallet, payment_request: store.payment_request};
+  }
+
+  async requestPayment() {
+    try {
+      const storeRepository = this.activeManager_.withRepository(
+        this.storeRepository_
+      );
+      
+      const update = await storeRepository.update(this.loggedInCustomer_.store_id, {
+        payment_request: true,
+      });
+      return true;
+    } catch (error) {
+      console.log("Error al solicitar pago", error);
+      return false;
+    }
   }
 
   async updateBalance() {

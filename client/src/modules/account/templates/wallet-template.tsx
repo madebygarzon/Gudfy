@@ -8,6 +8,8 @@ import WalletTable from "../components/seller_wallet_historic_table"
 import { useNotificationContext } from "@lib/context/notification-context"
 import Notification from "@modules/common/components/notification"
 import { useMeCustomer } from "medusa-react"
+import Button from "@modules/common/components/button"
+import { requestPayment } from "../actions/wallet/request-payment"
 
 export type dataWallet = {
   id: string
@@ -16,6 +18,7 @@ export type dataWallet = {
   outstanding_balance: number
   balance_paid: number
   wallet_address: string
+  payment_request: boolean
 }
 
 const WalletTemplate = () => {
@@ -28,16 +31,24 @@ const WalletTemplate = () => {
     outstanding_balance: 0,
     balance_paid: 0,
     wallet_address: "",
+    payment_request: true,
   })
+
+  const handlerPaymentRequest = () => {
+    requestPayment().then(() => {
+      setWallet({
+        ...wallet,
+        payment_request: true,
+      })
+    })
+  }
 
   return (
     <div className="w-full p-2 sm:p-8 border border-gray-200 rounded-lg">
-      {/* Encabezado */}
       <div className="mb-8 flex flex-col sm:flex-row gap-4 justify-between">
         <h2 className="text-lg sm:text-2xl mt-2 font-bold text-gray-700 capitalize">
           Billetera: {wallet.wallet_address}
         </h2>
-        {/* Saldos */}
         <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-7 sm:mr-4 font-bold">
           <div>
             <span className="text-yellow-600 text-sm sm:text-base">
@@ -55,13 +66,41 @@ const WalletTemplate = () => {
             </span>
           </div>
         </div>
+        <div>
+          {!wallet.payment_request ? (
+            <>
+            
+            <Button
+              onClick={handlerPaymentRequest}
+              disabled={wallet.available_balance < 10}
+              className={wallet.available_balance < 10 ? "bg-gray-200 hover:bg-gray-200 text-gray-500 cursor-not-allowed" : ""}
+            >
+              {wallet.available_balance < 10 ? "Saldo insuficiente" : "Solicitar Pago"}
+              
+            </Button>
+            {wallet.available_balance < 10  &&  <p className="text-xs text-center text-gray-400">Pago minimo de $10</p>}
+            </>
+          ) : (
+            <Button
+              disabled
+              className="bg-red-200 hover:bg-red-300 text-gray-700"
+            >
+              Pago en proceso
+            </Button>
+          )}
+        </div>
       </div>
-
-      {/* Tabs */}
       <div>
         <div className="flex w-full flex-col">
           <Tabs aria-label="Options">
-            <Tab key="Historico" title={<h3 className="md:text-sm text-xs">Histórico de transacciones</h3>}>
+            <Tab
+              key="Historico"
+              title={
+                <h3 className="md:text-sm text-xs">
+                  Histórico de transacciones
+                </h3>
+              }
+            >
               <Card className="shadow-white shadow-lg">
                 <CardBody className="p-0">
                   <div className="flex w-full flex-col">
@@ -70,7 +109,8 @@ const WalletTemplate = () => {
                 </CardBody>
               </Card>
             </Tab>
-            <Tab key="Pagos"
+            <Tab
+              key="Pagos"
               title={<h3 className="md:text-sm text-xs">Histórico de pagos</h3>}
               className="relative"
             >

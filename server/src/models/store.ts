@@ -14,6 +14,9 @@ export class Store extends MedusaStore {
   @Column({ type: "varchar", nullable: true })
   avatar?: string;
 
+  @Column({ type: "boolean" })
+  payment_request?: boolean;
+
   @OneToMany(() => Customer, (customer) => customer?.store)
   members?: Customer[];
 
