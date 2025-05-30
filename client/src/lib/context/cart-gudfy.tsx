@@ -105,7 +105,7 @@ export const CartGudfyProvider = ({
   const listItem = async () => {
     const dataCartId = cart?.id || localStorage.getItem("cart_id")
     if (dataCartId) {
-      await axios
+       const listItems = await axios
         .get(`${process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL}/store/cart/items`, {
           params: { cartId: dataCartId },
           withCredentials: true,
@@ -115,9 +115,11 @@ export const CartGudfyProvider = ({
         })
         .then((data) => {
           setItems(data.data.items)
+          return data.data.items
         })
+        return listItems|| []
     }
-    return
+    
   }
 
   const deleteLineItem = async (lineItemId: string) => {
@@ -190,8 +192,11 @@ export const CartGudfyProvider = ({
       })
   }
 
-  const validateItemExistence = (storeVariantId: string) => {
-    const existence = items?.find(
+  const validateItemExistence = async (storeVariantId: string) => {
+    
+    const listItems = await listItem() as lineItem[]
+
+    const existence = listItems?.find(
       (item) => item.store_variant_id === storeVariantId
     )
 
@@ -199,7 +204,7 @@ export const CartGudfyProvider = ({
       setExistingVariant(storeVariantId)
       return true
     }
-    return existence!!
+    return false
   }
 
   const addItem = async (
@@ -208,8 +213,7 @@ export const CartGudfyProvider = ({
     storeVariantId: string
   ) => {
     if (!cart) throw new Error("No hay un carro al cual relacionar el producto")
-
-    if (validateItemExistence(storeVariantId)) return
+    if (await validateItemExistence(storeVariantId)) return
     const response = await axios
       .post(
         `${process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL}/store/carts/${cart.id}/add-item`,

@@ -57,6 +57,7 @@ class OrderPaymentService extends TransactionBaseService {
         .select([
           "s.id AS store_id",
           "s.name AS store_name",
+          "s.payment_request AS payment_request",
           "svo.id AS svo_id",
           "svo.created_at AS date_order",
           "svo.quantity AS quantity",
@@ -83,6 +84,7 @@ class OrderPaymentService extends TransactionBaseService {
           storeMap.set(store.store_id, {
             store_id: store.store_id,
             store_name: store.store_name,
+            payment_request: store.payment_request,
             date_order: store.date_order,
             wallet_address: store.wallet_address,
             product: [
@@ -205,6 +207,14 @@ class OrderPaymentService extends TransactionBaseService {
       });
       const savePaymentDetail = await PayDetail.save(createPayDetail);
     }
+
+    const storeRepository = this.activeManager_.withRepository(
+      this.storeRepository_
+    );
+    
+    const update = await storeRepository.update(dataOrderP.store_id, {
+      payment_request: false,
+    });
 
     return saverOrderPay;
   }
