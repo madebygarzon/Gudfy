@@ -26,6 +26,7 @@ import { getListProductSerials } from "./product/get-list-product-serial";
 import { DeleteSerialCodes } from "./product/delete-serials-code";
 import { getListSoldProductSerials } from "./product/get-list-sold-product-serial";
 import { postUpdatePriceProduct } from "./product/update-product-price";
+import requestPayment from "./wallet/request-payment";
 
 const router = Router();
 
@@ -48,6 +49,7 @@ export function attachSellerRoutes(customerRouter: Router) {
   //----wallet----
   router.get("/wallet", wrapHandler(getWallet));
   router.get("/wallet/orders", wrapHandler(getListSellerPayOrders));
+  router.get("/request-payment", wrapHandler(requestPayment));
 
   //-------Product - Serial-codes--------
 

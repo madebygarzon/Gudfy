@@ -33,6 +33,7 @@ type dataSotores = {
   available_balance: number;
   balance_paid: number;
   wallet_address: string;
+  payment_request: boolean;
   product: [
     {
       svo_id: string;
@@ -299,6 +300,7 @@ const WalletListado = () => {
                     <Table.HeaderCell>Saldo pendiente</Table.HeaderCell>
                     <Table.HeaderCell>Saldo disponible</Table.HeaderCell>
                     <Table.HeaderCell>Fecha límite de pago</Table.HeaderCell>
+                    
                     <Table.HeaderCell className="flex items-center gap-x-2">
                       Histórico
                       <Tooltip content="Historial de ventas de la tienda">
@@ -366,6 +368,7 @@ const WalletListado = () => {
                                       <Table.HeaderCell>
                                         Cliente
                                       </Table.HeaderCell>
+                                  
                                     </Table.Row>
                                   </Table.Header>
                                   <Table.Body>
@@ -433,6 +436,7 @@ const WalletListado = () => {
                                           <Table.Cell>
                                             {product.customer_name}
                                           </Table.Cell>
+                                         
                                         </Table.Row>
                                       );
                                     })}
@@ -468,13 +472,20 @@ const WalletListado = () => {
                             if (!open) handlerResetSubmit();
                           }}
                         >
-                          <Drawer.Trigger>
+                          <Drawer.Trigger className="flex items-center gap-x-2">
                             <Button
                               onClick={() => handlerDataOrder(data)}
                               className="bg-green-500 border-green-500 shadow-md text-white rounded-md px-4 py-2 "
                             >
                               Pagos
+                              
+                             
                             </Button>
+                            {data?.payment_request && (
+                                <Alert>
+                                    Solicitud
+                                </Alert>
+                              )}
                           </Drawer.Trigger>
                           <Drawer.Content className="w-6/12 right-0">
                             <Drawer.Header>

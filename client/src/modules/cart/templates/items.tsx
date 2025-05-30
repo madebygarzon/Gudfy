@@ -10,7 +10,7 @@ import { getListVariantAndStock } from "../actions/get-listvariandAndStock"
 import { Avatar } from "@heroui/react"
 import { Divider } from "@heroui/react"
 import InputSelectStock from "../components/input-stock"
-import { Alert } from "@medusajs/ui"
+import { Alert } from "@heroui/react"
 
 interface lineItem
   extends Omit<
@@ -137,7 +137,7 @@ const ItemsTemplate = ({ items, modifyProduct }: ItemsTemplateProps) => {
                           modifyProduct.map((itemId) => {
                             if (itemId === item.store_variant_id)
                               return (
-                                <Alert key={itemId} variant="warning">
+                                <Alert key={itemId} color="warning" className="w-auto text-xs"  >
                                   Cantidad insuficiente
                                 </Alert>
                               )

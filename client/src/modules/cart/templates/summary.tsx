@@ -26,6 +26,7 @@ type ItemsTemplateProps = {
 const Summary = ({ items, setModifyProduct }: ItemsTemplateProps) => {
   const { customer } = useMeCustomer()
   const [success, setSuccess] = useState<{ success: false; data: string[] }>()
+  const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
   const handlerTotalPrice = () => {
     let total = 0
@@ -39,8 +40,10 @@ const Summary = ({ items, setModifyProduct }: ItemsTemplateProps) => {
   }
 
   const handlerAddOrder = async () => {
-    if (items?.length) {
-      postAddOrder(items, customer?.id || "").then((e) => {
+    if (items?.length && !isLoading) {
+      setIsLoading(true)
+      try {
+        const e = await postAddOrder(items, customer?.id || "")
         if (!e.success) {
           setSuccess({
             success: e.success,
@@ -50,7 +53,11 @@ const Summary = ({ items, setModifyProduct }: ItemsTemplateProps) => {
         } else {
           router.push(`/checkout?orderid=${e.data.id}`)
         }
-      })
+      } catch (error) {
+        console.error("Error processing order:", error)
+      } finally {
+        setIsLoading(false)
+      }
     }
   }
   return (
@@ -77,9 +84,10 @@ const Summary = ({ items, setModifyProduct }: ItemsTemplateProps) => {
         
         <div className="mt-6">
           <Button
+            isLoading={isLoading}
             className="w-full rounded-3xl"
             onClick={handlerAddOrder}
-            disabled={!customer}
+           
           >
             Ir a pagar
           </Button>
