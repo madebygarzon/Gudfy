@@ -263,9 +263,9 @@ class OrderPaymentService extends TransactionBaseService {
           products: [
             {
               name: payment.product_name,
-              price: payment.product_price,
+              price: formatPrice(payment.product_price - payment.product_price * Number(process.env.COMMISSION)),
               quantity: payment.product_quantity,
-              total_price: payment.total_price,
+              total_price: formatPrice(payment.total_price - payment.total_price * Number(process.env.COMMISSION)),
               store_order_id: payment.store_order_id,
               customer_name: payment.customer_name,
             },
@@ -274,9 +274,9 @@ class OrderPaymentService extends TransactionBaseService {
       } else {
         paymentdOrdersMap.get(payment.payment_id).products.push({
           name: payment.product_name,
-          price: payment.product_price,
+          price: formatPrice(payment.product_price - payment.product_price * Number(process.env.COMMISSION)),
           quantity: payment.product_quantity,
-          total_price: payment.total_price,
+          total_price: formatPrice(payment.total_price - payment.total_price * Number(process.env.COMMISSION)),
           store_order_id: payment.store_order_id,
           customer_name: payment.customer_name,
         });
