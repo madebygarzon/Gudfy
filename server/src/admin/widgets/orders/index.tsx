@@ -200,13 +200,41 @@ const SellerApplication = () => {
   useEffect(() => {
     handlerGetListOrder();
   }, []);
+  
+  // Obtener tiendas únicas para el filtro cuando se cargan los datos
+  useEffect(() => {
+    if (dataOrder.dataOrders.length > 0) {
+      // Extraer todos los nombres de tiendas de todos los pedidos
+      const allStores = dataOrder.dataOrders.flatMap(order => 
+        order.store_variant?.map(store => store.store_name) || []
+      );
+      
+      // Crear un conjunto de nombres de tiendas únicos
+      const uniqueStores = [...new Set(allStores)];
+      
+      // Crear las opciones para el filtro
+      const storeOptions = [
+        { value: "All", label: "Todas las tiendas" },
+        ...uniqueStores.map(store => ({
+          value: store,
+          label: store
+        }))
+      ];
+      
+      setStoreFilterOptions(storeOptions);
+    }
+  }, [dataOrder.dataOrders]);
 
   // Estado actual de los filtros
   const [currentStateFilter, setCurrentStateFilter] = useState<string>("All");
   const [currentPaymentMethodFilter, setCurrentPaymentMethodFilter] = useState<string>("All");
+  const [currentStoreFilter, setCurrentStoreFilter] = useState<string>("All");
+  
+  // Estado para almacenar las tiendas únicas para el filtro
+  const [storeFilterOptions, setStoreFilterOptions] = useState<Array<{value: string, label: string}>>([]);
 
-  // Función para aplicar ambos filtros a la vez
-  const applyFilters = (stateFilter: string, paymentMethodFilter: string) => {
+  // Función para aplicar los filtros
+  const applyFilters = (stateFilter: string, paymentMethodFilter: string, storeFilter: string) => {
     setPage(1);
   
     // Comenzamos con los datos originales
@@ -231,6 +259,14 @@ const SellerApplication = () => {
         return false;
       });
     }
+    
+    // Aplicamos filtro de tienda si no es "All"
+    if (storeFilter !== "All") {
+      filteredData = filteredData.filter(order => {
+        // Verifica si alguna tienda coincide con el filtro
+        return order.store_variant?.some(store => store.store_name === storeFilter) || false;
+      });
+    }
   
     // Actualizamos el estado con los datos filtrados
     setDataCustomer({
@@ -244,12 +280,17 @@ const SellerApplication = () => {
 
   const handlerFilter = (value: string) => {
     setCurrentStateFilter(value);
-    applyFilters(value, currentPaymentMethodFilter);
+    applyFilters(value, currentPaymentMethodFilter, currentStoreFilter);
   };
 
   const handlerFilterPaymentMethod = (value: string) => {
     setCurrentPaymentMethodFilter(value);
-    applyFilters(currentStateFilter, value);
+    applyFilters(currentStateFilter, value, currentStoreFilter);
+  };
+  
+  const handlerFilterStore = (value: string) => {
+    setCurrentStoreFilter(value);
+    applyFilters(currentStateFilter, currentPaymentMethodFilter, value);
   };
 
   const handlerRowsNumber = (value) => {
@@ -299,11 +340,15 @@ const SellerApplication = () => {
     }
 
     const filterData = dataOrder.dataOrders.filter(
-      (e) =>
+      (e) => 
         e.id?.toLowerCase().includes(value?.toLowerCase() || '') ||
         e.person_name?.toLowerCase().includes(value?.toLowerCase() || '') ||
         e.person_last_name?.toLowerCase().includes(value?.toLowerCase() || '') ||
-        e.email?.toLowerCase().includes(value?.toLowerCase() || '')
+        e.email?.toLowerCase().includes(value?.toLowerCase() || '') ||
+        // Buscar coincidencias en los nombres de las tiendas
+        e.store_variant?.some(store => 
+          store.store_name?.toLowerCase().includes(value?.toLowerCase() || '')
+        )
     );
 
     setDataCustomer({
@@ -390,6 +435,20 @@ const SellerApplication = () => {
                   </Select.Content>
                 </Select>
               </div>
+              {/* <div className="w-[156px] ">
+                <Select onValueChange={handlerFilterStore}>
+                  <Select.Trigger>
+                    <Select.Value placeholder="Filtrar por tienda: " />
+                  </Select.Trigger>
+                  <Select.Content>
+                    {storeFilterOptions.map((item) => (
+                      <Select.Item key={item.value} value={item.value}>
+                        {item.label}
+                      </Select.Item>
+                    ))}
+                  </Select.Content>
+                </Select>
+              </div> */}
               <div className="w-[250px]">
                 <Input
                   placeholder="Comprador, Email, Orden"
@@ -435,6 +494,7 @@ const SellerApplication = () => {
                         </div>
                       </button>
                     </Table.HeaderCell>
+                    <Table.HeaderCell>Tienda</Table.HeaderCell>
                     <Table.HeaderCell>Comprobante</Table.HeaderCell>
                     <Table.HeaderCell>Fecha y hora</Table.HeaderCell>
                     <Table.HeaderCell>Detalle</Table.HeaderCell>
@@ -454,6 +514,18 @@ const SellerApplication = () => {
                           {data.person_name + " " + data.person_last_name}
                         </Table.Cell>
                         <Table.Cell>{data.total_price}</Table.Cell>
+                        <Table.Cell>
+                          {data.store_variant ? 
+                            [...new Set(data.store_variant.map(store => store.store_name))]
+                              .map((storeName, index, uniqueStores) => (
+                                <span key={storeName}>
+                                  {storeName}
+                                  {index < uniqueStores.length - 1 && ', '}
+                                </span>
+                              ))
+                            : null
+                          }
+                        </Table.Cell>
                         <Table.Cell>
                           {data.proof_of_payment ? (
                             <Tooltip maxWidth={300} content={<img
