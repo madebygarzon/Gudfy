@@ -73,6 +73,7 @@ export default function AddProducts({ setReset }: Reset) {
   const [addResult, setAddResult] = useState<CodesResult[]>([])
   const [addPrice, setAddPrice] = useState<ProductPrice[]>([])
   const [isloadingPV, setLoadingPV] = useState<boolean>(false)
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
   const [susccessful, setSusccessful] = useState<boolean>(false)
   const [erros, setErrors] = useState<{
     codes: boolean
@@ -178,6 +179,11 @@ export default function AddProducts({ setReset }: Reset) {
   }
 
   const onSubmit = () => {
+    // Si ya está en proceso de envío, no continuar
+    if (isloadingPV || isSubmitting) return
+
+    // Marcar como enviando inmediatamente para evitar clics múltiples
+    setIsSubmitting(true)
     setLoadingPV(true)
 
     const dataSend = addResult.map((data) => {
@@ -187,16 +193,28 @@ export default function AddProducts({ setReset }: Reset) {
       return { ...data, ...dataPrice }
     })
 
-    if (!handlerValidateData(dataSend)) return setLoadingPV(false)
-
-    AddProductsVariant(dataSend).then(() => {
-      setAddResult([])
+    if (!handlerValidateData(dataSend)) {
       setLoadingPV(false)
-      setSusccessful(true)
-      setListProducts((data) => ({ ...data, selectedProducts: [] }))
-      setAddPrice([])
-      setReset((reset) => !reset)
-    })
+      setIsSubmitting(false)
+      return
+    }
+
+    AddProductsVariant(dataSend)
+      .then(() => {
+        setAddResult([])
+        setSusccessful(true)
+        setListProducts((data) => ({ ...data, selectedProducts: [] }))
+        setAddPrice([])
+        setReset((reset) => !reset)
+      })
+      .catch((error) => {
+        console.error('Error al agregar productos:', error)
+      })
+      .finally(() => {
+        // Restablecer los estados de carga y envío al finalizar
+        setLoadingPV(false)
+        setIsSubmitting(false)
+      })
   }
 
   return (
@@ -410,8 +428,9 @@ export default function AddProducts({ setReset }: Reset) {
                     Cancelar
                   </ButtonLigth>
                   <ButtonLigth
-                    className="bg-[#28A745] hover:bg-[#218838] text-white border-none"
+                    className={`bg-[#28A745] hover:bg-[#218838] text-white border-none ${isloadingPV ? 'opacity-70 cursor-not-allowed' : ''}`}
                     onClick={onSubmit}
+                    disabled={isloadingPV}
                   >
                     {isloadingPV ? (
                       <Spinner color="secondary" />
