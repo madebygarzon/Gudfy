@@ -77,11 +77,10 @@ export default class WalletService extends TransactionBaseService {
       where: { id: store_wallet_id.id },
     });
 
-   
     const store = await storeRepository.findOne({
       where: { id: this.loggedInCustomer_.store_id },
     });
-    return {...updatedWallet, payment_request: store.payment_request};
+    return { ...updatedWallet, payment_request: store.payment_request };
   }
 
   async requestPayment() {
@@ -89,10 +88,13 @@ export default class WalletService extends TransactionBaseService {
       const storeRepository = this.activeManager_.withRepository(
         this.storeRepository_
       );
-      
-      const update = await storeRepository.update(this.loggedInCustomer_.store_id, {
-        payment_request: true,
-      });
+
+      const update = await storeRepository.update(
+        this.loggedInCustomer_.store_id,
+        {
+          payment_request: true,
+        }
+      );
       return true;
     } catch (error) {
       console.log("Error al solicitar pago", error);
@@ -141,24 +143,44 @@ export default class WalletService extends TransactionBaseService {
 
     listSVO.forEach((item) => {
       item.price = formatPrice(item.price - item.price * 0.01);
-    })
+    });
 
     listSVO.forEach((item) => {
       const totalProductPrice = item.price * item.quantity;
       if (item.variant_order_status_id === "Finished_ID") {
-        // Si el pedido está en estado "Finished_ID"
-        prices.available_balance += formatPrice(totalProductPrice - (totalProductPrice * 0.01));
+        prices.available_balance += formatPrice(
+          totalProductPrice - totalProductPrice * 0.01
+        );
       } else if (
         item.variant_order_status_id === "Discussion_ID" ||
         item.variant_order_status_id === "Completed_ID"
       ) {
-        // Si el pedido está en estado "Discussion_ID" o "Completed_ID"
-        prices.outstanding_balance += formatPrice(totalProductPrice - (totalProductPrice * 0.01));
+        prices.outstanding_balance += formatPrice(
+          totalProductPrice - totalProductPrice * 0.01
+        );
       } else if (item.variant_order_status_id == "Paid_ID") {
-        prices.balance_paid += formatPrice(totalProductPrice - (totalProductPrice * 0.01));
+        prices.balance_paid += formatPrice(
+          totalProductPrice - totalProductPrice * 0.01
+        );
       }
     });
 
     return prices;
+  }
+
+  async updateWallet(walletAddress: string) {
+    const walletRepository = this.activeManager_.withRepository(
+      this.walletRepository_
+    );
+    const storeRepository = this.activeManager_.withRepository(
+      this.storeRepository_
+    );
+    const store_wallet_id = await walletRepository.findOne({
+      where: { store_id: this.loggedInCustomer_.store_id },
+    });
+    const update = await walletRepository.update(store_wallet_id.id, {
+      wallet_address: walletAddress,
+    });
+    return true;
   }
 }

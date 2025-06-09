@@ -30,14 +30,11 @@ interface props {
 const WalletTable = ({ wallet, setWallet }: props) => {
   const commission = 0.01
   const [listOrders, setList] = useState<orderData[]>()
+  const [isLoading, setIsLoading] = useState<boolean>(true)
 
-  const handleReset = () => {
-    // handlerGetListSellerOrder()
-  }
   const [filterStatus, setFilterStatus] = useState<
     "Cancelado" | "Pagado" | "Completado" | "Finalizado" | "all"
   >("all")
-  // const [selectOrderData, setSelectOrderData] = useState<orderData>()
 
   const getStatusColor = (
     status: "Cancelado" | "Pagado" | "Completado" | "Finalizado"
@@ -58,22 +55,27 @@ const WalletTable = ({ wallet, setWallet }: props) => {
   const { isOpen, onOpen, onOpenChange } = useDisclosure()
 
   const handlerGetDataWallet = () => {
-    getListPayOrders().then((e) => {
-      setList(e)
-    })
-    getWallet().then((e) => {
-      setWallet(e)
-    })
+    setIsLoading(true)
+    Promise.all([
+      getListPayOrders(),
+      getWallet()
+    ])
+      .then(([orders, walletData]) => {
+        setList(orders)
+        setWallet(walletData)
+      })
+      .catch(error => {
+        console.error("Error al cargar datos:", error)
+      })
+      .finally(() => {
+        setIsLoading(false)
+      })
   }
 
   useEffect(() => {
     handlerGetDataWallet()
   }, [])
 
-  // // Calculate totals
-  // const totalOutstandingBalance = listOrders
-  //   ?.filter((order) => filterStatus === "all" || order.state === filterStatus)
-  //   .reduce((total, order) => total + (order.state === "Pendiente de pago" ? order.total_price_for_product : 0), 0) || 0;
 
   const totalBalancePaid =
     listOrders
@@ -136,7 +138,13 @@ const WalletTable = ({ wallet, setWallet }: props) => {
               </tr>
             </thead>
             <tbody>
-              {listOrders?.length ? (
+              {isLoading ? (
+                <tr>
+                  <td colSpan={8} className="px-4 py-8 text-center">
+                    <Loader />
+                  </td>
+                </tr>
+              ) : listOrders && listOrders.length > 0 ? (
                 listOrders
                   .filter(
                     (order) =>
@@ -179,7 +187,28 @@ const WalletTable = ({ wallet, setWallet }: props) => {
                     </tr>
                   ))
               ) : (
-                <Loader />
+                <tr>
+                  <td colSpan={8} className="px-4 py-8 text-center">
+                    <div className="flex flex-col items-center justify-center">
+                      <svg 
+                        xmlns="http://www.w3.org/2000/svg" 
+                        className="h-12 w-12 text-gray-400 mb-3" 
+                        fill="none" 
+                        viewBox="0 0 24 24" 
+                        stroke="currentColor"
+                      >
+                        <path 
+                          strokeLinecap="round" 
+                          strokeLinejoin="round" 
+                          strokeWidth={1.5} 
+                          d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" 
+                        />
+                      </svg>
+                      <p className="text-gray-600 text-lg font-medium mb-1">No hay datos disponibles</p>
+                      <p className="text-gray-500 text-sm">No se encontraron transacciones para mostrar</p>
+                    </div>
+                  </td>
+                </tr>
               )}
             </tbody>
           </table>
