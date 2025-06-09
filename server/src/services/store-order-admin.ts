@@ -7,7 +7,10 @@ import StoreXVariantRepository from "../repositories/store-x-variant";
 import SerialCodeRepository from "src/repositories/serial-code";
 import CustomerRepository from "src/repositories/customer";
 import { In } from "typeorm";
-import { EmailPurchaseCompleted } from "../admin/components/email/payments";
+import {
+  EmailPurchaseCompleted,
+  EmailPurchaseSellerCompleted,
+} from "../admin/components/email/payments";
 import { io } from "../websocket";
 import JobsService from "./jobs";
 import { formatPrice } from "./utils/format-price";
@@ -137,7 +140,7 @@ class StoreOrderAdminService extends TransactionBaseService {
       .createQueryBuilder("cus")
       .innerJoinAndSelect("cus.customerorder", "so")
       .where("so.order_status_id IN (:...status_ids)", {
-        status_ids: ["Finished_ID", "Completed_ID" , "Discussion_ID"],
+        status_ids: ["Finished_ID", "Completed_ID", "Discussion_ID"],
       })
       .select([
         "cus.id AS id",
@@ -166,7 +169,6 @@ class StoreOrderAdminService extends TransactionBaseService {
       } = order;
 
       if (!dataMap.has(order.id)) {
-        // Inicializar el cliente en el Map si no existe
         dataMap.set(order.id, {
           ...rest,
           customer_name: first_name + " " + last_name,
@@ -176,33 +178,29 @@ class StoreOrderAdminService extends TransactionBaseService {
           expenses: 0,
           total_media_order: 0,
           phone,
-          last_order_date: new Date(0), // Inicializar con fecha antigua para comparar
+          last_order_date: new Date(0),
         });
       }
 
-      // Obtener el cliente actual del Map
       const customer = dataMap.get(order.id);
 
-      // Actualizar las métricas
       customer.num_orders += 1;
       customer.num_products += quantity_products;
-      customer.mvp_order = formatPrice(Math.max(
-        customer.mvp_order,
-        parseFloat(total_price)
-      ));
+      customer.mvp_order = formatPrice(
+        Math.max(customer.mvp_order, parseFloat(total_price))
+      );
       customer.expenses += formatPrice(parseFloat(total_price));
-      
-      // Calcular el promedio del total de órdenes para este cliente
-      customer.total_media_order = parseFloat((customer.expenses / customer.num_orders).toFixed(2));
-      
-      // Actualizar la fecha de la última orden si es más reciente
+
+      customer.total_media_order = parseFloat(
+        (customer.expenses / customer.num_orders).toFixed(2)
+      );
+
       const orderDate = new Date(order_date);
       if (orderDate > customer.last_order_date) {
         customer.last_order_date = orderDate;
       }
     }
 
-    // Convertir el Map a un array de resultados
     const result = Array.from(dataMap.values());
     const resultMetricsOrder = await this.listMetricsOrders();
     const addResults = {
@@ -234,7 +232,7 @@ class StoreOrderAdminService extends TransactionBaseService {
     return listMetrics;
   }
 
-  async UpdateOrderPendingToComplete(order_id){
+  async UpdateOrderPendingToComplete(order_id) {
     try {
       const so = this.activeManager_.withRepository(this.storeOrderRepository_);
       const svo = this.activeManager_.withRepository(
@@ -245,8 +243,7 @@ class StoreOrderAdminService extends TransactionBaseService {
       );
       const sc = this.activeManager_.withRepository(this.serialCodeRepository_);
       const codes = [];
-
-      
+      const storeCodeMap = {};
 
       const storeOrder = await so.findOne({ where: { id: order_id } });
       if (!storeOrder) {
@@ -255,21 +252,15 @@ class StoreOrderAdminService extends TransactionBaseService {
 
       const ListSVO = await svo.find({ where: { store_order_id: order_id } });
 
-      // Array to collect variants with insufficient stock
       const insufficientStockVariants = [];
 
-     
-      // First validate and collect all variants with insufficient quantity_store
       for (const variant of ListSVO) {
         const quantity = variant.quantity;
         const storeVariant = await sv.findOneBy({
           id: variant.store_variant_id,
         });
 
-        
-
         if (!storeVariant || storeVariant.quantity_reserved < quantity) {
-          // Get variant information for better error message
           const variantInfo = await sv
             .createQueryBuilder("sv")
             .innerJoinAndSelect("sv.variant", "v")
@@ -277,27 +268,26 @@ class StoreOrderAdminService extends TransactionBaseService {
             .select(["v.title AS title"])
             .getRawOne();
 
-          const variantTitle = variantInfo ? variantInfo.title : 'Unknown variant';
+          const variantTitle = variantInfo
+            ? variantInfo.title
+            : "Unknown variant";
           insufficientStockVariants.push({
             title: variantTitle,
             requested: quantity,
             available: storeVariant ? storeVariant.quantity_reserved : 0,
-            variant_id: variant.store_variant_id
+            variant_id: variant.store_variant_id,
           });
         }
       }
 
-      // If there are variants with insufficient stock, return the array with details
       if (insufficientStockVariants.length > 0) {
-       
         return {
           success: false,
           message: "No hay suficiente stock para algunas variaciones",
-          insufficientStockVariants
+          insufficientStockVariants,
         };
       }
 
-      // If all variants have sufficient quantity_store, proceed with code assignment
       for (const variant of ListSVO) {
         const quantity = variant.quantity;
         const id = variant.id;
@@ -320,7 +310,10 @@ class StoreOrderAdminService extends TransactionBaseService {
           .returning(["id", "serial"])
           .execute();
 
-        const serialCodesToUpdate = result.raw as { id: string; serial: string }[];
+        const serialCodesToUpdate = result.raw as {
+          id: string;
+          serial: string;
+        }[];
 
         if (serialCodesToUpdate.length < quantity) {
           throw new Error(
@@ -331,15 +324,44 @@ class StoreOrderAdminService extends TransactionBaseService {
         const productVariant = await sv
           .createQueryBuilder("sv")
           .innerJoinAndSelect("sv.variant", "v")
+          .innerJoinAndSelect("sv.store", "s")
+          .innerJoinAndSelect("s.members", "c")
           .where("sv.id = :id", { id: variant.store_variant_id })
-          .select(["v.title AS title"])
+          .select([
+            "v.title AS title",
+            "s.name AS store_name",
+            "c.email AS email_store",
+            "s.name AS name_store",
+            "sv.id AS store_id",
+          ])
           .getRawMany();
+
+        const storeId = variant.store_variant_id;
+        const storeInfo = {
+          store_id: productVariant[0].store_id,
+          store_name: productVariant[0].store_name,
+          email_store: productVariant[0].email_store,
+          name_store: productVariant[0].name_store,
+        };
+
+        if (!storeCodeMap[storeId]) {
+          storeCodeMap[storeId] = {
+            ...storeInfo,
+            codes: [],
+          };
+        }
 
         for (const serialCode of serialCodesToUpdate) {
           codes.push({
             serialCodes: serialCode.serial,
             title: productVariant[0].title,
           });
+
+          storeCodeMap[storeId].codes.push({
+            serialCodes: serialCode.serial,
+            title: productVariant[0].title,
+          });
+
           await sc.update(serialCode.id, { store_variant_order_id: id });
         }
 
@@ -354,7 +376,12 @@ class StoreOrderAdminService extends TransactionBaseService {
         });
       }
 
-     
+      const storesWithCodes = Object.values(storeCodeMap);
+
+      await EmailPurchaseSellerCompleted({
+        storesWithCodes: storesWithCodes as any,
+        order_id: order_id,
+      });
 
       await EmailPurchaseCompleted({
         email: storeOrder.email,
@@ -369,7 +396,7 @@ class StoreOrderAdminService extends TransactionBaseService {
         success: true,
         message: "Orden completada exitosamente",
         order_id,
-        codes
+        codes,
       };
     } catch (error) {
       console.error(
@@ -379,10 +406,9 @@ class StoreOrderAdminService extends TransactionBaseService {
       return {
         success: false,
         message: error.message || "Error desconocido al procesar la orden",
-        error: error.toString()
+        error: error.toString(),
       };
     }
-
   }
 
   async UpdateOrderToComplete(order_id) {
@@ -396,8 +422,7 @@ class StoreOrderAdminService extends TransactionBaseService {
       );
       const sc = this.activeManager_.withRepository(this.serialCodeRepository_);
       const codes = [];
-
-      
+      const storeCodeMap: Record<string, any> = {};
 
       const storeOrder = await so.findOne({ where: { id: order_id } });
       if (!storeOrder) {
@@ -406,21 +431,15 @@ class StoreOrderAdminService extends TransactionBaseService {
 
       const ListSVO = await svo.find({ where: { store_order_id: order_id } });
 
-      // Array to collect variants with insufficient stock
       const insufficientStockVariants = [];
 
-     
-      // First validate and collect all variants with insufficient quantity_store
       for (const variant of ListSVO) {
         const quantity = variant.quantity;
         const storeVariant = await sv.findOneBy({
           id: variant.store_variant_id,
         });
 
-        
-
         if (!storeVariant || storeVariant.quantity_store < quantity) {
-          // Get variant information for better error message
           const variantInfo = await sv
             .createQueryBuilder("sv")
             .innerJoinAndSelect("sv.variant", "v")
@@ -428,27 +447,26 @@ class StoreOrderAdminService extends TransactionBaseService {
             .select(["v.title AS title"])
             .getRawOne();
 
-          const variantTitle = variantInfo ? variantInfo.title : 'Unknown variant';
+          const variantTitle = variantInfo
+            ? variantInfo.title
+            : "Unknown variant";
           insufficientStockVariants.push({
             title: variantTitle,
             requested: quantity,
             available: storeVariant ? storeVariant.quantity_store : 0,
-            variant_id: variant.store_variant_id
+            variant_id: variant.store_variant_id,
           });
         }
       }
 
-      // If there are variants with insufficient stock, return the array with details
       if (insufficientStockVariants.length > 0) {
-       
         return {
           success: false,
           message: "No hay suficiente stock para algunas variaciones",
-          insufficientStockVariants
+          insufficientStockVariants,
         };
       }
 
-      // If all variants have sufficient quantity_store, proceed with code assignment
       for (const variant of ListSVO) {
         const quantity = variant.quantity;
         const id = variant.id;
@@ -471,7 +489,10 @@ class StoreOrderAdminService extends TransactionBaseService {
           .returning(["id", "serial"])
           .execute();
 
-        const serialCodesToUpdate = result.raw as { id: string; serial: string }[];
+        const serialCodesToUpdate = result.raw as {
+          id: string;
+          serial: string;
+        }[];
 
         if (serialCodesToUpdate.length < quantity) {
           throw new Error(
@@ -482,15 +503,44 @@ class StoreOrderAdminService extends TransactionBaseService {
         const productVariant = await sv
           .createQueryBuilder("sv")
           .innerJoinAndSelect("sv.variant", "v")
+          .innerJoinAndSelect("sv.store", "s")
+          .innerJoinAndSelect("s.members", "c")
           .where("sv.id = :id", { id: variant.store_variant_id })
-          .select(["v.title AS title"])
+          .select([
+            "v.title AS title",
+            "s.name AS store_name",
+            "c.email AS email_store",
+            "s.name AS name_store",
+            "sv.id AS store_id",
+          ])
           .getRawMany();
+
+        const storeId = variant.store_variant_id;
+        const storeInfo = {
+          store_id: productVariant[0].store_id,
+          store_name: productVariant[0].store_name,
+          email_store: productVariant[0].email_store,
+          name_store: productVariant[0].name_store,
+        };
+
+        if (!storeCodeMap[storeId]) {
+          storeCodeMap[storeId] = {
+            ...storeInfo,
+            codes: [],
+          };
+        }
 
         for (const serialCode of serialCodesToUpdate) {
           codes.push({
             serialCodes: serialCode.serial,
             title: productVariant[0].title,
           });
+
+          storeCodeMap[storeId].codes.push({
+            serialCodes: serialCode.serial,
+            title: productVariant[0].title,
+          });
+
           await sc.update(serialCode.id, { store_variant_order_id: id });
         }
 
@@ -504,8 +554,12 @@ class StoreOrderAdminService extends TransactionBaseService {
           quantity_store: storeVariant.quantity_store - quantity,
         });
       }
+      const storesWithCodes = Object.values(storeCodeMap);
 
-     
+      await EmailPurchaseSellerCompleted({
+        storesWithCodes: storesWithCodes as any,
+        order_id: order_id,
+      });
 
       await EmailPurchaseCompleted({
         email: storeOrder.email,
@@ -520,7 +574,7 @@ class StoreOrderAdminService extends TransactionBaseService {
         success: true,
         message: "Orden completada exitosamente",
         order_id,
-        codes
+        codes,
       };
     } catch (error) {
       console.error(
@@ -530,14 +584,13 @@ class StoreOrderAdminService extends TransactionBaseService {
       return {
         success: false,
         message: error.message || "Error desconocido al procesar la orden",
-        error: error.toString()
+        error: error.toString(),
       };
     }
   }
-  async UpdateOrderToCancel(order_id){
+  async UpdateOrderToCancel(order_id) {
     const result = await this.jobsService_.deleteOrder(order_id);
     return result;
   }
-  
 }
 export default StoreOrderAdminService;

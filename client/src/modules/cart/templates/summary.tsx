@@ -82,15 +82,17 @@ const Summary = ({ items, setModifyProduct }: ItemsTemplateProps) => {
           nuestros usuarios.
         </p> */}
         
-        <div className="mt-6">
+        <div className="mt-6 flex flex-col gap-y-2 justify-center items-center ">
           <Button
             isLoading={isLoading}
             className="w-full rounded-3xl"
             onClick={handlerAddOrder}
+            disabled={!customer}
            
           >
-            Ir a pagar
+            {customer ? "Ir a pagar" : "Inicia sesión para comprar"}
           </Button>
+         
         </div>
         {success && !success.success && success.data.length ? (
           <div className="text-center text-sm text-red-500 mt-5">

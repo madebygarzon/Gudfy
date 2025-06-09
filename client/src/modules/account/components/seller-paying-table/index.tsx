@@ -52,6 +52,7 @@ interface props {
 const WalletTable = ({ wallet, setWallet }: props) => {
   const [listOrdersPayment, setListOrdersPayment] =
     useState<OrderPaymentData[]>()
+  const [isLoading, setIsLoading] = useState<boolean>(true)
   const { storeSeller } = useSellerStoreGudfy()
   const handleReset = () => {
     // handlerGetListSellerOrder()
@@ -79,9 +80,17 @@ const WalletTable = ({ wallet, setWallet }: props) => {
   const { isOpen, onOpen, onOpenChange } = useDisclosure()
 
   const handlerGetListOrdersPayments = () => {
-    getListOrderPayments(storeSeller?.id || " ").then((e) => {
-      setListOrdersPayment(e)
-    })
+    setIsLoading(true)
+    getListOrderPayments(storeSeller?.id || " ")
+      .then((e) => {
+        setListOrdersPayment(e)
+      })
+      .catch((error) => {
+        console.error("Error al cargar datos de pagos:", error)
+      })
+      .finally(() => {
+        setIsLoading(false)
+      })
   }
 
   useEffect(() => {
@@ -102,8 +111,14 @@ const WalletTable = ({ wallet, setWallet }: props) => {
               </tr>
             </thead>
             <tbody>
-              {listOrdersPayment?.length ? (
-                listOrdersPayment?.map((order, i) => (
+              {isLoading ? (
+                <tr>
+                  <td colSpan={4} className="px-4 py-8 text-center">
+                    <Loader />
+                  </td>
+                </tr>
+              ) : listOrdersPayment && listOrdersPayment.length > 0 ? (
+                listOrdersPayment.map((order, i) => (
                   <tr key={i} className="hover:bg-gray-50">
                     <td className="px-4 py-2 ">
                       {handlerformatDate(order.payment_date)}
@@ -126,9 +141,32 @@ const WalletTable = ({ wallet, setWallet }: props) => {
                   </tr>
                 ))
               ) : (
-                <div className="mt-2">
-                  <Loader />
-                </div>
+                <tr>
+                  <td colSpan={4} className="px-4 py-8 text-center">
+                    <div className="flex flex-col items-center justify-center">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-12 w-12 text-gray-400 mb-3"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={1.5}
+                          d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                        />
+                      </svg>
+                      <p className="text-gray-600 text-lg font-medium mb-1">
+                        No hay datos disponibles
+                      </p>
+                      <p className="text-gray-500 text-sm">
+                        No se encontraron pagos para mostrar
+                      </p>
+                    </div>
+                  </td>
+                </tr>
               )}
             </tbody>
           </table>
@@ -158,8 +196,6 @@ interface ModalOrder {
   onOpenChange: () => void
   handleReset: () => void
 }
-
-// Información falsa para el modal
 
 const ModalOrder = ({
   ordePaymenmtData,
