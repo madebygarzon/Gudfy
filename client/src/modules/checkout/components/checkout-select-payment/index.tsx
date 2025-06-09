@@ -92,7 +92,7 @@ const CheckoutSelectPayment: React.FC<CheckoutDetailsProps> = ({
     return number;
   }
   
-  // Estado para controlar la comisión de Coinpal (1%)
+  
   const isCoinpalSelected = checkbox === "coinpal_pay"
 
   useEffect(() => {
@@ -300,11 +300,13 @@ const CheckoutSelectPayment: React.FC<CheckoutDetailsProps> = ({
             </div>
           </AccordionItem>
         </Accordion>
-        <div className="pl-2 flex my-5">
-          <Checkbox
-            radius="none"
-            size="sm"
-            onChangeCapture={() => {
+        <div className="pl-2 flex items-center my-5">
+          <input
+            type="checkbox"
+            id="terms-checkbox"
+            className="w-4 h-4 mr-2 cursor-pointer"
+            checked={completedForm.TermsConditions}
+            onChange={() => {
               trigger()
               setCompleteForm((com) => ({
                 ...com,
@@ -315,7 +317,7 @@ const CheckoutSelectPayment: React.FC<CheckoutDetailsProps> = ({
           <p className="text-sm font-semibold">
             He leído y estoy de acuerdo con los{" "}
             <Link
-              href="/terminos-y-condiciones"
+              href="/terms-and-conditions"
               className="text-sky-600 underline"
             >
               términos y condiciones de la web

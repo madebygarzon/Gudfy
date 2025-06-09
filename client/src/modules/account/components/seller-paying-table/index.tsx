@@ -53,7 +53,7 @@ const WalletTable = ({ wallet, setWallet }: props) => {
   const [listOrdersPayment, setListOrdersPayment] =
     useState<OrderPaymentData[]>()
   const [isLoading, setIsLoading] = useState<boolean>(true)
-  const { storeSeller } = useSellerStoreGudfy()
+  const { storeSeller , handlerGetSellerStore} = useSellerStoreGudfy()
   const handleReset = () => {
     // handlerGetListSellerOrder()
   }
@@ -94,7 +94,26 @@ const WalletTable = ({ wallet, setWallet }: props) => {
   }
 
   useEffect(() => {
-    handlerGetListOrdersPayments()
+    const loadData = async () => {
+      setIsLoading(true);
+      
+      if (!storeSeller) {
+        await handlerGetSellerStore();
+       
+      } else {
+        
+        try {
+          const payments = await getListOrderPayments(storeSeller.id || " ");
+          setListOrdersPayment(payments);
+        } catch (error) {
+          console.error("Error al cargar datos de pagos:", error);
+        } finally {
+          setIsLoading(false);
+        }
+      }
+    };
+
+    loadData();
   }, [storeSeller])
 
   return (
