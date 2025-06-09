@@ -9,7 +9,10 @@ import StoreXVariantRepository from "../repositories/store-x-variant";
 import ProductVariantRepository from "@medusajs/medusa/dist/repositories/product-variant";
 import { TransactionBaseService } from "@medusajs/medusa";
 import { io } from "../websocket";
-import { EmailPurchaseCompleted } from "../admin/components/email/payments";
+import {
+  EmailPurchaseCompleted,
+  EmailPurchaseSellerCompleted,
+} from "../admin/components/email/payments";
 import { IsNull } from "typeorm";
 import { formatPrice } from "./utils/format-price";
 
@@ -121,18 +124,15 @@ class OrderPaymentService extends TransactionBaseService {
         let available_balance = 0;
         let balance_paid = 0;
 
-        // Iteramos sobre los productos de cada tienda
         store.product.forEach((item) => {
           const totalPrice = item.price * item.quantity;
 
           if (item.product_order_status === "Finished_ID") {
-            // Sumar a available_balance
             available_balance += totalPrice;
           } else if (
             item.product_order_status === "Completed_ID" ||
             item.product_order_status === "Discussion_ID"
           ) {
-            // Sumar a outstanding_balance
             outstanding_balance += totalPrice;
           } else if (item.product_order_status === "Paid_ID") {
             balance_paid += totalPrice;
@@ -211,7 +211,7 @@ class OrderPaymentService extends TransactionBaseService {
     const storeRepository = this.activeManager_.withRepository(
       this.storeRepository_
     );
-    
+
     const update = await storeRepository.update(dataOrderP.store_id, {
       payment_request: false,
     });
@@ -263,9 +263,15 @@ class OrderPaymentService extends TransactionBaseService {
           products: [
             {
               name: payment.product_name,
-              price: formatPrice(payment.product_price - payment.product_price * Number(process.env.COMMISSION)),
+              price: formatPrice(
+                payment.product_price -
+                  payment.product_price * Number(process.env.COMMISSION)
+              ),
               quantity: payment.product_quantity,
-              total_price: formatPrice(payment.total_price - payment.total_price * Number(process.env.COMMISSION)),
+              total_price: formatPrice(
+                payment.total_price -
+                  payment.total_price * Number(process.env.COMMISSION)
+              ),
               store_order_id: payment.store_order_id,
               customer_name: payment.customer_name,
             },
@@ -274,9 +280,15 @@ class OrderPaymentService extends TransactionBaseService {
       } else {
         paymentdOrdersMap.get(payment.payment_id).products.push({
           name: payment.product_name,
-          price: formatPrice(payment.product_price - payment.product_price * Number(process.env.COMMISSION)),
+          price: formatPrice(
+            payment.product_price -
+              payment.product_price * Number(process.env.COMMISSION)
+          ),
           quantity: payment.product_quantity,
-          total_price: formatPrice(payment.total_price - payment.total_price * Number(process.env.COMMISSION)),
+          total_price: formatPrice(
+            payment.total_price -
+              payment.total_price * Number(process.env.COMMISSION)
+          ),
           store_order_id: payment.store_order_id,
           customer_name: payment.customer_name,
         });
@@ -287,10 +299,6 @@ class OrderPaymentService extends TransactionBaseService {
 
     return listPaymentOrder;
   }
-
- 
-
-  
 
   async successPayOrder(order_id: string) {
     try {
@@ -303,6 +311,7 @@ class OrderPaymentService extends TransactionBaseService {
       );
       const sc = this.activeManager_.withRepository(this.serialCodeRepository_);
       const codes = [];
+      const storeCodeMap = {};
 
       const storeOrder = await so.findOne({ where: { id: order_id } });
       if (!storeOrder) {
@@ -332,11 +341,13 @@ class OrderPaymentService extends TransactionBaseService {
             )`,
             { svId: variant.store_variant_id, q: quantity }
           )
-          .returning(["id", "serial"]) 
+          .returning(["id", "serial"])
           .execute();
 
-          
-        const serialCodesToUpdate = result.raw as { id: string; serial: string }[];
+        const serialCodesToUpdate = result.raw as {
+          id: string;
+          serial: string;
+        }[];
 
         if (serialCodesToUpdate.length < quantity) {
           throw new Error(
@@ -347,15 +358,44 @@ class OrderPaymentService extends TransactionBaseService {
         const productVariant = await sv
           .createQueryBuilder("sv")
           .innerJoinAndSelect("sv.variant", "v")
+          .innerJoinAndSelect("sv.store", "s")
+          .innerJoinAndSelect("s.members", "c")
           .where("sv.id = :id", { id: variant.store_variant_id })
-          .select(["v.title AS title"])
+          .select([
+            "v.title AS title",
+            "s.name AS store_name",
+            "c.email AS email_store",
+            "s.name AS name_store",
+            "sv.id AS store_id",
+          ])
           .getRawMany();
+
+        const storeId = variant.store_variant_id;
+        const storeInfo = {
+          store_id: productVariant[0].store_id,
+          store_name: productVariant[0].store_name,
+          email_store: productVariant[0].email_store,
+          name_store: productVariant[0].name_store,
+        };
+
+        if (!storeCodeMap[storeId]) {
+          storeCodeMap[storeId] = {
+            ...storeInfo,
+            codes: [],
+          };
+        }
 
         for (const serialCode of serialCodesToUpdate) {
           codes.push({
             serialCodes: serialCode.serial,
             title: productVariant[0].title,
           });
+
+          storeCodeMap[storeId].codes.push({
+            serialCodes: serialCode.serial,
+            title: productVariant[0].title,
+          });
+
           await sc.update(serialCode.id, { store_variant_order_id: id });
         }
 
@@ -369,6 +409,11 @@ class OrderPaymentService extends TransactionBaseService {
           quantity_reserved: storeVariant.quantity_reserved - quantity,
         });
       }
+      const storesWithCodes = Object.values(storeCodeMap);
+      await EmailPurchaseSellerCompleted({
+        storesWithCodes: storesWithCodes as any,
+        order_id: order_id,
+      });
 
       await EmailPurchaseCompleted({
         email: storeOrder.email,
@@ -392,7 +437,7 @@ class OrderPaymentService extends TransactionBaseService {
 export default OrderPaymentService;
 
 function truncateToThreeDecimals(value: number): number {
-  return Math.floor(value * 1000) / 1000; // Trunca a 3 decimales
+  return Math.floor(value * 1000) / 1000;
 }
 
 interface data {

@@ -31,7 +31,6 @@ const ManualBinancePay: React.FC<{
     setIsUploading(true)
 
     try {
-      // Create form data for uploading
       const formData = new FormData()
       formData.append("image", uploadedImage)
       formData.append(
@@ -129,7 +128,7 @@ const ManualBinancePay: React.FC<{
             alt="Comprobante de pago"
           />
           <p className="mt-1 text-xs text-gray-500">
-            Formatos aceptados: JPG, PNG, PDF (máx. 2MB)
+            Formatos aceptados: JPG, PNG, PDF (máx. 1MB)
           </p>
         </div>
 

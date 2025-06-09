@@ -27,6 +27,7 @@ import { DeleteSerialCodes } from "./product/delete-serials-code";
 import { getListSoldProductSerials } from "./product/get-list-sold-product-serial";
 import { postUpdatePriceProduct } from "./product/update-product-price";
 import requestPayment from "./wallet/request-payment";
+import updateWallet from "./wallet/update-wallet";
 
 const router = Router();
 
@@ -50,6 +51,7 @@ export function attachSellerRoutes(customerRouter: Router) {
   router.get("/wallet", wrapHandler(getWallet));
   router.get("/wallet/orders", wrapHandler(getListSellerPayOrders));
   router.get("/request-payment", wrapHandler(requestPayment));
+  router.post("/update-wallet", wrapHandler(updateWallet));
 
   //-------Product - Serial-codes--------
 
@@ -57,10 +59,7 @@ export function attachSellerRoutes(customerRouter: Router) {
     "/add-codes-store-variant",
     wrapHandler(postAddCodesStoreVariant)
   );
-  router.post(
-    "/update-product-price",
-    wrapHandler(postUpdatePriceProduct)
-  );
+  router.post("/update-product-price", wrapHandler(postUpdatePriceProduct));
   router.get(
     "/get-list-product-serials/:id",
     wrapHandler(getListProductSerials)

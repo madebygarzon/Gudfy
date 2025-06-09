@@ -8,6 +8,10 @@ import ProfileBillingAddress from "../components/profile-billing-address"
 import ProfilePhone from "../components/profile-phone"
 import { Avatar } from "@heroui/react"
 import { Customer } from "@medusajs/medusa"
+import { getWallet } from "@modules/account/actions/get-wallet"
+import { useState, useEffect } from "react"
+import { dataWallet } from "./wallet-template"
+import ProfileWallet from "../components/profile-wallet"
 
 const ProfileTemplate = () => {
   const { customer, retrievingCustomer, refetchCustomer } = useAccount()
@@ -30,6 +34,27 @@ const ProfileTemplate = () => {
 
     return (count / 4) * 100
   }
+
+  const [wallet, setWallet] = useState<dataWallet>({
+    id: "",
+    store_id: "",
+    available_balance: 0,
+    outstanding_balance: 0,
+    balance_paid: 0,
+    wallet_address: "",
+    payment_request: true,
+  })
+
+  const handlerGetWallet = async () => {
+    const wallet = await getWallet()
+    if (wallet) {
+      setWallet(wallet)
+    }
+  }
+
+  useEffect(() => {
+    handlerGetWallet()
+  }, [])
 
   return (
     <div className="h-full flex flex-col lg:flex-row items-center lg:items-center gap-6 p-4 sm:p-2 ">
@@ -77,6 +102,8 @@ const ProfileTemplate = () => {
           <ProfilePhone customer={customer} />
           <Divider />
           <ProfilePassword customer={customer} />
+          <Divider />
+          <ProfileWallet wallet={wallet} customer={customer} onWalletUpdate={handlerGetWallet} />
         </div>
       </div>
     </div>

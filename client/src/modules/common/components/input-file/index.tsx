@@ -190,6 +190,7 @@ const InputFile: React.FC<InputProps> = ({
                 className="absolute top-[5%] right-[2px] text-white ml-5 hover:text-zinc-400"
                 onClick={() => {
                   setFile(undefined)
+                  setPreviewImage(undefined)
                   if (setResult) setResult(null)
                 }}
               >
