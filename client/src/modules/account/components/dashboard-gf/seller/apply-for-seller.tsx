@@ -31,44 +31,47 @@ const ApplyForSeller: React.FC<props> = ({ handlerReset }) => {
   return (
     <>
       <div className=" flex flex-col w-full space-y-10 items-center">
-        <h1 className="text-center text-[38px] font-black">
-          ¡ Unete a Gudfy !
+        <h1 className="mt-8 text-center text-[38px] font-black">
+          ¡Postúlate como vendedor en Gudfy!
         </h1>
 
         <p className=" text-center text-[18px] font-light max-w-[700px]">
-          ¡Únete como vendedor en GUDFY! Completa nuestro formulario y comparte
-          detalles sobre tu negocio. Revisaremos rápido para que puedas empezar
-          a vender. ¡Bienvenido a nuestra comunidad! 🚀🛍️
+          Postúlate ahora para formar parte de nuestro marketplace. Si tienes
+          productos digitales y quieres llegar a miles de compradores, este es
+          tu lugar. Llena el formulario, cuéntanos sobre tu tienda o negocio y
+          empieza tu camino como vendedor en Gudfy. ¡Bienvenido a la comunidad
+          de vendedores de Gudfy! 🚀🛍
         </p>
-        <h2 className="text-center text-2xl font-semibold">
+        {/* <h2 className="text-center text-2xl font-semibold">
           ¿Cómo te identificas?
-        </h2>
+        </h2> */}
         <div className="text-center">
           <ButtonMedusa
             onClick={onOpen}
             className="text-[22px] mr-4"
             variant="primary"
           >
-            Soy comerciante individual
+            ¡Postúlate como vendedor aquí!
+
           </ButtonMedusa>
-          <ButtonMedusa
+          {/* <ButtonMedusa
             onClick={onOpen2}
             className="text-[22px]"
             variant="primary"
           >
             Represento una empresa
-          </ButtonMedusa>
+          </ButtonMedusa> */}
         </div>
       </div>
       {}
       <>
         <Modal
-        isDismissable={false}
-        isKeyboardDismissDisabled={true}
+          isDismissable={false}
+          isKeyboardDismissDisabled={true}
           className=""
           isOpen={isOpen}
           onOpenChange={onOpenChange}
-          scrollBehavior='inside'
+          scrollBehavior="inside"
         >
           <ModalContent>
             <ModalHeader className="flex flex-col gap-1 mr-auto ml-auto">
@@ -88,8 +91,8 @@ const ApplyForSeller: React.FC<props> = ({ handlerReset }) => {
         </Modal>
 
         <Modal
-         isDismissable={false}
-         isKeyboardDismissDisabled={true}
+          isDismissable={false}
+          isKeyboardDismissDisabled={true}
           className=""
           isOpen={isOpen2}
           onOpenChange={onOpenChange2}
