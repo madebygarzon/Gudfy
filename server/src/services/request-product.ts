@@ -90,16 +90,26 @@ class RequestProductService extends TransactionBaseService {
     }
   }
 
-  async updateRequest(id) {
-    const repoReqPro = this.activeManager_.withRepository(
-      this.requestProductRepository_
-    );
+  async updateRequest(id, product) {
+ try {
+  
+  const repoReqPro = this.activeManager_.withRepository(
+    this.requestProductRepository_
+  );
 
-    const update = await repoReqPro.update(id, {
-      approved: true,
-    });
-
-    return true;
+  const update = await repoReqPro.update(id, {
+    approved: true,
+    product_title: product.product_title,
+    product_image:  product.product_image,
+    description: product.description,
+    variants: product.variants.join(","),
+  });
+  
+  return true;
+ } catch (error) {
+  console.log("error en la actualizacion del producto", error)
+ }
+   
   }
 }
 export default RequestProductService;
