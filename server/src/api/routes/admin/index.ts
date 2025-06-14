@@ -20,6 +20,8 @@ import getListTickets from "./tickets/get-list-tickets";
 import getMessagesTickets from "./tickets/get-data-message-ticket";
 import { postAddMessageTicket } from "./tickets/post-add-message-ticket";
 import Image from "../../middlewares/images-tickests";
+import ImageProduct from "../../middlewares/request-product";
+
 import getSellerList from "./seller/get-seller-list";
 import UpdateSellerReview from "./seller/update-seller-review";
 import getSellersReviewsList from "./seller/get-seller-reviews-list";
@@ -33,6 +35,8 @@ import UpdateOrderToCompleted from "./orders/update-order-to-completed";
 import UpdateOrderToPendingToCompleted from "./orders/update-order-pending-to-completed";
 import UpdateOrderToCancel from "./orders/update-order-to-cancel";
 import storeProducts from "./get-store-products";
+import createProductVariant from "./product/create-product-variant";
+import createProductVariantWithImage from "./product/create-product-variant-with-image";
 
 // Initialize a custom router
 const router = Router();
@@ -128,6 +132,12 @@ export function attachAdminRoutes(adminRouter: Router) {
     wrapHandler(getListMetricsCustomer)
   );
   router.get("/list-metrics-seller", wrapHandler(getListMetricsSeller));
+
+
+  //---------------product-----------------
+  router.post("/product/create-product-variant", wrapHandler(createProductVariant));
+
+  router.post("/product/create-product-variant-with-image",ImageProduct.single("image"), wrapHandler(createProductVariantWithImage));
 
   onboardingRoutes(adminRouter);
 }
