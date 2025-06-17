@@ -1,8 +1,8 @@
 import type { WidgetConfig } from "@medusajs/admin";
 import { Link } from "react-router-dom";
 
-import React, { useState, useEffect } from "react";
-import { Table, DropdownMenu, IconButton } from "@medusajs/ui";
+import React, { useState, useEffect, useRef } from "react";
+import { Table, DropdownMenu, IconButton, FocusModal, Button, Select, Textarea, Text } from "@medusajs/ui";
 import { Thumbnail } from "../../components/thumbnail";
 import {
   PencilSquare,
@@ -16,12 +16,13 @@ import {
   ArrowDownTray,
 } from "@medusajs/icons";
 import Spinner from "../../components/shared/spinner";
-import { Input, Select } from "@medusajs/ui";
+import { Input } from "@medusajs/ui";
 import { InformationCircleSolid } from "@medusajs/icons";
 import { Tooltip } from "@medusajs/ui";
 import { getAllListRequestProduct } from "../../actions/request-product/get-all-list-request-product";
 import clsx from "clsx";
 import { updateRequestProduct } from "../../actions/request-product/update-request-product";
+import { createProductVariant } from "../../actions/product/create-productVariants";
 
 type ListRequestProduct = {
   request_id: string;
@@ -72,7 +73,14 @@ const RequestProduct = () => {
   const [page, setPage] = useState(1);
   const [rowsPages, setRowsPages] = useState<number>(15);
   const [isLoading2, setIsLoading] = useState<boolean>(true);
+  const [isLoadingButton, setIsLoadingButton] = useState<boolean>(false);
   const [orderDate, setOrderDate] = useState<boolean>(true);
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [editData, setEditData] = useState<ListRequestProduct | null>(null);
+  const [variantInputs, setVariantInputs] = useState<string[]>([]);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handlerGetListProduct = async (order?: string) => {
     setIsLoading(true);
@@ -238,11 +246,69 @@ const RequestProduct = () => {
     URL.revokeObjectURL(url);
   };
 
-  const handlerUpdateRequestProduct = (id) => {
-    updateRequestProduct(id).then(() => {
-      handlerGetListProduct();
-    });
+  const openEditModal = (rowData: ListRequestProduct) => {
+    setEditData(rowData);
+    setVariantInputs(rowData.variants ? rowData.variants.split(",") : []);
+    setPreviewUrl(rowData.product_image || null);
+    setSelectedFile(null);
+    setIsModalOpen(true);
   };
+
+  const handleSubmit = () => {
+    setIsLoadingButton(true)
+    if (editData) {
+      const updatedProduct = {
+        ...editData,
+        variants: variantInputs,
+        product_image: selectedFile ? '' : (previewUrl || editData.product_image)
+      };
+
+      
+
+      if (selectedFile) {
+       
+        
+        createProductVariant(updatedProduct, selectedFile)
+          .then((response) => {
+            handlerGetListProduct()
+            setIsModalOpen(false)
+            setIsLoadingButton(false)
+          })
+          .catch((error) => {
+           
+            setIsLoadingButton(false)
+          });
+      } else {
+       
+        createProductVariant(updatedProduct)
+          .then((response) => {
+            handlerGetListProduct()
+            setIsModalOpen(false)
+            setIsLoadingButton(false)
+          })
+          .catch((error) => {
+            setIsLoadingButton(false)
+          });
+      }
+    }
+  };
+
+  const handleUpdateVariant = (index: number, value: string) => {
+    const newVariants = [...variantInputs];
+    newVariants[index] = value;
+    setVariantInputs(newVariants);
+  };
+  
+  const addVariant = () => {
+    setVariantInputs([...variantInputs, '']);
+  };
+  
+  const removeVariant = (index: number) => {
+    const newVariants = [...variantInputs];
+    newVariants.splice(index, 1);
+    setVariantInputs(newVariants);
+  };
+
 
   return (
     <div className=" bg-white p-8 border border-gray-200 rounded-lg mb-10">
@@ -344,7 +410,7 @@ const RequestProduct = () => {
                     </Table.Cell>
 
                     <Table.Cell className="flex gap-x-2 items-center">
-                      <DropdownMenu>
+                    {!data.approved &&  <DropdownMenu>
                         <DropdownMenu.Trigger asChild>
                           <IconButton>
                             <PencilSquare className="text-ui-fg-subtle" />
@@ -353,15 +419,14 @@ const RequestProduct = () => {
                         <DropdownMenu.Content>
                           <DropdownMenu.Item
                             className="gap-x-2"
-                            onClick={() =>
-                              handlerUpdateRequestProduct(data.request_id)
-                            }
+                            onClick={() => openEditModal(data)}
                           >
                             <Check className="text-ui-fg-subtle" />
-                            Aprobar
+                            Ver solicitud
                           </DropdownMenu.Item>
                         </DropdownMenu.Content>
-                      </DropdownMenu>
+                      </DropdownMenu> }
+                     
                     </Table.Cell>
                   </Table.Row>
                 );
@@ -412,6 +477,155 @@ const RequestProduct = () => {
           </button>
         </div>
       </div>
+
+      {/* Edit Modal */}
+      {isModalOpen && editData && (
+        <FocusModal open={isModalOpen} onOpenChange={setIsModalOpen}>
+          <FocusModal.Content className="w-[70%] h-[80%] mx-auto my-auto rounded-2xl overflow-hidden shadow-lg">
+            <FocusModal.Header className=" justify-start m-2" >
+              <h1 className="text-xl font-semibold">Aprobar Producto</h1>
+            </FocusModal.Header>
+            <FocusModal.Body className="bg-white px-8  overflow-y-auto flex gap-5">
+             
+                <div className=" w-[50%]">
+                  <div>
+                    <label className="text-gray-700 text-sm">Título del Producto</label>
+                    <Input 
+                      value={editData.product_title || ''}
+                      onChange={(e) => setEditData({...editData, product_title: e.target.value})}
+                    />
+                  </div>
+                  <div>
+                    <label className="text-gray-700 text-sm">Descripción</label>
+                    <textarea
+                      className="w-full px-3 py-2 text-gray-700 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      rows={4}
+                      value={editData.description || ''}
+                      onChange={(e) => setEditData({...editData, description: e.target.value})}
+                      placeholder="Introduce una descripción del producto..."
+                    />
+                  </div>
+                  <div>
+                    <div className="flex flex-col items-center">
+                      <label className="text-gray-700 text-sm">Variantes</label>
+                      <Button 
+                        size="small" 
+                        variant="secondary" 
+                        onClick={addVariant}
+                        className="px-2 py-1 text-xs"
+                      >
+                        + Añadir variante
+                      </Button>
+                    </div>
+                    <div className="flex flex-col gap-2 mt-2">
+                      {variantInputs.map((variant, index) => (
+                        <div key={index} className="flex gap-2">
+                          <Input
+                            value={variant}
+                            onChange={(e) => handleUpdateVariant(index, e.target.value)}
+                            className="flex-grow"
+                          />
+                          <IconButton 
+                            onClick={() => removeVariant(index)}
+                            size="small"
+                          >
+                            <XMark className="text-ui-fg-subtle" />
+                          </IconButton>
+                        </div>
+                      ))}
+                      {variantInputs.length === 0 && (
+                        <p className="text-xs text-gray-500 italic">No hay variantes. Añade una con el botón "Añadir variante".</p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+                {/* Right Column - Image, URL and Upload */}
+                <div className="w-[50%]">
+                  <div className="flex items-center justify-center mb-4">
+                    {previewUrl || editData.product_image ? (
+                      <img 
+                        src={previewUrl || editData.product_image} 
+                        alt="Vista previa del producto" 
+                        className="max-h-64 max-w-full rounded-md object-contain border border-gray-200 shadow-sm"
+                      />
+                    ) : (
+                      <div className="h-64 w-full bg-gray-100 flex items-center justify-center rounded-md border border-gray-200">
+                        <Text className="text-ui-fg-subtle">Sin imagen</Text>
+                      </div>
+                    )}
+                  </div>
+                  <div>
+                    <label className="text-gray-700 text-sm">URL de Imagen</label>
+                    <Input 
+                      value={editData.product_image || ''}
+                      onChange={(e) => {
+                        setEditData({...editData, product_image: e.target.value});
+                        setPreviewUrl(e.target.value);
+                      }}
+                      placeholder="https://ejemplo.com/imagen.jpg"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-gray-700 text-sm">Subir Imagen</label>
+                    <div className="mt-1 flex items-center">
+                      <Button 
+                        variant="secondary" 
+                        onClick={() => fileInputRef.current?.click()}
+                        className="w-full p-2 text-sm"
+                      >
+                        {selectedFile ? selectedFile.name : "Seleccionar archivo"}
+                      </Button>
+                      <input 
+                        ref={fileInputRef}
+                        type="file" 
+                        accept="image/*" 
+                        className="hidden"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0] || null;
+                          if (file) {
+                            setSelectedFile(file);
+                            // Create a preview URL for the selected file
+                            const fileUrl = URL.createObjectURL(file);
+                            setPreviewUrl(fileUrl);
+                          }
+                        }}
+                      />
+                      {selectedFile && (
+                        <IconButton
+                          onClick={() => {
+                            setSelectedFile(null);
+                            setPreviewUrl(editData?.product_image || null);
+                            if (fileInputRef.current) fileInputRef.current.value = '';
+                          }}
+                          className="ml-2"
+                          size="small"
+                        >
+                          <XMark className="text-ui-fg-subtle" />
+                        </IconButton>
+                      )}
+                    </div>
+                    {selectedFile && (
+                      <Text size="small" className="mt-1 text-ui-fg-subtle">
+                        Archivo seleccionado: {selectedFile.name} ({Math.round(selectedFile.size / 1024)} KB)
+                      </Text>
+                    )}
+                  </div>
+                  <div className="col-span-1 md:col-span-2 flex items-center gap-x-2 justify-end w-full mt-4">
+                  
+                  <Button 
+                  isLoading={isLoadingButton}
+                    variant="primary" 
+                    onClick={handleSubmit}>
+                    Confirmar
+                  </Button>
+                </div>
+                </div>
+                {/* Footer with buttons - spans both columns */}
+
+            </FocusModal.Body>
+          </FocusModal.Content>
+        </FocusModal>
+      )}
     </div>
   );
 };
