@@ -30,38 +30,47 @@ const ApplyForSeller: React.FC<props> = ({ handlerReset }) => {
   } = useDisclosure()
   return (
     <>
-      <div className=" flex flex-col w-full space-y-10 items-center">
-        <h1 className="mt-8 text-center text-[38px] font-black">
-          ¡Postúlate como vendedor en Gudfy!
-        </h1>
+      <div className=" flex w-full space-y-10 items-center">
+        <div className="flex flex-col w-1/2">
+          <h1 className="mt-8 text-start text-[50px] font-semibold text-[#1F0054] ">
+            ¡Vende tus productos digitales en Gudfy!
+          </h1>
 
-        <p className=" text-center text-[18px] font-light max-w-[700px]">
-          Postúlate ahora para formar parte de nuestro marketplace. Si tienes
-          productos digitales y quieres llegar a miles de compradores, este es
-          tu lugar. Llena el formulario, cuéntanos sobre tu tienda o negocio y
-          empieza tu camino como vendedor en Gudfy. ¡Bienvenido a la comunidad
-          de vendedores de Gudfy! 🚀🛍
-        </p>
-        {/* <h2 className="text-center text-2xl font-semibold">
-          ¿Cómo te identificas?
-        </h2> */}
-        <div className="text-center">
-          <ButtonMedusa
-            onClick={onOpen}
-            className="text-[22px] mr-4"
-            variant="primary"
-          >
-            ¡Postúlate como vendedor aquí!
+          <p className=" text-start text-[18px] font-light max-w-[700px]">
+            ¿Tienes productos digitales y quieres llegar a miles de compradores?
+          </p>
+          <p className=" text-start text-[18px] font-light max-w-[700px]">
+            Postúlate y forma parte de nuestro marketplace.
+          </p>
+          <p className=" text-start text-[18px] font-light max-w-[700px]">
+            Cuéntanos sobre tu tienda y empieza hoy mismo.
+          </p>
+          <p className=" text-start text-[18px] font-light max-w-[700px]">
+            🚀¡Bienvenido a la comunidad de Gudfy!
+          </p>
 
-          </ButtonMedusa>
-          {/* <ButtonMedusa
-            onClick={onOpen2}
-            className="text-[22px]"
-            variant="primary"
-          >
-            Represento una empresa
-          </ButtonMedusa> */}
+          {/* <h2 className="text-center text-2xl font-semibold">
+            ¿Cómo te identificas?
+          </h2> */}
+          <div className="text-start">
+            <ButtonMedusa
+              onClick={onOpen}
+              className="text-[25px] px-8 py-8  bg-[#857fe7] text-white"
+              variant="primary"
+            >
+              ¡Postúlate como vendedor aquí!
+            </ButtonMedusa>
+            {/* <ButtonMedusa
+              onClick={onOpen2}
+              className="text-[22px]"
+              variant="primary"
+            >
+              Represento una empresa
+            </ButtonMedusa> */}
+          </div>
         </div>
+
+        <div className="flex flex-col w-2/2"></div>
       </div>
       {}
       <>
