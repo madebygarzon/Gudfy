@@ -13,7 +13,9 @@ type Product = {
   product_image: string
   description: string
   variants: string
-  approved: boolean
+  approved?: boolean // deprecated
+  status: "C" | "B" | "A"
+  note?: string
   created_at: string
 }
 
@@ -63,7 +65,10 @@ const RequestProductTable: React.FC = () => {
                           Variaciones
                         </th>
                         <th className="px-4 py-2 border-b border-gray-100 text-left">
-                          Aprobado
+                          Estado
+                        </th>
+                        <th className="px-4 py-2 border-b border-gray-100 text-left">
+                          Nota
                         </th>
                         <th className="px-4 py-2 border-b border-gray-100 text-left">
                           Fecha
@@ -96,9 +101,24 @@ const RequestProductTable: React.FC = () => {
                               {product.variants}
                             </td>
                             <td className="px-4 py-2 border-b border-gray-100">
-                              {product.approved
-                                ? "Aprobado"
-                                : "Pendiente de aprobación"}
+                              <span
+                                className={
+                                  product.status === "A"
+                                    ? "text-green-600"
+                                    : product.status === "B"
+                                    ? "text-red-600"
+                                    : "text-yellow-500"
+                                }
+                              >
+                                {product.status === "A"
+                                  ? "Aprobado"
+                                  : product.status === "B"
+                                  ? "Rechazado"
+                                  : "Pendiente"}
+                              </span>
+                            </td>
+                            <td className="px-4 py-2 border-b border-gray-100">
+                              {product.note || "-"}
                             </td>
                             <td className="px-4 py-2 border-b border-gray-100">
                               {new Date(

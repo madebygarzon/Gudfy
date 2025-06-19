@@ -1,6 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from "typeorm";
 import { BaseEntity } from "@medusajs/medusa";
 import { SellerApplication } from "./seller-application";
+import { RequestProduct } from "./request-product";
 
 @Entity()
 export class StateApplication extends BaseEntity {
@@ -12,4 +13,7 @@ export class StateApplication extends BaseEntity {
 
   @OneToMany(() => SellerApplication, (seller) => seller?.state_application)
   sellerapplication?: SellerApplication;
+
+  @OneToMany(() => RequestProduct, (seller) => seller?.status)
+  requestproduct?: RequestProduct;
 }
