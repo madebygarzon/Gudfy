@@ -43,62 +43,67 @@ type index = {
 type productData = {
   product: {
     title: string
-    subtitle: string
     description: string
-    mid_code: string
   }
   categories: ProductCategory[] | undefined
   optionVariant: objetOptionVariant[]
   variant: variant[]
 }
 type Errors = {
-  productError: string
-  categoriesError: string
-  optionVariant: string
-  optionVariantTitle: string
-  optionVariantItem: string
-  variant: string
-  variant_inventory: string
-  variant_prices: string
+  title: string
+  description: string
+  variants: string
+  image: string
 }
 export default function RequestProduct({ setReset }: Reset) {
   const { customer } = useMeCustomer()
   const [file, setFile] = useState<File>()
   const [product, setProduct] = useState({
     title: "",
-    subtitle: "",
     description: "",
-    mid_code: "",
   })
 
   const { isOpen, onOpen, onOpenChange } = useDisclosure()
-  const [valueVariants, setValueVariant] = useState<string>()
-  const [titleValueVariants, setTitleValueVariants] = useState<string[]>([])
+  const [variantInputs, setVariantInputs] = useState<string[]>([])
   const [loading, setLoading] = useState<boolean>(false)
   const [Errors, setError] = useState<Errors>({
-    productError: "",
-    categoriesError: "",
-    optionVariant: "",
-    optionVariantTitle: "",
-    optionVariantItem: "",
-    variant: "",
-    variant_inventory: "",
-    variant_prices: "",
+    title: "",
+    description: "",
+    variants: "",
+    image: "",
   })
-  const handlerTrashVariant = (value: string) => {}
-  const handlerControlVariant = (e: any) => {
-    if (e.includes(",")) {
-      setTitleValueVariants((old) => [...old, e.slice(0, -1)])
-      setValueVariant("")
-    } else {
-      setValueVariant(e)
-    }
+
+  const addVariant = () => {
+    setVariantInputs([...variantInputs, ""])
+  }
+
+  const removeVariant = (index: number) => {
+    const newVariants = [...variantInputs]
+    newVariants.splice(index, 1)
+    setVariantInputs(newVariants)
+  }
+
+  const handleUpdateVariant = (index: number, value: string) => {
+    const newVariants = [...variantInputs]
+    newVariants[index] = value
+    setVariantInputs(newVariants)
   }
 
   useEffect(() => {
     setFile(undefined)
+    setVariantInputs([])
     setLoading(false)
-  }, [open])
+    setProduct({
+      title: "",
+      description: "",
+    })
+    setError({
+      title: "",
+      description: "",
+      variants: "",
+      image: "",
+    })
+  }, [isOpen])
 
   const handlerError = () => {
     return false
@@ -106,16 +111,42 @@ export default function RequestProduct({ setReset }: Reset) {
 
   const onSubmit = () => {
     setLoading(true)
+
+    const newErrors: Errors = {
+      title: "",
+      description: "",
+      variants: "",
+      image: "",
+    }
+
+    if (!product.title.trim()) newErrors.title = "El título es requerido."
+    if (!product.description.trim())
+      newErrors.description = "La descripción es requerida."
+    if (variantInputs.filter((v) => v.trim() !== "").length === 0)
+      newErrors.variants = "Debe agregar al menos una variación."
+    if (!file) newErrors.image = "La imagen del producto es requerida."
+
+    if (Object.values(newErrors).some(Boolean)) {
+      setError(newErrors)
+      setLoading(false)
+      return
+    }
+    setLoading(true)
     if (!file) return setLoading(false)
+
+    const variantsString =
+      variantInputs.length > 0
+        ? variantInputs.filter((v) => v.trim() !== "").join(", ")
+        : ""
 
     const productData = {
       customer_id: customer?.id || " ",
       product_title: product.title,
       description: product.description,
-      variants: titleValueVariants.join(", "),
+      variants: variantsString,
     }
 
-    addRequestProduct(productData, transformImage(file))
+    addRequestProduct(productData, transformImage(file!))
       .then(() => {
         onOpenChange()
         setReset((boolean) => !boolean)
@@ -187,37 +218,39 @@ export default function RequestProduct({ setReset }: Reset) {
                           />
                         </div>
                         <div>
-                          <h3 className="text-base font-blod">
-                            Presiona "," para agregar una variación
-                          </h3>
+                          <div className="flex justify-between items-center">
+                            <h3 className="text-base font-bold">
+                              Variaciones del producto
+                            </h3>
+                            <ButtonLigth
+                              className="bg-[#9B48ED] hover:bg-[#7b39c4] text-white border-none py-1 px-2 text-xs"
+                              onClick={addVariant}
+                            >
+                              <span className="mr-1">+ Añadir variante</span>
+                            </ButtonLigth>
+                          </div>
 
-                          <Input
-                            labelPlacement="outside"
-                            label={``}
-                            size="sm"
-                            placeholder="Netflix 1 Mes , 3 Meses"
-                            value={valueVariants}
-                            onChange={(e) =>
-                              handlerControlVariant(e.target.value)
-                            }
-                            startContent={
-                              titleValueVariants.length ? (
-                                titleValueVariants?.map((v: string) => (
-                                  <button
-                                    className="mx-1 px-2 py-1 rounded-[10px] bg-slate-300 w-auto"
-                                    onClick={() => handlerTrashVariant(v)}
-                                  >
-                                    <span className="flex gap-1 text-xs items-center">
-                                      {" "}
-                                      {v} <XCircleSolid />{" "}
-                                    </span>
-                                  </button>
-                                ))
-                              ) : (
-                                <></>
-                              )
-                            }
-                          />
+                          <div className="flex flex-col gap-2 mt-2">
+                            {variantInputs.map((variant, index) => (
+                              <div key={index} className="flex gap-2">
+                                <Input
+                                  size="sm"
+                                  placeholder="Ej: Netflix 1 Mes"
+                                  value={variant}
+                                  onChange={(e) =>
+                                    handleUpdateVariant(index, e.target.value)
+                                  }
+                                  className="flex-grow"
+                                />
+                                <button
+                                  onClick={() => removeVariant(index)}
+                                  className="flex items-center justify-center h-9 w-9 bg-gray-100 rounded-md hover:bg-gray-200"
+                                >
+                                  <XCircleSolid />
+                                </button>
+                              </div>
+                            ))}
+                          </div>
                         </div>
                       </div>
                       <div className="w-full md:w-[50%] flex justify-between flex-col items-center">
@@ -257,12 +290,13 @@ export default function RequestProduct({ setReset }: Reset) {
                             Enviar solicitud
                           </ButtonLigth>
                         </div>
+                        {Object.values(Errors).some(Boolean) && (
+                          <p className="text-red-600 mt-4">
+                            {Object.values(Errors).find(Boolean)}
+                          </p>
+                        )}
                       </div>
                     </div>
-
-                    {Errors.productError && (
-                      <p className="text-red-600">{Errors.productError}</p>
-                    )}
                   </div>
                 </div>
               </ModalBody>
