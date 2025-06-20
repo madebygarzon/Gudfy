@@ -1,7 +1,7 @@
 import { Lifetime } from "awilix";
 import RequestProductRepository from "../repositories/request-product";
-
 import { TransactionBaseService, Customer } from "@medusajs/medusa";
+import { EmailRequestProductApproved, EmailRequestProductRejected } from "../admin/components/email/request-product.ts";
 
 class RequestProductService extends TransactionBaseService {
   static LIFE_TIME = Lifetime.SCOPED;
@@ -75,6 +75,8 @@ class RequestProductService extends TransactionBaseService {
           "rp.variants AS variants",
           "rp.approved AS approved",
           "rp.created_at AS created_at",
+          "rp.status AS status",
+          "rp.note AS note",
           "s.name AS store_name ",
           "c.email AS customer_email",
           "s.id AS store_id",
@@ -91,25 +93,66 @@ class RequestProductService extends TransactionBaseService {
   }
 
   async updateRequest(id, product) {
- try {
-  
-  const repoReqPro = this.activeManager_.withRepository(
-    this.requestProductRepository_
-  );
+    try {
+    
+      const repoReqPro = this.activeManager_.withRepository(
+        this.requestProductRepository_
+      );
 
-  const update = await repoReqPro.update(id, {
-    approved: true,
-    product_title: product.product_title,
-    product_image:  product.product_image,
-    description: product.description,
-    variants: product.variants.join(","),
-  });
-  
-  return true;
- } catch (error) {
-  console.log("error en la actualizacion del producto", error)
- }
-   
+      const dataSeller = await repoReqPro
+        .createQueryBuilder("rp")
+        .innerJoinAndSelect("rp.customer", "c")
+        .innerJoinAndSelect("c.store", "s")
+        .where("rp.id = :id", { id })
+        .select([
+          "rp.id AS request_id",
+          "rp.customer_id AS seller_id",
+          "rp.product_title AS product_title",
+          "rp.description AS description",
+          "rp.variants AS variants",
+          "rp.approved AS approved",
+          "rp.created_at AS created_at",
+          "rp.status AS status",
+          "rp.note AS note",
+          "s.name AS store_name ",
+          "c.email AS customer_email",
+          "s.id AS store_id",
+        ])
+        .getRawOne();
+      const update = await repoReqPro.update(id, {
+        approved: true,
+        product_title: product.product_title,
+        product_image: product.product_image,
+        description: product.description,
+        variants: product.variants,
+        status: product.status,
+        note: product.note,
+      });
+
+      if (product.status === "A") {
+        EmailRequestProductApproved({
+          title_product: dataSeller.product_title,
+          store_name: dataSeller.store_name,
+          customer_email: dataSeller.customer_email,
+          variants: product.variants,
+          note: product.note,
+        });
+      }
+
+      if (product.status === "B") {
+        EmailRequestProductRejected({
+          title_product: dataSeller.product_title,
+          store_name: dataSeller.store_name,
+          customer_email: dataSeller.customer_email,
+          note: product.note,
+          variants: dataSeller.variants,
+        });
+      }
+
+      return true;
+    } catch (error) {
+      console.log("error en la actualizacion del producto", error);
+    }
   }
 }
 export default RequestProductService;
