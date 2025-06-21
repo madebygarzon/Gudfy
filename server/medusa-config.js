@@ -143,6 +143,7 @@ const plugins = [
     resolve: process.env.NODE_ENV === "development"
       ? "./src/services/billionmail-notification"
       : "./dist/services/billionmail-notification",
+
     options: {
       host: process.env.SMTP_HOST,
       port: Number(process.env.SMTP_PORT) || 587,
