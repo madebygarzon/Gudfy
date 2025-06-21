@@ -1,6 +1,7 @@
 import axios from "axios"
 import { BACKEND_URL } from ".."
 
+
 export const updateWallet = async (walletAddress: string) => {
   try {
     const response = await axios.post(
