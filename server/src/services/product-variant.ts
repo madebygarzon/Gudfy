@@ -29,19 +29,20 @@ class ProductVariantService extends MedusaProductVariantService {
     product: {
       request_id: string;
       product_title: string;
-      variants: string[];
+      seller_id: string;
+      variants: string;
       product_image: string;
       description: string;
     },
     image?: {path: string}
   ) {
     try {
-
+      
       const productMedusa = await this.productService_.create({
         title: product.product_title,
         thumbnail: image ? process.env.BACKEND_URL + "/" + image.path : product.product_image,
         description: product.description,
-        variants : product.variants.map(variant => {
+        variants : product.variants.split(",").map(variant => {
           return {
             title: variant,
             inventory_quantity: 0,

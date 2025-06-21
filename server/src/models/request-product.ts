@@ -38,6 +38,16 @@ export class RequestProduct extends BaseEntity {
   @Column({ type: "boolean", nullable: true })
   approved: boolean;
 
+  @Column({ type: "varchar", nullable: true })
+  status: string;
+
+   @ManyToOne(() => StateApplication, (op) => op?.requestproduct)
+    @JoinColumn({ name: "status", referencedColumnName: "id" })
+    state_application?: StateApplication;
+
+  @Column({ type: "varchar", nullable: true })
+  note: string;
+
   @BeforeInsert()
   private beforeInsert(): void {
     this.id = generateEntityId(this.id, "request_product_id");
