@@ -45,20 +45,28 @@ const WalletTemplate = () => {
     wallet_address: "",
     payment_request: true,
   })
-  
+
   const [walletData, setWalletData] = useState({
+    wallet_type: "Binance ID",
     wallet_address: "",
-    confirm_wallet_address: ""
+    confirm_wallet_address: "",
   })
   const [walletError, setWalletError] = useState<string>("")
   const [isSaving, setIsSaving] = useState<boolean>(false)
 
-  const handleWalletAddressChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  // const handleWalletAddressChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   const { name, value } = e.target
+  //   setWalletData({
+  //     ...walletData,
+  //     [name]: value
+  //   })
+  // }
+
+  const handleWalletAddressChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
     const { name, value } = e.target
-    setWalletData({
-      ...walletData,
-      [name]: value
-    })
+    setWalletData((prev) => ({ ...prev, [name]: value }))
   }
 
   const handleSaveWalletAddress = async () => {
@@ -66,33 +74,28 @@ const WalletTemplate = () => {
       setWalletError("Las direcciones de billetera no coinciden")
       return
     }
-    
-    if (!walletData.wallet_address || walletData.wallet_address.trim() === "") {
+    if (!walletData.wallet_address.trim()) {
       setWalletError("Por favor ingrese una dirección de billetera válida")
       return
     }
-    
+
     try {
       setIsSaving(true)
-      const newWalletAddress = walletData.wallet_address
-      
-      setWallet(prevWallet => ({
-        ...prevWallet,
-        wallet_address: newWalletAddress
-      }))
 
-      await updateWallet(newWalletAddress)
+      const { wallet_address, wallet_type } = walletData
+      const fullWallet = `${wallet_type}: ${wallet_address.trim()}`
+
+      setWallet(prev => ({ ...prev, wallet_address: fullWallet }))
+
+      await updateWallet(fullWallet)
+
       onClose()
-      
-      requestPayment().then(() => {
-        setWallet(prevWallet => ({
-          ...prevWallet,
-          payment_request: true,
-          wallet_address: newWalletAddress
-        }))
-      })
-    } catch (error) {
-      console.error("Error al guardar la dirección de wallet:", error)
+
+      await requestPayment()
+      setWallet(prev => ({ ...prev, payment_request: true }))
+
+    } catch (err) {
+      console.error("Error al guardar la dirección de wallet:", err)
       setWalletError("Ocurrió un error al guardar la dirección. Intente nuevamente.")
     } finally {
       setIsSaving(false)
@@ -113,6 +116,7 @@ const WalletTemplate = () => {
     })
   }
 
+
   return (
     <div className="w-full p-2 sm:p-8 border border-gray-200 rounded-lg">
       <Modal
@@ -132,18 +136,33 @@ const WalletTemplate = () => {
               </ModalHeader>
               <ModalBody>
                 <div className="p-4">
-                  <p className="mb-4 text-gray-600">Para poder solicitar un pago, necesitas registrar tu dirección de billetera.</p>
-                  
-                  {walletError && (
-                    <div className="p-4 mb-4 bg-red-50 text-red-600 rounded-lg">
-                      {walletError}
-                    </div>
-                  )}
-                  
-                  <div className="flex flex-col gap-4 mb-6">
+                  <p className="mb-4 text-gray-600">
+                    Para poder solicitar un pago, necesitas registrar tu
+                    dirección de billetera.
+                  </p>
+
+                  <div className="mb-6 flex flex-col gap-4">
                     <div>
-                      <label className="text-sm font-medium mb-2 block">Dirección de billetera</label>
-                      <Input 
+                      <label className="text-sm font-medium mb-2 block">
+                        Tipo de wallet
+                      </label>
+                      <select
+                        name="wallet_type"
+                        value={walletData.wallet_type}
+                        onChange={handleWalletAddressChange}
+                        className="w-full border rounded-lg p-2"
+                      >
+                        <option value="Binance ID">Binance ID</option>
+                        <option value="RED BEP20">RED BEP20</option>
+                        <option value="RED TRON">RED TRON</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="text-sm font-medium mb-2 block">
+                        Dirección de billetera
+                      </label>
+                      <Input
                         name="wallet_address"
                         value={walletData.wallet_address}
                         onChange={handleWalletAddressChange}
@@ -151,8 +170,10 @@ const WalletTemplate = () => {
                       />
                     </div>
                     <div>
-                      <label className="text-sm font-medium mb-2 block">Confirmar dirección de billetera</label>
-                      <Input 
+                      <label className="text-sm font-medium mb-2 block">
+                        Confirmar dirección de billetera
+                      </label>
+                      <Input
                         name="confirm_wallet_address"
                         value={walletData.confirm_wallet_address}
                         onChange={handleWalletAddressChange}
@@ -163,10 +184,7 @@ const WalletTemplate = () => {
                 </div>
               </ModalBody>
               <ModalFooter className="flex justify-end gap-3">
-                <Button
-                  variant="secondary"
-                  onClick={onClose}
-                >
+                <Button variant="secondary" onClick={onClose}>
                   Cancelar
                 </Button>
                 <ButtonLigth
@@ -177,9 +195,25 @@ const WalletTemplate = () => {
                 >
                   {isSaving ? (
                     <div className="flex items-center justify-center">
-                      <svg className="animate-spin h-5 w-5 mr-2 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      <svg
+                        className="animate-spin h-5 w-5 mr-2 text-white"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                      >
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                        ></circle>
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                        ></path>
                       </svg>
                       Guardando...
                     </div>
@@ -194,7 +228,7 @@ const WalletTemplate = () => {
       </Modal>
       <div className="mb-8 flex flex-col sm:flex-row gap-4 justify-between">
         <h2 className="text-lg sm:text-2xl mt-2 font-bold text-gray-700 capitalize">
-        {wallet.wallet_address ? "Billetera: " + wallet.wallet_address : ""}
+          {wallet.wallet_address ? "Billetera: " + wallet.wallet_address : ""}
         </h2>
         <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-7 sm:mr-4 font-bold">
           <div>
@@ -216,16 +250,24 @@ const WalletTemplate = () => {
         <div>
           {!wallet.payment_request ? (
             <>
-            
-            <Button
-              onClick={handlerPaymentRequest}
-              disabled={wallet.available_balance < 10}
-              className={wallet.available_balance < 10 ? "bg-gray-200 hover:bg-gray-200 text-gray-500 cursor-not-allowed" : ""}
-            >
-              {wallet.available_balance < 10 ? "Saldo insuficiente" : "Solicitar Pago"}
-              
-            </Button>
-            {wallet.available_balance < 10  &&  <p className="text-xs text-center text-gray-400">Pago minimo de $10</p>}
+              <Button
+                onClick={handlerPaymentRequest}
+                disabled={wallet.available_balance < 10}
+                className={
+                  wallet.available_balance < 10
+                    ? "bg-gray-200 hover:bg-gray-200 text-gray-500 cursor-not-allowed"
+                    : ""
+                }
+              >
+                {wallet.available_balance < 10
+                  ? "Saldo insuficiente"
+                  : "Solicitar Pago"}
+              </Button>
+              {wallet.available_balance < 10 && (
+                <p className="text-xs text-center text-gray-400">
+                  Pago minimo de $10
+                </p>
+              )}
             </>
           ) : (
             <Button
