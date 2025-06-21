@@ -78,20 +78,6 @@ const plugins = [
   //   },
   // },
   {
-    resolve: `medusa-plugin-sendgrid`,
-    options: {
-      api_key: process.env.SENDGRID_API_KEY,
-      from: process.env.SENDGRID_FROM,
-      order_placed_template: process.env.SENDGRID_ORDER_PLACED_ID,
-      localization: {
-        "de-DE": {
-          // locale key
-          order_placed_template: process.env.SENDGRID_ORDER_PLACED_ID,
-        },
-      },
-    },
-  },
-  {
     resolve: "medusa-plugin-auth",
     /** @type {import('medusa-plugin-auth').AuthOptions} */
     options: {
@@ -151,6 +137,19 @@ const plugins = [
           successRedirect: `${STORE_CORS}/`,
         },
       },
+    },
+  },
+  {
+    resolve: process.env.NODE_ENV === "development"
+      ? "./src/services/billionmail-notification"
+      : "./dist/services/billionmail-notification",
+    options: {
+      host: process.env.SMTP_HOST,
+      port: Number(process.env.SMTP_PORT) || 587,
+      secure: process.env.SMTP_SECURE === "true",
+      user: process.env.SMTP_USER,
+      pass: process.env.SMTP_PASSWORD,
+      from: process.env.SMTP_FROM,
     },
   },
 ];
