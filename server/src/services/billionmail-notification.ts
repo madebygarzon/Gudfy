@@ -17,7 +17,8 @@ export default class BillionMailNotificationService extends NotificationService 
   protected from_: string
 
   constructor(_, options: Options) {
-    // @ts-expect-error prefer-rest-params
+    // pass on the container and any other args
+    // @ts-ignore untyped constructor in medusa-interfaces
     super(...arguments)
     this.from_ = options.from
     this.transporter_ = nodemailer.createTransport({
