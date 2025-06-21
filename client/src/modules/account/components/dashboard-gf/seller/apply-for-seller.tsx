@@ -13,6 +13,8 @@ import {
 import SellerRequestPerson from "@modules/account/components/seller_request_person"
 import SellerRequestCompany from "@modules/account/components/seller_request_company"
 import SellerRequestSimple from "@modules/account/components/seller_request_simple"
+import Image from "next/image"
+import image_cta_seller from "../../../../../../public/home/cta_image_seller.png"
 
 type props = {
   handlerReset: () => void
@@ -30,32 +32,32 @@ const ApplyForSeller: React.FC<props> = ({ handlerReset }) => {
   } = useDisclosure()
   return (
     <>
-      <div className=" flex w-full space-y-10 items-center">
-        <div className="flex flex-col w-1/2">
-          <h1 className="mt-8 text-start text-[50px] font-semibold text-[#1F0054] ">
+      <div className=" block md:flex w-full md:space-y-10 items-center">
+        <div className="px-2 md:ml-6 md:mr-0 mr-8 flex flex-col w-full ">
+          <h1 className="mt-8 text-center md:text-start text-[50px] leading-tight font-semibold text-[#1F0054] ">
             ¡Vende tus productos digitales en Gudfy!
           </h1>
 
-          <p className=" text-start text-[18px] font-light max-w-[700px]">
+          <p className="pt-6 pb-2 text-center md:text-start text-[18px] font-light w-full md:max-w-[700px]">
             ¿Tienes productos digitales y quieres llegar a miles de compradores?
           </p>
-          <p className=" text-start text-[18px] font-light max-w-[700px]">
+          <p className="py-2  text-center md:text-start text-[18px] font-light w-full md:max-w-[700px]">
             Postúlate y forma parte de nuestro marketplace.
           </p>
-          <p className=" text-start text-[18px] font-light max-w-[700px]">
+          <p className="py-2  text-center md:text-start text-[18px] font-light w-full md:max-w-[700px]">
             Cuéntanos sobre tu tienda y empieza hoy mismo.
           </p>
-          <p className=" text-start text-[18px] font-light max-w-[700px]">
+          <p className="pt-2 pb-6 text-center md:text-start text-[18px] font-light w-full md:max-w-[700px]">
             🚀¡Bienvenido a la comunidad de Gudfy!
           </p>
 
           {/* <h2 className="text-center text-2xl font-semibold">
             ¿Cómo te identificas?
           </h2> */}
-          <div className="text-start">
+          <div className="md:text-start text-center">
             <ButtonMedusa
               onClick={onOpen}
-              className="text-[25px] px-8 py-8  bg-[#857fe7] text-white"
+              className="text-[25px] px-8 py-8  bg-[#1F0054] text-white"
               variant="primary"
             >
               ¡Postúlate como vendedor aquí!
@@ -70,7 +72,13 @@ const ApplyForSeller: React.FC<props> = ({ handlerReset }) => {
           </div>
         </div>
 
-        <div className="flex flex-col w-2/2"></div>
+        <div className="my-8 md:my-0  md:ml-0 flex items-center justify-center md:flex-col w-full">
+          <Image
+            src={image_cta_seller}
+            alt="CTA Seller"
+            className="w-[350] sm:w-64 md:w-[400px] h-auto" // 12 rem → 16 rem → 400 px
+          />
+        </div>
       </div>
       {}
       <>
