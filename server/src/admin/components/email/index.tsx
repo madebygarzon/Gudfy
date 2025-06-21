@@ -1,4 +1,4 @@
-import sendgrid from "@sendgrid/mail";
+import { sendMail } from "../../../utils/mailer";
 import { render } from "@react-email/render";
 import { ApprovedApplication } from "./state-seller-application/approved-seller-application";
 import { RejectedApplication } from "./state-seller-application/rejected-seller-application";
@@ -15,15 +15,13 @@ export async function ApprovedEmailSellerApplication({
   name,
   email,
 }: EmailApplication) {
-  await sendgrid.setApiKey(process.env.SENDGRID_API_KEY);
   const emailHtml = render(<ApprovedApplication name={name} />);
-  const options = {
-    from: process.env.SENDGRID_FROM,
+  await sendMail({
+    from: process.env.SMTP_FROM,
     to: email,
     subject: "Solicitud de vendedor aprobada",
     html: emailHtml,
-  };
-  sendgrid.send(options);
+  });
 }
 
 export async function RejectedEmailSellerApplication({
@@ -31,17 +29,15 @@ export async function RejectedEmailSellerApplication({
   email,
   message,
 }: EmailApplication) {
-  await sendgrid.setApiKey(process.env.SENDGRID_API_KEY);
   const emailHtml = render(
     <RejectedApplication name={name} message={message} />
   );
-  const options = {
-    from: process.env.SENDGRID_FROM,
+  await sendMail({
+    from: process.env.SMTP_FROM,
     to: email,
     subject: "Solicitud de vendedor rechazada",
     html: emailHtml,
-  };
-  sendgrid.send(options);
+  });
 }
 
 export async function CorrectionEmailSellerApplication({
@@ -49,37 +45,38 @@ export async function CorrectionEmailSellerApplication({
   email,
   message,
 }: EmailApplication) {
-  await sendgrid.setApiKey(process.env.SENDGRID_API_KEY);
   const emailHtml = render(
     <CorrectionApplication name={name} message={message} />
   );
-  const options = {
-    from: process.env.SENDGRID_FROM,
+  await sendMail({
+    from: process.env.SMTP_FROM,
     to: email,
     subject: "Solicitud de vendedor por corregir",
     html: emailHtml,
-  };
-  sendgrid.send(options);
+  });
 }
 
 export async function SendEmailSellerApplication({
   name,
   email,
 }: EmailApplication) {
-  await sendgrid.setApiKey(process.env.SENDGRID_API_KEY);
   const emailHtml = render(<SentApplication name={name} />);
   const emailHtmlAdmin = render(<NewSellerApplication name={name} email={email}/>);
-  const options = [{
-    from: process.env.SENDGRID_FROM,
-    to: email,
-    subject: "Solicitud de vendedor fue enviada",
-    html: emailHtml,
-  }];
-  options.push({
-    from: process.env.SENDGRID_FROM,
-    to: "rdelgado@gudfy.com",
-    subject: "Nueva solicitud de vendedor",
-    html: emailHtmlAdmin,
-  });
-  sendgrid.send(options);
+  const options = [
+    {
+      from: process.env.SMTP_FROM,
+      to: email,
+      subject: "Solicitud de vendedor fue enviada",
+      html: emailHtml,
+    },
+    {
+      from: process.env.SMTP_FROM,
+      to: "rdelgado@gudfy.com",
+      subject: "Nueva solicitud de vendedor",
+      html: emailHtmlAdmin,
+    },
+  ];
+  for (const opt of options) {
+    await sendMail(opt);
+  }
 }
