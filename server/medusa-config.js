@@ -140,9 +140,8 @@ const plugins = [
     },
   },
   {
-    resolve: process.env.NODE_ENV === "development"
-      ? "./src/services/billionmail-notification"
-      : "./dist/services/billionmail-notification",
+    // Use the compiled service in both development and production
+    resolve: "./dist/services/billionmail-notification",
 
     options: {
       host: process.env.SMTP_HOST,

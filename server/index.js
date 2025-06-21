@@ -3,7 +3,8 @@ const { GracefulShutdownServer } = require("medusa-core-utils");
 
 const loaders = require("@medusajs/medusa/dist/loaders/index").default;
 
-require("./src/websocket");
+// Use the compiled websocket server
+require("./dist/websocket");
 
 (async () => {
   async function start() {
