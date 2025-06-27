@@ -148,8 +148,9 @@ const ModalOrderDetail = ({
 
       for (const v of orderData.store_variant) {
         const priceNumber = parseFloat(v.total_price_for_product)
+        const variantId = (v as any).product_id ?? v.store_variant_order_id
         const { commissionBinance, totalPrice } = await calculeCommissionCoinpal(
-          v.product_id,
+          variantId,
           priceNumber
         )
 
