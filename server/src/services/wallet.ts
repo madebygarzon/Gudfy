@@ -5,13 +5,19 @@ import StoreVariantOrderRepository from "src/repositories/store-variant-order";
 import { io } from "../websocket";
 import { formatPrice } from "./utils/format-price";
 import StoreRepository from "src/repositories/store";
+import CommissionService from "./commission";
 
+/**
+ * WalletService
+ * Gestiona los saldos del vendedor teniendo en cuenta la comisión dinámica.
+ */
 export default class WalletService extends TransactionBaseService {
   protected readonly walletRepository_: typeof WalletRepository;
   protected readonly payMethodSellerRepository_: typeof PayMethodSellerRepository;
   protected readonly storeVariantOrderRepository_: typeof StoreVariantOrderRepository;
   protected readonly loggedInCustomer_: Customer | null;
   protected readonly storeRepository_: typeof StoreRepository;
+  protected readonly commissionService_: CommissionService;
 
   constructor(container, options) {
     // @ts-expect-error prefer-rest-params
@@ -21,15 +27,14 @@ export default class WalletService extends TransactionBaseService {
     this.storeVariantOrderRepository_ = container.storeVariantOrderRepository;
     this.loggedInCustomer_ = container.loggedInCustomer || "";
     this.storeRepository_ = container.storeRepository;
+    this.commissionService_ = container.resolve("commissionService");
   }
 
+  /* -------------------------------- CRUD -------------------------------- */
+
   async create(idSotore, payMethod) {
-    const walletRepository = this.activeManager_.withRepository(
-      this.walletRepository_
-    );
-    const payMethodRepo = this.activeManager_.withRepository(
-      this.payMethodSellerRepository_
-    );
+    const walletRepository = this.activeManager_.withRepository(this.walletRepository_);
+    const payMethodRepo = this.activeManager_.withRepository(this.payMethodSellerRepository_);
 
     const createWallet = await walletRepository.create({
       store_id: idSotore,
@@ -58,82 +63,78 @@ export default class WalletService extends TransactionBaseService {
       await payMethodRepo.save(createMethod);
     }
   }
+
+  /* ------------------------------ Public API ----------------------------- */
+
   async retriverWallet() {
-    const walletRepository = this.activeManager_.withRepository(
-      this.walletRepository_
-    );
-    const storeRepository = this.activeManager_.withRepository(
-      this.storeRepository_
-    );
-    const store_wallet_id = await walletRepository.findOne({
+    const walletRepository = this.activeManager_.withRepository(this.walletRepository_);
+    const storeRepository = this.activeManager_.withRepository(this.storeRepository_);
+
+    const wallet = await walletRepository.findOne({
       where: { store_id: this.loggedInCustomer_.store_id },
     });
+
     const dataUpdate = await this.updateBalance();
-    const update = await walletRepository.update(store_wallet_id.id, {
-      ...dataUpdate,
-    });
+    await walletRepository.update(wallet.id, { ...dataUpdate });
 
-    const updatedWallet = await walletRepository.findOne({
-      where: { id: store_wallet_id.id },
-    });
-
-    const store = await storeRepository.findOne({
-      where: { id: this.loggedInCustomer_.store_id },
-    });
+    const updatedWallet = await walletRepository.findOne({ where: { id: wallet.id } });
+    const store = await storeRepository.findOne({ where: { id: this.loggedInCustomer_.store_id } });
     return { ...updatedWallet, payment_request: store.payment_request };
   }
 
   async requestPayment() {
     try {
-      const storeRepository = this.activeManager_.withRepository(
-        this.storeRepository_
-      );
-
-      const update = await storeRepository.update(
-        this.loggedInCustomer_.store_id,
-        {
-          payment_request: true,
-        }
-      );
+      const storeRepository = this.activeManager_.withRepository(this.storeRepository_);
+      await storeRepository.update(this.loggedInCustomer_.store_id, { payment_request: true });
       return true;
     } catch (error) {
-      console.log("Error al solicitar pago", error);
+      console.error("Error al solicitar pago", error);
       return false;
     }
   }
 
+  /* ----------------------------- Core logic ------------------------------ */
+
+  /**
+   * Obtiene la tasa de comisión para cada productId y la cachea en memoria
+   * durante la ejecución de la request.
+   */
+  private async getRates(productIds: string[]) {
+    const rates = new Map<string, number>();
+    for (const pid of productIds) {
+      if (!rates.has(pid)) {
+        const rate = await this.commissionService_.getRate({ productId: pid });
+        rates.set(pid, rate);
+      }
+    }
+    return rates;
+  }
+
+  /**
+   * Recalcula saldos (disponible, pendiente, pagado) descontando la comisión
+   * dinámica por producto.
+   */
   async updateBalance() {
-    const SVORepository = this.activeManager_.withRepository(
-      this.storeVariantOrderRepository_
-    );
-    const walletRepository = this.activeManager_.withRepository(
-      this.walletRepository_
-    );
+    const SVORepository = this.activeManager_.withRepository(this.storeVariantOrderRepository_);
 
     const listSVO = await SVORepository.createQueryBuilder("svo")
       .innerJoinAndSelect("svo.store_order", "so")
       .innerJoinAndSelect("svo.store_variant", "sxv")
       .innerJoinAndSelect("sxv.variant", "pv")
       .innerJoinAndSelect("pv.product", "p")
-      .where("sxv.store_id = :store_id", {
-        store_id: this.loggedInCustomer_.store_id,
-      })
+      .where("sxv.store_id = :store_id", { store_id: this.loggedInCustomer_.store_id })
       .select([
-        "sxv.id AS storeXVariantId",
-        "svo.quantity AS quantity",
-        "svo.unit_price AS price",
-        "sxv.store_id AS storeId",
-        "sxv.variant_id AS variantId",
-        "so.order_status_id AS status_id",
-        "svo.variant_order_status_id AS variant_order_status_id",
-        "pv.id AS productVariantId",
-        "pv.title AS productVariantTitle",
-        "pv.product_id AS productId",
-        "p.title AS productTitle",
-        "p.thumbnail AS thumbnail",
-        "p.description AS description",
+        "svo.quantity     AS quantity",
+        "svo.unit_price   AS price",
+        "so.order_status_id            AS status_id",
+        "svo.variant_order_status_id   AS variant_order_status_id",
+        "p.id              AS productId",
       ])
       .getRawMany();
+
+    // Cache de tasas
+    const productIds = [...new Set(listSVO.map((i) => i.productId))];
+    const ratesMap = await this.getRates(productIds);
 
     const prices = {
       available_balance: 0,
@@ -142,45 +143,36 @@ export default class WalletService extends TransactionBaseService {
     };
 
     listSVO.forEach((item) => {
-      item.price = formatPrice(item.price - item.price * 0.01);
-    });
+      const rate = ratesMap.get(item.productId) ?? 0.01; // fallback seguro
+      const netUnitPrice = item.price * (1 - rate);
+      const totalNet = netUnitPrice * item.quantity;
 
-    listSVO.forEach((item) => {
-      const totalProductPrice = item.price * item.quantity;
-      if (item.variant_order_status_id === "Finished_ID") {
-        prices.available_balance += formatPrice(
-          totalProductPrice - totalProductPrice * 0.01
-        );
-      } else if (
-        item.variant_order_status_id === "Discussion_ID" ||
-        item.variant_order_status_id === "Completed_ID"
-      ) {
-        prices.outstanding_balance += formatPrice(
-          totalProductPrice - totalProductPrice * 0.01
-        );
-      } else if (item.variant_order_status_id == "Paid_ID") {
-        prices.balance_paid += formatPrice(
-          totalProductPrice - totalProductPrice * 0.01
-        );
+      switch (item.variant_order_status_id) {
+        case "Finished_ID":
+          prices.available_balance += totalNet;
+          break;
+        case "Discussion_ID":
+        case "Completed_ID":
+          prices.outstanding_balance += totalNet;
+          break;
+        case "Paid_ID":
+          prices.balance_paid += totalNet;
+          break;
       }
     });
 
-    return prices;
+    return {
+      available_balance: formatPrice(prices.available_balance),
+      outstanding_balance: formatPrice(prices.outstanding_balance),
+      balance_paid: formatPrice(prices.balance_paid),
+    };
   }
 
   async updateWallet(walletAddress: string) {
-    const walletRepository = this.activeManager_.withRepository(
-      this.walletRepository_
-    );
-    const storeRepository = this.activeManager_.withRepository(
-      this.storeRepository_
-    );
-    const store_wallet_id = await walletRepository.findOne({
-      where: { store_id: this.loggedInCustomer_.store_id },
-    });
-    const update = await walletRepository.update(store_wallet_id.id, {
-      wallet_address: walletAddress,
-    });
+    const walletRepository = this.activeManager_.withRepository(this.walletRepository_);
+    const wallet = await walletRepository.findOne({ where: { store_id: this.loggedInCustomer_.store_id } });
+    await walletRepository.update(wallet.id, { wallet_address: walletAddress });
     return true;
   }
 }
+

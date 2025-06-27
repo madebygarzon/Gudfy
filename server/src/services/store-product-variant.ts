@@ -4,6 +4,7 @@ import {
   TransactionBaseService,
   Customer,
 } from "@medusajs/medusa";
+import CommissionService from "./commission";
 import ProductRepository from "@medusajs/medusa/dist/repositories/product";
 import StoreXVariantRepository from "../repositories/store-x-variant";
 import ProductVariantRepository from "@medusajs/medusa/dist/repositories/product-variant";
@@ -15,6 +16,7 @@ class StoreProductVariantService extends TransactionBaseService {
   protected readonly productVariantRepository_: typeof ProductVariantRepository;
   protected readonly storeXVariantRepository_: typeof StoreXVariantRepository;
   protected readonly loggedInCustomer_: Customer | null;
+  protected readonly commissionService_: CommissionService;
 
   constructor(container, options) {
     // @ts-expect-error prefer-rest-params
@@ -24,6 +26,7 @@ class StoreProductVariantService extends TransactionBaseService {
       this.productRepository_ = container.productRepository;
       this.storeXVariantRepository_ = container.storeXVariantRepository;
       this.productVariantRepository_ = container.productVariantRepository;
+      this.commissionService_ = container.commissionService;
     } catch (e) {
       // avoid errors when backend first runs
     }
@@ -82,6 +85,7 @@ class StoreProductVariantService extends TransactionBaseService {
           "pv.id AS id",
           "pv.title AS title",
           "sxv.price AS price",
+          "p.id AS product_id",
           "p.title AS product_parent",
           "p.thumbnail AS thumbnail",
           "p.description AS description",
@@ -90,14 +94,31 @@ class StoreProductVariantService extends TransactionBaseService {
 
       const variantMap = new Map();
 
-      rawVariants.forEach((variant) => {
-        if (!variantMap.has(variant.id)) {
-          variantMap.set(variant.id, {
-            ...variant,
-            prices: [formatPrice(variant.price + variant.price * Number(process.env.COMMISSION))],
+      // rawVariants.forEach((variant) => {
+      //   if (!variantMap.has(variant.id)) {
+      //     variantMap.set(variant.id, {
+      //       ...variant,
+      //       prices: [formatPrice(variant.price + variant.price * Number(process.env.COMMISSION))],
+      //     });
+      //   } else variantMap.get(variant.id).prices.push(formatPrice(variant.price + variant.price * Number(process.env.COMMISSION)));
+      // });
+      
+
+      for (const v of rawVariants) {
+        // ⇒ tasa dinámica por producto
+        const rate = await this.commissionService_.getRate({ productId: v.product_id });
+        const priceWithFee = v.price + v.price * rate;
+
+        if (!variantMap.has(v.id)) {
+          variantMap.set(v.id, {
+            ...v,
+            prices: [formatPrice(priceWithFee)],
           });
-        } else variantMap.get(variant.id).prices.push(formatPrice(variant.price + variant.price * Number(process.env.COMMISSION)));
-      });
+        } else {
+          variantMap.get(v.id).prices.push(formatPrice(priceWithFee));
+        }
+      }
+
 
       const listVariant = Array.from(variantMap.values()).map((variant) => {
         return {

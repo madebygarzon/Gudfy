@@ -6,6 +6,7 @@ import { StoreReviewRepository } from "../repositories/store-review";
 import { IsNull, Not } from "typeorm";
 import StoreService from "./store";
 import { formatPrice } from "./utils/format-price";
+import CommissionService from "./commission";
 
 class StoreXVariantService extends TransactionBaseService {
   static LIFE_TIME = Lifetime.SCOPED;
@@ -14,6 +15,7 @@ class StoreXVariantService extends TransactionBaseService {
   protected readonly storeXVariantRepository_: typeof StoreXVariantRepository;
   protected readonly storeService_: StoreService;
   protected readonly loggedInCustomer_: Customer | null;
+  protected readonly commissionService_: CommissionService;
 
   constructor(container, options) {
     // @ts-expect-error prefer-rest-params
@@ -25,6 +27,7 @@ class StoreXVariantService extends TransactionBaseService {
       this.loggedInCustomer_ = container.loggedInCustomer || "";
       this.storeXVariantRepository_ = container.storeXVariantRepository;
       this.serialCodeRepository_ = container.serialCodeRepository;
+      this.commissionService_     = container.commissionService;
     } catch (e) {
       // avoid errors when backend first runs
     }
@@ -50,6 +53,7 @@ class StoreXVariantService extends TransactionBaseService {
           "sxv.quantity_store AS quantity",
           "sxv.price AS price",
           "pv.id AS variantid",
+          "pv.product_id AS product_id",
           "pv.title AS titlevariant",
           "p.title AS productparent",
           "p.thumbnail AS thumbnail",
@@ -78,7 +82,12 @@ class StoreXVariantService extends TransactionBaseService {
                 store_name: variant.store_name,
                 email: variant.customer_email,
                 quantity: variant.quantity,
-                price: formatPrice(variant.price + variant.price * Number(process.env.COMMISSION)),
+                // price: formatPrice(variant.price + variant.price * Number(process.env.COMMISSION)),
+                price: formatPrice(
+                  variant.price * (1 +
+                    (await this.commissionService_.getRate({ productId: variant.product_id }))
+                  )
+                ),
                 avatar: variant.avatar,
                 parameters: {
                   rating: await this.storeService_.getSellerRating(
@@ -96,7 +105,12 @@ class StoreXVariantService extends TransactionBaseService {
             store_name: variant.store_name,
             email: variant.customer_email,
             quantity: variant.quantity,
-            price: formatPrice(variant.price + variant.price * Number(process.env.COMMISSION)),
+            // price: formatPrice(variant.price + variant.price * Number(process.env.COMMISSION)),
+            price: formatPrice(
+              variant.price * (1 +
+                (await this.commissionService_.getRate({ productId: variant.product_id }))
+              )
+            ),
             avatar: variant.avatar,
             parameters: {
               rating: await this.storeService_.getSellerRating(

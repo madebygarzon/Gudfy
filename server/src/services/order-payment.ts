@@ -15,6 +15,8 @@ import {
 } from "../admin/components/email/payments";
 import { IsNull } from "typeorm";
 import { formatPrice } from "./utils/format-price";
+import CommissionService from "./commission";
+
 
 class OrderPaymentService extends TransactionBaseService {
   static LIFE_TIME = Lifetime.SCOPED;
@@ -26,6 +28,7 @@ class OrderPaymentService extends TransactionBaseService {
   protected readonly storeOrderRepository_: typeof StoreOrderRepository;
   protected readonly storeXVariantRepository_: typeof StoreXVariantRepository;
   protected readonly productVariantRepository_: typeof ProductVariantRepository;
+  protected readonly commissionService_: CommissionService;
 
   constructor(container) {
     // @ts-expect-error prefer-rest-params
@@ -38,6 +41,7 @@ class OrderPaymentService extends TransactionBaseService {
     this.storeOrderRepository_ = container.storeOrderRepository;
     this.storeXVariantRepository_ = container.storeXVariantRepository;
     this.productVariantRepository_ = container.productVariantRepository;
+    this.commissionService_ = container.commissionService;   
   }
   async retriveListStoresToPay() {
     try {
@@ -68,6 +72,7 @@ class OrderPaymentService extends TransactionBaseService {
           "svo.unit_price AS price",
           "so.id as order_id",
           "v.title AS product_name",
+          "v.product_id AS product_id",
           "p.thumbnail AS thumbnail",
           "c.first_name AS customer_name",
           "c.last_name AS custommer_last_name",
@@ -76,46 +81,61 @@ class OrderPaymentService extends TransactionBaseService {
         .orderBy("svo.created_at", "DESC")
         .getRawMany();
 
-      listStore.forEach((store) => {
-        store.price = formatPrice(store.price - store.price * 0.01);
-      });
+      // listStore.forEach((store) => {
+      //   store.price = formatPrice(store.price - store.price * 0.01);
+      // });
 
+      const uniqueProdIds = [...new Set(listStore.map((s) => s.product_id))];
+      const rateMap = new Map<string, number>();
+      
       const storeMap = new Map();
 
+      for (const pid of uniqueProdIds) {
+        const rate = await this.commissionService_.getRate({ productId: pid });
+        rateMap.set(pid, rate);
+      }
+
       listStore.forEach((store) => {
+        // ---------- 1. Aplicar la comisión dinámica ----------
+        const rate = rateMap.get(store.product_id) ?? 0.01;   // fallback si algo falla
+        store.rate  = rate;                                   // opcional, por si quieres mostrarlo
+        store.price = formatPrice(store.price - store.price * rate);
+
+        // ---------- 2. Agrupar por tienda ----------
         if (!storeMap.has(store.store_id)) {
           storeMap.set(store.store_id, {
-            store_id: store.store_id,
-            store_name: store.store_name,
+            store_id:       store.store_id,
+            store_name:     store.store_name,
             payment_request: store.payment_request,
-            date_order: store.date_order,
+            date_order:     store.date_order,
             wallet_address: store.wallet_address,
             product: [
               {
-                order_id: store.order_id,
-                svo_id: store.svo_id,
-                product_name: store.product_name,
-                thumbnail: store.thumbnail,
-                price: store.price,
-                quantity: store.quantity,
-                customer_name:
-                  store.customer_name + " " + store.custommer_last_name,
+                order_id:             store.order_id,
+                svo_id:               store.svo_id,
+                product_name:         store.product_name,
+                thumbnail:            store.thumbnail,
+                price:                store.price,
+                quantity:             store.quantity,
+                customer_name:        `${store.customer_name} ${store.custommer_last_name}`,
                 product_order_status: store.product_order_status,
+                rate,                         // % aplicado a este ítem
               },
             ],
           });
-        } else
+        } else {
           storeMap.get(store.store_id).product.push({
-            order_id: store.order_id,
-            svo_id: store.svo_id,
-            product_name: store.product_name,
-            thumbnail: store.thumbnail,
-            price: store.price,
-            quantity: store.quantity,
-            customer_name:
-              store.customer_name + " " + store.custommer_last_name,
+            order_id:             store.order_id,
+            svo_id:               store.svo_id,
+            product_name:         store.product_name,
+            thumbnail:            store.thumbnail,
+            price:                store.price,
+            quantity:             store.quantity,
+            customer_name:        `${store.customer_name} ${store.custommer_last_name}`,
             product_order_status: store.product_order_status,
+            rate,
           });
+        }
       });
 
       const listStoreXproductsPay = Array.from(storeMap.values());
@@ -154,6 +174,21 @@ class OrderPaymentService extends TransactionBaseService {
   }
 
   async postAddPayment(dataOrderP, voucher, products) {
+    
+    let commission = 0;
+
+    for (const product of products) {
+      const rate = await this.commissionService_.getRate({ productId: product.product_id });
+      commission += product.product_price * product.quantity * rate;
+    }
+
+    const subtotal = products.reduce(
+      (s, p) => s + p.product_price * p.quantity,
+      0
+    );
+
+    const amount_paid = subtotal + commission;
+
     const OrderPaymentRepo = this.activeManager_.withRepository(
       this.orderPaymentRepository_
     );
@@ -181,14 +216,17 @@ class OrderPaymentService extends TransactionBaseService {
 
     const createOrderPay = await OrderPaymentRepo.create({
       id: `${prefix}${newIdNumber}`,
-      amount_paid: dataOrderP.amount_paid,
+      // amount_paid: dataOrderP.amount_paid,
+      amount_paid, 
       payment_note: dataOrderP.payment_note,
       store_id: dataOrderP.store_id,
       voucher: `${
         process.env.BACKEND_URL ?? "http://localhost:9000"
       }/${voucher}`,
-      commission: dataOrderP.commission,
-      subtotal: dataOrderP.subtotal,
+      // commission: dataOrderP.commission,
+      // subtotal: dataOrderP.subtotal,
+      commission,
+      subtotal,
       customer_name: dataOrderP.customer_name,
     });
 
@@ -263,9 +301,14 @@ class OrderPaymentService extends TransactionBaseService {
           products: [
             {
               name: payment.product_name,
-              price: formatPrice(
+              // price: formatPrice(
+              //   payment.product_price -
+              //     payment.product_price * Number(process.env.COMMISSION)
+              // ),
+
+              price: formatPrice(          // neto = unit_price - (commission_proporcional)
                 payment.product_price -
-                  payment.product_price * Number(process.env.COMMISSION)
+                  (payment.product_price / payment.subtotal) * payment.commission
               ),
               quantity: payment.product_quantity,
               total_price: formatPrice(
@@ -280,15 +323,26 @@ class OrderPaymentService extends TransactionBaseService {
       } else {
         paymentdOrdersMap.get(payment.payment_id).products.push({
           name: payment.product_name,
+          // price: formatPrice(
+          //   payment.product_price -
+          //     payment.product_price * Number(process.env.COMMISSION)
+          // ),
           price: formatPrice(
             payment.product_price -
-              payment.product_price * Number(process.env.COMMISSION)
+              (payment.product_price / payment.subtotal) * payment.commission
           ),
+
           quantity: payment.product_quantity,
+          // total_price: formatPrice(
+          //   payment.total_price -
+          //     payment.total_price * Number(process.env.COMMISSION)
+          // ),
+
           total_price: formatPrice(
             payment.total_price -
-              payment.total_price * Number(process.env.COMMISSION)
+              (payment.total_price / payment.subtotal) * payment.commission
           ),
+
           store_order_id: payment.store_order_id,
           customer_name: payment.customer_name,
         });
