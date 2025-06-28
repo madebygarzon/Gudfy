@@ -55,6 +55,7 @@ const plugins = [
   //   },
   // },
   { resolve: "$SRC/services/commission" },
+  { resolve: "$SRC/services/commission-admin" },
   {
     resolve: `@medusajs/file-local`,
     options: {
