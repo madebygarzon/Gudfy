@@ -57,8 +57,8 @@ interface ModalOrderProps {
 }
 
 type CoinpalInfo = {
-  commission: string
-  totalPrice: string
+  commission: number
+  totalPrice: number
 }
 
 type PropsStoreReview = {
@@ -154,8 +154,8 @@ const ModalOrderDetail = ({
           priceNumber
         )
 
-        commissionSum += parseFloat(commissionBinance)
-        totalSum += parseFloat(totalPrice)
+        commissionSum += Number(commissionBinance)
+        totalSum += Number(totalPrice)
       }
 
       setCoinpalInfo({

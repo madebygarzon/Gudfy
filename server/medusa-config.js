@@ -54,7 +54,6 @@ const plugins = [
   //     api_key: STRIPE_API_KEY,
   //   },
   // },
-  { resolve: "$SRC/services/commission" },
   {
     resolve: `@medusajs/file-local`,
     options: {
