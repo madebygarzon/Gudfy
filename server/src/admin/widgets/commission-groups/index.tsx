@@ -20,8 +20,13 @@ const CommissionGroups = () => {
   const [newRate, setNewRate] = useState(0)
 
   const load = async () => {
-    const data = await getCommissionGroups()
-    setGroups(data)
+    try {
+      const data = await getCommissionGroups()
+      setGroups(data)
+    } catch (err) {
+      console.error("Failed to load commission groups", err)
+    }
+
   }
 
   useEffect(() => {
@@ -29,20 +34,33 @@ const CommissionGroups = () => {
   }, [])
 
   const add = async () => {
-    await postCommissionGroup(newName, newRate)
-    setNewName("")
-    setNewRate(0)
-    load()
+    try {
+      await postCommissionGroup(newName, newRate)
+      setNewName("")
+      setNewRate(0)
+      load()
+    } catch (err) {
+      console.error("Failed to add commission group", err)
+    }
   }
 
   const update = async (id: string, name: string, rate: number) => {
-    await putCommissionGroup(id, name, rate)
-    load()
+    try {
+      await putCommissionGroup(id, name, rate)
+      load()
+    } catch (err) {
+      console.error("Failed to update commission group", err)
+    }
   }
 
   const remove = async (id: string) => {
-    await deleteCommissionGroup(id)
-    load()
+    try {
+      await deleteCommissionGroup(id)
+      load()
+    } catch (err) {
+      console.error("Failed to delete commission group", err)
+    }
+
   }
 
   return (
