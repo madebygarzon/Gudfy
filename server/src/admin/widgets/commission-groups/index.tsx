@@ -26,6 +26,7 @@ const CommissionGroups = () => {
     } catch (err) {
       console.error("Failed to load commission groups", err)
     }
+
   }
 
   useEffect(() => {
@@ -59,6 +60,7 @@ const CommissionGroups = () => {
     } catch (err) {
       console.error("Failed to delete commission group", err)
     }
+
   }
 
   return (
