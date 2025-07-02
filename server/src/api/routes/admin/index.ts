@@ -37,6 +37,7 @@ import UpdateOrderToCancel from "./orders/update-order-to-cancel";
 import storeProducts from "./get-store-products";
 import createProductVariant from "./product/create-product-variant";
 import createProductVariantWithImage from "./product/create-product-variant-with-image";
+import getNotificationDashboardAdmin from "./notification-admin/get-notification-dashboard-admin";
 
 // Initialize a custom router
 const router = Router();
@@ -138,6 +139,11 @@ export function attachAdminRoutes(adminRouter: Router) {
   router.post("/product/create-product-variant", wrapHandler(createProductVariant));
 
   router.post("/product/create-product-variant-with-image",ImageProduct.single("image"), wrapHandler(createProductVariantWithImage));
+
+
+//---------------Notifications dashboard admin-----------------
+
+router.get("/notification/dashboard-admin", wrapHandler(getNotificationDashboardAdmin));
 
   onboardingRoutes(adminRouter);
 }
