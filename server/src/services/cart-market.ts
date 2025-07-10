@@ -106,7 +106,7 @@ class CartMarketService extends TransactionBaseService {
         store_variant_id: store_variant_id,
       });
       addItem = await lineItemRepo.save(addItem);
-
+      
       return addItem;
     } catch (error) {
       console.log("Error al agregar el itemen el servicio", error);
@@ -123,10 +123,13 @@ class CartMarketService extends TransactionBaseService {
 
       const variantStoc = await storexVariantRepo
         .createQueryBuilder("sxv")
+        .innerJoinAndSelect("sxv.variant", "v")
+        .innerJoinAndSelect("v.product", "p")
+        .innerJoinAndSelect("p.product_comission", "pc")
         .where("sxv.id IN (:...storeVariantIds)", {
           storeVariantIds: idsVariants,
         })
-        .select(["sxv.id AS store_variant_id", "sxv.quantity_store AS stock"])
+        .select(["sxv.id AS store_variant_id", "sxv.quantity_store AS stock","sxv.price AS original_price" , "pc.percentage AS commission"])
         .getRawMany();
 
       return variantStoc;
@@ -146,24 +149,24 @@ class CartMarketService extends TransactionBaseService {
 
   async compareSuccessfulStocks(items, customer_id) {
     try {
-      const dataVarianStock = await this.variantAndStock(items);
+      const dataVariantStock = await this.variantAndStock(items);
 
-      const result = compararStock(items, dataVarianStock);
+      const result = compararStock(items, dataVariantStock);
 
       if (result.length) return {success: false, data: result};
 
-      let auxTotalProce = 0;
+      let auxTotalPrice = 0;
       let auxTotalProducts = 0;
 
       items.forEach((item) => {
-        auxTotalProce += parseFloat(item.unit_price) * item.quantity;
+        auxTotalPrice += parseFloat(item.unit_price) * item.quantity;
       });
       items.forEach((item) => {
         auxTotalProducts += item.quantity;
       });
 
       const newOrder = await this.createStoreOrder(
-        auxTotalProce,
+        auxTotalPrice,
         auxTotalProducts,
         customer_id
       );
@@ -181,6 +184,8 @@ class CartMarketService extends TransactionBaseService {
           variant_order_status_id: "Payment_Pending_ID",
           unit_price: items[index].unit_price,
           total_price: formatPrice((items[index].unit_price) * items[index].quantity),
+          commission_order: dataVariantStock.find((variant) => variant.store_variant_id === items[index].store_variant_id).commission,
+          original_price_for_uniti: dataVariantStock.find((variant) => variant.store_variant_id === items[index].store_variant_id).original_price,
         });
         const saveSVO = await storeVariantOrderRepo.save(newSVO);
         

@@ -8,6 +8,7 @@ import { getListPayOrders } from "@modules/account/actions/get-list-seller-pay-o
 import handlerformatDate from "@lib/util/formatDate"
 import Loader from "@lib/loader"
 import { dataWallet } from "@modules/account/templates/wallet-template"
+import { formatPrice } from "@lib/util/formatPrice"
 
 export type orderData = {
   produc_title: string
@@ -162,15 +163,13 @@ const WalletTable = ({ wallet, setWallet }: props) => {
                       <td className="px-4 py-2">$ {order.unit_price}</td>
                       <td className="px-4 py-2">
                         ${" "}
-                        {(order.total_price_for_product * commission).toFixed(
-                          2
-                        )}
+                        {formatPrice(order.unit_price * commission)}
                       </td>
                       <td className="px-4 py-2">
-                        {(
-                          order.unit_price * order.quantity -
-                          order.total_price_for_product * commission
-                        ).toFixed(2)}
+                        
+                        {formatPrice(
+                         ( order.unit_price * order.quantity) - formatPrice((order.unit_price * order.quantity) * commission)
+                        )}
                       </td>
                       <td className="px-4 py-2">
                         {handlerformatDate(order.created_date)}

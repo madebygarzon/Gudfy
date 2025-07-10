@@ -1,11 +1,6 @@
 import axios from "axios";
 import { BACKEND } from "../index";
 
-/**
- * Crea o actualiza un producto con sus variantes
- * @param product Datos del producto
- * @param imageFile Archivo de imagen opcional (si se ha subido una nueva imagen)
- */
 export const createProductVariant = async (product, imageFile?: File | null) => {
   try {
     if (imageFile) {

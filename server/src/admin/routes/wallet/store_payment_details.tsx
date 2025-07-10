@@ -17,11 +17,11 @@ type props = {
 export function StorePaymentDetails({ products }: props) {
   const commission = 0.01;
   const subtotal = products?.reduce(
-    (sum, prod) => sum + Number(prod.total_price),
+    (sum, prod) => sum + Number(prod.price * prod.quantity),
     0
   );
   const comisionTotal = products?.reduce(
-    (sum, prod) => sum + Number(prod.total_price) * commission,
+    (sum, prod) => sum + Number(prod.price * prod.quantity) * commission,
     0
   );
   const total = subtotal - comisionTotal;
@@ -62,9 +62,9 @@ export function StorePaymentDetails({ products }: props) {
               <Table.Cell>{product.customer_name}</Table.Cell>
               <Table.Cell>{product.quantity}</Table.Cell>
               <Table.Cell>{product.price}</Table.Cell>
-              <Table.Cell>{product.total_price}</Table.Cell>
+              <Table.Cell>{product.price * product.quantity}</Table.Cell>
               <Table.Cell>
-                {formatPrice(Number(product.total_price) * commission)}
+                {formatPrice(Number(product.price * product.quantity) * commission)}
               </Table.Cell>
             </Table.Row>
           );
@@ -88,7 +88,7 @@ export function StorePaymentDetails({ products }: props) {
           <Table.Cell></Table.Cell>
           <Table.Cell></Table.Cell>
           <Table.Cell className="font-bold">Total</Table.Cell>
-          <Table.Cell className="font-bold">{formatPrice(total)}</Table.Cell>
+          <Table.Cell className="font-bold">{formatPrice(subtotal / (1 + commission))}</Table.Cell>
         </Table.Row>
       </Table.Body>
     </Table>
