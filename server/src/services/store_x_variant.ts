@@ -42,6 +42,7 @@ class StoreXVariantService extends TransactionBaseService {
         .innerJoinAndSelect("pv.product", "p")
         .innerJoinAndSelect("sxv.store", "s")
         .leftJoinAndSelect("s.members", "c")
+        .leftJoinAndSelect("p.product_comission", "pc")
         .where("pv.title ILIKE :title AND sxv.quantity_store > 0" , {
           title: `${variantProduct}`,
         })
@@ -54,6 +55,7 @@ class StoreXVariantService extends TransactionBaseService {
           "p.title AS productparent",
           "p.thumbnail AS thumbnail",
           "p.description AS description",
+          "pc.percentage AS commission",
           "s.id AS store_id",
           "s.avatar AS avatar",
           "s.name AS store_name",
@@ -78,7 +80,7 @@ class StoreXVariantService extends TransactionBaseService {
                 store_name: variant.store_name,
                 email: variant.customer_email,
                 quantity: variant.quantity,
-                price: formatPrice(variant.price + variant.price * Number(process.env.COMMISSION)),
+                price: formatPrice(variant.price * (1 + Number(variant.commission))),
                 avatar: variant.avatar,
                 parameters: {
                   rating: await this.storeService_.getSellerRating(
@@ -96,7 +98,7 @@ class StoreXVariantService extends TransactionBaseService {
             store_name: variant.store_name,
             email: variant.customer_email,
             quantity: variant.quantity,
-            price: formatPrice(variant.price + variant.price * Number(process.env.COMMISSION)),
+            price: formatPrice(variant.price * (1 + Number(variant.commission))),
             avatar: variant.avatar,
             parameters: {
               rating: await this.storeService_.getSellerRating(
@@ -130,6 +132,7 @@ class StoreXVariantService extends TransactionBaseService {
       .innerJoinAndSelect("pv.product", "p")
       .innerJoinAndSelect("sxv.store", "s")
       .leftJoinAndSelect("s.members", "c")
+      .leftJoinAndSelect("p.product_comission", "pc")
       .select([
         "sxv.id AS id",
         "sxv.quantity_store AS quantity",
@@ -143,6 +146,7 @@ class StoreXVariantService extends TransactionBaseService {
         "s.name AS storeName",
         "c.id AS customerID",
         "c.email AS customerEmail",
+        "pc.percentage AS commission",
       ])
       .getRawMany();
 
@@ -171,6 +175,7 @@ class StoreXVariantService extends TransactionBaseService {
         "p.title AS parentTitle",
         "p.thumbnail AS thumbnail",
         "p.description AS desciption",
+        "pc.percentage AS commission",
       ])
       .getRawMany();
     return Product;
@@ -201,7 +206,7 @@ class StoreXVariantService extends TransactionBaseService {
         "p.title AS productTitle",
         "p.thumbnail AS thumbnail",
         "p.description AS description",
-      ])
+              ])
       .getRawMany();
     for (const product of listProduct) {
       const count = await repoSerialCode.count({

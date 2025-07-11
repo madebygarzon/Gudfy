@@ -42,7 +42,7 @@ const handlerGetListOrderPayments = async (idStore) => {
 };
   useEffect(() => {
     handlerGetListOrderPayments(idStore);
-  }, [idStore, shouldRefresh]); // Agregar shouldRefresh como dependencia
+  }, [idStore]); // Agregar shouldRefresh como dependencia
 
   return (
     <Table className="">

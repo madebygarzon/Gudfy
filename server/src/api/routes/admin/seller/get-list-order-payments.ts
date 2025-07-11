@@ -11,7 +11,8 @@ export default async function getListOrderPayments(
     res.status(200).json(data);
   } catch (error) {
     console.log(
-      "Error al intentar recuperar el listado de las ordenes pagadas"
+      "Error al intentar recuperar el listado de las ordenes pagadas",
+      error
     );
   }
 }

@@ -37,8 +37,11 @@ class StoreProductVariantService extends TransactionBaseService {
     const storexvariant = this.manager_.withRepository(
       this.storeXVariantRepository_
     );
-
-    const listProduct = await product.find();
+    const listProduct = await product.find({
+      relations: {
+        product_comission: true,
+      },
+    });
     const listVariant = await variant.find();
     const obtainedProducts = await storexvariant.find({
       where: {
@@ -55,6 +58,7 @@ class StoreProductVariantService extends TransactionBaseService {
         thumbnail: theProduct.thumbnail,
         titleVariant: v.title,
         product_id: v.product_id,
+        commission: Number(theProduct.product_comission.percentage),
       };
     });
 
@@ -77,6 +81,7 @@ class StoreProductVariantService extends TransactionBaseService {
         .createQueryBuilder("pv")
         .innerJoin("pv.store_x_variant", "sxv")
         .innerJoinAndSelect("pv.product", "p")
+        .innerJoinAndSelect("p.product_comission", "pc")
         .where("COALESCE(sxv.quantity_store, 0) > 0")
         .select([
           "pv.id AS id",
@@ -85,6 +90,7 @@ class StoreProductVariantService extends TransactionBaseService {
           "p.title AS product_parent",
           "p.thumbnail AS thumbnail",
           "p.description AS description",
+          "pc.percentage AS commission",
         ])
         .getRawMany();
 
@@ -94,9 +100,9 @@ class StoreProductVariantService extends TransactionBaseService {
         if (!variantMap.has(variant.id)) {
           variantMap.set(variant.id, {
             ...variant,
-            prices: [formatPrice(variant.price + variant.price * Number(process.env.COMMISSION))],
+            prices: [formatPrice(variant.price * (1 + Number(variant.commission)))],
           });
-        } else variantMap.get(variant.id).prices.push(formatPrice(variant.price + variant.price * Number(process.env.COMMISSION)));
+        } else variantMap.get(variant.id).prices.push(formatPrice(variant.price * (1 + Number(variant.commission))));
       });
 
       const listVariant = Array.from(variantMap.values()).map((variant) => {
