@@ -37,6 +37,10 @@ import UpdateOrderToCancel from "./orders/update-order-to-cancel";
 import storeProducts from "./get-store-products";
 import createProductVariant from "./product/create-product-variant";
 import createProductVariantWithImage from "./product/create-product-variant-with-image";
+import getNotificationDashboardAdmin from "./notification-admin/get-notification-dashboard-admin";
+import commissionRoutes from "./commission";
+import getProductsWithCommission from "./product/get-product-with-commission";
+import updateProductCommission from "./product/update-product-commission";
 
 // Initialize a custom router
 const router = Router();
@@ -139,5 +143,12 @@ export function attachAdminRoutes(adminRouter: Router) {
 
   router.post("/product/create-product-variant-with-image",ImageProduct.single("image"), wrapHandler(createProductVariantWithImage));
 
-  onboardingRoutes(adminRouter);
+  router.get("/product/get-products-with-commission", wrapHandler(getProductsWithCommission));
+  router.post("/products/:id/commission", wrapHandler(updateProductCommission));
+
+//---------------Notifications dashboard admin-----------------
+
+router.get("/notification/dashboard-admin", wrapHandler(getNotificationDashboardAdmin));
+commissionRoutes(adminRouter);
+onboardingRoutes(adminRouter);
 }
