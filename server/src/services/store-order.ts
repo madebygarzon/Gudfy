@@ -79,12 +79,10 @@ class StoreOrderService extends TransactionBaseService {
         ])
         .getRawMany();
 
-      // Agrupar las órdenes y sus variantes
-      const ordersMap = new Map();
 
+      const ordersMap = new Map();
       for (const order of listOrder) {
         if (!ordersMap.has(order.id)) {
-          // Crear nueva orden
           ordersMap.set(order.id, {
             id: order.id,
             pay_method_id: order.pay_method_id,
@@ -102,18 +100,15 @@ class StoreOrderService extends TransactionBaseService {
           });
         }
 
-        // Obtener códigos seriales para esta variante
         const serialCodes = await repoSerialCode.find({
           where: { store_variant_order_id: order.store_variant_order_id },
         });
-
-        // Agregar variante a la orden
         ordersMap.get(order.id).store_variant.push({
           store_id: order.store_id,
           store_name: order.store_name,
           store_variant_order_id: order.store_variant_order_id,
           produc_title: order.produc_title,
-          price: formatPrice(order.price * (1 + Number(order.commission))),
+          price: order.price,
           quantity: order.quantity,
           total_price_for_product: order.total_price_for_product,
           variant_order_status_id: order.variant_order_status_id,
@@ -267,7 +262,8 @@ class StoreOrderService extends TransactionBaseService {
     //   order.price = formatPrice(order.price / (1 + Number(order.commission)));
     // }); 
     listOrder.forEach((order) => {
-      order.total_price_for_product = formatPrice(order.total_price_for_product / (1 + Number(order.commission)));
+     
+      order.total_price_for_product = order.price * order.quantity;
     }); 
 
     const OrderMap = new Map();
@@ -306,7 +302,7 @@ class StoreOrderService extends TransactionBaseService {
           quantity: orderData.quantity,
           total_price: orderData.total_price_for_product,
           produc_title: orderData.produc_title,
-          price: formatPrice(orderData.price ),
+          price: formatPrice(orderData.price),
           serial_code_products:
             orderData.status_id === "Completed_ID" ||
             orderData.status_id === "Finished_ID" ||
