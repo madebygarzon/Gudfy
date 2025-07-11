@@ -44,6 +44,8 @@ class StoreOrderService extends TransactionBaseService {
         .leftJoin("so.storeVariantOrder", "svo")
         .leftJoin("svo.store_variant", "sxv")
         .innerJoinAndSelect("sxv.variant", "pv")
+        .innerJoinAndSelect("pv.product", "p")
+        .innerJoinAndSelect("p.product_comission", "pc")
         .leftJoin("sxv.store", "s")
         .where(
           "so.id = :store_order_id AND so.order_status_id = :status",
@@ -73,15 +75,14 @@ class StoreOrderService extends TransactionBaseService {
           "svo.unit_price AS price",
           "s.name AS store_name",
           "s.id AS store_id",
+          "pc.percentage AS commission",
         ])
         .getRawMany();
 
-      // Agrupar las órdenes y sus variantes
-      const ordersMap = new Map();
 
+      const ordersMap = new Map();
       for (const order of listOrder) {
         if (!ordersMap.has(order.id)) {
-          // Crear nueva orden
           ordersMap.set(order.id, {
             id: order.id,
             pay_method_id: order.pay_method_id,
@@ -99,18 +100,15 @@ class StoreOrderService extends TransactionBaseService {
           });
         }
 
-        // Obtener códigos seriales para esta variante
         const serialCodes = await repoSerialCode.find({
           where: { store_variant_order_id: order.store_variant_order_id },
         });
-
-        // Agregar variante a la orden
         ordersMap.get(order.id).store_variant.push({
           store_id: order.store_id,
           store_name: order.store_name,
           store_variant_order_id: order.store_variant_order_id,
           produc_title: order.produc_title,
-          price: formatPrice(order.price + order.price * Number(process.env.COMMISSION)),
+          price: order.price,
           quantity: order.quantity,
           total_price_for_product: order.total_price_for_product,
           variant_order_status_id: order.variant_order_status_id,
@@ -138,6 +136,8 @@ class StoreOrderService extends TransactionBaseService {
       .leftJoinAndSelect("so.storeVariantOrder", "svo")
       .leftJoinAndSelect("svo.store_variant", "sxv")
       .innerJoinAndSelect("sxv.variant", "pv")
+      .innerJoinAndSelect("pv.product", "p")
+      .innerJoinAndSelect("p.product_comission", "pc")
       .leftJoinAndSelect("sxv.store", "s")
       .where("so.customer_id = :customer_id ", { customer_id: customerId })
       .select([
@@ -163,6 +163,7 @@ class StoreOrderService extends TransactionBaseService {
         "svo.unit_price AS price",
         "s.name AS store_name",
         "s.id AS store_id",
+        "svo.commission_order AS commission",
       ])
       .getRawMany();
 
@@ -179,6 +180,7 @@ class StoreOrderService extends TransactionBaseService {
         quantity,
         variant_order_status_id,
         total_price_for_product,
+        commission,
         ...rest
       } = order;
       if (!orderMap.has(order.id)) {
@@ -190,7 +192,7 @@ class StoreOrderService extends TransactionBaseService {
         store_name,
         store_variant_order_id,
         produc_title,
-        price: formatPrice(price + price * Number(process.env.COMMISSION)),
+        price: price,
         quantity,
         total_price_for_product: formatPrice(Number(total_price_for_product) ),
         variant_order_status_id,
@@ -234,6 +236,8 @@ class StoreOrderService extends TransactionBaseService {
       .leftJoinAndSelect("so.customer", "c")
       .leftJoinAndSelect("svo.store_variant", "sxv")
       .innerJoinAndSelect("sxv.variant", "pv")
+      .innerJoinAndSelect("pv.product", "p")
+      .innerJoinAndSelect("p.product_comission", "pc")
       .where("sxv.store_id = :store_id", { store_id: storeId })
       .select([
         "so.id AS id",
@@ -247,17 +251,19 @@ class StoreOrderService extends TransactionBaseService {
         "svo.variant_order_status_id AS variant_order_status_id",
         "sso.state AS state_order",
         "pv.title AS produc_title",
-        "svo.unit_price AS price",
+        "svo.original_price_for_uniti AS price",
+        "svo.commission_order AS commission",
       ])
       .orderBy("so.created_at", "DESC")
       .getRawMany();
 
 
-     listOrder.forEach((order) => {
-      order.price = formatPrice(order.price - order.price * Number(process.env.COMMISSION));
-    }); 
+    //  listOrder.forEach((order) => {
+    //   order.price = formatPrice(order.price / (1 + Number(order.commission)));
+    // }); 
     listOrder.forEach((order) => {
-      order.total_price_for_product = formatPrice(order.total_price_for_product - order.total_price_for_product * Number(process.env.COMMISSION));
+     
+      order.total_price_for_product = order.price * order.quantity;
     }); 
 
     const OrderMap = new Map();
@@ -296,7 +302,7 @@ class StoreOrderService extends TransactionBaseService {
           quantity: orderData.quantity,
           total_price: orderData.total_price_for_product,
           produc_title: orderData.produc_title,
-          price: formatPrice(orderData.price ),
+          price: formatPrice(orderData.price),
           serial_code_products:
             orderData.status_id === "Completed_ID" ||
             orderData.status_id === "Finished_ID" ||
@@ -325,6 +331,8 @@ class StoreOrderService extends TransactionBaseService {
       .leftJoinAndSelect("svo.variant_order_status", "vos")
       .leftJoinAndSelect("svo.store_variant", "sxv")
       .innerJoinAndSelect("sxv.variant", "pv")
+      .innerJoinAndSelect("pv.product", "p")
+      .innerJoinAndSelect("p.product_comission", "pc")
       .where(
         "sxv.store_id = :store_id AND svo.variant_order_status_id NOT IN (:...excludedStatus) ",
         {
@@ -340,14 +348,15 @@ class StoreOrderService extends TransactionBaseService {
         "svo.quantity AS quantity",
         "vos.state AS state",
         "pv.title AS produc_title",
-        "svo.unit_price AS unit_price",
+        "svo.original_price_for_uniti AS unit_price",
+        "svo.commission_order AS commission",
       ])
       .orderBy("so.created_at", "DESC")
       .getRawMany();
 
-      listOrder.forEach((order) => {
-        order.unit_price = formatPrice(order.unit_price - order.unit_price * 0.01);
-      });
+      // listOrder.forEach((order) => {
+      //   order.unit_price = formatPrice(order.unit_price / (1 + Number(order.commission)));
+      // });
     return listOrder;
   }
 
@@ -517,6 +526,8 @@ class StoreOrderService extends TransactionBaseService {
       .leftJoinAndSelect("so.storeVariantOrder", "svo")
       .leftJoinAndSelect("svo.store_variant", "sxv")
       .innerJoinAndSelect("sxv.variant", "pv")
+      .innerJoinAndSelect("pv.product", "p")
+      .innerJoinAndSelect("p.product_comission", "pc")
       .leftJoinAndSelect("sxv.store", "s")
       .where("so.customer_id = :customer_id ", {
         customer_id: this.loggedInCustomer_?.id,
@@ -541,6 +552,7 @@ class StoreOrderService extends TransactionBaseService {
         "svo.unit_price AS price",
         "s.name AS store_name",
         "s.id AS store_id",
+        "svo.commission_order AS commission",
       ])
       .getRawMany();
 
@@ -555,6 +567,7 @@ class StoreOrderService extends TransactionBaseService {
         price,
         quantity,
         total_price_for_product,
+        commission,
         ...rest
       } = order;
       if (!orderMap.has(order.id)) {
@@ -562,10 +575,10 @@ class StoreOrderService extends TransactionBaseService {
       }
       orderMap.get(order.id).store_variant.push({
         store_id,
-        store_name,
+        store_name,   
         store_variant_order_id,
         produc_title,
-        price : formatPrice(price + price * Number(process.env.COMMISSION)),
+        price : price,
         quantity,
         total_price_for_product,
       });

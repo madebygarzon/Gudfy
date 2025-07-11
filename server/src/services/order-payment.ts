@@ -54,6 +54,7 @@ class OrderPaymentService extends TransactionBaseService {
         .innerJoinAndSelect("v.product", "p")
         .innerJoinAndSelect("svo.store_order", "so")
         .innerJoinAndSelect("so.customer", "c")
+        .innerJoinAndSelect("p.product_comission", "pc")
         .where("svo.variant_order_status_id NOT IN (:...excludedStatus)", {
           excludedStatus: ["Cancel_ID", "Payment_Pending_ID"],
         })
@@ -65,20 +66,19 @@ class OrderPaymentService extends TransactionBaseService {
           "svo.created_at AS date_order",
           "svo.quantity AS quantity",
           "svo.variant_order_status_id AS product_order_status",
-          "svo.unit_price AS price",
+          "svo.original_price_for_uniti AS price",
           "so.id as order_id",
           "v.title AS product_name",
           "p.thumbnail AS thumbnail",
           "c.first_name AS customer_name",
           "c.last_name AS custommer_last_name",
           "w.wallet_address AS wallet_address",
+          "svo.commission_order AS commission",
         ])
         .orderBy("svo.created_at", "DESC")
         .getRawMany();
 
-      listStore.forEach((store) => {
-        store.price = formatPrice(store.price - store.price * 0.01);
-      });
+    
 
       const storeMap = new Map();
 
@@ -138,10 +138,9 @@ class OrderPaymentService extends TransactionBaseService {
             balance_paid += totalPrice;
           }
         });
-        store.available_balance = truncateToThreeDecimals(available_balance);
-        store.outstanding_balance =
-          truncateToThreeDecimals(outstanding_balance);
-        store.balance_paid = truncateToThreeDecimals(balance_paid);
+        store.available_balance = formatPrice(available_balance );
+        store.outstanding_balance = formatPrice(outstanding_balance );
+        store.balance_paid = formatPrice(balance_paid / (1 + Number(process.env.COMMISSION)));
       });
 
       return listStoreXproductsPay;
@@ -227,6 +226,10 @@ class OrderPaymentService extends TransactionBaseService {
     const paidOrders = await OrderPaymentRepo.createQueryBuilder("op")
       .innerJoinAndSelect("op.payment_detail", "pd")
       .innerJoinAndSelect("pd.store_variant_order", "svo")
+      .innerJoinAndSelect("svo.store_variant", "sv")
+      .innerJoinAndSelect("sv.variant", "v")
+      .innerJoinAndSelect("v.product", "p")
+      .innerJoinAndSelect("p.product_comission", "pc")
       .where("op.store_id = :idStore", {
         idStore: idStore,
       })
@@ -240,10 +243,11 @@ class OrderPaymentService extends TransactionBaseService {
         "op.subtotal AS subtotal",
         "op.created_at AS payment_date",
         "pd.product_name AS product_name",
-        "svo.unit_price AS product_price",
+        "svo.original_price_for_uniti AS product_price",
         "pd.quantity AS  product_quantity",
         "svo.total_price AS total_price",
         "svo.store_order_id AS store_order_id",
+        "pc.percentage AS commission",
       ])
       .orderBy("op.created_at", "DESC")
       .getRawMany();
@@ -263,14 +267,14 @@ class OrderPaymentService extends TransactionBaseService {
           products: [
             {
               name: payment.product_name,
-              price: formatPrice(
-                payment.product_price -
-                  payment.product_price * Number(process.env.COMMISSION)
-              ),
+              price: payment.product_price,
+              // price: formatPrice(
+              //   payment.product_price / (1 + Number(payment.commission))
+              // ),
               quantity: payment.product_quantity,
+             
               total_price: formatPrice(
-                payment.total_price -
-                  payment.total_price * Number(process.env.COMMISSION)
+                payment.total_price / (1 + Number(process.env.COMMISSION))
               ),
               store_order_id: payment.store_order_id,
               customer_name: payment.customer_name,
@@ -280,14 +284,13 @@ class OrderPaymentService extends TransactionBaseService {
       } else {
         paymentdOrdersMap.get(payment.payment_id).products.push({
           name: payment.product_name,
-          price: formatPrice(
-            payment.product_price -
-              payment.product_price * Number(process.env.COMMISSION)
-          ),
+          price: payment.product_price,
+          // price: formatPrice(
+          //   payment.product_price / (1 + Number(payment.commission))
+          // ),
           quantity: payment.product_quantity,
           total_price: formatPrice(
-            payment.total_price -
-              payment.total_price * Number(process.env.COMMISSION)
+            payment.total_price / (1 + Number(process.env.COMMISSION))
           ),
           store_order_id: payment.store_order_id,
           customer_name: payment.customer_name,

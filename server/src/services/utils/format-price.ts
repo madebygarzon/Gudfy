@@ -1,20 +1,37 @@
-export function formatPrice(valor: number | string | null): number {
-  if (valor === null || valor === undefined) {
+export function formatPrice(numero: number | null | undefined): number {
+  if (numero === null || numero === undefined || Number.isNaN(numero)) {
     return 0;
   }
 
-  const numero = typeof valor === 'string' ? parseFloat(valor) : valor;
-  
+  const numeroNormalizado =
+    typeof numero === "string" ? Number(numero) : numero;
 
-  if (isNaN(numero)) {
+  if (Number.isInteger(numeroNormalizado)) {
+    return numeroNormalizado;
+  }
+
+  try {
+    const numStr = numeroNormalizado.toString();
+
+    if (numStr.includes(".")) {
+      const [_, parteDecimal] = numStr.split(".");
+
+      if (parteDecimal.length > 2) {
+        const thirdDecimal = parseInt(parteDecimal[2]);
+
+        if (thirdDecimal === 5) {
+          return Math.floor(numeroNormalizado * 1000) / 1000;
+        } else if (thirdDecimal < 5) {
+          return Math.floor(numeroNormalizado * 100) / 100;
+        } else {
+          return Math.ceil(numeroNormalizado * 100) / 100;
+        }
+      }
+    }
+
+    return numeroNormalizado;
+  } catch (error) {
+    console.error("Error al formatear precio:", error);
     return 0;
   }
-  
-
-  if (Number.isInteger(numero)) {
-    return numero;
-  }
-  
-
-  return Math.round(numero * 100) / 100;
 }
