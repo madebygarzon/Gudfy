@@ -121,7 +121,7 @@ export default class WalletService extends TransactionBaseService {
       .select([
         "sxv.id AS storeXVariantId",
         "svo.quantity AS quantity",
-        "svo.unit_price AS price",
+        "svo.original_price_for_uniti AS price",
         "sxv.store_id AS storeId",
         "sxv.variant_id AS variantId",
         "so.order_status_id AS status_id",
@@ -141,30 +141,29 @@ export default class WalletService extends TransactionBaseService {
       balance_paid: 0,
     };
 
-    listSVO.forEach((item) => {
-      item.price = formatPrice(item.price - item.price * 0.01);
-    });
+    // listSVO.forEach((item) => {
+    //   item.price = formatPrice(item.price - item.price * 0.01);
+    // });
 
     listSVO.forEach((item) => {
       const totalProductPrice = item.price * item.quantity;
       if (item.variant_order_status_id === "Finished_ID") {
-        prices.available_balance += formatPrice(
-          totalProductPrice - totalProductPrice * 0.01
-        );
+        prices.available_balance += totalProductPrice;
       } else if (
         item.variant_order_status_id === "Discussion_ID" ||
         item.variant_order_status_id === "Completed_ID"
       ) {
-        prices.outstanding_balance += formatPrice(
-          totalProductPrice - totalProductPrice * 0.01
-        );
+        prices.outstanding_balance += totalProductPrice;
       } else if (item.variant_order_status_id == "Paid_ID") {
-        prices.balance_paid += formatPrice(
-          totalProductPrice - totalProductPrice * 0.01
-        );
+        prices.balance_paid += totalProductPrice;
+        
       }
     });
 
+    prices.available_balance = formatPrice(prices.available_balance / (1 + Number(process.env.COMMISSION)));
+    prices.outstanding_balance = formatPrice(prices.outstanding_balance / (1 + Number(process.env.COMMISSION)));
+    prices.balance_paid = formatPrice(prices.balance_paid / (1 + Number(process.env.COMMISSION)));
+   
     return prices;
   }
 

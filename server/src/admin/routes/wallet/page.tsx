@@ -219,12 +219,10 @@ const WalletListado = () => {
     setVoucher(null);
   };
 
-  const handlerOrderId = (orderId: string) => {
-    return orderId.replace("reder_payments_id__", "");
-  };
+  
 
   const handlerRoundDecimals = (value: number) => {
-    return Math.floor(value * 1000) / 1000; // Trunca a 3 decimales
+    return formatPrice(value);
   };
 
   const handlerGetListStore = () => {
@@ -382,7 +380,7 @@ const WalletListado = () => {
                                             {product.product_name}
                                           </Table.Cell>
                                           <Table.Cell>
-                                            {handlerOrderId(product.order_id)}
+                                            {product.order_id}
                                           </Table.Cell>
                                           <Table.Cell>
                                             {product.quantity}
@@ -399,9 +397,9 @@ const WalletListado = () => {
                                           <Table.Cell>--</Table.Cell>
                                           <Table.Cell>
                                             {formatPrice(
-                                              product.price *
-                                                product.quantity *
-                                                commission
+                                                product.price *
+                                                  product.quantity *
+                                                  commission
                                             )}
                                           </Table.Cell>
                                           <Table.Cell>
@@ -448,17 +446,15 @@ const WalletListado = () => {
                               <div className="flex justify-end items-center gap-x-2 py-4">
                                 <p>Saldo Pagado: </p>
                                 <Badge className="bg-[#233044a3] text-white shadow-md ">
-                                  {data?.balance_paid -
-                                    data?.balance_paid * commission}
+                                  {data?.balance_paid }
                                 </Badge>
                                 <p>Saldo pendiente:</p>
                                 <Badge className="bg-[#578be0a3] text-white shadow-md ">
-                                  {data.outstanding_balance}
+                                  {data.outstanding_balance }
                                 </Badge>
                                 <p>Saldo disponible:</p>
                                 <Badge className="bg-green-500 text-white shadow-md ">
-                                  {data?.available_balance -
-                                    data?.available_balance * commission}
+                                  {data?.available_balance }
                                 </Badge>
                               </div>
                             </Drawer.Footer>
@@ -511,8 +507,7 @@ const WalletListado = () => {
                                       <Alert className="flex items-center">
                                         Saldo a pagar con el 1% de comisión:{" "}
                                         {handlerRoundDecimals(
-                                          data?.available_balance -
-                                            data?.available_balance * commission
+                                          data?.available_balance / (1 + commission)
                                         )}
                                         .
                                       </Alert>

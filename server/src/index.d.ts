@@ -1,5 +1,12 @@
 import { LineItem } from "@medusajs/medusa";
 
+export declare module "@medusajs/medusa/dist/models/product" {
+  declare interface Product {
+    product_comission_id?: string;
+    product_comission?: ProductComission;
+  }
+}
+
 export declare module "@medusajs/medusa/dist/models/store" {
   declare interface Store {
     change_name?: boolean;

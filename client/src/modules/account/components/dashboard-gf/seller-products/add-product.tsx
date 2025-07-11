@@ -24,6 +24,7 @@ type Reset = {
   setReset: React.Dispatch<React.SetStateAction<boolean>>
 }
 type listProductsVariant = {
+  commission: number
   id: string
   product_id: string
   thumbnail: string
@@ -146,7 +147,8 @@ export default function AddProducts({ setReset }: Reset) {
   }
 
   const handlerChangePrice = (value: number, variantID: string) => {
-    if (addPrice.length) {
+    if (addPrice.some(p => p.variantID === variantID)) {
+      // Update existing price
       const newArrayPrice = addPrice.map((price) => {
         if (price.variantID === variantID) {
           return { price: value, variantID }
@@ -154,8 +156,10 @@ export default function AddProducts({ setReset }: Reset) {
         return price
       })
       setAddPrice(newArrayPrice)
+    } else {
+      // Add new price
+      setAddPrice((prevPrices) => [...prevPrices, { price: value, variantID }])
     }
-    setAddPrice((addPrice) => [...addPrice, { price: value, variantID }])
   }
 
   const handlerValidateData = (dataSend: dataSend): boolean => {
@@ -371,6 +375,13 @@ export default function AddProducts({ setReset }: Reset) {
                                   )
                                 }}
                               />
+                              <p className="text-sm m-2"> Precio para clientes:{(() => {
+                                const priceObj = addPrice.find(p => p.variantID === product.id);
+                                if (priceObj) {
+                                  return (priceObj.price * product.commission).toFixed(2);
+                                }
+                                return '0.00';
+                              })()}</p>
                             </div>
 
                             {/* Acciones (Cancelar) */}
