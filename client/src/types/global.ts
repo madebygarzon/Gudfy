@@ -53,6 +53,7 @@ export type storeProductVariant = {
   description: string
   thumbnail: string
   productparent: string
+   status: "published" | "draft"
   sellers: {
     store_variant_id: string
     store_id: string
