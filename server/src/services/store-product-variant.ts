@@ -83,6 +83,7 @@ class StoreProductVariantService extends TransactionBaseService {
         .innerJoinAndSelect("pv.product", "p")
         .innerJoinAndSelect("p.product_comission", "pc")
         .where("COALESCE(sxv.quantity_store, 0) > 0")
+        .andWhere("p.status = 'published'")
         .select([
           "pv.id AS id",
           "pv.title AS title",

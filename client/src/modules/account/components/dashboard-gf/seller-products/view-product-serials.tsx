@@ -40,6 +40,7 @@ type StoreProducVariant = {
   quantity: string
   price: string
   serialCodeCount: number
+  commission: string
 }
 interface serials {
   id: string
