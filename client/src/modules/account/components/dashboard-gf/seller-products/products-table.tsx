@@ -28,6 +28,7 @@ type StoreProducVariant = {
   quantity: string
   price: string
   serialCodeCount: number
+  commission: string
 }
 
 type ListDataSellerProduct = {

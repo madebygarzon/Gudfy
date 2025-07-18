@@ -392,6 +392,7 @@ const SellerApplication = () => {
                       />
                     </Table.HeaderCell>
                     <Table.HeaderCell>Usuario</Table.HeaderCell>
+                    <Table.HeaderCell>Teléfono</Table.HeaderCell>
                     <Table.HeaderCell>Email</Table.HeaderCell>
                     <Table.HeaderCell>Estado</Table.HeaderCell>
                     <Table.HeaderCell></Table.HeaderCell>
@@ -404,6 +405,7 @@ const SellerApplication = () => {
                       <Table.Row key={data.customer_id}>
                         <Table.Cell>{DateFormat(data.created_at)}</Table.Cell>
                         <Table.Cell>{data.customer.name}</Table.Cell>
+                        <Table.Cell>{data.application_data.phone}</Table.Cell>
                         <Table.Cell>{data.customer.email}</Table.Cell>
                         <Table.Cell>{data.state_application.state}</Table.Cell>
                         <Table.Cell className="flex gap-x-2 items-center">
