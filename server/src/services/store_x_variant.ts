@@ -55,6 +55,7 @@ class StoreXVariantService extends TransactionBaseService {
           "p.title AS productparent",
           "p.thumbnail AS thumbnail",
           "p.description AS description",
+          "p.status AS status",
           "pc.percentage AS commission",
           "s.id AS store_id",
           "s.avatar AS avatar",
@@ -73,6 +74,7 @@ class StoreXVariantService extends TransactionBaseService {
             description: variant.description,
             thumbnail: variant.thumbnail,
             productparent: variant.productparent,
+            status: variant.status,
             sellers: [
               {
                 store_variant_id: variant.id,
@@ -191,6 +193,7 @@ class StoreXVariantService extends TransactionBaseService {
       .createQueryBuilder("sxv")
       .innerJoinAndSelect("sxv.variant", "pv")
       .innerJoinAndSelect("pv.product", "p")
+      .innerJoinAndSelect("p.product_comission", "pc")
       .where("sxv.store_id = :storeId", {
         storeId: this.loggedInCustomer_.store_id,
       })
@@ -206,6 +209,7 @@ class StoreXVariantService extends TransactionBaseService {
         "p.title AS productTitle",
         "p.thumbnail AS thumbnail",
         "p.description AS description",
+        "pc.percentage AS commission",
               ])
       .getRawMany();
     for (const product of listProduct) {

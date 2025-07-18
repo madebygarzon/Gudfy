@@ -15,6 +15,7 @@ import { Input } from "@heroui/react"
 import ButtonLigth from "@modules/common/components/button_light"
 import Thumbnail from "@modules/products/components/thumbnail"
 import { postUpdatePriceProduct } from "@modules/account/actions/serial-code/uptade-product-price"
+import { formatPrice } from "@lib/util/formatPrice"
 
 type props = {
   productData: StoreProducVariant
@@ -37,6 +38,7 @@ type StoreProducVariant = {
   quantity: string
   price: string
   serialCodeCount: number
+  commission: string
 }
 interface CodesResult {
   variantID: string
@@ -124,6 +126,7 @@ export default function EditProduct({
                       <span className="font-bold">Precio actual:</span>{" "}
                       ${productData.price}
                     </p>
+                   
                     <div className="mt-2">
                       <label htmlFor="price-update" className="font-bold block mb-1">Actualizar precio:</label>
                       <input 
@@ -135,6 +138,10 @@ export default function EditProduct({
                         placeholder="Nuevo precio"
                       />
                     </div>
+                    <p className="mt-2">
+                      <span className="font-bold">Precio final para clientes:</span>{" "}
+                      ${formatPrice(Number(updatedPrice) * (1 + Number(productData.commission)))}
+                    </p>
                   </div>
                   <h4 className="font-bold mt-8 text-lg mb-1">
                     Agregar inventario
