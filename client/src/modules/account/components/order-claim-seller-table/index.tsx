@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import React from "react"
 import InputFile from "@modules/common/components/input-file"
 import {
@@ -28,7 +28,7 @@ import Loader from "@lib/loader"
 import { ChatIcon, SendIcon } from "@lib/util/icons"
 import ButtonLigth from "@modules/common/components/button_light"
 import Image from "next/image"
-import { XMarkMini } from "@medusajs/icons"
+import { XMarkMini, PlayMiniSolid } from "@medusajs/icons"
 
 type orders = {
   orders: order[]
@@ -226,6 +226,15 @@ const ModalClaimComment = ({
   const [image, setImage] = useState<File | undefined>()
   const [isLoadingStatus, setIsLoadingStatus] = useState<boolean>(false)
   const { customer } = useMeCustomer()
+  const messagesEndRef = useRef<HTMLDivElement>(null)
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
+  }
+
+  useEffect(() => {
+    scrollToBottom()
+  }, [comments])
 
   const handlerSubmitComment = () => {
     const dataComment = {
@@ -332,6 +341,18 @@ const ModalClaimComment = ({
                           ? "Admin Gudfy"
                           : "Tienda"}
                       </p>
+                      {comment.created_at && (
+                        <p className={`text-[10px] mb-2 ${comment.comment_owner_id === "COMMENT_STORE_ID" ? "text-white" : "text-gray-500"}`}>
+                          {new Date(comment.created_at).toLocaleString('es-ES', {
+                            year: 'numeric',
+                            month: '2-digit',
+                            day: '2-digit',
+                            hour: '2-digit',
+                            minute: '2-digit',
+                            second: '2-digit'
+                          })}
+                        </p>
+                      )}
                       <p>{comment.comment}</p>
                       {comment.image ? (
                         <Image
@@ -345,6 +366,7 @@ const ModalClaimComment = ({
                     </div>
                   </div>
                 ))}
+                <div ref={messagesEndRef} />
               </div>
             </ModalBody>
             <ModalFooter className="border-t border-slate-200 bg-gray-50 py-3 px-4 rounded-b-2xl">
@@ -356,14 +378,23 @@ const ModalClaimComment = ({
                         value={newComment}
                         size="sm"
                         radius="sm"
-                        className="flex-1 text-sm focus:outline-none focus:ring-0 border-none placeholder-gray-400"
+                        className="flex-1 text-sm focus:outline-none focus:ring-0 border-none placeholder-white"
                         placeholder="Escribe un mensaje..."
                         onValueChange={setNewComment}
                       />
                       <SendIcon
                         onClick={handlerSubmitComment}
-                        className="cursor-pointer p-1 flex items-center justify-center w-10 h-8 rounded-full bg-blue-500 hover:bg-blue-600 text-white shadow-md transition-all duration-200"
-                      />
+                        className={`p-1 flex items-center justify-center w-10 h-8 rounded-full shadow-md transition-all duration-200 ${
+                          newComment?.trim() || image
+                            ? "cursor-pointer bg-blue-500 hover:bg-blue-600 text-white"
+                            : "cursor-not-allowed bg-gray-300 text-gray-500"
+                        }`}
+                        style={{
+                          pointerEvents: newComment?.trim() || image ? "auto" : "none"
+                        }}
+                      >
+                        <PlayMiniSolid color={newComment?.trim() || image ? "#FFFFFF" : "#9CA3AF"} />
+                      </SendIcon>
                     </div>
                     <div className="mt-2">
                       <InputFile

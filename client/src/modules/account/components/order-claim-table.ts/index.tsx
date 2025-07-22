@@ -1,5 +1,5 @@
 "use client"
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import React from "react"
 import {
   Modal,
@@ -43,7 +43,6 @@ const ClaimTable: React.FC = () => {
     useOrderGudfy()
   const [selectOrderClaim, setSelectOrderClaim] = useState<orderClaim>()
 
-  // Pagination controls
   const [page, setPage] = useState(1)
   const [rowsPerPage, setRowsPerPage] = useState(dataSelecterPage[0])
   const [pageTotal, setPageTotal] = useState(1)
@@ -55,7 +54,7 @@ const ClaimTable: React.FC = () => {
 
   const filteredOrderClaims = listOrderClaim
     ?.filter(claim => {
-      // Status filter
+      
       if (filterStatus !== "all") {
         switch (filterStatus) {
           case "CERRADA":
@@ -72,7 +71,6 @@ const ClaimTable: React.FC = () => {
       }
       return true
     })
-    // Search filter
     .filter(claim => 
       claim.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
       claim.number_order.toLowerCase().includes(searchQuery.toLowerCase())
@@ -101,13 +99,11 @@ const ClaimTable: React.FC = () => {
     })
   }
 
-  // Update total pages when filtered data or rows per page changes
   useEffect(() => {
     if (!filteredOrderClaims) return
     setPageTotal(Math.ceil(filteredOrderClaims.length / rowsPerPage))
   }, [filteredOrderClaims, rowsPerPage])
 
-  // Get paginated data
   const paginatedClaims = filteredOrderClaims
     ?.slice((page - 1) * rowsPerPage, page * rowsPerPage)
 
@@ -343,6 +339,15 @@ const ModalClaimComment = ({
     unsolved: boolean
   }>({ solved: false, cancel: false, unsolved: false })
   const { customer } = useMeCustomer()
+  const messagesEndRef = useRef<HTMLDivElement>(null)
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
+  }
+
+  useEffect(() => {
+    scrollToBottom()
+  }, [comments])
   const handlerSubmitComment = () => {
     const dataComment = {
       comment: newComment,
@@ -355,7 +360,7 @@ const ModalClaimComment = ({
       setImage(undefined)
       setNewComment("")
       setComments((old) => {
-        // se debe de arreglar un un reset
+     
         return old?.length
           ? [
               ...old,
@@ -407,8 +412,6 @@ const ModalClaimComment = ({
     const socketIo = io(process.env.PORT_SOKET || "http://localhost:3001")
 
     socketIo.on("new_comment", (data: { order_claim_id: string }) => {
-      // Si la notificación es para el cliente correcto, agregarla a la lista
-
       if (data.order_claim_id === claim?.id)
         getListClaimComments(claim?.id).then((e) => {
           setComments(e)
@@ -418,7 +421,7 @@ const ModalClaimComment = ({
     setSocket(socketIo)
 
     return () => {
-      socketIo.disconnect() // Desconectar el socket cuando el componente se desmonta
+      socketIo.disconnect()
     }
   }, [claim])
 
@@ -475,6 +478,18 @@ const ModalClaimComment = ({
                           ? "Admin Gudfy"
                           : claim?.store_name}
                       </p>
+                      {comment.created_at && (
+                        <p className={`text-[10px] mb-2 ${comment.comment_owner_id === "COMMENT_STORE_ID" ? "text-gray-500" : "text-white"}`}>
+                          {new Date(comment.created_at).toLocaleString('es-ES', {
+                            year: 'numeric',
+                            month: '2-digit',
+                            day: '2-digit',
+                            hour: '2-digit',
+                            minute: '2-digit',
+                            second: '2-digit'
+                          })}
+                        </p>
+                      )}
                       <p>{comment.comment}</p>
                       {comment.image ? (
                         <Image
@@ -488,6 +503,7 @@ const ModalClaimComment = ({
                     </div>
                   </div>
                 ))}
+                <div ref={messagesEndRef} />
               </div>
             </ModalBody>
             <ModalFooter className="border-t border-slate-200 bg-gray-50 py-3 px-4 rounded-b-2xl">
@@ -505,9 +521,16 @@ const ModalClaimComment = ({
                       />
                       <SendIcon
                         onClick={handlerSubmitComment}
-                        className="cursor-pointer p-1 flex items-center justify-center w-10 h-8 rounded-full bg-blue-500 hover:bg-blue-600 text-white shadow-md transition-all duration-200"
+                        className={`p-1 flex items-center justify-center w-10 h-8 rounded-full shadow-md transition-all duration-200 ${
+                          newComment?.trim() || image
+                            ? "cursor-pointer bg-blue-500 hover:bg-blue-600 text-white"
+                            : "cursor-not-allowed bg-gray-300 text-gray-500"
+                        }`}
+                        style={{
+                          pointerEvents: newComment?.trim() || image ? "auto" : "none"
+                        }}
                       >
-                        <PlayMiniSolid color="#FFFFFF" />
+                        <PlayMiniSolid color={newComment?.trim() || image ? "#FFFFFF" : "#9CA3AF"} />
                       </SendIcon>
                     </div>
                     <div className="mt-2">
@@ -521,13 +544,13 @@ const ModalClaimComment = ({
                       />
                     </div>
 
-                    <div className="mt-4 px-6 text-xs text-gray-600">
+                    {/* <div className=" px-6 text-[10px] text-gray-600">
                       *Estimado cliente, le informamos que dispone de varias
                       opciones para gestionar su reclamación. Le invitamos a
                       elegir la alternativa que mejor se ajuste a sus
                       necesidades.*
-                    </div>
-                    <div className="mt-1 px-6 text-xs text-gray-600">
+                    </div> */}
+                    <div className=" px-6 text-[10px] text-gray-600">
                       <p>
                         <span className="font-extrabold">
                           ⚠️ Aviso Importante:

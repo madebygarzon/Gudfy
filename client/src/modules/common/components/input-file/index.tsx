@@ -51,6 +51,12 @@ const InputFile: React.FC<InputProps> = ({
     }
   }, [previewImage])
 
+  useEffect(() => {
+    if (!file && previewImage) {
+      setPreviewImage(undefined)
+    }
+  }, [file, previewImage])
+
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     setError(null)
     const selectedFile = e.target.files?.[0]
