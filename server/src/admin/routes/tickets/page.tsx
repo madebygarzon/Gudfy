@@ -333,9 +333,13 @@ const ModalViewTicket = ({
       <Drawer.Trigger asChild>
         <Button>Ver conversación </Button>
       </Drawer.Trigger>
-      <Drawer.Content className="w-[60%] right-0">
-        <Drawer.Header className="flex flex-col gap-1"></Drawer.Header>
-        <Drawer.Body className="">
+      <Drawer.Content className="w-[60%] right-0 h-full flex flex-col">
+        <Drawer.Header className="flex flex-col gap-1 flex-shrink-0">
+          <h1 className="text-2xl font-bold text-center text-gray-700 capitalize">
+           Asunto: {subject}
+          </h1>
+        </Drawer.Header>
+        <Drawer.Body className="flex-1 overflow-hidden p-0">
           <ViewTicket
             handlerReset={handlerReset}
             subject={subject}

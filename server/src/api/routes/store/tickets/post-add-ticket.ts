@@ -23,5 +23,8 @@ export async function postAddTickets(
     }
   } catch (error) {
     console.log("Error en el punto final para agregar un ticket nuevo ", error);
+  } finally {
+    res.status(200).send(null);
   }
+
 }
