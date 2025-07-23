@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { Image } from "@medusajs/medusa";
 import { getDataMessagesTicket } from "../../actions/tickets/get-data-message-ticket";
@@ -25,6 +25,8 @@ const ViewTicket = ({ handlerReset, ticketId, subject, status }: Props) => {
   const [message, setMessage] = useState<string>("");
   const [data, setData] = useState<ContactFormValues[]>([]);
   const [image, setImage] = useState<File | undefined>();
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const {
     register,
@@ -33,18 +35,36 @@ const ViewTicket = ({ handlerReset, ticketId, subject, status }: Props) => {
     formState: { errors },
   } = useForm<{ message: string; image: File | undefined }>();
 
-  const onSubmit = handleSubmit(async (formData) => {
+  const submitMessage = async (formData: { message: string; image: File | undefined }) => {
+    if (isLoading) return; 
+    
     try {
-      addTicketMessage({ ticketId, message: formData.message }, image).then(
-        () => {
-          handlerReset();
-          reset();
-        }
-      );
+      setIsLoading(true);
+      await addTicketMessage({ ticketId, message: formData.message }, image);
+      
+      setMessage("");
+      setImage(undefined);
+      reset();
+      handlerReset();
     } catch (error) {
       console.error("Error al crear el ticket:", error);
+    } finally {
+      setIsLoading(false);
     }
-  });
+  };
+
+  const onSubmit = handleSubmit(submitMessage);
+
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      onSubmit();
+    }
+  };
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
 
   useEffect(() => {
     if (ticketId) {
@@ -54,14 +74,21 @@ const ViewTicket = ({ handlerReset, ticketId, subject, status }: Props) => {
     }
   }, [ticketId, handlerReset]);
 
-  return (
-    <form onSubmit={onSubmit} className="p-6 bg-white rounded-lg shadow-md">
-      <div className="flex flex-col w-full gap-4 text-sm">
-        <h1 className="text-2xl font-bold text-center text-gray-700">
-          {subject}
-        </h1>
+  useEffect(() => {
+    scrollToBottom();
+  }, [data]);
 
-        <div className="max-h-96 overflow-y-auto space-y-3">
+  return (
+    <div className="h-full flex flex-col bg-white">
+      {/* <div className="p-6 flex-shrink-0">
+        <h1 className="text-2xl font-bold text-start text-gray-700 ">
+          Asunto: {subject}
+        </h1>
+        
+      </div> */}
+
+      <div className="flex-1 px-6 pb-4 flex flex-col gap-4 ">
+        <div className="overflow-y-auto space-y-3" style={{ height: '50vh' }}>
           {data.map((message, index) => (
             <div
               key={index}
@@ -83,6 +110,16 @@ const ViewTicket = ({ handlerReset, ticketId, subject, status }: Props) => {
                     ? "Admin Gudfy"
                     : "Cliente"}
                 </p>
+                <p className="text-[10px] text-gray-500 mb-2">
+                  {new Date(message.created_at).toLocaleString('es-ES', {
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit'
+                  })}
+                </p>
                 <p className="mt-1">{message.message}</p>
                 {message.image && (
                   <img
@@ -94,21 +131,36 @@ const ViewTicket = ({ handlerReset, ticketId, subject, status }: Props) => {
               </div>
             </div>
           ))}
+          <div ref={messagesEndRef} />
         </div>
         {status == "Cerrado" || status == "Contestado" ? (
           <p className="text-red-500 text-xs">
             El ticket se encuentra {status}
           </p>
         ) : (
-          <>
-            <Textarea
-              {...register("message", { required: true })}
-              placeholder="Escribe tu mensaje aquí..."
-              rows={3}
-              className="rounded-md"
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-            />
+          <form onSubmit={onSubmit} className="flex flex-col gap-4">
+            <div className="flex gap-2 items-center">
+              <div className="flex-1">
+                <Textarea
+                  {...register("message", { required: true })}
+                  placeholder="Escribe tu mensaje aquí... (Presiona Enter para enviar)"
+                  rows={1}
+                  className="rounded-md"
+                  value={message}
+                  onChange={(e) => setMessage(e.target.value)}
+                  onKeyPress={handleKeyPress}
+                  disabled={isLoading}
+                />
+              </div>
+              <Button 
+                type="submit" 
+                color="primary" 
+                className="h-fit px-6"
+                disabled={isLoading || (!message.trim() && !image)}
+              >
+                {isLoading ? "Enviando..." : "Enviar"}
+              </Button>
+            </div>
             {errors.message && (
               <p className="text-red-500 text-xs">El mensaje es requerido</p>
             )}
@@ -120,14 +172,10 @@ const ViewTicket = ({ handlerReset, ticketId, subject, status }: Props) => {
               setFile={setImage}
               accept="image/*"
             />
-
-            <Button type="submit" color="primary" className="mt-4 w-full">
-              Enviar
-            </Button>
-          </>
+          </form>
         )}
       </div>
-    </form>
+    </div>
   );
 };
 

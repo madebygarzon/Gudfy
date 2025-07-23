@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   Table,
   DropdownMenu,
@@ -81,8 +81,8 @@ const ReclamosListado = () => {
   const [page, setPage] = useState(1);
   const [rowsPages, setRowsPages] = useState(10);
   const [isLoading, setIsLoading] = useState(true);
-  // Estado para almacenar la reclamación seleccionada
   const [selectedClaimId, setSelectedClaimId] = useState<string>("");
+  const [selectedClaimStatus, setSelectedClaimStatus] = useState<string>("");
 
   const formatStatus = (status) => {
     return status.charAt(0).toUpperCase() + status.slice(1).toLowerCase();
@@ -175,15 +175,15 @@ const ReclamosListado = () => {
   const getStatusColor = (status) => {
     switch (status) {
       case "CERRADA":
-        return "bg-red-200"; // Rojo: Indica que el reclamo está cerrado o finalizado.
+        return "bg-red-200";
       case "SIN RESOLVER":
-        return "bg-yellow-200"; // Amarillo: Indica que el reclamo está pendiente o requiere atención.
+        return "bg-yellow-200";
       case "ABIERTA":
-        return "bg-blue-200"; // Azul: Indica que el reclamo está activo o en revisión.
+        return "bg-blue-200";
       case "RESUELTA":
-        return "bg-green-200"; // Verde: Indica que el reclamo ha sido resuelto satisfactoriamente.
+        return "bg-green-200";
       default:
-        return "bg-gray-200"; // Gris: Para estados no definidos o neutrales.
+        return "bg-gray-200";
     }
   };
 
@@ -214,6 +214,12 @@ const ReclamosListado = () => {
   const handlerCommentsFromClaimOrder = (claim: string) => {
     setIsLoadingComment(true);
     setSelectedClaimId(claim);
+    
+    const selectedClaim = dataCustomer.dataClaim.find(data => data.id === claim);
+    if (selectedClaim) {
+      setSelectedClaimStatus(selectedClaim.status_order_claim);
+    }
+    
     getClaimComments(claim).then((e) => {
       setIsLoadingComment(false);
       setComments(e || []);
@@ -323,7 +329,11 @@ const ReclamosListado = () => {
                               }
                               return null;
                             })}
-                            <IconButton onClick={() => handlerCommentsFromClaimOrder(data.id)}>
+                            <IconButton
+                              onClick={() =>
+                                handlerCommentsFromClaimOrder(data.id)
+                              }
+                            >
                               <Eye className="text-ui-fg-subtle" />
                             </IconButton>
                           </div>
@@ -389,6 +399,7 @@ const ReclamosListado = () => {
         comments={comments}
         setComments={setComments}
         handlerStatusClaim={handlerStatusClaim}
+        claimStatus={selectedClaimStatus}
       />
     </div>
   );
@@ -401,6 +412,7 @@ interface ModalClaimComment {
   comments: ClaimComments[];
   setComments: React.Dispatch<React.SetStateAction<ClaimComments[]>>;
   handlerStatusClaim: (claim: string, status: string) => void;
+  claimStatus?: string;
 }
 
 const ModalComment = ({
@@ -410,10 +422,20 @@ const ModalComment = ({
   comments,
   setComments,
   handlerStatusClaim,
+  claimStatus,
 }: ModalClaimComment) => {
-  const { user } = useAdminGetSession();
   const [newComment, setNewComment] = useState("");
   const [socket, setSocket] = useState<Socket | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+  
+  const isClaimClosed = claimStatus === "CERRADA";
+  
+  const { user } = useAdminGetSession();
 
   useEffect(() => {
     const socketIo = io("http://localhost:9000");
@@ -423,31 +445,44 @@ const ModalComment = ({
     };
   }, []);
 
-  const handlerSubmitComment = () => {
-    if (!newComment.trim()) return;
-    const newCommentData = {
-      comment: newComment,
-      comment_owner_id: "COMMENT_ADMIN_ID",
-      order_claim_id: claimId,
-    };
+  const handlerSubmitComment = async () => {
+    if (!newComment.trim() || isLoading || isClaimClosed) return;
 
-    postAddComment(newCommentData).then((response) => {
-      // Solo procesamos la respuesta si existe y tiene un ID
-      if (response && typeof response === 'object' && 'id' in response) {
+    setNewComment("");
+    try {
+      setIsLoading(true);
+      const newCommentData = {
+        comment: newComment,
+        comment_owner_id: "COMMENT_ADMIN_ID",
+        order_claim_id: claimId,
+      };
+
+      const response = await postAddComment(newCommentData);
+
+      if (response && typeof response === "object" && "id" in response) {
         setComments((old) => [...old, { ...newCommentData, id: response.id }]);
-        setNewComment("");
         socket?.emit("comment-added", {
           ...newCommentData,
           id: response.id,
         });
       }
-    });
+    } catch (error) {
+      console.error("Error al enviar comentario:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      handlerSubmitComment();
+    }
   };
 
   useEffect(() => {
     const socketIo = io(process.env.PORT_SOKET || "http://localhost:3001");
     socketIo.on("new_comment", (data: { order_claim_id: string }) => {
-      // Si la notificación es para el cliente correcto, agregarla a la lista
       if (data.order_claim_id === claimId)
         getClaimComments(claimId).then((e) => {
           setComments(e);
@@ -459,82 +494,124 @@ const ModalComment = ({
     };
   }, [claimId, setComments]);
 
+  useEffect(() => {
+    scrollToBottom();
+  }, [comments]);
+  useEffect(() => {
+    if (open && comments.length > 0) {
+      setTimeout(() => scrollToBottom(), 100);
+    }
+  }, [open, comments]);
+
   return (
     <FocusModal open={open} onOpenChange={setOpen}>
-      {/* No necesitamos un trigger aquí ya que el modal se abre desde la tabla */}
-
-      {/* Contenedor principal del modal, aplicando estilos similares a "rounded-2xl overflow-hidden shadow-lg" */}
-      <FocusModal.Content className="w-[50%] h-[80%] mx-auto my-auto rounded-2xl overflow-hidden shadow-lg">
-        {/* Encabezado con estilo similar al ModalHeader original */}
-        <FocusModal.Header className="flex flex-col gap-1 border-b border-slate-200 bg-gray-50 py-3 px-4 rounded-t-2xl">
-          <h2 className="text-center text-lg font-semibold">
-            Resolución de Reclamaciones
-          </h2>
-        </FocusModal.Header>
-
-        {/* Cuerpo principal del chat, similar al ModalBody original */}
-        <FocusModal.Body className="bg-gray-100 px-8 py-4 overflow-y-auto h-[60vh]">
-          <div className="flex flex-col gap-2">
-            {comments?.map((comment) => (
+      <FocusModal.Content className="w-[60%] h-full flex flex-col ml-auto">
+        <FocusModal.Header className="flex gap-1 justify-end"></FocusModal.Header>
+        <FocusModal.Body className="flex-1 overflow-hidden p-0">
+          <div className="h-full flex flex-col bg-white">
+            <h1 className="text-2xl font-bold text-center text-gray-700">
+              Resolución de Reclamaciones
+            </h1>
+            <div className="flex-1 px-6 pb-4 flex flex-col gap-4 mt-4">
               <div
-                key={comment.id}
-                className={`flex w-full transition-transform duration-300 ease-in-out ${
-                  comment.comment_owner_id === "COMMENT_CUSTOMER_ID"
-                    ? "justify-end"
-                    : "justify-start"
-                }`}
+                className="overflow-y-auto space-y-3"
+                style={{ height: "60vh" }}
               >
-                <div
-                  className={`max-w-[75%] px-4 py-2 shadow-md text-sm ${
-                    comment.comment_owner_id === "COMMENT_CUSTOMER_ID"
-                      ? "bg-blue-400 text-white rounded-bl-xl rounded-tr-xl rounded-tl-xl"
-                      : "bg-gray-200 text-gray-900 rounded-br-xl rounded-tr-xl rounded-tl-xl"
-                  }`}
-                >
-                  <p className="mb-1 text-xs font-bold">
-                    {comment.comment_owner_id === "COMMENT_CUSTOMER_ID"
-                      ? "Cliente"
-                      : comment.comment_owner_id === "COMMENT_ADMIN_ID"
-                      ? "Admin Gudfy"
-                      : "Tienda"}
-                  </p>
-                  <p>{comment.comment}</p>
-                </div>
+                {comments?.map((comment) => (
+                  <div
+                    key={comment.id}
+                    className={`flex w-full ${
+                      comment.comment_owner_id === "COMMENT_ADMIN_ID"
+                        ? "justify-end"
+                        : "justify-start"
+                    }`}
+                  >
+                    <div
+                      className={`p-3 rounded-lg ${
+                        comment.comment_owner_id === "COMMENT_ADMIN_ID"
+                          ? "bg-blue-100 text-blue-700"
+                          : "bg-gray-100 text-gray-700"
+                      }`}
+                    >
+                      <p className="text-xs font-semibold">
+                        {comment.comment_owner_id === "COMMENT_CUSTOMER_ID"
+                          ? "Cliente"
+                          : comment.comment_owner_id === "COMMENT_ADMIN_ID"
+                          ? "Admin Gudfy"
+                          : "Tienda"}
+                      </p>
+                      {comment.created_at && (
+                        <p className="text-[10px] text-gray-500 mb-2">
+                          {new Date(comment.created_at).toLocaleString(
+                            "es-ES",
+                            {
+                              year: "numeric",
+                              month: "2-digit",
+                              day: "2-digit",
+                              hour: "2-digit",
+                              minute: "2-digit",
+                              second: "2-digit",
+                            }
+                          )}
+                        </p>
+                      )}
+                      <p className="mt-1">{comment.comment}</p>
+                    </div>
+                  </div>
+                ))}
+                <div ref={messagesEndRef} />
               </div>
-            ))}
-          </div>
-        </FocusModal.Body>
 
-        {/* Zona de footer o acciones (en tu caso, lo manejas con otro FocusModal.Body) */}
-        <FocusModal.Body className="border-t border-slate-200 bg-gray-50 py-3 px-4 rounded-b-2xl">
-          <div className="w-full">
-            {/* Campo de texto + botón de enviar, usando las clases del input estilo "rounded-full shadow-md" */}
-            <div className="flex items-center w-full gap-2 bg-white px-3 py-2 rounded-full shadow-md">
-              <input
-                value={newComment}
-                onChange={(e) => setNewComment(e.target.value)}
-                type="text"
-                placeholder="Escribe tu respuesta..."
-                className="flex-1 text-sm focus:outline-none focus:ring-0 border-none placeholder-gray-400"
-              />
-              <button
-                onClick={handlerSubmitComment}
-                className="cursor-pointer p-1 flex items-center justify-center w-10 h-8 rounded-full bg-blue-500 hover:bg-blue-600 text-white shadow-md transition-all duration-200"
-              >
-                {/* Icono de enviar (similar a SendIcon del original) */}
-                <PlayMiniSolid />
-              </button>
-            </div>
+              <div className="flex flex-col gap-4">
+                {isClaimClosed && (
+                  <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-md">
+                    <p className="text-sm font-medium">
+                      🚫 Esta reclamación está cerrada. No se pueden enviar más mensajes.
+                    </p>
+                  </div>
+                )}
+                <div className="flex gap-2 items-center">
+                  <div className="flex-1">
+                    <input
+                      value={newComment}
+                      onChange={(e) => setNewComment(e.target.value)}
+                      onKeyPress={handleKeyPress}
+                      type="text"
+                      placeholder={isClaimClosed ? "Reclamación cerrada - No se pueden enviar mensajes" : "Escribe tu respuesta... (Presiona Enter para enviar)"}
+                      className={`w-full px-3 py-2 border rounded-md focus:outline-none ${
+                        isClaimClosed 
+                          ? "border-gray-200 bg-gray-100 text-gray-400 cursor-not-allowed" 
+                          : "border-gray-300 focus:ring-2 focus:ring-blue-500"
+                      }`}
+                      disabled={isLoading || isClaimClosed}
+                    />
+                  </div>
+                  <button
+                    onClick={handlerSubmitComment}
+                    className={`h-fit px-6 py-2 rounded-md transition-colors duration-200 ${
+                      isClaimClosed || isLoading || !newComment.trim()
+                        ? "bg-gray-400 cursor-not-allowed text-white"
+                        : "bg-blue-500 hover:bg-blue-600 text-white"
+                    }`}
+                    disabled={isLoading || !newComment.trim() || isClaimClosed}
+                  >
+                    {isLoading ? "Enviando..." : isClaimClosed ? "Cerrada" : "Enviar"}
+                  </button>
+                </div>
 
-            <div className="flex justify-center mt-4">
-              <button
-                type="button"
-                className="py-2 btn btn-secondary btn-small flex items-center"
-                onClick={()=>handlerStatusClaim(claimId, "CANCEL")}
-              >
-                <ArchiveBox className="mr-2" />
-                Cerrar reclamación
-              </button>
+                <div className="flex justify-center">
+                  {!isClaimClosed && (
+                  <button
+                    type="button"
+                    className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-md flex items-center gap-2 transition-colors duration-200"
+                    onClick={() => handlerStatusClaim(claimId, "CANCEL")}
+                  >
+                    <ArchiveBox className="w-4 h-4" />
+                    Cerrar reclamación
+                  </button>
+                  )}
+                </div> 
+              </div>
             </div>
           </div>
         </FocusModal.Body>
@@ -546,7 +623,6 @@ const ModalComment = ({
 export const config: RouteConfig = {
   link: {
     label: "Reclamos",
-    // icon: CustomIcon,
   },
 };
 
