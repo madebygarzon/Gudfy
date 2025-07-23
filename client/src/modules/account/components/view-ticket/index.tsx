@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useState, useRef } from "react"
 import ButtonMedusa from "@modules/common/components/button"
 import { Input, Textarea } from "@heroui/react"
 import { useForm } from "react-hook-form"
@@ -35,17 +35,29 @@ const ViewTicket = ({
   const [message, setMessage] = useState<string>("")
   const [data, setData] = useState<ContactFormValues[]>()
   const [image, setImage] = useState<File | undefined>()
+  const messagesEndRef = useRef<HTMLDivElement>(null)
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<{ message: string }>()
 
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
+  }
+
+  useEffect(() => {
+    scrollToBottom()
+  }, [data])
+
   const onSubmit = handleSubmit(async () => {
     try {
-      addTicketMessage({ ticketId, message }, image)
-      onClose()
-      handlerReset()
+      await addTicketMessage({ ticketId, message }, image)
+      setImage(undefined)
+      setMessage("")
+      getDataMessagesTicket(ticketId).then((e) => {
+        setData(e)
+      })
     } catch (error) {
       console.error("Error al crear el ticket:", error)
     }
@@ -94,6 +106,20 @@ const ViewTicket = ({
                     ? "Admin Gudfy"
                     : ""}
                 </p>
+                {message.created_at && (
+                  <p className={`text-[10px] mb-2 ${
+                    message.owner_id === "COMMENT_CUSTOMER_ID" ? "text-white" : "text-gray-500"
+                  }`}>
+                    {new Date(message.created_at).toLocaleString('es-ES', {
+                      year: 'numeric',
+                      month: '2-digit',
+                      day: '2-digit',
+                      hour: '2-digit',
+                      minute: '2-digit',
+                      second: '2-digit'
+                    })}
+                  </p>
+                )}
                 <p>{message.message}</p>
                 {message.image ? (
                   <Image
@@ -107,6 +133,7 @@ const ViewTicket = ({
               </div>
             </div>
           ))}
+          <div ref={messagesEndRef} />
         </div>
 
         {status !== "Cerrado" && (
@@ -124,13 +151,22 @@ const ViewTicket = ({
                 placeholder="Escribe un mensaje..."
               />
               <SendIcon
-                className="cursor-pointer p-1 flex items-center justify-center w-10 h-8 rounded-full bg-blue-500 hover:bg-blue-600 text-white shadow-md transition-all duration-200"
+                className={`p-1 flex items-center justify-center w-10 h-8 rounded-full shadow-md transition-all duration-200 ${
+                  message?.trim() || image
+                    ? "cursor-pointer bg-blue-500 hover:bg-blue-600 text-white"
+                    : "cursor-not-allowed bg-gray-300 text-gray-500"
+                }`}
+                style={{
+                  pointerEvents: message?.trim() || image ? "auto" : "none"
+                }}
                 onClick={(e) => {
                   e.preventDefault()
-                  onSubmit()
+                  if (message?.trim() || image) {
+                    onSubmit()
+                  }
                 }}
               >
-                <PlayMiniSolid type="button" color="#FFFFFF" />
+                <PlayMiniSolid type="button" color={message?.trim() || image ? "#FFFFFF" : "#9CA3AF"} />
               </SendIcon>
             </div>
             <div>

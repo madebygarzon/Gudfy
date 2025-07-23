@@ -1,5 +1,9 @@
 
 export function formatPrice(numero: number): number {
+  if (numero == null || isNaN(numero)) {
+    return 0;
+  }
+  
   if (Number.isInteger(numero)) {
     return numero;
   }
