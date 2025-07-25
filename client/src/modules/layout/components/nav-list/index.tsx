@@ -5,6 +5,7 @@ import clsx from "clsx"
 import { categoryContext } from "@lib/context/category-context"
 import { Fragment } from "react"
 import SelectedProducts from "@modules/home/components/slector-products"
+import Loader from "@lib/loader"
 
 const NavList: React.FC = () => {
   const categories = useContext(categoryContext)
@@ -65,12 +66,12 @@ const NavList: React.FC = () => {
                 </Transition>
               </Popover>
             ) : (
-              "loading.."
+              <Loader size={10} />
             )}
           </div>
         </nav>
       ) : (
-        <> loading...</>
+        <> <Loader size={10} /></>
       )}
     </>
   )
