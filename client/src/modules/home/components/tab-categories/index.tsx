@@ -40,7 +40,7 @@ const Category = ({
   }
 
   return categories.length ? (
-    <div className="flex flex-wrap md:flex-col  max-h-[300px] md:pl-5 mb-3 overflow-x-auto">
+    <div className="flex justify-center flex-wrap max-h-[300px] md:pl-5 mb-3 overflow-x-auto">
       <ButtonLigth
         type="button"
         onClick={() => {
