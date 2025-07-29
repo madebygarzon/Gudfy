@@ -49,7 +49,7 @@ export interface order {
       store_name: string;
       store_variant_order_id: string;
       variant_order_status_id: string;
-      produc_title: string;
+      product_title: string;
       price: string;
       quantity: string;
       total_price_for_product: string;
