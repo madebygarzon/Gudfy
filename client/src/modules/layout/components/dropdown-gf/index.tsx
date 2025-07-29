@@ -6,6 +6,7 @@ import { useAccount } from "@lib/context/account-context"
 import { useTranslation } from "react-i18next"
 import { Badge, Avatar } from "@heroui/react"
 import { useNotificationContext } from "@lib/context/notification-context"
+import {useSellerStoreGudfy} from "@lib/context/seller-store"
 import Notification from "@modules/common/components/notification"
 
 type DropdownProps = {
@@ -20,6 +21,8 @@ const DropdownGudFy: React.FC<DropdownProps> = ({ name, items }) => {
   const { t } = useTranslation("common")
 
   const { notifications } = useNotificationContext()
+
+  const {notificateLowStock} = useSellerStoreGudfy()
 
   return (
     <div
@@ -36,8 +39,8 @@ const DropdownGudFy: React.FC<DropdownProps> = ({ name, items }) => {
             width={32}
             height={32}
           />
-          {notifications?.length ? (
-            <Notification count={notifications.length} />
+          {notifications?.length || notificateLowStock.store_x_variant_id.length ? (
+            <Notification count={notifications.length + notificateLowStock.store_x_variant_id.length} />
           ) : (
             <></>
           )}
@@ -75,7 +78,7 @@ const DropdownGudFy: React.FC<DropdownProps> = ({ name, items }) => {
                   {notifications.map((n) => {
                     if (
                       n.notification_type_id === "NOTI_CLAIM_CUSTOMER_ID" ||
-                      (n.notification_type_id === "NOTI_CLAIM_SELLER_ID" &&
+                      (n.notification_type_id === "NOTI_CLAIM_SELLER_ID" || notificateLowStock.store_x_variant_id.length > 0 &&
                         item.label == "Panel de control")
                     ) {
                       return <Notification />

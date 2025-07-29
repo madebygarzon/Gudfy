@@ -14,6 +14,9 @@ import {
 import { io } from "../websocket";
 import JobsService from "./jobs";
 import { formatPrice } from "./utils/format-price";
+import ProductNotificateRepository from "../repositories/product-notificate";
+import { EmailLowStock } from "../admin/components/email/low-stock-notificate/index";
+
 
 class StoreOrderAdminService extends TransactionBaseService {
   static LIFE_TIME = Lifetime.SCOPED;
@@ -23,6 +26,9 @@ class StoreOrderAdminService extends TransactionBaseService {
   protected readonly serialCodeRepository_: typeof SerialCodeRepository;
   protected readonly customerRepository_: typeof CustomerRepository;
   protected readonly jobsService_: JobsService;
+   protected readonly productNotificateRepository_: typeof ProductNotificateRepository;
+    
+  
 
   constructor(container) {
     // @ts-expect-error prefer-rest-params
@@ -33,6 +39,33 @@ class StoreOrderAdminService extends TransactionBaseService {
     this.serialCodeRepository_ = container.serialCodeRepository;
     this.customerRepository_ = container.customerRepository;
     this.jobsService_ = container.jobsService;
+    this.productNotificateRepository_ = container.productNotificateRepository;
+
+  }
+
+  async getBatchSerialCodes(storeVariantOrderIds: string[]) {
+    if (storeVariantOrderIds.length === 0) return new Map();
+    
+    const repoSerialCode = this.activeManager_.withRepository(
+      this.serialCodeRepository_
+    );
+
+    const serialCodes = await repoSerialCode.find({
+      where: {
+        store_variant_order_id: In(storeVariantOrderIds),
+      },
+    });
+
+    // Group by store_variant_order_id
+    const serialCodeMap = new Map();
+    for (const code of serialCodes) {
+      if (!serialCodeMap.has(code.store_variant_order_id)) {
+        serialCodeMap.set(code.store_variant_order_id, []);
+      }
+      serialCodeMap.get(code.store_variant_order_id).push(code);
+    }
+    
+    return serialCodeMap;
   }
 
   async listCustomersOrders() {
@@ -47,11 +80,10 @@ class StoreOrderAdminService extends TransactionBaseService {
         .leftJoinAndSelect("svo.store_variant", "sxv")
         .innerJoinAndSelect("sxv.variant", "pv")
         .leftJoinAndSelect("sxv.store", "s")
-        .leftJoinAndSelect("s.members", "c")
         .select([
           "so.id AS id",
-          "so.pay_method_id AS pay_method_id ",
-          "so.quantity_products AS quantity_products ",
+          "so.pay_method_id AS pay_method_id",
+          "so.quantity_products AS quantity_products",
           "so.total_price AS total_price",
           "so.name AS person_name",
           "so.last_name AS person_last_name",
@@ -68,20 +100,33 @@ class StoreOrderAdminService extends TransactionBaseService {
           "svo.total_price AS total_price_for_product",
           "svo.variant_order_status_id AS variant_order_status_id",
           "sso.state AS state_order",
-          "pv.title AS produc_title",
+          "pv.title AS product_title",
           "s.name AS store_name",
           "s.id AS store_id",
         ])
+        .orderBy("so.created_at", "DESC")
         .getRawMany();
 
-      const orderMap = new Map();
+      const storeVariantOrderIds = listOrder
+        .filter(order => 
+          order.status_id === "Completed_ID" ||
+          order.status_id === "Finished_ID" ||
+          order.status_id === "Discussion_ID"
+        )
+        .map(order => order.store_variant_order_id)
+        .filter(id => id); 
 
+     
+      const serialCodeMap = await this.getBatchSerialCodes(storeVariantOrderIds);
+
+      const orderMap = new Map();
+      
       for (const order of listOrder) {
         const {
           store_id,
           store_name,
           store_variant_order_id,
-          produc_title,
+          product_title,
           price,
           quantity,
           variant_order_status_id,
@@ -96,7 +141,7 @@ class StoreOrderAdminService extends TransactionBaseService {
           store_id,
           store_name,
           store_variant_order_id,
-          produc_title,
+          product_title,
           price,
           quantity,
           total_price_for_product,
@@ -105,17 +150,18 @@ class StoreOrderAdminService extends TransactionBaseService {
             order.status_id === "Completed_ID" ||
             order.status_id === "Finished_ID" ||
             order.status_id === "Discussion_ID"
-              ? await this.functionRecoverCodes(store_variant_order_id)
+              ? serialCodeMap.get(store_variant_order_id) || []
               : [],
         });
       }
+      
       const returnArray = Array.from(orderMap.values());
-      returnArray.sort(
-        (a, b) =>
-          new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-      );
+    
       return returnArray;
-    } catch (error) {}
+    } catch (error) {
+      console.error("Error in listCustomersOrders:", error);
+      throw new Error(`Failed to fetch customer orders: ${error.message}`);
+    }
   }
 
   async functionRecoverCodes(store_variant_order_id) {
@@ -374,7 +420,16 @@ class StoreOrderAdminService extends TransactionBaseService {
         await sv.update(variant.store_variant_id, {
           quantity_reserved: storeVariant.quantity_reserved - quantity,
         });
+
+        await this.compareLowStock(
+          variant.store_variant_id,
+          storeVariant.quantity_reserved - quantity,
+          storeInfo.email_store,
+          storeInfo.name_store,
+          productVariant[0].title
+        );
       }
+      
 
       const storesWithCodes = Object.values(storeCodeMap);
 
@@ -553,6 +608,13 @@ class StoreOrderAdminService extends TransactionBaseService {
         await sv.update(variant.store_variant_id, {
           quantity_store: storeVariant.quantity_store - quantity,
         });
+        await this.compareLowStock(
+          variant.store_variant_id,
+          storeVariant.quantity_store - quantity,
+          storeInfo.email_store,
+          storeInfo.name_store,
+          productVariant[0].title
+        );
       }
       const storesWithCodes = Object.values(storeCodeMap);
 
@@ -591,6 +653,42 @@ class StoreOrderAdminService extends TransactionBaseService {
   async UpdateOrderToCancel(order_id) {
     const result = await this.jobsService_.deleteOrder(order_id);
     return result;
+  }
+
+   async compareLowStock(
+      store_x_variant_id: string,
+      quantity: number,
+      seller_email: string,
+      product_title: string,
+      store_name: string
+    ) {
+      try {
+      const repo = this.manager_.withRepository(
+        this.productNotificateRepository_
+      );
+      const notioficate = await repo.findOne({ where: { store_x_variant_id } });
+      if (!notioficate.activate || notioficate.stock_notificate > quantity) {
+        return;
+      }
+      if (notioficate.stock_notificate < quantity) {
+        await EmailLowStock({
+          email: seller_email,
+          product_title: product_title,
+          name: store_name,
+        });
+      }
+      return;
+    } catch (error) {
+      console.error(
+        "Error en el servicio para comparar el stock de la orden:",
+        error
+      );
+      return {
+        success: false,
+        message: error.message || "Error desconocido al procesar la orden",
+        error: error.toString(),
+      };
+    }
   }
 }
 export default StoreOrderAdminService;

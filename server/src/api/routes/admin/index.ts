@@ -41,6 +41,7 @@ import getNotificationDashboardAdmin from "./notification-admin/get-notification
 import commissionRoutes from "./commission";
 import getProductsWithCommission from "./product/get-product-with-commission";
 import updateProductCommission from "./product/update-product-commission";
+import getLowStock from "./product/get-product-notification-low-stock";
 
 // Initialize a custom router
 const router = Router();
@@ -145,6 +146,7 @@ export function attachAdminRoutes(adminRouter: Router) {
 
   router.get("/product/get-products-with-commission", wrapHandler(getProductsWithCommission));
   router.post("/products/:id/commission", wrapHandler(updateProductCommission));
+  router.get("/product/low-stock", wrapHandler(getLowStock));
 
 //---------------Notifications dashboard admin-----------------
 

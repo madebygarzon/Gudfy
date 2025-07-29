@@ -28,6 +28,8 @@ import { getListSoldProductSerials } from "./product/get-list-sold-product-seria
 import { postUpdatePriceProduct } from "./product/update-product-price";
 import requestPayment from "./wallet/request-payment";
 import updateWallet from "./wallet/update-wallet";
+import { UpdateLowStock } from "./product-notificate-low-stock/update-low-stock";
+import { getNotificationLowStockProduct } from "./product-notificate-low-stock/get-list-product-notificate";
 
 const router = Router();
 
@@ -87,3 +89,8 @@ export function attachSellerRoutes(customerRouter: Router) {
   );
   router.get("/LIST-request-product/:id", wrapHandler(getListRequestProduct));
 }
+
+
+//--------Notification Low Stock Product---------------------------
+router.post("/activate-low-stock", wrapHandler(UpdateLowStock));
+router.get("/product/low-stock", wrapHandler(getNotificationLowStockProduct));

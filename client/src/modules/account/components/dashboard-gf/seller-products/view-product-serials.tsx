@@ -41,6 +41,8 @@ type StoreProducVariant = {
   price: string
   serialCodeCount: number
   commission: string
+  activate_low_stock: boolean
+  stock_notificate: number
 }
 interface serials {
   id: string

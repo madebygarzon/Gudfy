@@ -11,6 +11,8 @@ interface SellerStoreContext {
   handlerGetListSellerOrder: () => void
   isLoadingOrders: boolean
   listSellerOrders: SellerOrder[]
+  handlerLowStock: () => void
+  notificateLowStock: lowStock
 }
 export type SellerOrder = {
   id: string
@@ -46,6 +48,11 @@ type store = {
   }
 }
 
+type lowStock = {
+  store_x_variant_id: string[]
+}
+
+
 const SellerStoreContext = React.createContext<SellerStoreContext | null>(null)
 
 export const SellerStoreProvider = ({
@@ -56,12 +63,16 @@ export const SellerStoreProvider = ({
   const [storeSeller, setStoreSeller] = useState<store>()
   const [isLoadingStore, setIsLoadingStore] = useState<boolean>(true)
   const [isLoadingOrders, setIsLoadingOrders] = useState<boolean>(true)
+  const [notificateLowStock, setNotificateLowStock] = useState<lowStock>({
+    store_x_variant_id: []
+  })
   const [listSellerOrders, setListSellerOrder] = useState<SellerOrder[]>([])
 
   const handlerGetSellerStore = async () => {
     setIsLoadingStore(true)
     const store = await getStore()
     setStoreSeller(store)
+    
     setIsLoadingStore(false)
 
     return store
@@ -88,6 +99,24 @@ export const SellerStoreProvider = ({
     }
   }
 
+  const handlerLowStock = async () => {
+    try {
+      const e = await axios
+    .get(
+      `${process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL}/seller/store/product/low-stock`,
+      {
+        withCredentials: true,
+      }
+    )
+   
+    setNotificateLowStock({store_x_variant_id: e.data})
+    } catch (error) {
+      console.error("error en la notificacion del producto",error)
+    }    
+   
+
+  }
+  useEffect(() => {}, [])
   return (
     <SellerStoreContext.Provider
       value={{
@@ -97,12 +126,15 @@ export const SellerStoreProvider = ({
         handlerGetListSellerOrder,
         listSellerOrders,
         isLoadingOrders,
+        handlerLowStock,
+        notificateLowStock,
       }}
     >
       {children}
     </SellerStoreContext.Provider>
   )
 }
+
 
 export const useSellerStoreGudfy = () => {
   const context = useContext(SellerStoreContext)

@@ -91,9 +91,7 @@ const Recommendedproduct = ({ params }: InfiniteProductsType) => {
                 }) => (
                   <li key={p.id} className="text-white">
                     <Link
-                      href={`/products/${p.parent_title}/${p.title
-                        ?.replace(" ", "_")
-                        .toLowerCase()}`}
+                      href={`/product/${p.title.replaceAll(" ", "-").toLowerCase()}`}
                     >
                       <div>
                         <Thumbnail thumbnail={p.thumbnail} size="full" />
