@@ -15,6 +15,7 @@ import getClaimNotification from "./get-claim-notification";
 import getListStoresToPay from "./get-list-store-to-pay";
 import postAddOrderPay from "./post-add-order-pay";
 import voucher from "../../middlewares/voucher-order-pay";
+import productCategory from "../../middlewares/product-category";
 import getListOrderPayments from "./seller/get-list-order-payments";
 import getListTickets from "./tickets/get-list-tickets";
 import getMessagesTickets from "./tickets/get-data-message-ticket";
@@ -41,7 +42,8 @@ import getNotificationDashboardAdmin from "./notification-admin/get-notification
 import commissionRoutes from "./commission";
 import getProductsWithCommission from "./product/get-product-with-commission";
 import updateProductCommission from "./product/update-product-commission";
-import getLowStock from "./product/get-product-notification-low-stock";
+import addImageToCategory from "./product-category/add-image";
+import getListProductCategory from "./product-category/get-list-product-category";
 
 // Initialize a custom router
 const router = Router();
@@ -146,11 +148,15 @@ export function attachAdminRoutes(adminRouter: Router) {
 
   router.get("/product/get-products-with-commission", wrapHandler(getProductsWithCommission));
   router.post("/products/:id/commission", wrapHandler(updateProductCommission));
-  router.get("/product/low-stock", wrapHandler(getLowStock));
 
 //---------------Notifications dashboard admin-----------------
 
 router.get("/notification/dashboard-admin", wrapHandler(getNotificationDashboardAdmin));
+
+
+//------------------product category-------------------------
+router.post("/product-category/add-image", productCategory.single("image"), wrapHandler(addImageToCategory));
+router.get("/product-category/list-product-category", wrapHandler(getListProductCategory));
 commissionRoutes(adminRouter);
 onboardingRoutes(adminRouter);
 }

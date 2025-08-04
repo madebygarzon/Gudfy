@@ -14,6 +14,9 @@ import DropdownGudFyLog from "@modules/layout/components/dropdown-gf-log"
 // import Link from "next/link"
 import Wallet from "@modules/layout/components/wallet-nav"
 import NavList from "@modules/layout/components/nav-list"
+import NavListSimple from "@modules/layout/components/nav-list/nav-list-simple"
+import CategoryProducts from "@modules/layout/components/category-products"
+
 import { useTranslation } from "react-i18next"
 import {
   Navbar,
@@ -134,7 +137,9 @@ const Nav = () => {
           </nav>
           <MobileMenu />
         </header>
-        <NavList />
+        {/* <NavList /> */}
+        <NavListSimple />
+        {/* <CategoryProducts /> */}
       </div>
 
       <div className={clsx("block sm:hidden sticky top-0 inset-x-0 z-50")}>
@@ -182,7 +187,8 @@ const Nav = () => {
           </nav>
           <MobileMenu />
         </header>
-        <NavList />
+        {/* <NavList /> */}
+        {/* <NavListSimple /> */}
       </div>
     </>
   )

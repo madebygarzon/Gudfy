@@ -27,6 +27,7 @@ export const CategoryProvider = ({ children }: CategoryProviderProps) => {
     const filter = product_categories?.filter(
       (category) => category.parent_category_id === isSelect
     )
+
     return filter
   }
   return (

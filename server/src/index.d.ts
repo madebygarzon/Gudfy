@@ -44,6 +44,12 @@ export declare module "@medusajs/medusa/dist/models/line_item" {
   }
 }
 
+export declare module "@medusajs/medusa/dist/models/product-category" {
+  declare interface ProductCategory {
+    image_url?: string;
+  }
+}
+
 // export declare module "@medusajs/medusa/dist/models/product" {
 //   declare interface Product {
 //     store_id?: string;
