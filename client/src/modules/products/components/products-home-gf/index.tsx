@@ -61,30 +61,6 @@ const Recommendedproduct = ({ params }: InfiniteProductsType) => {
         <IoIosArrowBack size={30} color="white" />
       </button>
 
-<<<<<<< HEAD
-      <div className="flex-1">
-        <ul className="grid grid-cols-2 small:grid-cols-3 medium:grid-cols-6 gap-x-2 gap-y-8 flex-1">
-          {previews.length
-            ? previews.map(
-                (p: {
-                  id: string
-                  parent_title: string
-                  title: string
-                  thumbnail: string
-                }) => (
-                  <li key={p.id} className="text-white">
-                    <Link
-                      href={`/product/${p.title.replaceAll(" ", "-").toLowerCase()}`}
-                    >
-                      <div>
-                        <Thumbnail thumbnail={p.thumbnail} size="full" />
-                        <div className="flex justify-center">
-                          <div className=" text-base-regular text-center mt-2 z-10 w-[90%] ">
-                            <span>{p.title}</span>
-                            <div className="flex w-full items-center"></div>
-                          </div>
-                        </div>
-=======
       {/* Contenedor scrollable */}
       <div
         ref={scrollRef}
@@ -99,7 +75,6 @@ const Recommendedproduct = ({ params }: InfiniteProductsType) => {
                     <div className="flex justify-center">
                       <div className=" text-base-regular text-center mt-2 w-[90%] ">
                         <span>{p.title}</span>
->>>>>>> e46411b925321ff6321bb2bbe24ed6fc68af8f4e
                       </div>
                     </div>
                   </div>
