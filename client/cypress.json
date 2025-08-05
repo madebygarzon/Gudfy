@@ -1,5 +1,5 @@
 {
-  "baseUrl": "http://localhost:8000",
+  "baseUrl": "${NEXT_PUBLIC_BASE_URL:-http://localhost:$FRONTEND_PORT}",
   "env": {
     "codeCoverage": {
       "url": "/api/__coverage__"
