@@ -28,8 +28,6 @@ export default class ProductCategoryGudfyService extends TransactionBaseService 
     try {
       const repo = this.manager_.withRepository(this.productCategoryRepository_)
       const categories = await repo.find()
-
-      console.log("retorno de categorias",categories)
       return categories
     } catch (error) {
       console.error("Error al listar categorías:", error)

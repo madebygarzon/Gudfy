@@ -12,7 +12,7 @@ const categoryProducts = (params: Props) => {
   const categoryCtx = useContext(categoryContext)
   
   const category = categoryCtx?.product_categories?.find(
-    (cat: any) => cat.handle === categoryHandle
+    (cat) => cat.handle === categoryHandle
   )
   
   if (!category && !categoryCtx?.isLoading) {
@@ -58,7 +58,8 @@ const categoryProducts = (params: Props) => {
         <CategoryProducts 
           categoryId={category?.id || ''} 
           categoryName={category?.name} 
-          categoryDescription={category?.description} 
+          categoryDescription={category?.description}
+          categoryImage={category?.image_url}
         />
       </Suspense>
     </div>
