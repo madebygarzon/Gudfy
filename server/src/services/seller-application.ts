@@ -68,16 +68,24 @@ export default class SellerApplicationService extends TransactionBaseService {
       const createApplication_data = await ApplicationDataRepository.create({
         ...applicationData,
         front_identity_document: `${
-          process.env.BACKEND_URL ?? "http://localhost:9000"
+          process.env.BACKEND_URL ?? `http://localhost:${
+            process.env.BACKEND_PORT ?? 9000
+          }`
         }/${frontDocument}`,
         revers_identity_document: `${
-          process.env.BACKEND_URL ?? "http://localhost:9000"
+          process.env.BACKEND_URL ?? `http://localhost:${
+            process.env.BACKEND_PORT ?? 9000
+          }`
         }/${reversDocument}`,
         address_proof: `${
-          process.env.BACKEND_URL ?? "http://localhost:9000"
+          process.env.BACKEND_URL ?? `http://localhost:${
+            process.env.BACKEND_PORT ?? 9000
+          }`
         }/${addressDocument}`,
         supplier_documents: `${
-          process.env.BACKEND_URL ?? "http://localhost:9000"
+          process.env.BACKEND_URL ?? `http://localhost:${
+            process.env.BACKEND_PORT ?? 9000
+          }`
         }/${supplierDocuments}`,
       });
 
@@ -126,25 +134,33 @@ export default class SellerApplicationService extends TransactionBaseService {
       if (paramsToUpdate.frontDocument) {
         deleteFile(applicationData.front_identity_document);
         applicationData.front_identity_document = `${
-          process.env.BACKEND_URL ?? "http://localhost:9000"
+          process.env.BACKEND_URL ?? `http://localhost:${
+            process.env.BACKEND_PORT ?? 9000
+          }`
         }/${paramsToUpdate.frontDocument}`;
       }
       if (paramsToUpdate.reversDocument) {
         deleteFile(applicationData.revers_identity_document);
         applicationData.revers_identity_document = `${
-          process.env.BACKEND_URL ?? "http://localhost:9000"
+          process.env.BACKEND_URL ?? `http://localhost:${
+            process.env.BACKEND_PORT ?? 9000
+          }`
         }/${paramsToUpdate.reversDocument}`;
       }
       if (paramsToUpdate.addressDocument) {
         deleteFile(applicationData.address_proof);
         applicationData.address_proof = `${
-          process.env.BACKEND_URL ?? "http://localhost:9000"
+          process.env.BACKEND_URL ?? `http://localhost:${
+            process.env.BACKEND_PORT ?? 9000
+          }`
         }/${paramsToUpdate.addressDocument}`;
       }
       if (paramsToUpdate.supplierDocuments) {
         deleteFile(applicationData.supplier_documents);
         applicationData.supplier_documents = `${
-          process.env.BACKEND_URL ?? "http://localhost:9000"
+          process.env.BACKEND_URL ?? `http://localhost:${
+            process.env.BACKEND_PORT ?? 9000
+          }`
         }/${paramsToUpdate.supplierDocuments}`;
       }
       const updateData = await applicationDataRepository.update(
