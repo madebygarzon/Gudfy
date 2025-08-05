@@ -5,7 +5,9 @@ type Props = {
   params: { handle: string }
 }
 
-const BASEURL = process.env.NEXT_PUBLIC_BASE_URL ?? "http://localhost:8000"
+const BASEURL =
+  process.env.NEXT_PUBLIC_BASE_URL ??
+  `http://localhost:${process.env.FRONTEND_PORT || 8000}`
 
 async function getCollection(handle: string) {
   const res = await fetch(`${BASEURL}/collections?handle=${handle}`)
