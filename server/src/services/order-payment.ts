@@ -184,7 +184,9 @@ class OrderPaymentService extends TransactionBaseService {
       payment_note: dataOrderP.payment_note,
       store_id: dataOrderP.store_id,
       voucher: `${
-        process.env.BACKEND_URL ?? "http://localhost:9000"
+        process.env.BACKEND_URL ?? `http://localhost:${
+          process.env.BACKEND_PORT ?? 9000
+        }`
       }/${voucher}`,
       commission: dataOrderP.commission,
       subtotal: dataOrderP.subtotal,

@@ -15,7 +15,9 @@ export async function updateProduct(
     const productVariant = req.scope.resolve("productVariantService");
     if (imagenPath)
       productData.product.thumbnail = `${
-        process.env.BACKEND_URL ?? "http://localhost:9000"
+        process.env.BACKEND_URL ?? `http://localhost:${
+          process.env.BACKEND_PORT ?? 9000
+        }`
       }/${imagenPath}`;
 
     if (payload.includes("GEN-INFO")) {

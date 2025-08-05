@@ -20,7 +20,11 @@ require("./src/websocket");
         expressApp: app,
       });
       const configModule = container.resolve("configModule");
-      const port = process.env.PORT ?? configModule.projectConfig.port ?? 9000;
+      const port =
+        process.env.PORT ??
+        process.env.BACKEND_PORT ??
+        configModule.projectConfig.port ??
+        9000;
 
       const server = GracefulShutdownServer.create(
         app.listen(port, (err) => {

@@ -438,7 +438,10 @@ const ModalComment = ({
   const { user } = useAdminGetSession();
 
   useEffect(() => {
-    const socketIo = io("http://localhost:9000");
+    const socketIo = io(
+      process.env.BACKEND_URL ??
+        `http://localhost:${process.env.BACKEND_PORT ?? 9000}`
+    );
     setSocket(socketIo);
     return () => {
       socketIo.disconnect();
