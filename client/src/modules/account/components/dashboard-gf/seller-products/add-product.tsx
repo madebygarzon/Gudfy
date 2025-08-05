@@ -375,10 +375,10 @@ export default function AddProducts({ setReset }: Reset) {
                                   )
                                 }}
                               />
-                              <p className="text-sm m-2"> Precio para clientes:{(() => {
+                              <p className="text-sm m-2"> Precio final de venta: {(() => {
                                 const priceObj = addPrice.find(p => p.variantID === product.id);
                                 if (priceObj) {
-                                  return (priceObj.price * product.commission).toFixed(2);
+                                  return ((priceObj.price * product.commission) + priceObj.price).toFixed(2);
                                 }
                                 return '0.00';
                               })()}</p>
