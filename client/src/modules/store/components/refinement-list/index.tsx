@@ -2,9 +2,8 @@ import { StoreGetProductsParams } from "@medusajs/medusa"
 import { useCollections } from "medusa-react"
 import { ChangeEvent, useState, useContext } from "react"
 import ProductVariantPreview from "@modules/product-variant/components/product-variant-preview"
-import { categoryContext } from "@lib/context/category-context"
+import { categoryContext, CategoryNode } from "@lib/context/category-context"
 import SelectedProducts from "@modules/home/components/slector-products"
-import { ProductCategory } from "@medusajs/medusa"
 import Loader from "@lib/loader"
 
 type RefinementListProps = {
@@ -113,7 +112,7 @@ const RefinementList = ({
                 {categories.product_categories &&
                 categories.product_categories.length > 0
                   ? categories.product_categories.map(
-                      (category: ProductCategory) =>
+                      (category: CategoryNode) =>
                         !category.parent_category_id && (
                           <li
                             key={category.id}
