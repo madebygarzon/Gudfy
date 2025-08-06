@@ -12,6 +12,11 @@ import Textarea from "@modules/common/components/textarea"
 import Input from "@modules/common/components/input"
 import axios from "axios"
 
+const BACKEND_PORT = process.env.NEXT_PUBLIC_BACKEND_PORT || "9000"
+const BACKEND_URL =
+  process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL ||
+  `http://localhost:${BACKEND_PORT}`
+
 interface props {
   isOpen: boolean
   onClose: () => void
@@ -84,7 +89,7 @@ const ModalReview: React.FC<props> = ({
       return
     } else {
       // axios
-      //   .post(`http://localhost:9000/store/reviews/${data.id}`, body)
+      //   .post(`${BACKEND_URL}/store/reviews/${data.id}`, body)
       //   .then((e) => {
       //     handlerReviews()
       //     setSuccess(true)

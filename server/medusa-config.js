@@ -25,13 +25,18 @@ try {
 const ADMIN_CORS =
   process.env.ADMIN_CORS || "http://localhost:7000,http://localhost:7001";
 
+const FRONTEND_PORT = process.env.FRONTEND_PORT || 8000;
+const BACKEND_PORT = process.env.BACKEND_PORT || 9000;
+
 // CORS to avoid issues when consuming Medusa from a client
-const STORE_CORS = process.env.STORE_CORS || "http://localhost:8000";
+const STORE_CORS =
+  process.env.STORE_CORS || `http://localhost:${FRONTEND_PORT}`;
 
 const DATABASE_URL =
   process.env.DATABASE_URL || "postgres://localhost/medusa-store";
 
-const BACKEND_URL = process.env.BACKEND_URL || "http://localhost:9000";
+const BACKEND_URL =
+  process.env.BACKEND_URL || `http://localhost:${BACKEND_PORT}`;
 
 const REDIS_URL = process.env.REDIS_URL || "redis://localhost:6379";
 

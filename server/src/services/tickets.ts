@@ -108,7 +108,11 @@ export default class TicketsService extends TransactionBaseService {
 
     const addMessage = await TicketMessagesRepository.create({
       image: image?.path
-        ? `${process.env.BACKEND_URL ?? `http://localhost:9000`}/${image.path}`
+        ? `${
+            process.env.BACKEND_URL ?? `http://localhost:${
+              process.env.BACKEND_PORT ?? 9000
+            }`
+          }/${image.path}`
         : null,
       message,
       ticket_id,
