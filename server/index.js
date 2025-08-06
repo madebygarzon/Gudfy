@@ -1,6 +1,6 @@
 const express = require("express");
+const cors = require("cors");
 const { GracefulShutdownServer } = require("medusa-core-utils");
-
 const loaders = require("@medusajs/medusa/dist/loaders/index").default;
 
 require("./src/websocket");
@@ -9,9 +9,18 @@ require("./src/websocket");
   async function start() {
     const app = express();
 
+    const allowedOrigins = process.env.CORS_ORIGINS
+      ? process.env.CORS_ORIGINS.split(",").map(origin => origin.trim())
+      : ["http://localhost:8000"];
+
+    app.use(cors({
+      origin: allowedOrigins,
+      credentials: true,
+    }));
+
     app.use(express.json());
     app.use(express.urlencoded({ extended: true }));
-    
+
     const directory = process.cwd();
 
     try {
@@ -19,6 +28,7 @@ require("./src/websocket");
         directory,
         expressApp: app,
       });
+
       const configModule = container.resolve("configModule");
       const port = process.env.PORT ?? configModule.projectConfig.port ?? 9000;
 
@@ -31,7 +41,18 @@ require("./src/websocket");
         })
       );
 
-      const gracefulShutDown = () => {
+      const gracefulShutDown = async () => {
+        try {
+          if (container.hasRegistration("redisClient")) {
+            const redis = container.resolve("redisClient");
+            if (redis && typeof redis.quit === "function") {
+              await redis.quit();  
+            }
+          }
+        } catch (e) {
+          console.error("Error closing Redis connection:", e);
+        }
+
         server
           .shutdown()
           .then(() => {
@@ -43,8 +64,10 @@ require("./src/websocket");
             process.exit(1);
           });
       };
+
       process.on("SIGTERM", gracefulShutDown);
       process.on("SIGINT", gracefulShutDown);
+
     } catch (err) {
       console.error("Error starting server", err);
       process.exit(1);

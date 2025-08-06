@@ -175,9 +175,9 @@ const modules = {
 
 /** @type {import('@medusajs/medusa').ConfigModule["projectConfig"]} */
 const projectConfig = {
-  cookie_domain: 'localhost',
-  cookie_same_site: 'lax',
-  jwtSecret: process.env.JWT_SECRET,
+  cookie_domain: process.env.COOKIE_DOMAIN || ".gudfyp2p.com",
+  cookie_same_site: process.env.COOKIE_SAME_SITE || "none",
+  jwt_secret: process.env.JWT_SECRET,
   cookieSecret: process.env.COOKIE_SECRET,
   store_cors: STORE_CORS,
   database_url: DATABASE_URL,

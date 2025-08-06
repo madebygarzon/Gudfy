@@ -1,4 +1,5 @@
 import { LineItem } from "@medusajs/medusa";
+import "express-session"
 
 export declare module "@medusajs/medusa/dist/models/product" {
   declare interface Product {
@@ -52,3 +53,17 @@ export declare module "@medusajs/medusa/dist/models/line_item" {
 //     typeVirtualProduct?: TypeVirtualProduct;
 //   }
 // }
+
+
+
+declare module "express-session" {
+  interface SessionData {
+    customer_id?: string
+  }
+}
+
+declare module "express-serve-static-core" {
+  interface Request {
+    session: SessionData
+  }
+}
