@@ -60,9 +60,11 @@ export interface order {
 
 type ListDataSellerApplication = {
   dataOrders: Array<order>;
-  dataFilter?: Array<order>;
   dataPreview: Array<order>;
-  count: number;
+  totalCount: number;
+  currentPage: number;
+  totalPages: number;
+  loadedPages: Set<number>;
 };
 
 const dataSelecFilter = [
@@ -71,239 +73,469 @@ const dataSelecFilter = [
     label: "Todos",
   },
   {
-    value: "Completado",
+    value: "Completed_ID",
     label: "Completado",
   },
   {
-    value: "Finalizado",
+    value: "Finished_ID",
     label: "Finalizado",
   },
   {
-    value: "Cancelada",
+    value: "Cancel_ID",
     label: "Cancelada",
   },
   {
-    value: "En discusión",
+    value: "Discussion_ID",
     label: "En discusión",
   },
-  { value: "Pendiente de pago", 
-    label: "Pendiente de pago" 
-  }
+  {
+    value: "Pending_ID",
+    label: "Pendiente de pago",
+  },
 ];
 
-const paymentMethodFilter = [
+const paymentMethodOptions = [
   {
     value: "All",
     label: "Todos los métodos",
   },
   {
-    value: "CoinPal",
+    value: "Method_COINPAL_ID",
     label: "CoinPal",
   },
   {
-    value: "Pago Manual",
+    value: "Method_Manual_Pay_ID",
     label: "Pago Manual",
   },
 ];
 
-const registerNumber = [20, 50, 100];
-// numero de filas por pagina predeterminado
-
+const registerNumber = [50, 100, 300, 500, 1000];
 
 const SellerApplication = () => {
-  //manejo de la tabla --------------
   const [dataOrder, setDataCustomer] = useState<ListDataSellerApplication>({
     dataOrders: [],
-    dataFilter: [],
     dataPreview: [],
-    count: 0,
+    totalCount: 0,
+    currentPage: 1,
+    totalPages: 0,
+    loadedPages: new Set(),
   });
-  const [pageTotal, setPagetotal] = useState<number>(); // paginas totales
   const [page, setPage] = useState(1);
-  const [rowsPages, setRowsPages] = useState<number>(20);
+  const [rowsPages, setRowsPages] = useState<number>(50);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [sortDirection, setSortDirection] = useState<'asc' | 'desc' | null>(null);
-  const [sortField, setSortField] = useState<'price' | 'order' | null>(null);
+
+  const [statusFilter, setStatusFilter] = useState<string>("All");
+  const [paymentMethodFilter, setPaymentMethodFilter] = useState<string>("All");
+  const [storeFilter, setStoreFilter] = useState<string>("All");
+  const [searchTerm, setSearchTerm] = useState<string>("");
+  const [searchInput, setSearchInput] = useState<string>("");
+  const [isSearching, setIsSearching] = useState<boolean>(false);
   
+  const [sortByPrice, setSortByPrice] = useState<boolean>(false);
+  const [sortByOrder, setSortByOrder] = useState<boolean>(false);
+
   const [selectOrderData, setTelectOrderData] = useState<order>();
-  //----------------------------------
 
-
-  //modal para ver el detalle de la orden
   const [open, onOpenChange] = useState(false);
 
   const handlerReset = () => {
-    handlerGetListOrder();
+    resetFiltersAndLoadFirstPage();
     onOpenChange(false);
+  };
+
+  const resetFiltersAndLoadFirstPage = () => {
+    setStatusFilter("All");
+    setPaymentMethodFilter("All");
+    setStoreFilter("All");
+    setSearchTerm("");
+    setSearchInput("");
     setPage(1);
-  };
-
-  const handlerGetListOrder = async () => {
-    setIsLoading(true);
-    const dataApplication = await getListStoreOrder()
-      .then((e) => {
-        setIsLoading(false);
-        return e;
-      })
-      .catch((e) => {});
-    if (!dataApplication) return;
-    setPagetotal(Math.ceil(dataApplication.length / rowsPages));
     setDataCustomer({
-      dataOrders: dataApplication,
-      dataPreview: handlerPreviewSellerAplication(dataApplication, 1),
-      count: dataApplication.length,
+      dataOrders: [],
+      dataPreview: [],
+      totalCount: 0,
+      currentPage: 1,
+      totalPages: 0,
+      loadedPages: new Set(),
     });
+    loadOrdersPage(1, true);
   };
 
-  const handlerNextPage = (action) => {
-    if (action == "NEXT")
-      setPage((old) => {
-        const dataToUse = dataOrder.dataFilter?.length
-          ? dataOrder.dataFilter
-          : dataOrder.dataOrders;
-        setDataCustomer({
-          ...dataOrder,
-          dataPreview: handlerPreviewSellerAplication(dataToUse, page + 1),
-        });
-        return old + 1;
-      });
-
-    if (action == "PREV")
-      setPage((old) => {
-        const dataToUse = dataOrder.dataFilter?.length
-          ? dataOrder.dataFilter
-          : dataOrder.dataOrders;
-        setDataCustomer({
-          ...dataOrder,
-          dataPreview: handlerPreviewSellerAplication(dataToUse, page - 1),
-        });
-        return old - 1;
-      });
-  };
-
-  const handlerPreviewSellerAplication = (
-    queryParams: Array<order>,
-    page,
-    rows?
+  const loadOrdersPage = async (
+    pageNumber: number,
+    resetData: boolean = false
   ) => {
-    // cadena de array para filtrar segun la pagina , se debe de pensar en cambiar el llamado a la api para poder
-    // solicitar unicamente los que se estan pidiendo en la paginacion
-    const dataRowPage = rows || rowsPages;
-    const start = (page - 1) * dataRowPage;
-    const end = page * dataRowPage;
-    const newArray = queryParams.slice(start, end);
-    //setPage(1);
-    setPagetotal(Math.ceil(queryParams.length / dataRowPage));
-    return newArray;
+    setIsLoading(true);
+    try {
+      const params = {
+        page: pageNumber,
+        limit: rowsPages,
+        status: statusFilter !== "All" ? statusFilter : undefined,
+        paymentMethod:
+          paymentMethodFilter !== "All" ? paymentMethodFilter : undefined,
+        store: storeFilter !== "All" ? storeFilter : undefined,
+        search: searchTerm || undefined,
+      };
+
+      const response = await getListStoreOrder(params);
+      if (!response) return;
+
+      setDataCustomer((prev) => {
+        const newLoadedPages = new Set(resetData ? [] : prev.loadedPages);
+        newLoadedPages.add(pageNumber);
+
+        const hasFilters =
+          statusFilter !== "All" ||
+          paymentMethodFilter !== "All" ||
+          storeFilter !== "All" ||
+          (searchTerm && searchTerm.trim() !== "");
+
+        let newDataOrders, newDataPreview;
+
+        if (hasFilters) {
+          newDataOrders = resetData
+            ? response.data
+            : [
+                ...prev.dataOrders.filter(
+                  (order) =>
+                    !response.data.some((newOrder) => newOrder.id === order.id)
+                ),
+                ...response.data,
+              ];
+          newDataPreview = response.data;
+        } else {
+          newDataOrders = resetData
+            ? response.data
+            : [
+                ...prev.dataOrders.filter(
+                  (order) =>
+                    !response.data.some((newOrder) => newOrder.id === order.id)
+                ),
+                ...response.data,
+              ];
+          newDataPreview = getPageData(newDataOrders, pageNumber, rowsPages);
+        }
+
+        return {
+          dataOrders: newDataOrders,
+          dataPreview: newDataPreview,
+          totalCount: response.totalCount,
+          currentPage: pageNumber,
+          totalPages: response.totalPages,
+          loadedPages: newLoadedPages,
+        };
+      });
+    } catch (error) {
+      console.error("Error loading orders:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const getPageData = (allData: order[], pageNum: number, limit: number) => {
+    const startIndex = (pageNum - 1) * limit;
+    const endIndex = startIndex + limit;
+    return allData.slice(startIndex, endIndex);
+  };
+
+  const handlerNextPage = (action: "NEXT" | "PREV") => {
+    const hasFilters =
+      statusFilter !== "All" ||
+      paymentMethodFilter !== "All" ||
+      storeFilter !== "All" ||
+      (searchTerm && searchTerm.trim() !== "");
+
+    if (action === "NEXT" && page < dataOrder.totalPages) {
+      const nextPage = page + 1;
+      setPage(nextPage);
+
+      if (!dataOrder.loadedPages.has(nextPage) || hasFilters) {
+        loadOrdersPage(nextPage);
+      } else {
+        const newDataPreview = getPageData(
+          dataOrder.dataOrders,
+          nextPage,
+          rowsPages
+        );
+        setDataCustomer((prev) => ({
+          ...prev,
+          dataPreview: newDataPreview,
+          currentPage: nextPage,
+        }));
+      }
+    }
+
+    if (action === "PREV" && page > 1) {
+      const prevPage = page - 1;
+      setPage(prevPage);
+
+      if (!dataOrder.loadedPages.has(prevPage) || hasFilters) {
+        loadOrdersPage(prevPage);
+      } else {
+        const newDataPreview = getPageData(
+          dataOrder.dataOrders,
+          prevPage,
+          rowsPages
+        );
+        setDataCustomer((prev) => ({
+          ...prev,
+          dataPreview: newDataPreview,
+          currentPage: prevPage,
+        }));
+      }
+    }
+  };
+
+  const handleSearch = async () => {
+    const newSearchTerm = searchInput.trim();
+    if (newSearchTerm === searchTerm) return;
+
+    setIsSearching(true);
+    setSearchTerm(newSearchTerm);
+    setPage(1);
+    setDataCustomer({
+      dataOrders: [],
+      dataPreview: [],
+      totalCount: 0,
+      currentPage: 1,
+      totalPages: 0,
+      loadedPages: new Set(),
+    });
+
+    try {
+      
+      const params = {
+        page: 1,
+        limit: rowsPages,
+        status: statusFilter !== "All" ? statusFilter : undefined,
+        paymentMethod:
+          paymentMethodFilter !== "All" ? paymentMethodFilter : undefined,
+        store: storeFilter !== "All" ? storeFilter : undefined,
+        search: newSearchTerm || undefined,
+      };
+
+    
+      const response = await getListStoreOrder(params);
+
+      if (response) {
+        setDataCustomer({
+          dataOrders: response.data,
+          dataPreview: response.data,
+          totalCount: response.totalCount,
+          currentPage: 1,
+          totalPages: response.totalPages,
+          loadedPages: new Set([1]),
+        });
+      }
+    } catch (error) {
+      console.error("Error searching orders:", error);
+    } finally {
+      setIsSearching(false);
+    }
   };
 
   useEffect(() => {
-    handlerGetListOrder();
+    loadOrdersPage(1, true);
   }, []);
-  
-  // Obtener tiendas únicas para el filtro cuando se cargan los datos
+
   useEffect(() => {
     if (dataOrder.dataOrders.length > 0) {
-      // Extraer todos los nombres de tiendas de todos los pedidos
-      const allStores = dataOrder.dataOrders.flatMap(order => 
-        order.store_variant?.map(store => store.store_name) || []
+      const allStores = dataOrder.dataOrders.flatMap(
+        (order) => order.store_variant?.map((store) => store.store_name) || []
       );
-      
-      // Crear un conjunto de nombres de tiendas únicos
+
       const uniqueStores = [...new Set(allStores)];
-      
-      // Crear las opciones para el filtro
+
       const storeOptions = [
         { value: "All", label: "Todas las tiendas" },
-        ...uniqueStores.map(store => ({
+        ...uniqueStores.map((store) => ({
           value: store,
-          label: store
-        }))
+          label: store,
+        })),
       ];
-      
+
       setStoreFilterOptions(storeOptions);
     }
   }, [dataOrder.dataOrders]);
 
-  // Estado actual de los filtros
-  const [currentStateFilter, setCurrentStateFilter] = useState<string>("All");
-  const [currentPaymentMethodFilter, setCurrentPaymentMethodFilter] = useState<string>("All");
-  const [currentStoreFilter, setCurrentStoreFilter] = useState<string>("All");
-  
-  // Estado para almacenar las tiendas únicas para el filtro
-  const [storeFilterOptions, setStoreFilterOptions] = useState<Array<{value: string, label: string}>>([]);
-
-  // Función para aplicar los filtros
-  const applyFilters = (stateFilter: string, paymentMethodFilter: string, storeFilter: string) => {
+  const [storeFilterOptions, setStoreFilterOptions] = useState<
+    Array<{ value: string; label: string }>
+  >([]);
+  const applyFilters = () => {
     setPage(1);
-  
-    // Comenzamos con los datos originales
-    let filteredData = dataOrder.dataOrders;
-  
-    // Aplicamos filtro de estado si no es "All"
-    if (stateFilter !== "All") {
-      filteredData = filteredData.filter(order => order.state_order === stateFilter);
+    setDataCustomer({
+      dataOrders: [],
+      dataPreview: [],
+      totalCount: 0,
+      currentPage: 1,
+      totalPages: 0,
+      loadedPages: new Set(),
+    });
+    loadOrdersPage(1, true);
+  };
+
+  const handlerFilter = async (value: string) => {
+    setIsLoading(true);
+    setStatusFilter(value);
+    setPage(1);
+    setDataCustomer({
+      dataOrders: [],
+      dataPreview: [],
+      totalCount: 0,
+      currentPage: 1,
+      totalPages: 0,
+      loadedPages: new Set(),
+    });
+
+    try {
+      const params = {
+        page: 1,
+        limit: rowsPages,
+        status: value !== "All" ? value : undefined,
+        paymentMethod:
+          paymentMethodFilter !== "All" ? paymentMethodFilter : undefined,
+        store: storeFilter !== "All" ? storeFilter : undefined,
+        search: searchTerm || undefined,
+      };
+
+      const response = await getListStoreOrder(params);
+
+      if (response) {
+        setDataCustomer({
+          dataOrders: response.data,
+          dataPreview: response.data,
+          totalCount: response.totalCount,
+          currentPage: 1,
+          totalPages: response.totalPages,
+          loadedPages: new Set([1]),
+        });
+      }
+    } catch (error) {
+      console.error("Error filtering orders:", error);
+    } finally {
+      setIsLoading(false);
     }
-  
-    // Aplicamos filtro de método de pago si no es "All"
-    if (paymentMethodFilter !== "All") {
-      filteredData = filteredData.filter(order => {
-        // Comprueba si es CoinPal (no tiene comprobante de pago)
-        if (paymentMethodFilter === "CoinPal" && !order.proof_of_payment) {
-          return true;
-        }
-        // Comprueba si es transferencia (tiene comprobante de pago)
-        if (paymentMethodFilter === "Pago Manual" && order.proof_of_payment) {
-          return true;
-        }
-        return false;
+  };
+
+  const handlerFilterPaymentMethod = async (value: string) => {
+    setIsLoading(true);
+    setPaymentMethodFilter(value);
+    setPage(1);
+    setDataCustomer({
+      dataOrders: [],
+      dataPreview: [],
+      totalCount: 0,
+      currentPage: 1,
+      totalPages: 0,
+      loadedPages: new Set(),
+    });
+
+    try {
+      const params = {
+        page: 1,
+        limit: rowsPages,
+        status: statusFilter !== "All" ? statusFilter : undefined,
+        paymentMethod: value !== "All" ? value : undefined,
+        store: storeFilter !== "All" ? storeFilter : undefined,
+        search: searchTerm || undefined,
+      };
+
+      const response = await getListStoreOrder(params);
+
+      if (response) {
+        setDataCustomer({
+          dataOrders: response.data,
+          dataPreview: response.data,
+          totalCount: response.totalCount,
+          currentPage: 1,
+          totalPages: response.totalPages,  
+          loadedPages: new Set([1]),
+        });
+      }
+    } catch (error) {
+      console.error("Error filtering by payment method:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };    
+
+  const handlerFilterStore = async (value: string) => {
+    setStoreFilter(value);
+    setPage(1);
+    setDataCustomer({
+      dataOrders: [],
+      dataPreview: [],
+      totalCount: 0,
+      currentPage: 1,
+      totalPages: 0,
+      loadedPages: new Set(),
+    });
+
+    const params = {
+      page: 1,
+      limit: rowsPages,
+      status: statusFilter !== "All" ? statusFilter : undefined,
+      paymentMethod:
+        paymentMethodFilter !== "All" ? paymentMethodFilter : undefined,
+      store: value !== "All" ? value : undefined,
+      search: searchTerm || undefined,
+    };
+
+    const response = await getListStoreOrder(params);
+    if (response) {
+      setDataCustomer({
+        dataOrders: response.data,
+        dataPreview: response.data,
+        totalCount: response.totalCount,
+        currentPage: 1,
+        totalPages: response.totalPages,
+        loadedPages: new Set([1]),
       });
     }
-    
-    // Aplicamos filtro de tienda si no es "All"
-    if (storeFilter !== "All") {
-      filteredData = filteredData.filter(order => {
-        // Verifica si alguna tienda coincide con el filtro
-        return order.store_variant?.some(store => store.store_name === storeFilter) || false;
-      });
+  };
+
+  const handlerRowsNumber = async (value: string) => {
+    const newRowsPages = parseInt(value);
+    setRowsPages(newRowsPages);
+    setPage(1);
+    setIsLoading(true);
+    setDataCustomer({
+      dataOrders: [],
+      dataPreview: [],
+      totalCount: 0,
+      currentPage: 1,
+      totalPages: 0,
+      loadedPages: new Set(),
+    });
+
+    try {
+      const params = {
+        page: 1,
+        limit: newRowsPages, 
+        status: statusFilter !== "All" ? statusFilter : undefined,
+        paymentMethod:
+          paymentMethodFilter !== "All" ? paymentMethodFilter : undefined,
+        store: storeFilter !== "All" ? storeFilter : undefined,
+        search: searchTerm || undefined,
+      };
+
+      const response = await getListStoreOrder(params);
+
+      if (response) {
+        setDataCustomer({
+          dataOrders: response.data,
+          dataPreview: response.data,
+          totalCount: response.totalCount,
+          currentPage: 1,
+          totalPages: response.totalPages,
+          loadedPages: new Set([1]),
+        });
+      }
+    } catch (error) {
+      console.error("Error changing rows per page:", error);
+    } finally {
+      setIsLoading(false);
     }
-  
-    // Actualizamos el estado con los datos filtrados
-    setDataCustomer({
-      ...dataOrder,
-      dataPreview: handlerPreviewSellerAplication(filteredData, 1),
-      dataFilter: filteredData,
-    });
-  
-    setPagetotal(Math.ceil(filteredData.length / rowsPages));
-  };
-
-  const handlerFilter = (value: string) => {
-    setCurrentStateFilter(value);
-    applyFilters(value, currentPaymentMethodFilter, currentStoreFilter);
-  };
-
-  const handlerFilterPaymentMethod = (value: string) => {
-    setCurrentPaymentMethodFilter(value);
-    applyFilters(currentStateFilter, value, currentStoreFilter);
-  };
-  
-  const handlerFilterStore = (value: string) => {
-    setCurrentStoreFilter(value);
-    applyFilters(currentStateFilter, currentPaymentMethodFilter, value);
-  };
-
-  const handlerRowsNumber = (value) => {
-    const valueInt = parseInt(value);
-    setRowsPages(valueInt);
-    setDataCustomer({
-      ...dataOrder,
-      dataPreview: handlerPreviewSellerAplication(
-        dataOrder.dataFilter! ? dataOrder.dataFilter : dataOrder.dataOrders,
-        1,
-        valueInt
-      ),
-    });
   };
 
   const getColorState = (state_id: string) => {
@@ -328,84 +560,69 @@ const SellerApplication = () => {
   };
 
   const handlerSearcherbar = (value: string) => {
-    if (value.length === 0) {
-      setDataCustomer({
-        ...dataOrder,
-        dataPreview: handlerPreviewSellerAplication(dataOrder.dataOrders, 1),
-        dataFilter: undefined,
-      });
-      setPage(1);
-      setPagetotal(Math.ceil(dataOrder.dataOrders.length / rowsPages));
-      return;
-    }
+    setSearchInput(value);
+  };
 
-    const filterData = dataOrder.dataOrders.filter(
-      (e) => 
-        e.id?.toLowerCase().includes(value?.toLowerCase() || '') ||
-        e.person_name?.toLowerCase().includes(value?.toLowerCase() || '') ||
-        e.person_last_name?.toLowerCase().includes(value?.toLowerCase() || '') ||
-        e.email?.toLowerCase().includes(value?.toLowerCase() || '') ||
-        // Buscar coincidencias en los nombres de las tiendas
-        e.store_variant?.some(store => 
-          store.store_name?.toLowerCase().includes(value?.toLowerCase() || '')
-        )
-    );
-
-    setDataCustomer({
-      ...dataOrder,
-      dataPreview: handlerPreviewSellerAplication(filterData, 1),
-      dataFilter: filterData,
-    });
+  const clearSearch = async () => {
+    setIsSearching(true);
+    setSearchInput("");
+    setSearchTerm("");
     setPage(1);
-    setPagetotal(Math.ceil(filterData.length / rowsPages));
+    setDataCustomer({
+      dataOrders: [],
+      dataPreview: [],
+      totalCount: 0,
+      currentPage: 1,
+      totalPages: 0,
+      loadedPages: new Set(),
+    });
+
+    try {
+      const params = {
+        page: 1,
+        limit: rowsPages,
+        status: statusFilter !== "All" ? statusFilter : undefined,
+        paymentMethod:
+          paymentMethodFilter !== "All" ? paymentMethodFilter : undefined,
+        store: storeFilter !== "All" ? storeFilter : undefined,
+        search: undefined, 
+      };
+
+      const response = await getListStoreOrder(params);
+
+      if (response) {
+        setDataCustomer({
+          dataOrders: response.data,
+          dataPreview: response.data,
+          totalCount: response.totalCount,
+          currentPage: 1,
+          totalPages: response.totalPages,
+          loadedPages: new Set([1]),
+        });
+      }
+    } catch (error) {
+      console.error("Error clearing search:", error);
+    } finally {
+      setIsSearching(false);
+    }
   };
 
-  const handleSort = (field: 'price' | 'order') => {
-    // If clicking on the same field, toggle direction. If clicking on a different field, set to ascending
-    let newSortDirection: 'asc' | 'desc' | null = 'asc';
-    if (sortField === field) {
-      newSortDirection = sortDirection === 'asc' ? 'desc' : 'asc';
-    }
-    
-    setSortField(field);
-    setSortDirection(newSortDirection);
-    
-    // Get the current data to sort (either filtered or all data)
-    const dataToSort = [...(dataOrder.dataFilter?.length ? dataOrder.dataFilter : dataOrder.dataOrders)];
-    
-    // Sort the data based on the selected field
-    const sortedData = dataToSort.sort((a, b) => {
-      if (field === 'price') {
-        const priceA = parseFloat(a.total_price);
-        const priceB = parseFloat(b.total_price);
-        return newSortDirection === 'asc' ? priceA - priceB : priceB - priceA;
-      } else { // order
-        // Sort by order ID (alphanumeric)
-        return newSortDirection === 'asc' 
-          ? a.id.localeCompare(b.id) 
-          : b.id.localeCompare(a.id);
-      }
-    });
-    
-    // Update the state with sorted data
-    setDataCustomer({
-      ...dataOrder,
-      dataPreview: handlerPreviewSellerAplication(sortedData, page),
-      dataFilter: dataOrder.dataFilter?.length ? sortedData : undefined,
-      dataOrders: dataOrder.dataFilter?.length ? dataOrder.dataOrders : sortedData,
-    });
+  const handlerSortByPrice = () => {
+
   };
-  
-  const handlerSortByPrice = () => handleSort('price');
-  const handlerSortByOrder = () => handleSort('order');
-  
+
+  const handlerSortByOrder = () => {
+    
+  };
 
   return (
     <div className=" bg-white p-8 border border-gray-200 rounded-lg ">
+       <h1 className=" text-xl font-bold">
+              Lista de ordenes
+            </h1>
       <div className="w-full h-auto ">
         <>
           <div className="mt-2 h-[120px] flex justify-between">
-            <h1 className=" text-xl font-bold"> Lista de ordenes</h1>
             <div className="flex gap-5 h-full items-end py-4">
               <div className="w-[156px] ">
                 <Select onValueChange={handlerFilter}>
@@ -427,7 +644,7 @@ const SellerApplication = () => {
                     <Select.Value placeholder="Método de pago: " />
                   </Select.Trigger>
                   <Select.Content>
-                    {paymentMethodFilter.map((item) => (
+                    {paymentMethodOptions.map((item) => (
                       <Select.Item key={item.value} value={item.value}>
                         {item.label}
                       </Select.Item>
@@ -449,15 +666,67 @@ const SellerApplication = () => {
                   </Select.Content>
                 </Select>
               </div> */}
-              <div className="w-[250px]">
+              <div className="w-[250px] flex gap-2">
                 <Input
                   placeholder="Comprador, Email, Orden"
                   id="search-input"
                   type="search"
+                  value={searchInput}
                   onChange={(e) => handlerSearcherbar(e.target.value)}
                 />
+                <Button
+                  size="small"
+                  onClick={handleSearch}
+                  disabled={isSearching}
+                >
+                  {isSearching ? "Buscando..." : "Buscar"}
+                </Button>
+                {searchTerm && (
+                  <Button
+                    size="small"
+                    variant="secondary"
+                    onClick={clearSearch}
+                  >
+                    Limpiar
+                  </Button>
+                )}
               </div>
             </div>
+            <div className="flex w-full p-6 text-xs font-light items-end justify-end">
+                
+                <div className="flex gap-5 justify-end">
+                  <div className="text-[12px] w-[50px]">
+                    <Select onValueChange={handlerRowsNumber} size="small">
+                      <Select.Trigger>
+                        <Select.Value placeholder="50" />
+                      </Select.Trigger>
+                      <Select.Content>
+                        {registerNumber.map((num) => (
+                          <Select.Item key={num} value={`${num}`}>
+                            {num}
+                          </Select.Item>
+                        ))}
+                      </Select.Content>
+                    </Select>
+                  </div>
+                  <div className="flex items-center">
+                    {page} of {dataOrder.totalPages}
+                  </div>
+                  <button
+                    disabled={page == 1 ? true : false}
+                    onClick={() => handlerNextPage("PREV")}
+                  >
+                    <ArrowLongLeft />
+                  </button>
+
+                  <button
+                    disabled={page == dataOrder.totalPages ? true : false}
+                    onClick={() => handlerNextPage("NEXT")}
+                  >
+                    <ArrowLongRight />
+                  </button>
+                </div>
+              </div>
           </div>
           {isLoading ? (
             <div className="min-h-[293px] flex items-center justify-center">
@@ -470,28 +739,20 @@ const SellerApplication = () => {
                   <Table.Row>
                     <Table.HeaderCell>Estado</Table.HeaderCell>
                     <Table.HeaderCell>
-                      <button 
+                      <button
                         onClick={handlerSortByOrder}
                         className="flex items-center gap-1 hover:text-ui-fg-base transition-colors"
                       >
                         Número de orden
-                        <div className="flex flex-col ml-1 text-[10px] leading-none">
-                          <span className={sortField === 'order' && sortDirection === 'asc' ? 'text-blue-500 font-bold' : 'text-gray-400'}>▲</span>
-                          <span className={sortField === 'order' && sortDirection === 'desc' ? 'text-blue-500 font-bold' : 'text-gray-400'}>▼</span>
-                        </div>
                       </button>
                     </Table.HeaderCell>
                     <Table.HeaderCell>Usuario</Table.HeaderCell>
                     <Table.HeaderCell>
-                      <button 
+                      <button
                         onClick={handlerSortByPrice}
                         className="flex items-center gap-1 hover:text-ui-fg-base transition-colors"
                       >
                         Precio
-                        <div className="flex flex-col ml-1 text-[10px] leading-none">
-                          <span className={sortField === 'price' && sortDirection === 'asc' ? 'text-blue-500 font-bold' : 'text-gray-400'}>▲</span>
-                          <span className={sortField === 'price' && sortDirection === 'desc' ? 'text-blue-500 font-bold' : 'text-gray-400'}>▼</span>
-                        </div>
                       </button>
                     </Table.HeaderCell>
                     <Table.HeaderCell>Tienda</Table.HeaderCell>
@@ -515,33 +776,42 @@ const SellerApplication = () => {
                         </Table.Cell>
                         <Table.Cell>{data.total_price}</Table.Cell>
                         <Table.Cell>
-                          {data.store_variant ? 
-                            [...new Set(data.store_variant.map(store => store.store_name))]
-                              .map((storeName, index, uniqueStores) => (
+                          {data.store_variant &&
+                          Array.isArray(data.store_variant)
+                            ? [
+                                ...new Set(
+                                  data.store_variant.map(
+                                    (store) => store.store_name
+                                  )
+                                ),
+                              ].map((storeName, index, uniqueStores) => (
                                 <span key={storeName}>
                                   {storeName}
-                                  {index < uniqueStores.length - 1 && ', '}
+                                  {index < uniqueStores.length - 1 && ", "}
                                 </span>
                               ))
-                            : null
-                          }
+                            : null}
                         </Table.Cell>
                         <Table.Cell>
                           {data.proof_of_payment ? (
-                            <Tooltip maxWidth={300} content={<img
-                              src={BACKEND + "/" + data.proof_of_payment}
-                              alt="Comprobante de pago"
-                              width={300}
-                              height={0} />}>
-                            <img
-                              src={BACKEND + "/" + data.proof_of_payment}
-                              alt="Comprobante de pago"
-                              width={50}
-                              height={50}
-                            />
-                          </Tooltip>
-                      
-                            
+                            <Tooltip
+                              maxWidth={300}
+                              content={
+                                <img
+                                  src={BACKEND + "/" + data.proof_of_payment}
+                                  alt="Comprobante de pago"
+                                  width={300}
+                                  height={0}
+                                />
+                              }
+                            >
+                              <img
+                                src={BACKEND + "/" + data.proof_of_payment}
+                                alt="Comprobante de pago"
+                                width={50}
+                                height={50}
+                              />
+                            </Tooltip>
                           ) : (
                             "CoinPal Pago Automatico"
                           )}
@@ -573,13 +843,13 @@ const SellerApplication = () => {
       </div>
 
       <div className="flex p-6">
-        <div className="w-[35%]">{`${dataOrder.count || 0} Ordenes`}</div>
+        <div className="w-[35%]">{`${dataOrder.totalCount || 0} Ordenes`}</div>
         <div className="flex w-[65%] gap-5 justify-end">
           <span className="text-[12px] mr-[4px]">{`N° Registros: `}</span>
           <div className="text-[12px] w-[50px]">
             <Select onValueChange={handlerRowsNumber} size="small">
               <Select.Trigger>
-                <Select.Value placeholder="20" />
+                <Select.Value placeholder="50" />
               </Select.Trigger>
               <Select.Content>
                 {registerNumber.map((num) => (
@@ -591,7 +861,7 @@ const SellerApplication = () => {
             </Select>
           </div>
           <>
-            {page} of {pageTotal}
+            {page} of {dataOrder.totalPages}
           </>
           <button
             disabled={page == 1 ? true : false}
@@ -601,7 +871,7 @@ const SellerApplication = () => {
           </button>
 
           <button
-            disabled={page == pageTotal ? true : false}
+            disabled={page == dataOrder.totalPages ? true : false}
             onClick={() => handlerNextPage("NEXT")}
           >
             <ArrowLongRight />

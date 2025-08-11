@@ -32,6 +32,8 @@ import { getAllListRequestProduct } from "../../actions/request-product/get-all-
 import clsx from "clsx";
 import { updateRequestProduct } from "../../actions/request-product/update-request-product";
 import { createProductVariant } from "../../actions/product/create-productVariants";
+import { getCommission } from "../../actions/commission";
+import { Label } from "@medusajs/ui";
 
 type ListRequestProduct = {
   request_id: string;
@@ -40,13 +42,19 @@ type ListRequestProduct = {
   product_image: string;
   description: string;
   variants: string;
-  status: string; // "C" pendiente, "A" aprobado, "B" rechazado
+  status: string; 
   note?: string;
   approved?: boolean;
   created_at: string;
   store_name: string;
   customer_email: string;
   store_id: string;
+};
+
+type CommissionType = {
+  id: string;
+  name: string;
+  percentage: string;
 };
 type arraysRequestProduct = {
   dataRequestProduct: ListRequestProduct[];
@@ -96,6 +104,9 @@ const RequestProduct = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isConfirmationMode, setIsConfirmationMode] = useState<boolean>(false);
   const [confirmationNote, setConfirmationNote] = useState<string>("");
+  const [commissions, setCommissions] = useState<CommissionType[]>([]);
+  const [selectedCommission, setSelectedCommission] = useState<string | null>(null);
+  const [isLoadingCommissions, setIsLoadingCommissions] = useState<boolean>(false);
 
   const handlerGetListProduct = async (order?: string) => {
     setIsLoading(true);
@@ -261,16 +272,26 @@ const RequestProduct = () => {
     URL.revokeObjectURL(url);
   };
 
-  const openEditModal = (rowData: ListRequestProduct) => {
+  const openEditModal = async (rowData: ListRequestProduct) => {
     setEditData(rowData);
-    setVariantInputs(
-      rowData.variants ? rowData.variants.split(",").map((v) => v.trim()) : []
-    );
-    setPreviewUrl(rowData.product_image || null);
-    setSelectedFile(null);
-    setIsRejectionMode(false);
-    setRejectionNote("");
+    setVariantInputs(rowData.variants ? rowData.variants.split(",") : []);
+    setPreviewUrl(rowData.product_image);
     setIsModalOpen(true);
+    setIsRejectionMode(false);
+    setIsConfirmationMode(false);
+    setRejectionNote("");
+    setConfirmationNote("");
+    setSelectedCommission(null);
+
+    setIsLoadingCommissions(true);
+    try {
+      const commissionData = await getCommission();
+      setCommissions(commissionData);
+    } catch (error) {
+      console.error("Error fetching commissions:", error);
+    } finally {
+      setIsLoadingCommissions(false);
+    }
   };
 
   const handleSubmit = () => {
@@ -283,6 +304,7 @@ const RequestProduct = () => {
         note: confirmationNote,
         variants: variantInputs.filter((v) => v.trim()).join(","),
         product_image: selectedFile ? "" : previewUrl || editData.product_image,
+        product_comission_id: selectedCommission,
       };
       if (selectedFile) {
         createProductVariant(updatedProduct, selectedFile)
@@ -320,7 +342,6 @@ const RequestProduct = () => {
         note: rejectionNote,
       };
 
-      // Use the update request product API call
       updateRequestProduct(editData.request_id, updatedProduct)
         .then((response) => {
           handlerGetListProduct();
@@ -674,7 +695,6 @@ const RequestProduct = () => {
                               const file = e.target.files?.[0] || null;
                               if (file) {
                                 setSelectedFile(file);
-                                // Create a preview URL for the selected file
                                 const fileUrl = URL.createObjectURL(file);
                                 setPreviewUrl(fileUrl);
                               }
@@ -764,6 +784,38 @@ const RequestProduct = () => {
                         />
                       </div>
 
+                      <div className="mb-6">
+                        <Label className="text-gray-700 text-sm mb-1 block">
+                          Comisión
+                        </Label>
+                        {isLoadingCommissions ? (
+                          <Spinner />
+                        ) : (
+                          <Select
+                            onValueChange={(value) => setSelectedCommission(value)}
+                            value={selectedCommission}
+                            disabled={isLoadingCommissions}
+                          >
+                            <Select.Trigger>
+                              <Select.Value placeholder="Seleccionar comisión" />
+                            </Select.Trigger>
+                            <Select.Content>
+                              {commissions.map((commission) => (
+                                <Select.Item
+                                  key={commission.id}
+                                  value={commission.id}
+                                >
+                                  {commission.name} (
+                                  {(Number(commission.percentage) * 100).toFixed(
+                                    0
+                                  )}%)
+                                </Select.Item>
+                              ))}
+                            </Select.Content>
+                          </Select>
+                        )}
+                      </div>
+
                       <div className="flex items-center gap-x-2 justify-end w-full mt-4">
                         <Button
                           variant="secondary"
@@ -775,6 +827,7 @@ const RequestProduct = () => {
                           isLoading={isLoadingButton}
                           variant="primary"
                           onClick={handleSubmit}
+                          disabled={!selectedCommission || isLoadingButton}
                         >
                           Confirmar aprobación
                         </Button>
@@ -793,7 +846,7 @@ const RequestProduct = () => {
                       producto:
                     </Text>
 
-                    <div className="bg-gray-50 p-4 rounded-md mb-6 flex gap-10">
+                    <div className="bg-gray-50 p-4 rounded-md mb-6">
                       <div className="mb-3">
                         <Text className="font-medium">
                           Título del producto:

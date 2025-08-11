@@ -56,7 +56,7 @@ class StoreOrderAdminService extends TransactionBaseService {
       },
     });
 
-    // Group by store_variant_order_id
+
     const serialCodeMap = new Map();
     for (const code of serialCodes) {
       if (!serialCodeMap.has(code.store_variant_order_id)) {
@@ -68,11 +68,111 @@ class StoreOrderAdminService extends TransactionBaseService {
     return serialCodeMap;
   }
 
-  async listCustomersOrders() {
+  async listCustomersOrders(params?: {
+    page?: number;
+    limit?: number;
+    status?: string;
+    paymentMethod?: string;
+    store?: string;
+    search?: string;
+  }) {
     try {
+      const {
+        page = 1,
+        limit = 50,
+        status,
+        paymentMethod,
+        store,
+        search,
+      } = params || {};
+
       const repoStoreOrder = this.activeManager_.withRepository(
         this.storeOrderRepository_
       );
+      
+      let queryBuilder = repoStoreOrder
+        .createQueryBuilder("so")
+        .innerJoinAndSelect("so.order_status", "sso")
+        .leftJoinAndSelect("so.storeVariantOrder", "svo")
+        .leftJoinAndSelect("svo.store_variant", "sxv")
+        .innerJoinAndSelect("sxv.variant", "pv")
+        .leftJoinAndSelect("sxv.store", "s");
+
+      
+      
+      if (status && status !== "All") {
+        queryBuilder = queryBuilder.where("so.order_status_id = :status", { status });
+      }
+
+      if (paymentMethod && paymentMethod !== "All") {
+        queryBuilder = queryBuilder.andWhere("so.pay_method_id = :paymentMethod", { paymentMethod });
+      }
+
+      if (store && store !== "All") {
+        queryBuilder = queryBuilder.andWhere("s.name = :store", { store });
+      }
+
+      if (search && search.trim() !== "") {
+        queryBuilder = queryBuilder.andWhere(
+          "(so.id LIKE :search OR so.name LIKE :search OR so.last_name LIKE :search OR so.email LIKE :search OR pv.title LIKE :search)",
+          { search: `%${search}%` }
+        );
+      }
+
+      
+      let simpleQueryBuilder = repoStoreOrder.createQueryBuilder("so");
+      
+      
+      if (status && status !== "All") {
+        simpleQueryBuilder = simpleQueryBuilder.where("so.order_status_id = :status", { status });
+      }
+
+      if (paymentMethod && paymentMethod !== "All") {
+        simpleQueryBuilder = simpleQueryBuilder.andWhere("so.pay_method_id = :paymentMethod", { paymentMethod });
+      }
+
+     
+      if (store && store !== "All") {
+        simpleQueryBuilder = simpleQueryBuilder.andWhere(
+          "so.id IN (SELECT DISTINCT svo2.store_order_id FROM store_variant_order svo2 " +
+          "JOIN store_x_variant sxv2 ON sxv2.id = svo2.store_variant_id " +
+          "JOIN store s2 ON s2.id = sxv2.store_id WHERE s2.name = :store)",
+          { store }
+        );
+      }
+
+      if (search && search.trim() !== "") {
+        simpleQueryBuilder = simpleQueryBuilder.andWhere(
+          "(so.id ILIKE :search OR so.name ILIKE :search OR so.last_name ILIKE :search OR so.email ILIKE :search OR " +
+          "so.id IN (SELECT DISTINCT svo3.store_order_id FROM store_variant_order svo3 " +
+          "JOIN store_x_variant sxv3 ON sxv3.id = svo3.store_variant_id " +
+          "JOIN product_variant pv3 ON pv3.id = sxv3.variant_id WHERE pv3.title ILIKE :search))",
+          { search: `%${search}%` }
+        );
+      }
+      
+      const totalCount = await simpleQueryBuilder.getCount();
+      
+      const paginatedOrderIds = await simpleQueryBuilder
+        .select("so.id")
+        .orderBy("so.created_at", "DESC")
+        .skip((page - 1) * limit)
+        .take(limit)
+        .getRawMany();
+      
+      
+      if (paginatedOrderIds.length === 0) {
+        return {
+          data: [],
+          totalCount,
+          page,
+          limit,
+          totalPages: Math.ceil(totalCount / limit),
+        };
+      }
+      
+      const orderIds = paginatedOrderIds.map(order => order.so_id);
+ 
       const listOrder = await repoStoreOrder
         .createQueryBuilder("so")
         .innerJoinAndSelect("so.order_status", "sso")
@@ -80,6 +180,7 @@ class StoreOrderAdminService extends TransactionBaseService {
         .leftJoinAndSelect("svo.store_variant", "sxv")
         .innerJoinAndSelect("sxv.variant", "pv")
         .leftJoinAndSelect("sxv.store", "s")
+        .where("so.id IN (:...orderIds)", { orderIds })
         .select([
           "so.id AS id",
           "so.pay_method_id AS pay_method_id",
@@ -157,7 +258,13 @@ class StoreOrderAdminService extends TransactionBaseService {
       
       const returnArray = Array.from(orderMap.values());
     
-      return returnArray;
+      return {
+        data: returnArray,
+        totalCount,
+        page,
+        limit,
+        totalPages: Math.ceil(totalCount / limit),
+      };
     } catch (error) {
       console.error("Error in listCustomersOrders:", error);
       throw new Error(`Failed to fetch customer orders: ${error.message}`);
