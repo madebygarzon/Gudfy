@@ -8,6 +8,8 @@ export const getListStoreOrder = async (params?: {
   paymentMethod?: string;
   store?: string;
   search?: string;
+  sortBy?: string;
+  sortDirection?: string;
 }) => {
   try {
     const queryParams = new URLSearchParams();
@@ -18,6 +20,8 @@ export const getListStoreOrder = async (params?: {
     if (params?.paymentMethod) queryParams.append('paymentMethod', params.paymentMethod);
     if (params?.store) queryParams.append('store', params.store);
     if (params?.search) queryParams.append('search', params.search);
+    if (params?.sortBy) queryParams.append('sortBy', params.sortBy);
+    if (params?.sortDirection) queryParams.append('sortDirection', params.sortDirection);
 
     const url = `${BACKEND}/admin/orders/list-orders${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
     

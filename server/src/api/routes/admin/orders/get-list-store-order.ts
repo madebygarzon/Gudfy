@@ -14,6 +14,8 @@ export default async function getListStoreOrders(req: Request, res: Response) {
       paymentMethod,
       store,
       search,
+      sortBy,
+      sortDirection,
     } = req.query;
 
     const params = {
@@ -23,6 +25,8 @@ export default async function getListStoreOrders(req: Request, res: Response) {
       paymentMethod: paymentMethod as string,
       store: store as string,
       search: search as string,
+      sortBy: sortBy as string,
+      sortDirection: sortDirection as string,
     };
 
     const data = await onboardingService.listCustomersOrders(params);

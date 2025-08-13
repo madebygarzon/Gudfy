@@ -1,6 +1,6 @@
 import type { WidgetConfig } from "@medusajs/admin";
 import React, { useState, useEffect } from "react";
-import { XMark, ArrowLongRight, ArrowLongLeft, Eye } from "@medusajs/icons";
+import { XMark, ArrowLongRight, ArrowLongLeft, Eye, ChevronUpMini, ChevronDownMini } from "@medusajs/icons";
 import Spinner from "../../components/shared/spinner";
 import {
   Table,
@@ -131,8 +131,8 @@ const SellerApplication = () => {
   const [searchInput, setSearchInput] = useState<string>("");
   const [isSearching, setIsSearching] = useState<boolean>(false);
   
-  const [sortByPrice, setSortByPrice] = useState<boolean>(false);
-  const [sortByOrder, setSortByOrder] = useState<boolean>(false);
+  const [sortByPrice, setSortByPrice] = useState<string>(""); 
+  const [sortByOrder, setSortByOrder] = useState<string>(""); 
 
   const [selectOrderData, setTelectOrderData] = useState<order>();
 
@@ -149,6 +149,8 @@ const SellerApplication = () => {
     setStoreFilter("All");
     setSearchTerm("");
     setSearchInput("");
+    setSortByPrice("");
+    setSortByOrder("");
     setPage(1);
     setDataCustomer({
       dataOrders: [],
@@ -175,6 +177,8 @@ const SellerApplication = () => {
           paymentMethodFilter !== "All" ? paymentMethodFilter : undefined,
         store: storeFilter !== "All" ? storeFilter : undefined,
         search: searchTerm || undefined,
+        sortBy: sortByPrice ? "price" : sortByOrder ? "order" : undefined,
+        sortDirection: sortByPrice || sortByOrder || undefined,
       };
 
       const response = await getListStoreOrder(params);
@@ -608,11 +612,63 @@ const SellerApplication = () => {
   };
 
   const handlerSortByPrice = () => {
-
+    setSortByOrder("");
+    
+    if (sortByPrice === "") {
+      setSortByPrice("desc"); 
+    } else if (sortByPrice === "desc") {
+      setSortByPrice("asc"); 
+    } else {
+      setSortByPrice(""); 
+    }
+    
+    setPage(1);
+    setDataCustomer({
+      dataOrders: [],
+      dataPreview: [],
+      totalCount: 0,
+      currentPage: 1,
+      totalPages: 0,
+      loadedPages: new Set(),
+    });
+    
+  
+    setPage(1);
+    setDataCustomer({
+      dataOrders: [],
+      dataPreview: [],
+      totalCount: 0,
+      currentPage: 1,
+      totalPages: 0,
+      loadedPages: new Set(),
+    });
+    
+  
+    setTimeout(() => loadOrdersPage(1, true), 0);
   };
 
   const handlerSortByOrder = () => {
+    setSortByPrice("");
     
+    if (sortByOrder === "") {
+      setSortByOrder("asc"); 
+    } else if (sortByOrder === "asc") {
+      setSortByOrder("desc"); 
+    } else {
+      setSortByOrder(""); 
+    }
+
+    setPage(1);
+    setDataCustomer({
+      dataOrders: [],
+      dataPreview: [],
+      totalCount: 0,
+      currentPage: 1,
+      totalPages: 0,
+      loadedPages: new Set(),
+    });
+   
+    setTimeout(() => loadOrdersPage(1, true), 0);
   };
 
   return (
@@ -744,6 +800,22 @@ const SellerApplication = () => {
                         className="flex items-center gap-1 hover:text-ui-fg-base transition-colors"
                       >
                         Número de orden
+                        <div className="flex flex-col">
+                          <ChevronUpMini 
+                            className={`w-3 h-3 ${
+                              sortByOrder === "asc" 
+                                ? "text-ui-fg-base" 
+                                : "text-ui-fg-muted opacity-40"
+                            }`} 
+                          />
+                          <ChevronDownMini 
+                            className={`w-3 h-3 ${
+                              sortByOrder === "desc" 
+                                ? "text-ui-fg-base" 
+                                : "text-ui-fg-muted opacity-40"
+                            }`} 
+                          />
+                        </div>
                       </button>
                     </Table.HeaderCell>
                     <Table.HeaderCell>Usuario</Table.HeaderCell>
@@ -753,6 +825,22 @@ const SellerApplication = () => {
                         className="flex items-center gap-1 hover:text-ui-fg-base transition-colors"
                       >
                         Precio
+                        <div className="flex flex-col">
+                          <ChevronUpMini 
+                            className={`w-3 h-3 ${
+                              sortByPrice === "asc" 
+                                ? "text-ui-fg-base" 
+                                : "text-ui-fg-muted opacity-40"
+                            }`} 
+                          />
+                          <ChevronDownMini 
+                            className={`w-3 h-3 ${
+                              sortByPrice === "desc" 
+                                ? "text-ui-fg-base" 
+                                : "text-ui-fg-muted opacity-40"
+                            }`} 
+                          />
+                        </div>
                       </button>
                     </Table.HeaderCell>
                     <Table.HeaderCell>Tienda</Table.HeaderCell>

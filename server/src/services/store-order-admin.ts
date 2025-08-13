@@ -75,6 +75,8 @@ class StoreOrderAdminService extends TransactionBaseService {
     paymentMethod?: string;
     store?: string;
     search?: string;
+    sortBy?: string;
+    sortDirection?: string;
   }) {
     try {
       const {
@@ -84,6 +86,8 @@ class StoreOrderAdminService extends TransactionBaseService {
         paymentMethod,
         store,
         search,
+        sortBy,
+        sortDirection,
       } = params || {};
 
       const repoStoreOrder = this.activeManager_.withRepository(
@@ -113,12 +117,30 @@ class StoreOrderAdminService extends TransactionBaseService {
       }
 
       if (search && search.trim() !== "") {
-        queryBuilder = queryBuilder.andWhere(
-          "(so.id LIKE :search OR so.name LIKE :search OR so.last_name LIKE :search OR so.email LIKE :search OR pv.title LIKE :search)",
-          { search: `%${search}%` }
-        );
+        const searchWords = search.trim().split(/\s+/);
+      
+        if (searchWords.length === 1) {
+          queryBuilder = queryBuilder.andWhere(
+            "(so.id LIKE :search OR so.name LIKE :search OR so.last_name LIKE :search OR so.email LIKE :search OR pv.title LIKE :search)",
+            { search: `%${search}%` }
+          );
+        } else {
+          const searchConditions = searchWords.map((word, index) => {
+            const paramName = `search${index}`;
+            return `(so.id LIKE :${paramName} OR so.name LIKE :${paramName} OR so.last_name LIKE :${paramName} OR so.email LIKE :${paramName} OR pv.title LIKE :${paramName})`;
+          });
+          
+          const searchParams = {};
+          searchWords.forEach((word, index) => {
+            searchParams[`search${index}`] = `%${word}%`;
+          });
+          
+          queryBuilder = queryBuilder.andWhere(
+            `(${searchConditions.join(' AND ')})`,
+            searchParams
+          );
+        }
       }
-
       
       let simpleQueryBuilder = repoStoreOrder.createQueryBuilder("so");
       
@@ -142,20 +164,55 @@ class StoreOrderAdminService extends TransactionBaseService {
       }
 
       if (search && search.trim() !== "") {
-        simpleQueryBuilder = simpleQueryBuilder.andWhere(
-          "(so.id ILIKE :search OR so.name ILIKE :search OR so.last_name ILIKE :search OR so.email ILIKE :search OR " +
-          "so.id IN (SELECT DISTINCT svo3.store_order_id FROM store_variant_order svo3 " +
-          "JOIN store_x_variant sxv3 ON sxv3.id = svo3.store_variant_id " +
-          "JOIN product_variant pv3 ON pv3.id = sxv3.variant_id WHERE pv3.title ILIKE :search))",
-          { search: `%${search}%` }
-        );
+        const searchWords = search.trim().split(/\s+/);
+      
+        if (searchWords.length === 1) {
+          simpleQueryBuilder = simpleQueryBuilder.andWhere(
+            "(so.id ILIKE :search OR so.name ILIKE :search OR so.last_name ILIKE :search OR so.email ILIKE :search OR " +
+            "so.id IN (SELECT DISTINCT svo3.store_order_id FROM store_variant_order svo3 " +
+            "JOIN store_x_variant sxv3 ON sxv3.id = svo3.store_variant_id " +
+            "JOIN product_variant pv3 ON pv3.id = sxv3.variant_id WHERE pv3.title ILIKE :search))",
+            { search: `%${search}%` }
+          );
+        } else {
+          const searchConditions = searchWords.map((word, index) => {
+            const paramName = `searchSimple${index}`;
+            return `(so.id ILIKE :${paramName} OR so.name ILIKE :${paramName} OR so.last_name ILIKE :${paramName} OR so.email ILIKE :${paramName} OR ` +
+                   `so.id IN (SELECT DISTINCT svo3.store_order_id FROM store_variant_order svo3 ` +
+                   `JOIN store_x_variant sxv3 ON sxv3.id = svo3.store_variant_id ` +
+                   `JOIN product_variant pv3 ON pv3.id = sxv3.variant_id WHERE pv3.title ILIKE :${paramName}))`;
+          });
+          
+          const searchParams = {};
+          searchWords.forEach((word, index) => {
+            searchParams[`searchSimple${index}`] = `%${word}%`;
+          });
+          
+          simpleQueryBuilder = simpleQueryBuilder.andWhere(
+            `(${searchConditions.join(' AND ')})`,
+            searchParams
+          );
+        }
       }
       
       const totalCount = await simpleQueryBuilder.getCount();
       
+      let orderByClause = "so.created_at";
+      let orderDirection: "ASC" | "DESC" = "DESC";
+      
+      if (sortBy && sortDirection) {
+        if (sortBy === "price") {
+          orderByClause = "so.total_price";
+          orderDirection = sortDirection.toUpperCase() as "ASC" | "DESC";
+        } else if (sortBy === "order") {
+          orderByClause = "so.created_at";
+          orderDirection = sortDirection.toUpperCase() as "ASC" | "DESC";
+        }
+      }
+      
       const paginatedOrderIds = await simpleQueryBuilder
         .select("so.id")
-        .orderBy("so.created_at", "DESC")
+        .orderBy(orderByClause, orderDirection)
         .skip((page - 1) * limit)
         .take(limit)
         .getRawMany();
@@ -205,7 +262,7 @@ class StoreOrderAdminService extends TransactionBaseService {
           "s.name AS store_name",
           "s.id AS store_id",
         ])
-        .orderBy("so.created_at", "DESC")
+        .orderBy(orderByClause, orderDirection)
         .getRawMany();
 
       const storeVariantOrderIds = listOrder
