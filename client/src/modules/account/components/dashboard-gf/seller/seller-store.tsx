@@ -34,6 +34,7 @@ import { Popover, PopoverTrigger, PopoverContent } from "@heroui/react"
 import { listSellersAvatar } from "@lib/util/list-sellers-avatar"
 import { updateSellerAvatar } from "@modules/account/actions/seller/update-seller-avatar"
 import { EyeSeeIcon } from "@lib/util/icons"
+import { useSellerStoreGudfy } from "@lib/context/seller-store"
 
 type store = {
   id: string
@@ -64,6 +65,7 @@ const CustomerStore: React.FC<store> = (store) => {
       </div>
 
       <div className="rounded-lg shadow-2xl p-8 w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 py-1 ">
+        
         <CardItemsDashboard
           image="/account/product.svg"
           title="Productos"
@@ -71,6 +73,7 @@ const CustomerStore: React.FC<store> = (store) => {
           href="/account/seller/products"
           store={store}
         />
+        
         <CardItemsDashboard
           image="/account/metricas.svg"
           title="Ordenes"
@@ -113,6 +116,7 @@ const CardItemsDashboard: React.FC<CardDasboard> = ({
   href,
 }) => {
   const { notifications } = useNotificationContext()
+  const {notificateLowStock} = useSellerStoreGudfy()
   return (
     <div className="min-h-[230px] ">
       <Link href={href}>
@@ -126,6 +130,9 @@ const CardItemsDashboard: React.FC<CardDasboard> = ({
               return <Notification />
             }
           })}
+          {notificateLowStock.store_x_variant_id.length > 0 && title == "Productos" && (
+            <Notification />
+          )}
           <h3 className="text-2xl font-bold ">{title}</h3>
           <p className="text-sm text-center">{description}</p>
         </div>

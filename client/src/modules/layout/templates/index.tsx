@@ -7,6 +7,7 @@ import io, { Socket } from "socket.io-client"
 import { useNotificationContext } from "@lib/context/notification-context"
 import { useMeCustomer } from "medusa-react"
 import { useAccount } from "@lib/context/account-context"
+import { useSellerStoreGudfy } from "@lib/context/seller-store"
 
 const restrictHeader = [
   // Podemos agregar las urls en las que no querramos mostar footer o Header
@@ -19,6 +20,7 @@ const Layout: React.FC = ({ children }) => {
   const pathname = usePathname()
   const [isLogin, setIsLogin] = useState(false)
   const { customer } = useAccount()
+  const { handlerLowStock } = useSellerStoreGudfy()
   const [socket, setSocket] = useState<Socket | null>(null)
   const { handlerRetriverNotification } = useNotificationContext()
   function isRestric(path: String): boolean {
@@ -26,7 +28,7 @@ const Layout: React.FC = ({ children }) => {
   }
 
   useEffect(() => {
-    if (customer) handlerRetriverNotification()
+    if (customer){ handlerRetriverNotification(); handlerLowStock()}
   }, [customer])
 
   useEffect(() => {

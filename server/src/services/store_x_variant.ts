@@ -119,7 +119,7 @@ class StoreXVariantService extends TransactionBaseService {
 
       return listSellerxVariant[0];
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   }
 
@@ -194,6 +194,7 @@ class StoreXVariantService extends TransactionBaseService {
       .innerJoinAndSelect("sxv.variant", "pv")
       .innerJoinAndSelect("pv.product", "p")
       .innerJoinAndSelect("p.product_comission", "pc")
+      .leftJoinAndSelect("sxv.product_notificate", "pn")
       .where("sxv.store_id = :storeId", {
         storeId: this.loggedInCustomer_.store_id,
       })
@@ -202,6 +203,8 @@ class StoreXVariantService extends TransactionBaseService {
         "sxv.quantity_store AS quantity",
         "sxv.price AS price",
         "sxv.store_id AS storeId",
+        "pn.stock_notificate AS stock_notificate",
+        "pn.activate AS activate_low_stock",
         "sxv.variant_id AS variantId",
         "pv.id AS productVariantId",
         "pv.title AS productVariantTitle",
@@ -254,7 +257,7 @@ class StoreXVariantService extends TransactionBaseService {
 
       return "products added correctly";
     } catch (error) {
-      console.log("ERROR EN EL SERVICIO AL AGREGAR LOS PRODUCTOS", error);
+      console.error("ERROR EN EL SERVICIO AL AGREGAR LOS PRODUCTOS", error);
     }
   }
 

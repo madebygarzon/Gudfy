@@ -88,7 +88,7 @@ const OrderCancel = ({ orderData, handlerReset }: props) => {
               <tr key={i} className="border-b border-slate-200">
                 <td className="py-2 px-4 border-r border-slate-200 flex justify-between flex-wrap">
                   <div className="w-[70%]">
-                    {p.produc_title} – ${p.price} USD x {p.quantity}
+                    {p.product_title} – ${p.price} USD x {p.quantity}
                   </div>
                   <div className="text-sm  font-light mt-2 w-[30%]">
                     <p>

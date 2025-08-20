@@ -15,6 +15,7 @@ import {
 } from "../admin/components/email/payments";
 import { IsNull } from "typeorm";
 import { formatPrice } from "./utils/format-price";
+import ProductNotificateService from "./product-notificate";
 
 class OrderPaymentService extends TransactionBaseService {
   static LIFE_TIME = Lifetime.SCOPED;
@@ -26,6 +27,7 @@ class OrderPaymentService extends TransactionBaseService {
   protected readonly storeOrderRepository_: typeof StoreOrderRepository;
   protected readonly storeXVariantRepository_: typeof StoreXVariantRepository;
   protected readonly productVariantRepository_: typeof ProductVariantRepository;
+  protected readonly productNotificateService_: ProductNotificateService;
 
   constructor(container) {
     // @ts-expect-error prefer-rest-params
@@ -38,6 +40,7 @@ class OrderPaymentService extends TransactionBaseService {
     this.storeOrderRepository_ = container.storeOrderRepository;
     this.storeXVariantRepository_ = container.storeXVariantRepository;
     this.productVariantRepository_ = container.productVariantRepository;
+    this.productNotificateService_ = container.productNotificateService;
   }
   async retriveListStoresToPay() {
     try {
@@ -77,8 +80,6 @@ class OrderPaymentService extends TransactionBaseService {
         ])
         .orderBy("svo.created_at", "DESC")
         .getRawMany();
-
-    
 
       const storeMap = new Map();
 
@@ -138,14 +139,16 @@ class OrderPaymentService extends TransactionBaseService {
             balance_paid += totalPrice;
           }
         });
-        store.available_balance = formatPrice(available_balance );
-        store.outstanding_balance = formatPrice(outstanding_balance );
-        store.balance_paid = formatPrice(balance_paid / (1 + Number(process.env.COMMISSION)));
+        store.available_balance = formatPrice(available_balance);
+        store.outstanding_balance = formatPrice(outstanding_balance);
+        store.balance_paid = formatPrice(
+          balance_paid / (1 + Number(process.env.COMMISSION))
+        );
       });
 
       return listStoreXproductsPay;
     } catch (error) {
-      console.log(
+      console.error(
         "error en el servicio al intentar enlistar las tiendas para su pago",
         error
       );
@@ -274,7 +277,7 @@ class OrderPaymentService extends TransactionBaseService {
               //   payment.product_price / (1 + Number(payment.commission))
               // ),
               quantity: payment.product_quantity,
-             
+
               total_price: formatPrice(
                 payment.total_price / (1 + Number(process.env.COMMISSION))
               ),
@@ -413,6 +416,13 @@ class OrderPaymentService extends TransactionBaseService {
         await sv.update(variant.store_variant_id, {
           quantity_reserved: storeVariant.quantity_reserved - quantity,
         });
+        await this.productNotificateService_.compareLowStock(
+          variant.store_variant_id,
+          storeVariant.quantity_reserved - quantity,
+          storeInfo.email_store,
+          storeInfo.name_store,
+          productVariant[0].title
+        );
       }
       const storesWithCodes = Object.values(storeCodeMap);
       await EmailPurchaseSellerCompleted({
