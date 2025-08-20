@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Table } from "@medusajs/ui";
+import { Table, Copy } from "@medusajs/ui";
 import { XMark, ArrowLongRight, ArrowLongLeft } from "@medusajs/icons";
 import Spinner from "../../components/shared/spinner";
 import { formatDate } from "../../utils/format-date";
@@ -193,7 +193,14 @@ const TableSellerMetrics: React.FC<TableCustomerMetricsProps> = ({
                   <Table.Cell>{data.store_name}</Table.Cell>
                   <Table.Cell>{data.email} {data.phone}</Table.Cell>
                   <Table.Cell>{formatDate(data.date_order)}</Table.Cell>
-                  <Table.Cell>{data.wallet_address}</Table.Cell>
+                  <Table.Cell className="">
+                    <div className="flex items-center gap-2">
+                      <div className="max-w-[240px] overflow-x-auto whitespace-nowrap">
+                        {data.wallet_address}
+                      </div>
+                      <Copy content={data.wallet_address} />
+                    </div>
+                  </Table.Cell>
                   <Table.Cell>{data.product}</Table.Cell>
                   <Table.Cell>${data.available_balance}</Table.Cell>
                   <Table.Cell>${data.outstanding_balance}</Table.Cell>
