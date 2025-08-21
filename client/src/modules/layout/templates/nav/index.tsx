@@ -14,6 +14,10 @@ import DropdownGudFyLog from "@modules/layout/components/dropdown-gf-log"
 // import Link from "next/link"
 import Wallet from "@modules/layout/components/wallet-nav"
 import NavList from "@modules/layout/components/nav-list"
+import NavListSimple from "@modules/layout/components/nav-list/nav-list-simple"
+import NavListSimpleMobile from "@modules/layout/components/nav-list/nav-list-simple-mobile"
+import CategoryProducts from "@modules/layout/components/category-products"
+
 import { useTranslation } from "react-i18next"
 import {
   Navbar,
@@ -28,7 +32,7 @@ import {
 } from "@heroui/react"
 
 const Nav = () => {
-  //Inicio Menu responsive
+
   const [isMenuOpen, setIsMenuOpen] = React.useState(false)
   const menuItems = [
     "Profile",
@@ -42,7 +46,7 @@ const Nav = () => {
     "Help & Feedback",
     "Log Out",
   ]
-  //Fin Menu responsive
+
 
   const { t } = useTranslation("common")
   const { customer } = useAccount()
@@ -134,7 +138,9 @@ const Nav = () => {
           </nav>
           <MobileMenu />
         </header>
-        <NavList />
+        {/* <NavList /> */}
+        <NavListSimple />
+        {/* <CategoryProducts /> */}
       </div>
 
       <div className={clsx("block sm:hidden sticky top-0 inset-x-0 z-50")}>
@@ -147,19 +153,22 @@ const Nav = () => {
               }
             )}
           >
-            <div className="mt-2 transition ease-in-out delay-150 hover:-translate-y-1 hover:scale-110 duration-300">
-              <Link href="/">
-                <Image
-                  alt="gudfy"
-                  src="/header/gudfy_logo.png"
-                  width={110}
-                  height={38}
-                />
-              </Link>
+            <div className="flex items-center gap-3">
+              <NavListSimpleMobile />
+              <div className="mt-2 transition ease-in-out delay-150 hover:-translate-y-1 hover:scale-110 duration-300">
+                <Link href="/">
+                  <Image
+                    alt="gudfy"
+                    src="/header/gudfy_logo.png"
+                    width={110}
+                    height={38}
+                  />
+                </Link>
 
-              {/* <div className="flex sm:hidden">
-          <DesktopSearchModal />
-        </div> */}
+                {/* <div className="flex sm:hidden">
+            <DesktopSearchModal />
+          </div> */}
+              </div>
             </div>
 
             <div className="ml-[-20px] flex items-center ">
@@ -182,7 +191,6 @@ const Nav = () => {
           </nav>
           <MobileMenu />
         </header>
-        <NavList />
       </div>
     </>
   )

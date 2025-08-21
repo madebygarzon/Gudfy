@@ -54,6 +54,7 @@ import getPaymentOrders from "./order/get-payment-orders";
 import postMethodPaymentOrder from "./order/post-method-payment-order";
 import updateOrderDataWhitManualPay from "./update-order-data-whit-manual-pay";
 import sso from "./sso";
+import { getListProductCategory } from "./product-category/get-list-product-category";
 
 // Initialize a custom router
 const router = Router();
@@ -213,4 +214,7 @@ export function attachStoreRoutes(storeRouter: Router) {
 
   //------------------------Contact---------------------------------
   router.post("/contact", wrapHandler(postSendContactForm));
+
+  //------------------------Product Category-------------------------
+  router.get("/list-product-category", wrapHandler(getListProductCategory));
 }

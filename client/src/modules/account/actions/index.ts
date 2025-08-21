@@ -1,2 +1,4 @@
+const BACKEND_PORT = process.env.NEXT_PUBLIC_BACKEND_PORT || "9000"
 export const BACKEND_URL =
-  process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL || "http://localhost:9000"
+  process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL ||
+  `http://localhost:${BACKEND_PORT}`

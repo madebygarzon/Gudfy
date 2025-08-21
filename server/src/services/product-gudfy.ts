@@ -2,18 +2,23 @@ import { Lifetime } from "awilix"
 import { TransactionBaseService } from "@medusajs/medusa"
 import ProductComissionRepository from "../repositories/product-comission"
 import ProductRepository from "../repositories/products"
+import  RequestProductService  from "./request-product";
+
 
 export default class ProductGudfyService extends TransactionBaseService {
   static LIFE_TIME = Lifetime.SCOPED
   protected readonly productComissionRepository_: typeof ProductComissionRepository
   protected readonly productRepository_: typeof ProductRepository
+  protected readonly requestProductService_: RequestProductService;
 
-  constructor({ productComissionRepository, productRepository }) {
+  constructor({ productComissionRepository, productRepository, requestProductService }) {
     // @ts-expect-error prefer-rest-params
     super(...arguments)
     this.productComissionRepository_ = productComissionRepository
     this.productRepository_ = productRepository
+    this.requestProductService_ = requestProductService;
   }
+  
 
   async listComissions() {
     const repo = this.manager_.withRepository(this.productComissionRepository_)
@@ -62,4 +67,6 @@ export default class ProductGudfyService extends TransactionBaseService {
     const product = await repo.update({ id: productId }, { product_comission_id: commissionId })
     return product
   }
+
+ 
 }

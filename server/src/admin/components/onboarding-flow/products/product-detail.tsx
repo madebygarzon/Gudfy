@@ -24,7 +24,10 @@ const ProductDetail = ({ onNext, isComplete, data }: StepContentProps) => {
               {
                 label: "cURL",
                 language: "markdown",
-                code: `curl -H 'x-publishable-key: ${api_key}' 'http://localhost:9000/store/products/${data?.product_id}'`,
+                code: `curl -H 'x-publishable-key: ${api_key}' '${
+                  process.env.BACKEND_URL ??
+                  `http://localhost:${process.env.BACKEND_PORT ?? 9000}`
+                }/store/products/${data?.product_id}'`,
               },
               {
                 label: "Medusa JS Client",
@@ -42,7 +45,10 @@ const ProductDetail = ({ onNext, isComplete, data }: StepContentProps) => {
       </div>
       <div className="flex mt-base gap-2">
         <a
-          href={`http://localhost:9000/store/products/${data?.product_id}`}
+          href={`${
+            process.env.BACKEND_URL ??
+            `http://localhost:${process.env.BACKEND_PORT ?? 9000}`
+          }/store/products/${data?.product_id}`}
           target="_blank"
         >
           <Button variant="secondary" size="small">

@@ -14,6 +14,9 @@ import Thumbnail from "@modules/products/components/thumbnail"
 import RequestProductTable from "./table-request-products"
 import { BsEye, BsViewList } from "react-icons/bs"
 import ViewProductSerials from "./view-product-serials"
+import LowStockAlert from "./low-stock-alert"
+import { useSellerStoreGudfy } from "@lib/context/seller-store"
+import Notification from "@modules/common/components/notification"
 
 type StoreProducVariant = {
   description: string
@@ -29,6 +32,8 @@ type StoreProducVariant = {
   price: string
   serialCodeCount: number
   commission: string
+  activate_low_stock: boolean
+  stock_notificate: number
 }
 
 type ListDataSellerProduct = {
@@ -60,6 +65,7 @@ interface serials {
 }
 
 export default function ProductsTable() {
+  const {notificateLowStock} = useSellerStoreGudfy()
   const [dataProducts, setDataProducts] = useState<ListDataSellerProduct>({
     dataProduct: [],
     dataPreview: [],
@@ -190,19 +196,19 @@ export default function ProductsTable() {
   const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure()
 
   const handlerSearcherbar = (e: string) => {
-    const dataFilter = dataProducts.dataProduct.filter((data) => {
-      const nameIncludes = data.producttitle
-        .toLowerCase()
-        .includes(e.toLowerCase())
-
-      return nameIncludes
-    })
+    const filterData = dataProducts.dataProduct.filter((data) =>
+      data.productvarianttitle.toLowerCase().includes(e.toLowerCase())
+    )
     setDataProducts({
       ...dataProducts,
-      dataPreview: handlerPreviewProducts(dataFilter, 1),
-      dataFilter: dataFilter.length ? dataFilter : [],
+      dataFilter: filterData,
+      dataPreview: handlerPreviewProducts(filterData, 1),
     })
+    setPage(1)
+    setPagetotal(Math.ceil(filterData.length / rowsPerPages))
   }
+
+ 
 
   return productView ? (
     <ViewProductSerials
@@ -244,6 +250,7 @@ export default function ProductsTable() {
                       <th className="py-3 px-4">Precio</th>
                       <th className="py-3 px-4">Inventario</th>
                       <th className="py-3 px-4">Categorias</th>
+                      <th className="py-3 px-4">Alerta Stock</th>
                       <th className="py-3 px-4">Ajustes</th>
                     </tr>
                   </thead>
@@ -280,6 +287,13 @@ export default function ProductsTable() {
                           </td>
                           <td className="md:p-4 p-2">GifCars</td>
                           <td className="md:p-4 p-2">
+                            <LowStockAlert
+                              productId={data.storexvariantid}
+                              initialEnabled={data.activate_low_stock || false}
+                              initialThreshold={data.stock_notificate || 5}
+                            />
+                          </td>
+                          <td className="md:p-4 p-2">
                             <div className="flex items-center gap-2">
                               <IconButton
                                 className="hover:bg-gray-100 hover:scale-110 transition-all"
@@ -301,6 +315,9 @@ export default function ProductsTable() {
                                 <BsEye color="#9b48ed" />
                               </IconButton>
                             </div>
+                            {notificateLowStock.store_x_variant_id.includes(data.storexvariantid) && (
+                              <Notification />
+                            )}
                           </td>
                         </tr>
                       )

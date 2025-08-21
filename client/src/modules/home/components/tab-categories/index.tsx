@@ -1,9 +1,8 @@
 import { StoreGetProductsParams } from "@medusajs/medusa"
-import { ProductCategory } from "@medusajs/medusa"
 import clsx from "clsx"
 import ButtonLigth from "@modules/common/components/button_light"
 import { useContext, useState, useEffect } from "react"
-import { categoryContext } from "@lib/context/category-context"
+import { categoryContext, CategoryNode } from "@lib/context/category-context"
 
 type RefinementListProps = {
   refinementList: StoreGetProductsParams
@@ -15,7 +14,7 @@ const Category = ({
   setRefinementList,
 }: RefinementListProps) => {
   const category = useContext(categoryContext)
-  const categories: ProductCategory[] = category?.childCategory() || []
+  const categories: CategoryNode[] = category?.childCategory() || []
   const [isSelect, setIsSelect] = useState<string>("")
 
   useEffect(() => {

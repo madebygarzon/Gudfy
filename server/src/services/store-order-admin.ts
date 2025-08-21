@@ -14,6 +14,9 @@ import {
 import { io } from "../websocket";
 import JobsService from "./jobs";
 import { formatPrice } from "./utils/format-price";
+import ProductNotificateRepository from "../repositories/product-notificate";
+import { EmailLowStock } from "../admin/components/email/low-stock-notificate/index";
+
 
 class StoreOrderAdminService extends TransactionBaseService {
   static LIFE_TIME = Lifetime.SCOPED;
@@ -23,6 +26,9 @@ class StoreOrderAdminService extends TransactionBaseService {
   protected readonly serialCodeRepository_: typeof SerialCodeRepository;
   protected readonly customerRepository_: typeof CustomerRepository;
   protected readonly jobsService_: JobsService;
+   protected readonly productNotificateRepository_: typeof ProductNotificateRepository;
+    
+  
 
   constructor(container) {
     // @ts-expect-error prefer-rest-params
@@ -33,13 +39,197 @@ class StoreOrderAdminService extends TransactionBaseService {
     this.serialCodeRepository_ = container.serialCodeRepository;
     this.customerRepository_ = container.customerRepository;
     this.jobsService_ = container.jobsService;
+    this.productNotificateRepository_ = container.productNotificateRepository;
+
   }
 
-  async listCustomersOrders() {
+  async getBatchSerialCodes(storeVariantOrderIds: string[]) {
+    if (storeVariantOrderIds.length === 0) return new Map();
+    
+    const repoSerialCode = this.activeManager_.withRepository(
+      this.serialCodeRepository_
+    );
+
+    const serialCodes = await repoSerialCode.find({
+      where: {
+        store_variant_order_id: In(storeVariantOrderIds),
+      },
+    });
+
+
+    const serialCodeMap = new Map();
+    for (const code of serialCodes) {
+      if (!serialCodeMap.has(code.store_variant_order_id)) {
+        serialCodeMap.set(code.store_variant_order_id, []);
+      }
+      serialCodeMap.get(code.store_variant_order_id).push(code);
+    }
+    
+    return serialCodeMap;
+  }
+
+  async listCustomersOrders(params?: {
+    page?: number;
+    limit?: number;
+    status?: string;
+    paymentMethod?: string;
+    store?: string;
+    search?: string;
+    sortBy?: string;
+    sortDirection?: string;
+  }) {
     try {
+      const {
+        page = 1,
+        limit = 50,
+        status,
+        paymentMethod,
+        store,
+        search,
+        sortBy,
+        sortDirection,
+      } = params || {};
+
       const repoStoreOrder = this.activeManager_.withRepository(
         this.storeOrderRepository_
       );
+      
+      let queryBuilder = repoStoreOrder
+        .createQueryBuilder("so")
+        .innerJoinAndSelect("so.order_status", "sso")
+        .leftJoinAndSelect("so.storeVariantOrder", "svo")
+        .leftJoinAndSelect("svo.store_variant", "sxv")
+        .innerJoinAndSelect("sxv.variant", "pv")
+        .leftJoinAndSelect("sxv.store", "s");
+
+      
+      
+      if (status && status !== "All") {
+        queryBuilder = queryBuilder.where("so.order_status_id = :status", { status });
+      }
+
+      if (paymentMethod && paymentMethod !== "All") {
+        queryBuilder = queryBuilder.andWhere("so.pay_method_id = :paymentMethod", { paymentMethod });
+      }
+
+      if (store && store !== "All") {
+        queryBuilder = queryBuilder.andWhere("s.name = :store", { store });
+      }
+
+      if (search && search.trim() !== "") {
+        const searchWords = search.trim().split(/\s+/);
+      
+        if (searchWords.length === 1) {
+          queryBuilder = queryBuilder.andWhere(
+            "(so.id LIKE :search OR so.name LIKE :search OR so.last_name LIKE :search OR so.email LIKE :search OR pv.title LIKE :search)",
+            { search: `%${search}%` }
+          );
+        } else {
+          const searchConditions = searchWords.map((word, index) => {
+            const paramName = `search${index}`;
+            return `(so.id LIKE :${paramName} OR so.name LIKE :${paramName} OR so.last_name LIKE :${paramName} OR so.email LIKE :${paramName} OR pv.title LIKE :${paramName})`;
+          });
+          
+          const searchParams = {};
+          searchWords.forEach((word, index) => {
+            searchParams[`search${index}`] = `%${word}%`;
+          });
+          
+          queryBuilder = queryBuilder.andWhere(
+            `(${searchConditions.join(' AND ')})`,
+            searchParams
+          );
+        }
+      }
+      
+      let simpleQueryBuilder = repoStoreOrder.createQueryBuilder("so");
+      
+      
+      if (status && status !== "All") {
+        simpleQueryBuilder = simpleQueryBuilder.where("so.order_status_id = :status", { status });
+      }
+
+      if (paymentMethod && paymentMethod !== "All") {
+        simpleQueryBuilder = simpleQueryBuilder.andWhere("so.pay_method_id = :paymentMethod", { paymentMethod });
+      }
+
+     
+      if (store && store !== "All") {
+        simpleQueryBuilder = simpleQueryBuilder.andWhere(
+          "so.id IN (SELECT DISTINCT svo2.store_order_id FROM store_variant_order svo2 " +
+          "JOIN store_x_variant sxv2 ON sxv2.id = svo2.store_variant_id " +
+          "JOIN store s2 ON s2.id = sxv2.store_id WHERE s2.name = :store)",
+          { store }
+        );
+      }
+
+      if (search && search.trim() !== "") {
+        const searchWords = search.trim().split(/\s+/);
+      
+        if (searchWords.length === 1) {
+          simpleQueryBuilder = simpleQueryBuilder.andWhere(
+            "(so.id ILIKE :search OR so.name ILIKE :search OR so.last_name ILIKE :search OR so.email ILIKE :search OR " +
+            "so.id IN (SELECT DISTINCT svo3.store_order_id FROM store_variant_order svo3 " +
+            "JOIN store_x_variant sxv3 ON sxv3.id = svo3.store_variant_id " +
+            "JOIN product_variant pv3 ON pv3.id = sxv3.variant_id WHERE pv3.title ILIKE :search))",
+            { search: `%${search}%` }
+          );
+        } else {
+          const searchConditions = searchWords.map((word, index) => {
+            const paramName = `searchSimple${index}`;
+            return `(so.id ILIKE :${paramName} OR so.name ILIKE :${paramName} OR so.last_name ILIKE :${paramName} OR so.email ILIKE :${paramName} OR ` +
+                   `so.id IN (SELECT DISTINCT svo3.store_order_id FROM store_variant_order svo3 ` +
+                   `JOIN store_x_variant sxv3 ON sxv3.id = svo3.store_variant_id ` +
+                   `JOIN product_variant pv3 ON pv3.id = sxv3.variant_id WHERE pv3.title ILIKE :${paramName}))`;
+          });
+          
+          const searchParams = {};
+          searchWords.forEach((word, index) => {
+            searchParams[`searchSimple${index}`] = `%${word}%`;
+          });
+          
+          simpleQueryBuilder = simpleQueryBuilder.andWhere(
+            `(${searchConditions.join(' AND ')})`,
+            searchParams
+          );
+        }
+      }
+      
+      const totalCount = await simpleQueryBuilder.getCount();
+      
+      let orderByClause = "so.created_at";
+      let orderDirection: "ASC" | "DESC" = "DESC";
+      
+      if (sortBy && sortDirection) {
+        if (sortBy === "price") {
+          orderByClause = "so.total_price";
+          orderDirection = sortDirection.toUpperCase() as "ASC" | "DESC";
+        } else if (sortBy === "order") {
+          orderByClause = "so.created_at";
+          orderDirection = sortDirection.toUpperCase() as "ASC" | "DESC";
+        }
+      }
+      
+      const paginatedOrderIds = await simpleQueryBuilder
+        .select("so.id")
+        .orderBy(orderByClause, orderDirection)
+        .skip((page - 1) * limit)
+        .take(limit)
+        .getRawMany();
+      
+      
+      if (paginatedOrderIds.length === 0) {
+        return {
+          data: [],
+          totalCount,
+          page,
+          limit,
+          totalPages: Math.ceil(totalCount / limit),
+        };
+      }
+      
+      const orderIds = paginatedOrderIds.map(order => order.so_id);
+ 
       const listOrder = await repoStoreOrder
         .createQueryBuilder("so")
         .innerJoinAndSelect("so.order_status", "sso")
@@ -47,11 +237,11 @@ class StoreOrderAdminService extends TransactionBaseService {
         .leftJoinAndSelect("svo.store_variant", "sxv")
         .innerJoinAndSelect("sxv.variant", "pv")
         .leftJoinAndSelect("sxv.store", "s")
-        .leftJoinAndSelect("s.members", "c")
+        .where("so.id IN (:...orderIds)", { orderIds })
         .select([
           "so.id AS id",
-          "so.pay_method_id AS pay_method_id ",
-          "so.quantity_products AS quantity_products ",
+          "so.pay_method_id AS pay_method_id",
+          "so.quantity_products AS quantity_products",
           "so.total_price AS total_price",
           "so.name AS person_name",
           "so.last_name AS person_last_name",
@@ -68,20 +258,33 @@ class StoreOrderAdminService extends TransactionBaseService {
           "svo.total_price AS total_price_for_product",
           "svo.variant_order_status_id AS variant_order_status_id",
           "sso.state AS state_order",
-          "pv.title AS produc_title",
+          "pv.title AS product_title",
           "s.name AS store_name",
           "s.id AS store_id",
         ])
+        .orderBy(orderByClause, orderDirection)
         .getRawMany();
 
-      const orderMap = new Map();
+      const storeVariantOrderIds = listOrder
+        .filter(order => 
+          order.status_id === "Completed_ID" ||
+          order.status_id === "Finished_ID" ||
+          order.status_id === "Discussion_ID"
+        )
+        .map(order => order.store_variant_order_id)
+        .filter(id => id); 
 
+     
+      const serialCodeMap = await this.getBatchSerialCodes(storeVariantOrderIds);
+
+      const orderMap = new Map();
+      
       for (const order of listOrder) {
         const {
           store_id,
           store_name,
           store_variant_order_id,
-          produc_title,
+          product_title,
           price,
           quantity,
           variant_order_status_id,
@@ -96,7 +299,7 @@ class StoreOrderAdminService extends TransactionBaseService {
           store_id,
           store_name,
           store_variant_order_id,
-          produc_title,
+          product_title,
           price,
           quantity,
           total_price_for_product,
@@ -105,17 +308,24 @@ class StoreOrderAdminService extends TransactionBaseService {
             order.status_id === "Completed_ID" ||
             order.status_id === "Finished_ID" ||
             order.status_id === "Discussion_ID"
-              ? await this.functionRecoverCodes(store_variant_order_id)
+              ? serialCodeMap.get(store_variant_order_id) || []
               : [],
         });
       }
+      
       const returnArray = Array.from(orderMap.values());
-      returnArray.sort(
-        (a, b) =>
-          new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-      );
-      return returnArray;
-    } catch (error) {}
+    
+      return {
+        data: returnArray,
+        totalCount,
+        page,
+        limit,
+        totalPages: Math.ceil(totalCount / limit),
+      };
+    } catch (error) {
+      console.error("Error in listCustomersOrders:", error);
+      throw new Error(`Failed to fetch customer orders: ${error.message}`);
+    }
   }
 
   async functionRecoverCodes(store_variant_order_id) {
@@ -374,7 +584,16 @@ class StoreOrderAdminService extends TransactionBaseService {
         await sv.update(variant.store_variant_id, {
           quantity_reserved: storeVariant.quantity_reserved - quantity,
         });
+
+        await this.compareLowStock(
+          variant.store_variant_id,
+          storeVariant.quantity_reserved - quantity,
+          storeInfo.email_store,
+          storeInfo.name_store,
+          productVariant[0].title
+        );
       }
+      
 
       const storesWithCodes = Object.values(storeCodeMap);
 
@@ -553,6 +772,13 @@ class StoreOrderAdminService extends TransactionBaseService {
         await sv.update(variant.store_variant_id, {
           quantity_store: storeVariant.quantity_store - quantity,
         });
+        await this.compareLowStock(
+          variant.store_variant_id,
+          storeVariant.quantity_store - quantity,
+          storeInfo.email_store,
+          storeInfo.name_store,
+          productVariant[0].title
+        );
       }
       const storesWithCodes = Object.values(storeCodeMap);
 
@@ -591,6 +817,42 @@ class StoreOrderAdminService extends TransactionBaseService {
   async UpdateOrderToCancel(order_id) {
     const result = await this.jobsService_.deleteOrder(order_id);
     return result;
+  }
+
+   async compareLowStock(
+      store_x_variant_id: string,
+      quantity: number,
+      seller_email: string,
+      product_title: string,
+      store_name: string
+    ) {
+      try {
+      const repo = this.manager_.withRepository(
+        this.productNotificateRepository_
+      );
+      const notioficate = await repo.findOne({ where: { store_x_variant_id } });
+      if (!notioficate.activate || notioficate.stock_notificate > quantity) {
+        return;
+      }
+      if (notioficate.stock_notificate < quantity) {
+        await EmailLowStock({
+          email: seller_email,
+          product_title: product_title,
+          name: store_name,
+        });
+      }
+      return;
+    } catch (error) {
+      console.error(
+        "Error en el servicio para comparar el stock de la orden:",
+        error
+      );
+      return {
+        success: false,
+        message: error.message || "Error desconocido al procesar la orden",
+        error: error.toString(),
+      };
+    }
   }
 }
 export default StoreOrderAdminService;

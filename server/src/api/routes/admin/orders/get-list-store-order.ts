@@ -2,11 +2,37 @@ import { Request, Response } from "express";
 import storeOrderAdminService from "../../../../services/store-order-admin";
 
 export default async function getListStoreOrders(req: Request, res: Response) {
-  const onboardingService: storeOrderAdminService = req.scope.resolve(
-    "storeOrderAdminService"
-  );
+  try {
+    const onboardingService: storeOrderAdminService = req.scope.resolve(
+      "storeOrderAdminService"
+    );
 
-  const data = await onboardingService.listCustomersOrders();
+    const {
+      page = 1,
+      limit = 50,
+      status,
+      paymentMethod,
+      store,
+      search,
+      sortBy,
+      sortDirection,
+    } = req.query;
 
-  res.status(200).send(data);
+    const params = {
+      page: parseInt(page as string, 10),
+      limit: parseInt(limit as string, 10),
+      status: status as string,
+      paymentMethod: paymentMethod as string,
+      store: store as string,
+      search: search as string,
+      sortBy: sortBy as string,
+      sortDirection: sortDirection as string,
+    };
+
+    const data = await onboardingService.listCustomersOrders(params);
+ 
+    res.status(200).send(data);
+  } catch (error) {
+    res.status(400).send(error);
+  }
 }
