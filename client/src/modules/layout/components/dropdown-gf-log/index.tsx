@@ -37,7 +37,7 @@ const DropdownGudFyLog: React.FC<DropdownProps> = ({ name }) => {
             width={32}
             height={32}
           />
-          {notifications?.length ? (
+          {notifications?.length  ? (
             <Notification count={notifications.length} />
           ) : (
             <></>

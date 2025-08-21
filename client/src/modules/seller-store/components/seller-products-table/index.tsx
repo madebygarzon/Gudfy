@@ -81,7 +81,7 @@ const SellerProductTable: React.FC<{ store: StoreData }> = ({ store }) => {
                   <td className="px-2 md:px-4 py-2 flex items-center">
                     <Link
                       className="flex"
-                      href={`/products/${variant.parent_title}/${variant.titleVariant}?id=${store.store_id}`}
+                      href={`/product/${variant.titleVariant.replaceAll(" ", "-").toLowerCase()}?id=${store.store_id}`}
                     >
                       <div className="flex items-center gap-2 md:gap-4">
                         <div className="w-[80px] md:w-[122px]">

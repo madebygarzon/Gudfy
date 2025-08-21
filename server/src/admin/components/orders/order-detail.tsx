@@ -148,7 +148,7 @@ const OrderDetail = ({ orderData, customer, handlerReset }: ModalOrderProps) => 
                       <td className="py-2 px-4  border-r border-slate-200 flex justify-between min-w-[250px]">
                         <div className="w-full flex justify-between">
                           <div className="text-base">
-                            <p className="font-bold">{`${p.produc_title} – ${p.price} USD x ${p.quantity}`}</p>
+                            <p className="font-bold">{`${p.product_title} – ${p.price} USD x ${p.quantity}`}</p>
 
                             <p className=" font-light ">
                               Tienda:{p.store_name}

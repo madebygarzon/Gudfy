@@ -1,8 +1,7 @@
 import { Popover, Transition } from "@headlessui/react"
 import React, { useContext, useState } from "react"
-import { ProductCategory } from "@medusajs/medusa"
 import clsx from "clsx"
-import { categoryContext } from "@lib/context/category-context"
+import { categoryContext, CategoryNode } from "@lib/context/category-context"
 import { Fragment } from "react"
 import SelectedProducts from "@modules/home/components/slector-products"
 import Loader from "@lib/loader"
@@ -24,7 +23,7 @@ const NavList: React.FC = () => {
             categories.product_categories.length > 0 ? (
               <Popover className=" flex justify-center h-full gap-x-7 ">
                 {categories.product_categories.map(
-                  (category: ProductCategory) =>
+                  (category: CategoryNode) =>
                     !category.parent_category_id && (
                       <button
                         key={category.id}

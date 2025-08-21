@@ -15,6 +15,11 @@ import { AiOutlineBars } from "react-icons/ai"
 import axios from "axios"
 import ModalReview from "./modal-review"
 
+const BACKEND_PORT = process.env.NEXT_PUBLIC_BACKEND_PORT || "9000"
+const BACKEND_URL =
+  process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL ||
+  `http://localhost:${BACKEND_PORT}`
+
 interface props {
   data: {
     approved: boolean
@@ -41,7 +46,7 @@ const DropdownCard: React.FC<props> = ({ data, handlerReviews }) => {
   }
   // const handlerDelete = () => {
   //   axios
-  //     .delete(`http://localhost:9000/store/reviews/${data.id}`)
+  //     .delete(`${BACKEND_URL}/store/reviews/${data.id}`)
   //     .then((e) => {
   //       console.log(e)
   //       handlerReviews()

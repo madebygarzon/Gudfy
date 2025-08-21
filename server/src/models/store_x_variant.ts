@@ -3,17 +3,18 @@ import { generateEntityId } from "@medusajs/medusa";
 import {
   Entity,
   Column,
-  Index,
   JoinColumn,
   OneToMany,
   ManyToOne,
   BeforeInsert,
+  OneToOne,
 } from "typeorm";
 import { ProductVariant } from "./product-variant";
 import { Store } from "./store";
 import { StoreVariantOrder } from "./store-variant-order";
 import { SerialCode } from "./serial-code";
 import { LineItem } from "./line-item";
+import { ProductNotificate } from "./product-notificate";
 
 @Entity()
 export class StoreXVariant extends BaseEntity {
@@ -48,6 +49,10 @@ export class StoreXVariant extends BaseEntity {
 
   @OneToMany(() => LineItem, (store) => store?.store_variant)
   store_line_items?: LineItem[];
+
+
+  @OneToOne(() => ProductNotificate, (product_notificate) => product_notificate.store_x_variant)
+  product_notificate?: ProductNotificate;
 
   @BeforeInsert()
   private beforeInsert(): void {
