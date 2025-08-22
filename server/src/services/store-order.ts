@@ -257,18 +257,44 @@ class StoreOrderService extends TransactionBaseService {
       .orderBy("so.created_at", "DESC")
       .getRawMany();
 
-
-    //  listOrder.forEach((order) => {
-    //   order.price = formatPrice(order.price / (1 + Number(order.commission)));
-    // }); 
+    
     listOrder.forEach((order) => {
-     
       order.total_price_for_product = order.price * order.quantity;
     }); 
 
-    const OrderMap = new Map();
+    const eligibleStatuses = ["Completed_ID", "Finished_ID", "Paid_ID", "Discussion_ID"];
+    const storeVariantOrderIds = listOrder
+      .filter(order => eligibleStatuses.includes(order.status_id))
+      .map(order => order.store_variant_order_id);
 
+    const serialCodesMap = new Map();
+    if (storeVariantOrderIds.length > 0) {
+      const repoSerialCode = this.activeManager_.withRepository(
+        this.serialCodeRepository_
+      );
+      
+      const allSerialCodes = await repoSerialCode.find({
+        where: {
+          store_variant_order_id: In(storeVariantOrderIds)
+        }
+      });
+
+     
+      allSerialCodes.forEach(code => {
+        if (!serialCodesMap.has(code.store_variant_order_id)) {
+          serialCodesMap.set(code.store_variant_order_id, []);
+        }
+        serialCodesMap.get(code.store_variant_order_id).push(code);
+      });
+    }
+
+    const OrderMap = new Map();
+    
     for (const orderData of listOrder) {
+      const serialCodes = eligibleStatuses.includes(orderData.status_id) 
+        ? serialCodesMap.get(orderData.store_variant_order_id) || []
+        : [];
+
       if (!OrderMap.has(orderData.id)) {
         OrderMap.set(orderData.id, {
           id: orderData.id,
@@ -282,16 +308,8 @@ class StoreOrderService extends TransactionBaseService {
               quantity: orderData.quantity,
               total_price: orderData.total_price_for_product,
               produc_title: orderData.produc_title,
-              price: formatPrice(orderData.price ),
-              serial_code_products:
-                orderData.status_id === "Completed_ID" ||
-                orderData.status_id === "Finished_ID" ||
-                orderData.status_id === "Paid_ID" ||
-                orderData.status_id === "Discussion_ID"
-                  ? await this.functionRecoverCodes(
-                      orderData.store_variant_order_id
-                    )
-                  : [],
+              price: formatPrice(orderData.price),
+              serial_code_products: serialCodes,
             },
           ],
         });
@@ -303,15 +321,7 @@ class StoreOrderService extends TransactionBaseService {
           total_price: orderData.total_price_for_product,
           produc_title: orderData.produc_title,
           price: formatPrice(orderData.price),
-          serial_code_products:
-            orderData.status_id === "Completed_ID" ||
-            orderData.status_id === "Finished_ID" ||
-            orderData.status_id === "Paid_ID" ||
-            orderData.status_id === "Discussion_ID"
-              ? await this.functionRecoverCodes(
-                  orderData.store_variant_order_id
-                )
-              : [],
+          serial_code_products: serialCodes,
         });
       }
     }
@@ -354,9 +364,7 @@ class StoreOrderService extends TransactionBaseService {
       .orderBy("so.created_at", "DESC")
       .getRawMany();
 
-      // listOrder.forEach((order) => {
-      //   order.unit_price = formatPrice(order.unit_price / (1 + Number(order.commission)));
-      // });
+    
     return listOrder;
   }
 

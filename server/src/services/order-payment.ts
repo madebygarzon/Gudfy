@@ -7,6 +7,7 @@ import PaymentDetailRepository from "../repositories/payment-detail";
 import SerialCodeRepository from "../repositories/serial-code";
 import StoreXVariantRepository from "../repositories/store-x-variant";
 import ProductVariantRepository from "@medusajs/medusa/dist/repositories/product-variant";
+import { EmailLowStock } from "../admin/components/email/low-stock-notificate/index";
 import { TransactionBaseService } from "@medusajs/medusa";
 import { io } from "../websocket";
 import {
@@ -15,7 +16,8 @@ import {
 } from "../admin/components/email/payments";
 import { IsNull } from "typeorm";
 import { formatPrice } from "./utils/format-price";
-import ProductNotificateService from "./product-notificate";
+import ProductNotificateRepository from "../repositories/product-notificate";
+
 
 class OrderPaymentService extends TransactionBaseService {
   static LIFE_TIME = Lifetime.SCOPED;
@@ -27,7 +29,8 @@ class OrderPaymentService extends TransactionBaseService {
   protected readonly storeOrderRepository_: typeof StoreOrderRepository;
   protected readonly storeXVariantRepository_: typeof StoreXVariantRepository;
   protected readonly productVariantRepository_: typeof ProductVariantRepository;
-  protected readonly productNotificateService_: ProductNotificateService;
+  protected readonly productNotificateRepository_: typeof ProductNotificateRepository;
+
 
   constructor(container) {
     // @ts-expect-error prefer-rest-params
@@ -40,7 +43,7 @@ class OrderPaymentService extends TransactionBaseService {
     this.storeOrderRepository_ = container.storeOrderRepository;
     this.storeXVariantRepository_ = container.storeXVariantRepository;
     this.productVariantRepository_ = container.productVariantRepository;
-    this.productNotificateService_ = container.productNotificateService;
+    this.productNotificateRepository_ = container.productNotificateRepository;
   }
   async retriveListStoresToPay() {
     try {
@@ -416,7 +419,7 @@ class OrderPaymentService extends TransactionBaseService {
         await sv.update(variant.store_variant_id, {
           quantity_reserved: storeVariant.quantity_reserved - quantity,
         });
-        await this.productNotificateService_.compareLowStock(
+        await this.compareLowStock(
           variant.store_variant_id,
           storeVariant.quantity_reserved - quantity,
           storeInfo.email_store,
@@ -448,7 +451,32 @@ class OrderPaymentService extends TransactionBaseService {
       throw error;
     }
   }
+  async compareLowStock(
+      store_x_variant_id: string,
+      quantity: number,
+      seller_email: string,
+      product_title: string,
+      store_name: string
+    ) {
+      const repo = this.manager_.withRepository(
+        this.productNotificateRepository_
+      );
+    
+      const notioficate = await repo.findOne({ where: { store_x_variant_id } });
+      if (!notioficate.activate || notioficate.stock_notificate > quantity) {
+        return;
+      }
+      if (notioficate.stock_notificate < quantity) {
+        await EmailLowStock({
+          email: seller_email,
+          product_title: product_title,
+          name: store_name,
+        });
+      }
+      return;
+    }
 }
+
 export default OrderPaymentService;
 
 function truncateToThreeDecimals(value: number): number {
