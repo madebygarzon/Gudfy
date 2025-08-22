@@ -182,7 +182,7 @@ const SellerOrdersTemplate = () => {
   }, [listSellerOrders])
   return (
     <>
-      <div className="">
+      {/* <div className="">
         <div className="w-full p-2 md:p-8 border border-gray-200 rounded-lg shadow-lg mb-4 flex flex-col items-center justify-center">
           <h2 className="text-sm text-center font-semibold text-blue-gf mb-2">
             Ordenes por día
@@ -247,7 +247,7 @@ const SellerOrdersTemplate = () => {
             </ResponsiveContainer>
           </div>
         </div>
-      </div>
+      </div> */}
       <div className="w-full p-2 md:p-8 border border-gray-200 rounded-lg shadow-lg">
         <div className="mb-8 flex flex-col gap-y-4">
           <h1 className="md:text-xl text-2xl mt-2 font-bold text-gray-700">

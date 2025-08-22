@@ -12,6 +12,6 @@ export const getListStoresToPay = async () => {
 
     return getComment.data;
   } catch (error) {
-    console.log("error al obtener la lista de aplicaciones", error);
+    console.log("error al obtener la lista de la wallet", error);
   }
 };

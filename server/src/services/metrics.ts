@@ -11,14 +11,12 @@ import { formatPrice } from "./utils/format-price";
 class MetricsService extends TransactionBaseService {
   static LIFE_TIME = Lifetime.SCOPED;
   protected readonly storeVariantOrderRepository_: typeof StoreVariantOrderRepository;
-  protected readonly orderPaymentService_: OrderPaymentService;
   protected readonly storeRepository_: typeof StoreRepository;
 
   constructor(container) {
     // @ts-expect-error prefer-rest-params
     super(...arguments);
     this.storeVariantOrderRepository_ = container.storeVariantOrderRepository;
-    this.orderPaymentService_ = container.orderPaymentService;
     this.storeRepository_ = container.storeRepository;
   }
 
