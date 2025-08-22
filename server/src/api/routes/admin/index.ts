@@ -44,7 +44,7 @@ import getProductsWithCommission from "./product/get-product-with-commission";
 import updateProductCommission from "./product/update-product-commission";
 import addImageToCategory from "./product-category/add-image";
 import getListProductCategory from "./product-category/get-list-product-category";
-
+import getListSerialCode from "./serial-code/get-list-serial-code";
 // Initialize a custom router
 const router = Router();
 
@@ -148,6 +148,9 @@ export function attachAdminRoutes(adminRouter: Router) {
 
   router.get("/product/get-products-with-commission", wrapHandler(getProductsWithCommission));
   router.post("/products/:id/commission", wrapHandler(updateProductCommission));
+
+  //---------------serial code-----------------
+  router.get("/serial-code/list-serial-code", wrapHandler(getListSerialCode));
 
 //---------------Notifications dashboard admin-----------------
 

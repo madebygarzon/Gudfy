@@ -6,7 +6,6 @@ export async function getListSellerOrders(
 ): Promise<void> {
   try {
     const { id } = req.params;
-
     const storeOrderService = req.scope.resolve("storeOrderService");
 
     const list = await storeOrderService.listSellerOrders(id);
