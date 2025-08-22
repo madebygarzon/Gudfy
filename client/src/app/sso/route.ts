@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { jwtVerify, decodeJwt } from "jose";
 
+export const dynamic = "force-dynamic";
+
 // --- Utils ---
 function clean(v?: string) {
   return (v ?? "").trim();
@@ -68,9 +70,28 @@ function splitSetCookie(headerValue: string): string[] {
   return headerValue.split(/,(?=\s*[A-Za-z0-9_\-]+=)/g);
 }
 
-// Normalize backend cookies so the browser will accept them in dev and work site-wide
-function normalizeCookieForBrowser(raw: string, req: NextRequest): string {
-  const isHttps = req.nextUrl.protocol === "https:";
+// Derive the public origin using proxy headers
+function getPublicOrigin(req: NextRequest): string {
+  const proto =
+    (req.headers.get("x-forwarded-proto") ||
+      req.nextUrl.protocol.replace(":", "")).toLowerCase();
+
+  // Prefer X-Forwarded-Host; fall back to Host; take first if multiple
+  const rawHost =
+    req.headers.get("x-forwarded-host") ||
+    req.headers.get("host") ||
+    req.nextUrl.host;
+
+  const firstHost = rawHost.split(",")[0].trim();
+
+  // Strip any :port to avoid leaking 8200 into redirects
+  const hostNoPort = firstHost.replace(/:\d+$/, "");
+
+  return `${proto}://${hostNoPort}`;
+} 
+
+// Normalize backend cookies so the browser will accept them site-wide
+function normalizeCookieForBrowser(raw: string, isHttps: boolean): string {
   const domainEnv = clean(process.env.COOKIE_DOMAIN);
   let c = raw;
 
@@ -94,7 +115,7 @@ function normalizeCookieForBrowser(raw: string, req: NextRequest): string {
     c = c.replace(/;\s*Domain=[^;]+/i, "");
   }
 
-  // Drop Secure on http (localhost), keep it on https
+  // Drop Secure on http, keep it on https
   if (!isHttps) {
     c = c.replace(/;\s*Secure/gi, "");
   }
@@ -107,17 +128,21 @@ function normalizeCookieForBrowser(raw: string, req: NextRequest): string {
 export async function GET(req: NextRequest) {
   const url = req.nextUrl;
   const token = url.searchParams.get("token");
+  const origin = getPublicOrigin(req);
+  const isHttps = origin.startsWith("https://");
 
   if (!token) {
-    return NextResponse.redirect(new URL("/account/login?err=missing_token", url));
+    return NextResponse.redirect(`${origin}/account/login?err=missing_token`);
   }
 
   // 1) Verify JWT signed by WordPress
   try {
     await verifyWpJwt(token);
   } catch {
-    return NextResponse.redirect(new URL("/account/login?err=invalid_token", url));
+    return NextResponse.redirect(`${origin}/account/login?err=invalid_token`);
   }
+
+  
 
   // 2) Call Medusa backend to perform its SSO/login and set session cookies
   const medusaUrl = `${clean(process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL)}/store/sso`;
@@ -131,19 +156,19 @@ export async function GET(req: NextRequest) {
   });
 
   if (!apiRes.ok) {
-    const txt = await apiRes.text().catch(() => "");
+  const txt = await apiRes.text().catch(() => "");
     console.error("Medusa SSO fail:", txt);
-    return NextResponse.redirect(new URL("/account/login?err=sso_failed", url));
+    return NextResponse.redirect(`${origin}/account/login?err=sso_failed`);
   }
 
   // 3) Forward backend cookies to the browser
-  const res = NextResponse.redirect(new URL("/account", url));
+  const res = NextResponse.redirect(`${origin}/account`);
   const rawSetCookie = apiRes.headers.get("set-cookie");
 
   if (rawSetCookie) {
     const parts = splitSetCookie(rawSetCookie);
     for (const part of parts) {
-      const normalized = normalizeCookieForBrowser(part, req);
+      const normalized = normalizeCookieForBrowser(part, isHttps);
       res.headers.append("set-cookie", normalized);
     }
   }
