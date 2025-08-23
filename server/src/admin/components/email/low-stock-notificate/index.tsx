@@ -1,4 +1,4 @@
-import sendgrid from "@sendgrid/mail";
+import { Resend } from "resend";
 import { render } from "@react-email/render";
 import { LowStockNotificate } from "./low-stock";
 
@@ -13,17 +13,17 @@ export async function EmailLowStock({
   product_title,
   name,
 }: EmailApplication) {
-  await sendgrid.setApiKey(process.env.SENDGRID_API_KEY);
+  const resend = new Resend(process.env.RESEND_API_KEY);
   const emailHtml = render(
     <LowStockNotificate productName={product_title} sellerName={name} />
   );
   const options = {
-    from: process.env.SENDGRID_FROM,
+    from: process.env.RESEND_FROM_EMAIL,
     to: email,
     subject: `Alerta de stock`,
     html: emailHtml,
   };
-  sendgrid.send(options);
+  await resend.emails.send(options);
 }
 
 

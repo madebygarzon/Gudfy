@@ -1,6 +1,6 @@
 import { EventBusService } from "@medusajs/medusa";
 import { render } from "@react-email/render";
-import sendgrid from "@sendgrid/mail";
+import { Resend } from "resend";
 import { Email } from "../admin/components/email/email-recovery-pasword";
 
 type InjectedDependencies = {
@@ -29,7 +29,7 @@ class RecoveryPasswork {
   handleRecoveryPass = async (data: DataOptions) => {
     try {
      
-      await sendgrid.setApiKey(process.env.SENDGRID_API_KEY);
+      const resend = new Resend(process.env.RESEND_API_KEY);
       const { email, token } = data;
       const emailHtml = render(
         <Email
@@ -40,13 +40,13 @@ class RecoveryPasswork {
       );
 
       const options = {
-        from: process.env.SENDGRID_FROM,
+        from: process.env.RESEND_FROM_EMAIL,
         to: email,
         subject: "Restablecimiento de Contraseña Solicitado - GUDFY",
         html: emailHtml,
       };
 
-      sendgrid.send(options);
+      await resend.emails.send(options);
  
     } catch (error) {
       console.log("Error sending email", error);
