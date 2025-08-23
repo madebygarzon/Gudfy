@@ -37,56 +37,33 @@ Este recurso te proporciona instrucciones detalladas sobre cómo configurar el M
 
 Importante mencionar que esta erramienta nos brinda un uso gratuito de 100 emails por dia, se puede considerar la opcion de 100.000 emials 
 
-estos pasos estan resumidos por lo que se recomienda mirar su [configuracion recomendada](https://docs.medusajs.com/plugins/notifications/sendgrid#install-the-sendgrid-plugin) 
+Para integrar el servicio de notificaciones con **Resend** debes crear una cuenta en [Resend](https://resend.com) y obtener una clave API.
 
-- [Se debe de crear un Usuarios en su pagina oficial](https://signup.sendgrid.com/) 
-
-Para que la integración funcione, debe crear una clave API en su cuenta SendGrid.
-Puede hacerlo eligiendo en la barra lateral de su panel de SendGrid Configuración> Claves API. Luego, haga clic en Crear clave API.
-
-El complemento SendGrid utiliza plantillas SendGrid para enviar correos electrónicos. Si no proporciona el complemento con las plantillas necesarias, no se enviarán correos electrónicos.
-
-Para crear una plantilla de correo electrónico, vaya a API de correo electrónico > Plantillas dinámicas. Luego, haga clic en "Crear una plantilla dinámica". Luego podrá ver la ID de la plantilla que necesitará para la configuración de su complemento.
-
-Entonces, en tu **.en** varchivo agregue la clave API que creó anteriormente, así como el envío desde el correo electrónico:
+En tu archivo **.env** agrega las variables:
 
 ```javascript
-SENDGRID_API_KEY=<API_KEY>
-SENDGRID_FROM=<SEND_FROM_EMAIL>
+RESEND_API_KEY=<API_KEY>
+RESEND_FROM_EMAIL=<SEND_FROM_EMAIL>
 ```
 
-Asegúrese de reemplazar el <API_KEY> con la clave API de SendGrid y el <SEND_FROM_EMAIL> con el correo electrónico que estás utilizando en SendGrid como remitente único.
+Asegúrate de reemplazar `<API_KEY>` con tu clave de Resend y `<SEND_FROM_EMAIL>` con el correo electrónico verificado que usarás como remitente.
 
-Además, debes agregar el ID de cada plantilla que crees en .env también. Por ejemplo:
-```javascript
-SENDGRID_ORDER_PLACED_ID=<ORDER_PLACED_TEMPLATE_ID>
-```
-Dónde <ORDER_PLACED_TEMPLATE_IDes> el ID de su plantilla para los correos electrónicos de pedidos realizados.
-
-Finalmente, en tu **medusa-config.js** archivo, agregue el complemento SendGrid a la matriz de complementos:
+Luego, agrega el plugin de Resend en **medusa-config.js**:
 
 ```javascript
 const plugins = [
   // ...,
   {
-    resolve: `medusa-plugin-sendgrid`,
+    resolve: `medusa-plugin-resend`,
     options: {
-      api_key: process.env.SENDGRID_API_KEY,
-      from: process.env.SENDGRID_FROM,
-      order_placed_template: 
-        process.env.SENDGRID_ORDER_PLACED_ID,
-      localization: {
-        "de-DE": { // locale key
-          order_placed_template:
-            process.env.SENDGRID_ORDER_PLACED_ID_LOCALIZED,
-        },
-      },
+      api_key: process.env.RESEND_API_KEY,
+      from: process.env.RESEND_FROM_EMAIL,
     },
   },
 ]
 ```
-Ela pi_key y from Se requieren opciones. Luego, use la clave de cada plantilla que cree (de la referencia ) como nombre de la opción con el ID de la plantilla como valor.
 
+Las opciones `api_key` y `from` son obligatorias. Consulta la documentación de Medusa para personalizar otras opciones según tus necesidades.
 # Implementación y configuración del plugin *medusa-plugin-auth*
 
 Para la implementación de la herramienta, se siguieron los pasos recomendados por la documentación oficial en https://medusa-plugins.vercel.app/authentication.

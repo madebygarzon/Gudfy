@@ -1,4 +1,4 @@
-import sendgrid from "@sendgrid/mail";
+import { Resend } from "resend";
 import { render } from "@react-email/render";
 import { RequestProductApproved } from "./request-product-approved";
 import { RequestProductRejected } from "./request-product-reject";
@@ -17,7 +17,7 @@ export async function EmailRequestProductApproved({
   variants,
   note,
 }: EmailTicket) {
-  await sendgrid.setApiKey(process.env.SENDGRID_API_KEY);
+  const resend = new Resend(process.env.RESEND_API_KEY);
   const emailHtml = render(
     <RequestProductApproved
       title_product={title_product}
@@ -28,12 +28,12 @@ export async function EmailRequestProductApproved({
     />
   );
   const options = {
-    from: process.env.SENDGRID_FROM,
+    from: process.env.RESEND_FROM_EMAIL,
     to: customer_email,
     subject: `Tu solicitud para el producto ${title_product} a sido aprobada exitosamente`,
     html: emailHtml,
   };
-  sendgrid.send(options);
+  await resend.emails.send(options);
 }
 
 export async function EmailRequestProductRejected({
@@ -41,9 +41,9 @@ export async function EmailRequestProductRejected({
   store_name,
   customer_email,
   note,
-  
+
 }: EmailTicket) {
-  await sendgrid.setApiKey(process.env.SENDGRID_API_KEY);
+  const resend = new Resend(process.env.RESEND_API_KEY);
   const emailHtml = render(
     <RequestProductRejected
       title_product={title_product}
@@ -53,10 +53,10 @@ export async function EmailRequestProductRejected({
     />
   );
   const options = {
-    from: process.env.SENDGRID_FROM,
+    from: process.env.RESEND_FROM_EMAIL,
     to: customer_email,
     subject: `Tu solicitud para el producto ${title_product} a sido rechazada exitosamente`,
     html: emailHtml,
   };
-  sendgrid.send(options);
+  await resend.emails.send(options);
 }
