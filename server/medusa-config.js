@@ -83,10 +83,11 @@ const plugins = [
   //   },
   // },
   {
-    resolve: `medusa-plugin-resend`,
+  resolve: `medusa-plugin-resend`,
     options: {
       api_key: process.env.RESEND_API_KEY,
       from: process.env.RESEND_FROM_EMAIL,
+      template_path: process.env.RESEND_TEMPLATE_PATH,
     },
   },
   {

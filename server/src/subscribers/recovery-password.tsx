@@ -1,57 +1,86 @@
-import { EventBusService } from "@medusajs/medusa";
-import { render } from "@react-email/render";
-import { Resend } from "resend";
+import type { EventBusService } from "@medusajs/medusa"
+import { render } from "@react-email/render"
+import { Resend } from "resend"
 import { Email } from "../admin/components/email/email-recovery-pasword";
 
+
 type InjectedDependencies = {
-  eventBusService: EventBusService;
-};
-interface DataOptions {
-  email: string;
-  token: string;
+  eventBusService: EventBusService
 }
 
-class RecoveryPasswork {
+interface DataOptions {
+  email: string
+  token: string
+  first_name?: string
+}
+
+class RecoveryPassword {
+  private readonly resend: Resend
+  private readonly from: string
+  private readonly resetBaseUrl?: string
+
   constructor({ eventBusService }: InjectedDependencies) {
-    try {
-      
-    eventBusService.subscribe(
-      "customer.password_reset",
-      this.handleRecoveryPass
-    );
-    
-    } catch (error) {
-      console.log("Error in the class RecoveryPassword", error)
+    // Validate env early
+    const apiKey = process.env.RESEND_API_KEY
+    const from = process.env.RESEND_FROM_EMAIL
+    this.resetBaseUrl = process.env.URL_RESET_PASSWORD
+
+    if (!apiKey) {
+      console.warn("[recovery-password] RESEND_API_KEY is missing")
     }
-    
+    if (!from) {
+      console.warn("[recovery-password] RESEND_FROM_EMAIL is missing")
+    }
+
+    this.resend = new Resend(apiKey)
+    this.from = from || "Gudfy <no-reply@example.com>"
+
+    // Subscribe once on boot
+    eventBusService.subscribe("customer.password_reset", this.handleRecoveryPass)
+
+    console.log("[recovery-password] Subscriber registered for 'customer.password_reset'")
   }
 
-  handleRecoveryPass = async (data: DataOptions) => {
+  private handleRecoveryPass = async (data: DataOptions) => {
     try {
-     
-      const resend = new Resend(process.env.RESEND_API_KEY);
-      const { email, token } = data;
-      const emailHtml = render(
+      console.log("[recovery-password] Event payload:", data)
+
+      const { email, token } = data || {}
+      if (!email || !token) {
+        console.warn("[recovery-password] Missing email or token in event payload")
+        return
+      }
+
+      // Build a reset URL if you prefer to send the full link directly
+      const resetLink = this.resetBaseUrl
+        ? `${this.resetBaseUrl}?token=${encodeURIComponent(token)}&email=${encodeURIComponent(email)}`
+        : undefined
+
+      const html = render(
         <Email
-          url={process.env.URL_RESET_PASSWORD}
+          // Your Email component accepts url, email, token — keep backward-compatible
+          url={resetLink || this.resetBaseUrl}
           email={email}
           token={token}
         />
-      );
+      )
 
-      const options = {
-        from: process.env.RESEND_FROM_EMAIL,
+      const { error } = await this.resend.emails.send({
+        from: this.from,                     // must be verified in Resend
         to: email,
         subject: "Restablecimiento de Contraseña Solicitado - GUDFY",
-        html: emailHtml,
-      };
+        html,
+      })
 
-      await resend.emails.send(options);
- 
-    } catch (error) {
-      console.log("Error sending email", error);
+      if (error) {
+        console.error("[recovery-password] Resend error:", error)
+      } else {
+        console.log("[recovery-password] Password reset email sent to:", email)
+      }
+    } catch (err) {
+      console.error("[recovery-password] Error sending email:", err)
     }
-  };
+  }
 }
 
-export default RecoveryPasswork;
+export default RecoveryPassword
