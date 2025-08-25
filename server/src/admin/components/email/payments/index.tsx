@@ -1,4 +1,4 @@
-import sendgrid from "@sendgrid/mail";
+import { Resend } from "resend";
 import { render } from "@react-email/render";
 import { PurchaseCompleted } from "./purchase-completed";
 import { PurchaseSellerCompleted } from "./purchase-seller-completed";
@@ -35,24 +35,24 @@ export async function EmailPurchaseCompleted({
   name,
   order,
 }: EmailApplication) {
-  await sendgrid.setApiKey(process.env.SENDGRID_API_KEY);
+  const resend = new Resend(process.env.RESEND_API_KEY);
   const emailHtml = render(
     <PurchaseCompleted order={order} serialCodes={serialCodes} name={name} />
   );
   const options = {
-    from: process.env.SENDGRID_FROM,
+    from: process.env.RESEND_FROM_EMAIL,
     to: email,
     subject: `Confirmación de compra – Pedido ${order}`,
     html: emailHtml,
   };
-  sendgrid.send(options);
+  await resend.emails.send(options);
 }
 
 export async function EmailPurchaseSellerCompleted({
   storesWithCodes,
   order_id,
 }: EmailApplicationSeller) {
-  await sendgrid.setApiKey(process.env.SENDGRID_API_KEY);
+  const resend = new Resend(process.env.RESEND_API_KEY);
 
   for (const store of storesWithCodes) {
     try {
@@ -66,13 +66,13 @@ export async function EmailPurchaseSellerCompleted({
         );
 
         const options = {
-          from: process.env.SENDGRID_FROM,
+          from: process.env.RESEND_FROM_EMAIL,
           to: store.email_store,
           subject: `¡Venta realizada! - Pedido #${order_id}`,
           html: emailHtml,
         };
 
-        await sendgrid.send(options);
+        await resend.emails.send(options);
       }
     } catch (error) {
       console.error(`Error al enviar email a ${store.email_store}:`, error);
