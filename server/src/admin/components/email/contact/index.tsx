@@ -1,4 +1,4 @@
-import sendgrid from "@sendgrid/mail";
+import { Resend } from "resend";
 import { render } from "@react-email/render";
 import { ContactEmail } from "./reception-contact-email";
 
@@ -10,17 +10,17 @@ type EmailTicket = {
 };
 export async function ReceptionEmail(data: EmailTicket) {
   try {
-    await sendgrid.setApiKey(process.env.SENDGRID_API_KEY);
+    const resend = new Resend(process.env.RESEND_API_KEY);
     const emailHtml = render(<ContactEmail {...data} />);
 
     const options = {
-      from: process.env.SENDGRID_FROM,
+      from: process.env.RESEND_FROM_EMAIL,
       to: process.env.RECEPTION_EMAIL || "sales@gudfy.com",
       subject: `Nuevo mensaje de contacto`,
       html: emailHtml,
     };
 
-    await sendgrid.send(options);
+    await resend.emails.send(options);
   } catch (error) {
     console.log("Error sending email", error);
   }

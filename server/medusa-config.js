@@ -82,20 +82,14 @@ const plugins = [
   //     // ...
   //   },
   // },
-  {
-    resolve: `medusa-plugin-sendgrid`,
-    options: {
-      api_key: process.env.SENDGRID_API_KEY,
-      from: process.env.SENDGRID_FROM,
-      order_placed_template: process.env.SENDGRID_ORDER_PLACED_ID,
-      localization: {
-        "de-DE": {
-          // locale key
-          order_placed_template: process.env.SENDGRID_ORDER_PLACED_ID,
-        },
+    /*{
+    resolve: `medusa-plugin-resend`,
+      options: {
+        api_key: process.env.RESEND_API_KEY,
+        from: process.env.RESEND_FROM_EMAIL,
+        template_path: process.env.RESEND_TEMPLATE_PATH,
       },
-    },
-  },
+    },*/
   {
     resolve: "medusa-plugin-auth",
     /** @type {import('medusa-plugin-auth').AuthOptions} */
