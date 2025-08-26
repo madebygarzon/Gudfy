@@ -21,12 +21,92 @@ class SerialCodeService extends TransactionBaseService {
     this.loggedInCustomer_ = container.loggedInCustomer || null;
   }
 
-  async recoverListSerialCode() {
+  async recoverListSerialCode(options: {
+    page?: number;
+    limit?: number;
+    search?: string;
+  } = {}) {
+    const {
+      page = 1,
+      limit = 10,
+      search = null
+    } = options;
+    const skip = (page - 1) * limit;
+
     const repoSerialCode = this.activeManager_.withRepository(
       this.serialCodeRepository_
     );
 
     try {
+      
+      let orderIdsQueryBuilder = repoSerialCode
+        .createQueryBuilder("sc")
+        .innerJoin("sc.store_variant_order", "svo")
+        .innerJoin("svo.store_order", "so")
+        .innerJoin("sc.store_variant", "sxv")
+        .innerJoin("sxv.variant", "v")
+        .innerJoin("sxv.store", "s")
+        .innerJoin("v.product", "p")
+        .where("so.customer_id = :customer_id", {
+          customer_id: this.loggedInCustomer_.id,
+        })
+        .andWhere("so.order_status_id IN (:...statuses)", {
+          statuses: ["Completed_ID", "Finished_ID", "Discussion_ID", "Paid_ID"],
+        });
+
+      if (search && search.trim()) {
+        orderIdsQueryBuilder = orderIdsQueryBuilder.andWhere(
+          "(so.id ILIKE :search OR v.title ILIKE :search OR s.name ILIKE :search)",
+          { search: `%${search.trim()}%` }
+        );
+      }
+
+      const totalCountResult = await orderIdsQueryBuilder
+        .select("COUNT(DISTINCT svo.id)", "count")
+        .getRawOne();
+      const totalCount = parseInt(totalCountResult.count);
+
+      const subQuery = repoSerialCode
+        .createQueryBuilder("sub_sc")
+        .innerJoin("sub_sc.store_variant_order", "sub_svo")
+        .innerJoin("sub_svo.store_order", "sub_so")
+        .innerJoin("sub_sc.store_variant", "sub_sxv")
+        .innerJoin("sub_sxv.variant", "sub_v")
+        .innerJoin("sub_sxv.store", "sub_s")
+        .innerJoin("sub_v.product", "sub_p")
+        .where("sub_so.customer_id = :customer_id", {
+          customer_id: this.loggedInCustomer_.id,
+        })
+        .andWhere("sub_so.order_status_id IN (:...statuses)", {
+          statuses: ["Completed_ID", "Finished_ID", "Discussion_ID", "Paid_ID"],
+        });
+
+      if (search && search.trim()) {
+        subQuery.andWhere(
+          "(sub_so.id ILIKE :search OR sub_v.title ILIKE :search OR sub_s.name ILIKE :search)",
+          { search: `%${search.trim()}%` }
+        );
+      }
+
+      const variantOrderIds = await subQuery
+        .select("DISTINCT sub_svo.id AS id, sub_svo.created_at AS created_at")
+        .orderBy("sub_svo.created_at", "DESC")
+        .limit(limit)
+        .offset(skip)
+        .getRawMany();
+
+      if (variantOrderIds.length === 0) {
+        return {
+          data: [],
+          totalCount,
+          page,
+          limit,
+          totalPages: Math.ceil(totalCount / limit)
+        };
+      }
+
+      const variantOrderIdsList = variantOrderIds.map(order => order.id);
+
       const serialCodes = await repoSerialCode
         .createQueryBuilder("sc")
         .innerJoinAndSelect("sc.store_variant_order", "svo")
@@ -35,12 +115,7 @@ class SerialCodeService extends TransactionBaseService {
         .innerJoinAndSelect("sxv.variant", "v")
         .innerJoinAndSelect("sxv.store", "s")
         .innerJoinAndSelect("v.product", "p")
-        .where("so.customer_id = :customer_id ", {
-          customer_id: this.loggedInCustomer_.id,
-        })
-        .andWhere("so.order_status_id IN (:...statuses)", {
-          statuses: ["Completed_ID", "Finished_ID", "Discussion_ID", "Paid_ID"],
-        })
+        .where("svo.id IN (:...variantOrderIds)", { variantOrderIds: variantOrderIdsList })
         .select([
           "sc.serial AS serial_code",
           "svo.id AS svo_id",
@@ -60,7 +135,7 @@ class SerialCodeService extends TransactionBaseService {
         if (!serialMap.has(data.svo_id)) {
           serialMap.set(data.svo_id, {
             store_variant_order: data.svo_id,
-            quantity: data.quantity,
+            quantity: data.codes_ammount,
             order_number: data.so_id,
             store_name: data.store_name,
             product_name: data.product_name,
@@ -75,12 +150,19 @@ class SerialCodeService extends TransactionBaseService {
 
       const listSerialCodes = Array.from(serialMap.values());
 
-      return listSerialCodes;
+      return {
+        data: listSerialCodes,
+        totalCount,
+        page,
+        limit,
+        totalPages: Math.ceil(totalCount / limit)
+      };
     } catch (error) {
       console.log(
-        "error en el servicio de serial_codes para enlistar los productos comprados ",
+        "Error en el servicio de serial_codes para enlistar los productos comprados ",
         error
       );
+      throw error;
     }
   }
 
@@ -145,7 +227,7 @@ class SerialCodeService extends TransactionBaseService {
       });
       return data;
     } catch (error) {
-      console.log(
+      console.error(
         "error en el servicio de serial_codes para enlistar los productos del vendedor ",
         error
       );

@@ -84,33 +84,57 @@ export type orderDataForm = {
   phone?: string
 }
 
+type dataFormPayment = {
+  checkbox: string
+  cart?: Cart
+  order_id: string
+}
+
 interface orderContext {
   isLoading: boolean
   isLoadingCurrentOrder: boolean
   handlerListOrder: () => Promise<void>
-  handlerCurrentOrder: (store_order_id?: string) => void
-  handlerOrderCancel: (orederId: string) => Promise<boolean>
-  handlersubmitPaymentMethod: (
-    checkbox: string,
-    cart: Cart | undefined,
-    order_id: string
-  ) => Promise<void>
-  dataPay: dataPay
-  setDataPay: react.Dispatch<SetStateAction<dataPay>>
-  listOrder: order[] | null
+  loadOrdersPage: (page: number, limit?: number, status?: string, search?: string) => Promise<void>
+  handlerCurrentOrder: (id: string) => Promise<void>
+  handlerOrderCancel: (id: string) => Promise<void>
+  handlersubmitPaymentMethod: (dataForm: dataFormPayment) => void
   currentOrder: order | null
-  handlerListOrderClaim: () => void
+  listOrder: order[] | null
+  dataOrders: order[]
+  loadedPages: Set<number>
+  totalCount: number
+  currentPage: number
+  setCurrentPage: react.Dispatch<SetStateAction<number>>
+  totalPages: number
+  pageLimit: number
+  setPageLimit: react.Dispatch<SetStateAction<number>>
+  statusFilter: string
+  setStatusFilter: react.Dispatch<SetStateAction<string>>
+  searchTerm: string
+  setSearchTerm: react.Dispatch<SetStateAction<string>>
+  handlerListOrderClaim: (resetFilters?: boolean) => Promise<void>
+  loadClaimsPage: (page: number, limit?: number, search?: string) => Promise<orderClaim[] | undefined>
   handlerListSellerOrderClaim: (id: string) => void
   isLoadingClaim: boolean
   listOrderClaim: orderClaim[] | null
+  dataOrderClaims: orderClaim[]
+  loadedClaimPages: Set<number>
+  totalClaimCount: number
+  currentClaimPage: number
+  setCurrentClaimPage: react.Dispatch<SetStateAction<number>>
+  totalClaimPages: number
+  claimPageLimit: number
+  setClaimPageLimit: react.Dispatch<SetStateAction<number>>
+  claimSearchTerm: string
+  setClaimSearchTerm: react.Dispatch<SetStateAction<string>>
+  
   handlerUpdateDataLastOrder: (
     dataForm: orderDataForm,
     orderId?: string
-  ) => Promise<void>
-  handlerRecoverPaymentOrders: (
-    customerid: string,
-    store_order_id: string
-  ) => Promise<void>
+  ) => Promise<any>
+  dataPay: dataPay
+  setDataPay: react.Dispatch<SetStateAction<dataPay>>
+  handlerRecoverPaymentOrders: (customerid: string, store_order_id: string) => void
 }
 
 export const OrderContext = createContext<orderContext | null>(null)
@@ -160,39 +184,138 @@ export const OrderGudfyProvider = ({
         },
       ],
     },
-  }) // array de pagos pendientes
+  })
   const [isLoading, setIsLoading] = useState<boolean>(true)
   const [isLoadingClaim, setIsLoadingClaim] = useState<boolean>(true)
   const [isLoadingCurrentOrder, setIsLoadingCurrentOrder] =
     useState<boolean>(true)
   const [listOrder, setLisOrder] = useState<order[] | null>(null)
-  const [listOrderClaim, setListOrderClaim] = useState<orderClaim[] | null>(
-    null
-  )
+  const [listOrderClaim, setListOrderClaim] = useState<orderClaim[] | null>(null)
+  const [dataOrderClaims, setDataOrderClaims] = useState<orderClaim[]>([])
+  const [loadedClaimPages, setLoadedClaimPages] = useState<Set<number>>(new Set())
+  const [totalClaimCount, setTotalClaimCount] = useState<number>(0)
+  const [currentClaimPage, setCurrentClaimPage] = useState<number>(1)
+  const [totalClaimPages, setTotalClaimPages] = useState<number>(0)
+  const [claimPageLimit, setClaimPageLimit] = useState<number>(10)
+  const [claimSearchTerm, setClaimSearchTerm] = useState<string>('')
+  const [dataOrders, setDataOrders] = useState<order[]>([])
+  const [loadedPages, setLoadedPages] = useState<Set<number>>(new Set())
+  const [totalCount, setTotalCount] = useState<number>(0)
+  const [currentPage, setCurrentPage] = useState<number>(1)
+  const [totalPages, setTotalPages] = useState<number>(1)
+  const [pageLimit, setPageLimit] = useState<number>(10) 
+  const [statusFilter, setStatusFilter] = useState<string>('all')
+  const [searchTerm, setSearchTerm] = useState<string>('')
 
   const [currentOrder, setCurrentOrderr] = useState<order | null>(null)
 
   const handlerListOrder = async() => {
     setIsLoading(true)
-    getListOrders(customer?.id || "").then((e) => {
-      setLisOrder(e)
-      setIsLoading(false)
-    })
-  }
-  const handlerCurrentOrder = (store_order_id?: string) => {
-    setIsLoadingCurrentOrder(true)
-    getCurrentOrder(store_order_id || "")
-      .then((e) => {
-       
-        setCurrentOrderr(e)
-        setIsLoadingCurrentOrder(false)
+    try {
+      const response = await getListOrders(customer?.id || "", {
+        page: 1,
+        limit: pageLimit
       })
-      .catch((error) => {})
+      setLisOrder(response.data || [])
+      
+      setDataOrders(response.data || [])
+      setTotalCount(response.totalCount || 0)
+      setTotalPages(response.totalPages || 1)
+      setCurrentPage(1)
+      setLoadedPages(new Set([1]))
+    } catch (error) {
+      console.error("Error al cargar órdenes:", error)
+    } finally {
+      setIsLoading(false)
+    }
   }
 
-  const handlerOrderCancel = async (orederId: string) => {
-    await updateCancelStoreOrder(orederId)
-    return true
+  const loadOrdersPage = async (page: number, limit?: number, status?: string, search?: string): Promise<void> => {
+    if (limit !== undefined && limit !== pageLimit) setPageLimit(limit);
+    if (status !== undefined) setStatusFilter(status || 'all');
+    if (search !== undefined) setSearchTerm(search || '');
+    
+    if (loadedPages.has(page) && 
+        limit === pageLimit && 
+        status === statusFilter && 
+        search === searchTerm) {
+      setCurrentPage(page);
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      
+      const response = await getListOrders(customer?.id || "", {
+        page,
+        limit,
+        status,
+        search
+      });
+
+      setTotalCount(response.totalCount);
+      setTotalPages(response.totalPages);
+      setCurrentPage(page);
+      
+      if (limit !== pageLimit || status !== statusFilter || search !== searchTerm) {
+        setDataOrders(response.data || []);
+        setLoadedPages(new Set([page]));
+      } else {
+        setDataOrders(prevOrders => {
+          const existingIds = new Set(prevOrders.map(order => order.id));
+          const newOrders = response.data.filter((order: order) => !existingIds.has(order.id));
+          return [...prevOrders, ...newOrders];
+        });
+        
+        setLoadedPages(prev => {
+          const newSet = new Set(prev);
+          newSet.add(page);
+          return newSet;
+        });
+      }
+    } catch (error) {
+      console.error("Error al cargar página de órdenes:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  }
+  const handlerCurrentOrder = async (id: string): Promise<void> => {
+    setIsLoadingCurrentOrder(true)
+    try {
+      const e = await getCurrentOrder(id || "")
+      setCurrentOrderr(e)
+    } catch (error) {
+      console.error("Error al obtener la orden actual:", error)
+    } finally {
+      setIsLoadingCurrentOrder(false)
+    }
+  }
+
+  const handlerOrderCancel = async (id: string): Promise<void> => {
+    await updateCancelStoreOrder(id)
+  }
+
+  const handlersubmitPaymentMethod = (dataForm: dataFormPayment): void => {
+    const { checkbox, cart, order_id } = dataForm
+    
+    fetch(
+      `${process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL}/store/order/payment-method`,
+      {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ checkbox, cart, order_id }),
+      }
+    )
+    .then(res => res.json())
+    .then(data => {
+      return data
+    })
+    .catch(error => {
+      console.error("Error submitting payment method:", error)
+    })
   }
 
   const handlerUpdateDataLastOrder = async (
@@ -204,87 +327,97 @@ export const OrderGudfyProvider = ({
         "No se encontro una orden disponible, por favor cree otra orden"
       )
     }
-    await axios.post(
-      `${process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL}/store/order/uptade-data/`,
-      {
-        store_order_id: orderId,
-        dataForm: dataForm,
-      },
-      {
-        withCredentials: true,
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    )
-  }
-
-  const handlersubmitPaymentMethod = async (
-    checkbox: string,
-    cart: Cart | undefined,
-    order_id: string
-  ) => {
-    setIsLoadingCurrentOrder(true)
-    const response = await axios
-      .post(
-        `${process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL}/store/carts/${cart?.id}/checkout`,
+    try {
+      await axios.post(
+        `${process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL}/store/order/uptade-data/`,
         {
-          payment_method: checkbox,
-          order_id: order_id,
+          store_order_id: orderId,
+          dataForm: dataForm,
         },
         {
           withCredentials: true,
           headers: {
             "Content-Type": "application/json",
-          },
+          }
         }
-      )
-      .then((res) => {
-        const result = res.data.result
-
-        setDataPay((old) => ({ ...old, dataPay: result }))
-        setIsLoadingCurrentOrder(false)
-        // location.href = result.data.checkoutUrl //redirect user to pay link
-      })
-      .catch((e) => {
-        
-      })
+      );
+    } catch (error) {
+      console.error("Error al actualizar datos de la orden:", error);
+    }
   }
 
-  const handlerListOrderClaim = async () => {
+  const loadClaimsPage = async (page: number, limit: number = claimPageLimit, search: string = claimSearchTerm): Promise<orderClaim[] | undefined> => {
     try {
+      if (loadedClaimPages.has(page)) {
+       
+        const startIndex = (page - 1) * limit;
+        const endIndex = startIndex + limit;
+        return dataOrderClaims.slice(startIndex, endIndex);
+      }
+
       setIsLoadingClaim(true)
-      const orders = await axios
-        .get(
-          `${process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL}/store/claim/${customer?.id}/orders`,
-          {
-            withCredentials: true,
-          }
-        )
-        .then((order) => {
-          setListOrderClaim(order.data)
-          setIsLoadingClaim(false)
-        })
+      
+      const url = `${process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL}/store/claim/${customer?.id}/orders?page=${page}&limit=${limit}${search ? `&search=${encodeURIComponent(search)}` : ''}`
+      
+      const response = await fetch(url, {
+        credentials: "include",
+      })
+
+      const { data, totalCount, totalPages } = await response.json()
+
+      setTotalClaimCount(totalCount)
+      setTotalClaimPages(totalPages)
+      
+      const newLoadedPages = new Set(loadedClaimPages)
+      newLoadedPages.add(page)
+      setLoadedClaimPages(newLoadedPages)
+
+      setDataOrderClaims(prevData => {
+        const existingDataMap = new Map(prevData.map((item: orderClaim) => [item.id, item]))
+        
+        data.forEach((item: orderClaim) => existingDataMap.set(item.id, item))
+        return Array.from(existingDataMap.values())
+      })
+
+      setListOrderClaim(data)
+      setIsLoadingClaim(false)
+
+      return data
+    } catch (error) {
+      console.error(`Error al cargar la página ${page} de reclamaciones:`, error)
+      setIsLoadingClaim(false)
+      return undefined
+    }
+  }
+  const handlerListOrderClaim = async (resetFilters: boolean = false): Promise<void> => {
+    try {
+      if (resetFilters) {
+        setClaimSearchTerm('')
+        setCurrentClaimPage(1)
+        setLoadedClaimPages(new Set())
+        setDataOrderClaims([])
+      }
+      
+      await loadClaimsPage(currentClaimPage, claimPageLimit, claimSearchTerm)
     } catch (error) {
       console.error("Error al obtener los reclamos:", error)
       throw error
     }
   }
 
-  const handlerListSellerOrderClaim = async (idStore?: string) => {
+  const handlerListSellerOrderClaim = async (id: string): Promise<void> => {
     setIsLoadingClaim(true)
     try {
-      const orders = await axios
-        .get(
-          `${process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL}/store/claim/${idStore}/seller/orders`,
-          {
-            withCredentials: true,
-          }
-        )
-        .then((order) => {
-          setListOrderClaim(order.data)
-          setIsLoadingClaim(false)
-        })
+      const orders = await fetch(
+        `${process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL}/store/claim/${id}/seller/orders`,
+        {
+          credentials: "include",
+        }
+      )
+      const { data } = await orders.json()
+
+      setListOrderClaim(data)
+      setIsLoadingClaim(false)
     } catch (error) {
       console.error(
         "Error al obtener los reclamos por parte del vendedor:",
@@ -325,16 +458,40 @@ export const OrderGudfyProvider = ({
         isLoading,
         isLoadingCurrentOrder,
         handlerListOrder,
+        loadOrdersPage,
         handlerCurrentOrder,
         handlerOrderCancel,
         currentOrder,
         handlersubmitPaymentMethod,
         listOrder,
+        dataOrders,
+        loadedPages,
+        totalCount,
+        currentPage,
+        setCurrentPage,
+        totalPages,
+        pageLimit,
+        setPageLimit,
+        statusFilter,
+        setStatusFilter,
+        searchTerm,
+        setSearchTerm,
         dataPay,
         setDataPay,
         handlerListOrderClaim,
+        loadClaimsPage,
         handlerListSellerOrderClaim,
         listOrderClaim,
+        dataOrderClaims,
+        loadedClaimPages,
+        totalClaimCount,
+        currentClaimPage,
+        setCurrentClaimPage,
+        totalClaimPages,
+        claimPageLimit,
+        setClaimPageLimit,
+        claimSearchTerm,
+        setClaimSearchTerm,
         isLoadingClaim,
         handlerUpdateDataLastOrder,
         handlerRecoverPaymentOrders,
