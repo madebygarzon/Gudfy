@@ -14,7 +14,9 @@ export async function addRequestProduct(
       customer_id: productData.customer_id,
       product_title: productData.product_title,
       product_image: `${
-        process.env.BACKEND_URL ?? "http://localhost:9000"
+        process.env.BACKEND_URL ?? `http://localhost:${
+          process.env.BACKEND_PORT ?? 9000
+        }`
       }/${imagenPath}`,
       description: productData.description,
       variants: productData.variants,

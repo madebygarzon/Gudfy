@@ -260,7 +260,11 @@ class OrderClaimService extends TransactionBaseService {
       order_claim_id: dataComment.order_claim_id,
       customer_id: dataComment.customer_id,
       image: image?.path
-        ? `${process.env.BACKEND_URL ?? `http://localhost:9000`}/${image.path}`
+        ? `${
+            process.env.BACKEND_URL ?? `http://localhost:${
+              process.env.BACKEND_PORT ?? 9000
+            }`
+          }/${image.path}`
         : null,
     });
 

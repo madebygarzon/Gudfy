@@ -25,13 +25,18 @@ try {
 const ADMIN_CORS =
   process.env.ADMIN_CORS || "http://localhost:7000,http://localhost:7001";
 
+const FRONTEND_PORT = process.env.FRONTEND_PORT || 8000;
+const BACKEND_PORT = process.env.BACKEND_PORT || 9000;
+
 // CORS to avoid issues when consuming Medusa from a client
-const STORE_CORS = process.env.STORE_CORS || "http://localhost:8000";
+const STORE_CORS =
+  process.env.STORE_CORS || `http://localhost:${FRONTEND_PORT}`;
 
 const DATABASE_URL =
   process.env.DATABASE_URL || "postgres://localhost/medusa-store";
 
-const BACKEND_URL = process.env.BACKEND_URL || "http://localhost:9000";
+const BACKEND_URL =
+  process.env.BACKEND_URL || `http://localhost:${BACKEND_PORT}`;
 
 const REDIS_URL = process.env.REDIS_URL || "redis://localhost:6379";
 
@@ -77,20 +82,14 @@ const plugins = [
   //     // ...
   //   },
   // },
-  {
-    resolve: `medusa-plugin-sendgrid`,
-    options: {
-      api_key: process.env.SENDGRID_API_KEY,
-      from: process.env.SENDGRID_FROM,
-      order_placed_template: process.env.SENDGRID_ORDER_PLACED_ID,
-      localization: {
-        "de-DE": {
-          // locale key
-          order_placed_template: process.env.SENDGRID_ORDER_PLACED_ID,
-        },
+    /*{
+    resolve: `medusa-plugin-resend`,
+      options: {
+        api_key: process.env.RESEND_API_KEY,
+        from: process.env.RESEND_FROM_EMAIL,
+        template_path: process.env.RESEND_TEMPLATE_PATH,
       },
-    },
-  },
+    },*/
   {
     resolve: "medusa-plugin-auth",
     /** @type {import('medusa-plugin-auth').AuthOptions} */
@@ -175,9 +174,9 @@ const modules = {
 
 /** @type {import('@medusajs/medusa').ConfigModule["projectConfig"]} */
 const projectConfig = {
-  cookie_domain: 'localhost',
-  cookie_same_site: 'lax',
-  jwtSecret: process.env.JWT_SECRET,
+  cookie_domain: process.env.COOKIE_DOMAIN || ".gudfyp2p.com",
+  cookie_same_site: process.env.COOKIE_SAME_SITE || "none",
+  jwt_secret: process.env.JWT_SECRET,
   cookieSecret: process.env.COOKIE_SECRET,
   store_cors: STORE_CORS,
   database_url: DATABASE_URL,
