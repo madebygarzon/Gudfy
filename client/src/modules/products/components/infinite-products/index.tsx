@@ -23,7 +23,6 @@ const InfiniteProducts = ({ params }: InfiniteProductsType) => {
   const [filteredProducts, setFilteredProducts] = useState<productVariant[]>([])
   const [isLoading, setIsLoading] = useState(true)
   
-  // Estados para filtros locales
   const [minPriceRange, setMinPriceRange] = useState<number>(0)
   const [maxPriceRange, setMaxPriceRange] = useState<number>(1000)
   const [localMaxPrice, setLocalMaxPrice] = useState<number>(1000)
@@ -35,20 +34,19 @@ const InfiniteProducts = ({ params }: InfiniteProductsType) => {
   const { cart } = useCart()
   const { ref, inView } = useInView()
 
+  
   const calculatePriceRange = (productList: productVariant[]) => {
     let min = Number.MAX_SAFE_INTEGER;
     let max = 0;
     
     productList.forEach(product => {
-      if (product.prices && product.prices.length > 0) {
-        const productPrices = product.prices.filter(price => typeof price === 'number');
+      if (product.prices && product.prices.length > 1) {
+        const minPrice = product.prices[0];
+        const maxPrice = product.prices[1];
         
-        if (productPrices.length > 0) {
-          const minProductPrice = Math.min(...productPrices);
-          const maxProductPrice = Math.max(...productPrices);
-          
-          if (minProductPrice < min) min = minProductPrice;
-          if (maxProductPrice > max) max = maxProductPrice;
+        if (typeof minPrice === 'number' && typeof maxPrice === 'number') {
+          if (minPrice < min) min = minPrice;
+          if (maxPrice > max) max = maxPrice;
         }
       }
     });
@@ -57,6 +55,7 @@ const InfiniteProducts = ({ params }: InfiniteProductsType) => {
     if (max === 0) max = 1000;
     
     max = Math.ceil(max / 10) * 10;
+    min = Math.floor(min / 10) * 10;
     
     return { min, max };
   };
@@ -75,7 +74,6 @@ const InfiniteProducts = ({ params }: InfiniteProductsType) => {
     getListProductVariantWithSellers(initialFilters)
       .then((data) => {
         setProducts(data)
-        console.log("data de products",data)
         setFilteredProducts(data)
         
         const { min, max } = calculatePriceRange(data);
@@ -101,31 +99,36 @@ const InfiniteProducts = ({ params }: InfiniteProductsType) => {
       })
   }, [])
 
+  
   const applyLocalFilters = () => {
     if (products.length === 0) return;
     
     let filtered = [...products];
     
-    if (localMaxPrice < maxPriceRange) {
-      filtered = filtered.filter(product => {
-        if (!product.prices || product.prices.length === 0) return true;
-        
-        return product.prices.some(price => typeof price === 'number' && price <= localMaxPrice);
-      });
-    }
+    filtered = filtered.filter(product => {
+      if (!product.prices || product.prices.length < 2) return true;
+      
+      const maxPrice = product.prices[1];
+      
+      if (typeof maxPrice !== 'number') return true;
+      
+     
+      return maxPrice <= localMaxPrice;
+    });
     
-    if (localCollections.length > 0) {
-      console.log('Filtro de colecciones aplicado:', localCollections);
-    }
+  
+    
     
     if (localCategoryId) {
       filtered = filtered.filter(product => {
         if (product.categories && Array.isArray(product.categories)) {
+          
           return product.categories.some((category: {id: string, name: string}) => category.id === localCategoryId);
         }
         return false;
       });
     }
+    
     
     if (localSearchTerm) {
       const searchLower = localSearchTerm.toLowerCase();
@@ -140,13 +143,14 @@ const InfiniteProducts = ({ params }: InfiniteProductsType) => {
     setFilteredProducts(filtered);
   };
 
+  
   useEffect(() => {
     applyLocalFilters();
   }, [localMaxPrice, localCollections, localCategoryId, localSearchTerm, products]);
   useEffect(() => {
     const handlePriceFilter = (event: CustomEvent) => {
       const { maxPrice } = event.detail;
-      setLocalMaxPrice(maxPrice);
+      if (maxPrice !== undefined) setLocalMaxPrice(maxPrice);
     };
 
     document.addEventListener('local-price-filter', handlePriceFilter as EventListener);
@@ -156,19 +160,6 @@ const InfiniteProducts = ({ params }: InfiniteProductsType) => {
     };
   }, []);
   
-  useEffect(() => {
-    if (products.length > 0) {
-      const { min, max } = calculatePriceRange(products);
-      if (max !== maxPriceRange || min !== minPriceRange) {
-        setMinPriceRange(min);
-        setMaxPriceRange(max);
-        
-        document.dispatchEvent(new CustomEvent('price-range-update', { 
-          detail: { minPrice: min, maxPrice: max } 
-        }));
-      }
-    }
-  }, [products]); 
   
   useEffect(() => {
     const handleCollectionFilter = (event: CustomEvent) => {
@@ -182,6 +173,27 @@ const InfiniteProducts = ({ params }: InfiniteProductsType) => {
       document.removeEventListener('local-collection-filter', handleCollectionFilter as EventListener);
     };
   }, []);
+  
+  
+  useEffect(() => {
+    if (products.length > 0) {
+      const { min, max } = calculatePriceRange(products);
+      if (max !== maxPriceRange || min !== minPriceRange) {
+        setMinPriceRange(min);
+        setMaxPriceRange(max);
+        
+     
+        if (localMaxPrice > max) {
+          setLocalMaxPrice(max);
+        }
+        
+        document.dispatchEvent(new CustomEvent('price-range-update', { 
+          detail: { minPrice: min, maxPrice: max } 
+        }));
+      }
+    }
+  }, [products]);
+  
   
   useEffect(() => {
     const handleCategoryFilter = (event: CustomEvent) => {
@@ -208,6 +220,7 @@ const InfiniteProducts = ({ params }: InfiniteProductsType) => {
       document.removeEventListener('local-category-filter', handleCategoryFilter as EventListener);
     };
   }, [products]);
+  
   
   useEffect(() => {
     const handleSearchFilter = (event: CustomEvent) => {
@@ -252,6 +265,7 @@ const InfiniteProducts = ({ params }: InfiniteProductsType) => {
     }
   }, [inView, hasNextPage, fetchNextPage])
 
+  
   if (!isLoading && filteredProducts.length === 0) {
     return (
       <div className="flex-1 content-container flex items-center justify-center py-12">
@@ -268,6 +282,7 @@ const InfiniteProducts = ({ params }: InfiniteProductsType) => {
       </div>
     )
   }
+  
   
   const hasActiveFilters = localMaxPrice < 1000 || localSearchTerm || localCategoryId || localCollections.length > 0;
   
@@ -297,6 +312,7 @@ const InfiniteProducts = ({ params }: InfiniteProductsType) => {
                 </button>
               )}
             </div>
+            
             
             {hasActiveFilters && (
               <div className="mt-2 flex flex-wrap gap-2">

@@ -19,11 +19,10 @@ const RefinementList = ({
 }: RefinementListProps) => {
   const { collections, isLoading } = useCollections()
   const categories = useContext(categoryContext)
-  console.log("categories", categories);
   
   const [minPriceRange, setMinPriceRange] = useState<number>(0)
   const [maxPriceRange, setMaxPriceRange] = useState<number>(1000)
-  const [localPrice, setLocalPrice] = useState<number>(1000)
+  const [localMaxPrice, setLocalMaxPrice] = useState<number>(1000)
   const [searchTerm, setSearchTerm] = useState<string>(refinementList.search || '')
   const [selectedCategory, setSelectedCategory] = useState<string | undefined>(
     refinementList.category_id && refinementList.category_id.length > 0 ? 
@@ -55,7 +54,7 @@ const RefinementList = ({
 
   const handlePriceChange = (event: ChangeEvent<HTMLInputElement>) => {
     const newPrice = Number(event.target.value)
-    setLocalPrice(newPrice)
+    setLocalMaxPrice(newPrice)
   }
 
   useEffect(() => {
@@ -63,10 +62,7 @@ const RefinementList = ({
       const { minPrice, maxPrice } = event.detail;
       setMinPriceRange(minPrice);
       setMaxPriceRange(maxPrice);
-      
-      if (localPrice > maxPrice) {
-        setLocalPrice(maxPrice);
-      }
+      setLocalMaxPrice(maxPrice); 
     };
     
     document.addEventListener('price-range-update', handlePriceRangeUpdate as EventListener);
@@ -74,14 +70,14 @@ const RefinementList = ({
     return () => {
       document.removeEventListener('price-range-update', handlePriceRangeUpdate as EventListener);
     };
-  }, [localPrice]);
+  }, []); 
   
   useEffect(() => {
     const event = new CustomEvent('local-price-filter', { 
-      detail: { maxPrice: localPrice } 
+      detail: { maxPrice: localMaxPrice } 
     })
     document.dispatchEvent(event)
-  }, [localPrice])
+  }, [localMaxPrice])
 
   const handleCategoryChange = (categoryId: string, categoryName: string) => {
     const newCategoryId = selectedCategory === categoryId ? undefined : categoryId
@@ -92,7 +88,7 @@ const RefinementList = ({
       detail: { 
         categoryId: newCategoryId,
         categoryName: newCategoryName
-      }   
+      } 
     }))
   }
   
@@ -114,38 +110,32 @@ const RefinementList = ({
     }))
   }
 
-  const handleClearFilters = () => {
-    setLocalPrice(maxPriceRange)
+  const handleClearAllFilters = () => {
     setSearchTerm('')
     setSelectedCategory(undefined)
     setLocalCollections([])
+    setLocalMaxPrice(maxPriceRange)
+    
+    setRefinementList({})
     
     document.dispatchEvent(new CustomEvent('local-price-filter', { 
       detail: { maxPrice: maxPriceRange } 
     }))
-    
     document.dispatchEvent(new CustomEvent('local-collection-filter', { 
       detail: { collections: [] } 
     }))
-    
     document.dispatchEvent(new CustomEvent('local-category-filter', { 
       detail: { categoryId: undefined, categoryName: '' } 
     }))
-    
     document.dispatchEvent(new CustomEvent('local-search-filter', { 
       detail: { searchTerm: '' } 
     }))
-    
-    setRefinementList({
-      collection_id: [],
-    })
   }
 
   return (
     <div className="p-3 w-full">
       <div className="content-filter border border-solid border-gray-200 p-4 rounded-md shadow-md">
         <div className="flex flex-col gap-y-3">
-          {/* Buscador */}
           <div>
             <h3 className="text-base font-bold mb-1">Buscar</h3>
             <div className="flex gap-1">
@@ -166,23 +156,20 @@ const RefinementList = ({
             </div>
           </div>
 
-          {/* Filtro de Precio (Local) */}
-          <div>
-            <h3 className="text-base font-bold mb-1">Precio máximo: <span className="text-lila-gf">${localPrice}</span></h3>
+          <div className="mt-4">
+            <div className="flex justify-between">
+              <h3 className="text-base font-bold mb-1">Precio</h3>
+              <span className="text-sm">${localMaxPrice}</span>
+            </div>
             <input
-              id="price-slider"
               type="range"
               min={minPriceRange}
               max={maxPriceRange}
-              step={Math.max(1, Math.floor((maxPriceRange - minPriceRange) / 20))}
-              value={localPrice}
+              value={localMaxPrice}
               onChange={handlePriceChange}
-              className="w-full accent-lila-gf cursor-pointer"
+              className="w-full"
+              step={(maxPriceRange - minPriceRange) / 100}
             />
-            <div className="flex justify-between text-xs text-gray-600">
-              <span>${minPriceRange}</span>
-              <span>${maxPriceRange}</span>
-            </div>
           </div>
 
           <div>
@@ -274,7 +261,7 @@ const RefinementList = ({
                             )}
                             <span>{childCategory.name}</span>
                           </li>
-                        ))}
+                        ))} 
                       </ul>
                     )}
                   </div>
@@ -287,12 +274,14 @@ const RefinementList = ({
             )}
           </div>
 
-          <button
-            onClick={handleClearFilters}
-            className="mt-2 w-full py-1.5 bg-gray-200 text-gray-700 rounded text-sm hover:bg-gray-300 transition-colors"
-          >
-            Limpiar filtros
-          </button>
+          <div className="mt-4">
+            <button 
+              onClick={handleClearAllFilters}
+              className="w-full bg-gray-200 text-gray-700 px-4 py-2 rounded text-sm hover:bg-gray-300"
+            >
+              Limpiar filtros
+            </button>
+          </div>
         </div>
       </div>
     </div>
