@@ -98,8 +98,6 @@ class StoreProductVariantService extends TransactionBaseService {
         ])
         .getRawMany();
 
-        console.log("rawVariants", rawVariants);
-
       const variantMap = new Map();
 
       rawVariants.forEach((variant) => {
