@@ -10,6 +10,8 @@ import {
   ModalBody,
   ModalFooter,
   useDisclosure,
+  Button,
+  Input,
 } from "@heroui/react"
 import handlerformatDate from "@lib/util/formatDate"
 import Timer from "@lib/util/timer-order"
@@ -21,19 +23,27 @@ import { formatPrice } from "@lib/util/formatPrice"
 import DownloadButton from "@modules/common/components/download-button"
 
 const SellerOrderTable: React.FC = () => {
-  const { listSellerOrders, handlerGetListSellerOrder, isLoadingOrders } =
-    useSellerStoreGudfy()
+  const {
+    dataOrders,
+    loadOrdersPage,
+    handlerGetListSellerOrder,
+    isLoadingOrders,
+    totalCount,
+    currentPage,
+    totalPages,
+    pageLimit,
+    setPageLimit,
+    searchTerm,
+    setSearchTerm,
+    statusFilter,
+    setStatusFilter,
+  } = useSellerStoreGudfy()
+  
+  const [localSearchTerm, setLocalSearchTerm] = useState<string>('')
+  
   const handleReset = () => {
-    handlerGetListSellerOrder()
+    handlerGetListSellerOrder({ page: 1, status: statusFilter, search: searchTerm })
   }
-  const [filterStatus, setFilterStatus] = useState<
-    | "Completado"
-    | "Cancelada"
-    | "Pendiente de pago"
-    | "Finalizado"
-    | "En discusión"
-    | "all"
-  >("all")
   const [selectOrderData, setSelectOrderData] = useState<SellerOrder>({
     id: "",
     person_name: "",
@@ -52,10 +62,25 @@ const SellerOrderTable: React.FC = () => {
     ],
   })
 
-  const filteredOrder =
-    filterStatus === "all"
-      ? listSellerOrders
-      : listSellerOrders?.filter((order) => order.state_order === filterStatus)
+  const handleSearch = () => {
+    setSearchTerm(localSearchTerm)
+    handlerGetListSellerOrder({ page: 1, status: statusFilter, search: localSearchTerm })
+  }
+
+  const handleStatusChange = (status: string) => {
+    setStatusFilter(status)
+    handlerGetListSellerOrder({ page: 1, status, search: searchTerm })
+  }
+
+  const handlePageLimitChange = (limit: number) => {
+    setPageLimit(limit)
+    handlerGetListSellerOrder({ page: 1, limit, status: statusFilter, search: searchTerm })
+  }
+
+
+  const handlePageChange = (page: number) => {
+    loadOrdersPage(page)
+  }
 
   const getStatusColor = (
     status:
@@ -83,41 +108,74 @@ const SellerOrderTable: React.FC = () => {
   const { isOpen, onOpen, onOpenChange } = useDisclosure()
 
   useEffect(() => {
-    handlerGetListSellerOrder()
+    handlerGetListSellerOrder({ page: 1 })
   }, [])
 
   return (
     <div className="w-full">
       <div className="flex flex-col gap-y-8 w-full">
-        <div className="w-96 flex flex-wrap items-center justify-between gap- py-4 rounded-lg shadow-sm">
-          <div className="flex items-center">
-            <label
-              htmlFor="status-filter"
-              className="mr-4 font-semibold text-gray-700 text-sm lg:text-base"
+        <div className="flex flex-col gap-4 w-full">
+          <div className="flex flex-wrap items-center gap-4">
+            <div className="flex items-center gap-2">
+              <label className="font-semibold text-gray-700 text-sm">
+                Estado:
+              </label>
+              <select
+                className="p-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm bg-white"
+                value={statusFilter}
+                onChange={(e) => handleStatusChange(e.target.value)}
+              >
+                <option value="all">Todos</option>
+                <option value="Cancelada">Cancelada</option>
+                <option value="Pendiente de pago">Pendiente de pago</option>
+                <option value="Finalizado">Finalizado</option>
+                <option value="En discusión">En discusión</option>
+              </select>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <label className="font-semibold text-gray-700 text-sm">
+                Por página:
+              </label>
+              <select
+                className="p-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm bg-white"
+                value={pageLimit}
+                onChange={(e) => handlePageLimitChange(parseInt(e.target.value))}
+              >
+                <option value={50}>50</option>
+                <option value={100}>100</option>
+                <option value={300}>300</option>
+              </select>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2 max-w-md">
+            <Input
+              placeholder="Buscar por ID, cliente o producto..."
+              value={localSearchTerm}
+              onChange={(e) => setLocalSearchTerm(e.target.value)}
+              onKeyPress={(e) => {
+                if (e.key === 'Enter') {
+                  handleSearch()
+                }
+              }}
+              className="flex-1"
+            />
+            <Button
+              onClick={handleSearch}
+              className="bg-blue-600 hover:bg-blue-700 text-white"
             >
-              Filtrar por estado:
-            </label>
-            <select
-              id="status-filter"
-              className="p-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm lg:text-base bg-white"
-              value={filterStatus}
-              onChange={(e) =>
-                setFilterStatus(
-                  e.target.value as
-                    | "Cancelada"
-                    | "Pendiente de pago"
-                    | "Finalizado"
-                    | "En discusión"
-                    | "all"
-                )
-              }
-            >
-              <option value="all">Todos</option>
-              <option value="Cancelada">Cancelada</option>
-              <option value="Pendiente de pago">Pendiente de pago</option>
-              <option value="Finalizado">Finalizado</option>
-              <option value="En discusión">En discusión</option>
-            </select>
+              Buscar
+            </Button>
+          </div>
+
+          <div className="flex items-center justify-between text-sm text-gray-600">
+            <span>
+              Mostrando {dataOrders.length} de {totalCount} órdenes
+            </span>
+            <span>
+              Página {currentPage} de {totalPages}
+            </span>
           </div>
         </div>
 
@@ -125,7 +183,6 @@ const SellerOrderTable: React.FC = () => {
           <table className="min-w-full bg-white  rounded-lg shadow-md md:text-base text-sm">
             <thead>
               <tr>
-                {/* <th className="py-2 text-left">Estado de la orden</th> */}
                 <th className="py-2 text-left ">Pago</th>
                 <th className="py-2 text-left">Orden</th>
                 <th className="py-2 text-left">Fecha</th>
@@ -134,22 +191,13 @@ const SellerOrderTable: React.FC = () => {
             </thead>
             <tbody>
               {!isLoadingOrders ? (
-                filteredOrder?.map((order) => (
+                dataOrders?.map((order) => (
                   <tr key={order.id} className="hover:bg-gray-50">
-                    {/* <td className=" py-2">
-                      <p
-                        className={`${getStatusColor(
-                          order.state_order
-                        )} px-4 py-2 rounded-lg `}
-                      >
-                        {order.state_order}
-                      </p>
-                    </td> */}
+                   
                     <td className=" px-4 py-2">
                       {order.state_order === "Pendiente de pago" ? (
                         <Timer creationTime={order.created_at} />
                       ) : order.state_order === "Cancelada" ? (
-                        // <XMarkMini className="text-red-600" />
                         (<p className="text-red-600">Expirado</p>)
                       ) : order.state_order === "Completado" ? (
                         <CheckMini className="text-green-600" />
@@ -175,16 +223,6 @@ const SellerOrderTable: React.FC = () => {
                         }}
                       />
 
-                      {/* <ButtonMedusa
-                        className=" bg-ui-button-neutral border-ui-button-neutral hover:bg-ui-button-neutral-hover rounded-[5px] text-[#402e72]"
-                        onClick={() => {
-                          setSelectOrderData(order)
-                          onOpen()
-                        }}
-                      >
-                        <FaEye />
-                        Ver detalle de la orden
-                      </ButtonMedusa> */}
                     </td>
                   </tr>
                 ))
@@ -193,9 +231,52 @@ const SellerOrderTable: React.FC = () => {
               )}
             </tbody>
           </table>
-          {!isLoadingOrders && !filteredOrder.length && (
+          {!isLoadingOrders && !dataOrders.length && (
             <div className="p-10 flex w-full text-center items-center justify-center text-lg">
-              <XMarkMini /> Aun no tienes ordenes
+              <XMarkMini /> No se encontraron órdenes
+            </div>
+          )}
+
+      
+          {totalPages > 1 && (
+            <div className="flex items-center justify-center gap-2 mt-6">
+              <Button
+                onClick={() => handlePageChange(currentPage - 1)}
+                disabled={currentPage === 1 || isLoadingOrders}
+                size="sm"
+                variant="bordered"
+              >
+                Anterior
+              </Button>
+              
+              <div className="flex items-center gap-1">
+                {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                  const pageNumber = Math.max(1, currentPage - 2) + i
+                  if (pageNumber > totalPages) return null
+                  
+                  return (
+                    <Button
+                      key={pageNumber}
+                      onClick={() => handlePageChange(pageNumber)}
+                      disabled={isLoadingOrders}
+                      size="sm"
+                      variant={pageNumber === currentPage ? "solid" : "bordered"}
+                      className={pageNumber === currentPage ? "bg-blue-600 text-white" : ""}
+                    >
+                      {pageNumber}
+                    </Button>
+                  )
+                })}
+              </div>
+              
+              <Button
+                onClick={() => handlePageChange(currentPage + 1)}
+                disabled={currentPage === totalPages || isLoadingOrders}
+                size="sm"
+                variant="bordered"
+              >
+                Siguiente
+              </Button>
             </div>
           )}
         </div>
@@ -264,16 +345,13 @@ const ModalOrder: React.FC<ModalOrder> = ({
       <ModalContent>
         {(onClose) => (
           <>
-            {/* Header */}
             <ModalHeader className="flex justify-center">
               <h2 className="text-center text-2xl mt-2 font-bold text-gray-700">
                 Detalles del pedido
               </h2>
             </ModalHeader>
 
-            {/* Body */}
             <ModalBody className="p-6">
-              {/* Order Information */}
               <div className="mb-4">
                 <p>
                   <strong>ID del pedido:</strong> {orderData.id}
@@ -286,11 +364,10 @@ const ModalOrder: React.FC<ModalOrder> = ({
                   {new Date(orderData.created_at).toLocaleString()}
                 </p>
                 <p>
-                  {/* <strong>Estado del Pedido:</strong> {orderData.state_order} */}
+               
                 </p>
               </div>
 
-              {/* Products Table */}
               <div className="">
                 <table className="min-w-full rounded-lg shadow-2xl p-8">
                   <thead className="bg-gray-100">
@@ -358,14 +435,13 @@ const ModalOrder: React.FC<ModalOrder> = ({
               </div>
             </ModalBody>
 
-            {/* Footer */}
             <ModalFooter className="flex justify-end space-x-4">
-              {/* <Button
+              <Button
                 onPress={onClose}
                 className="bg-gray-600 hover:bg-gray-700 text-white"
               >
                 Cerrar
-              </Button> */}
+              </Button>
             </ModalFooter>
           </>
         )}

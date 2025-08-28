@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import React from "react"
-import { Modal, ModalContent, useDisclosure, Input } from "@heroui/react"
+import { Modal, ModalContent, useDisclosure, Input, Button } from "@heroui/react"
 import { IconButton, Select, Input as InputMedusa } from "@medusajs/ui"
 import { XMark, ArrowLongRight, ArrowLongLeft } from "@medusajs/icons"
 import { useMeCustomer } from "medusa-react"
@@ -17,47 +17,22 @@ import Loader from "@lib/loader"
 import { EyeSeeIcon } from "@lib/util/icons"
 import ModalOrderDetail from "../order-status/detail-order"
 
-type orders = {
-  orders: order[]
-}
-
-// interface Ticket {
-//   id: number
-//   status: "" | "Por pagar" | "Completado"
-//   orderNumber: string
-//   createdAt: string
-// }
-
-const dataSelecterPage = [10, 20, 30]
+const dataSelecterPage = [10, 20, 30, 50, 100]
 
 const OrderTable: React.FC = () => {
-  const { listOrder, handlerListOrder, isLoading } = useOrderGudfy()
+  const { 
+    dataOrders, 
+    loadOrdersPage, 
+    isLoading, 
+    totalCount, 
+    totalPages, 
+    currentPage, 
+    setCurrentPage 
+  } = useOrderGudfy()
   const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure()
-
-  // Pagination and search state
-  const [page, setPage] = useState(1)
-  const [rowsPerPage, setRowsPerPage] = useState(dataSelecterPage[0])
-  const [pageTotal, setPageTotal] = useState(1)
+  const [rowsPerPage, setRowsPerPage] = useState(dataSelecterPage[0]) 
   const [searchQuery, setSearchQuery] = useState('')
-  const [selectOrderData, setTelectOrderData] = useState<order>()
-
-  const handleReset = async() => {
-    await handlerListOrder().then(()=>{
-      if (selectOrderData) {
-        // Use a small timeout to ensure the list is updated first
-        
-          // Find the updated order data with the same ID
-          const updatedOrder = listOrder?.find(order => order.id === selectOrderData.id)
-          if (updatedOrder) {
-            setTelectOrderData(updatedOrder)
-          }
-        
-      }
-    })
-    // If there's a selected order, update its data after refreshing the list
-    
-  }
-
+  const [localSearchTerm, setLocalSearchTerm] = useState('')
   const [filterStatus, setFilterStatus] = useState<
     | "Cancelada"
     | "Completado"
@@ -66,20 +41,20 @@ const OrderTable: React.FC = () => {
     | "Pendiente de pago"
     | "all"
   >("all")
+  const [selectOrderData, setTelectOrderData] = useState<order>()
 
-  
-
-  // Filter by status and search query
-  const filteredOrder = listOrder
-    ?.filter(order => {
-      if (filterStatus !== "all") {
-        return order.state_order === filterStatus
+  const handleReset = async() => {
+    await loadOrdersPage(currentPage, rowsPerPage, filterStatus === 'all' ? undefined : filterStatus, searchQuery || undefined).then(()=>{
+      if (selectOrderData) {
+        const updatedOrder = dataOrders.find(order => order.id === selectOrderData.id)
+        if (updatedOrder) {
+          setTelectOrderData(updatedOrder)
+        }
       }
-      return true
     })
-    .filter(order => 
-      order.id.toLowerCase().includes(searchQuery.toLowerCase())
-    )
+  }
+
+  const filteredOrder = dataOrders
 
   const getStatusColor = (
     status:
@@ -106,84 +81,128 @@ const OrderTable: React.FC = () => {
     }
   }
 
-  // Update total pages when filtered data or rows per page changes
-  useEffect(() => {
-    if (!filteredOrder) return
-    setPageTotal(Math.ceil(filteredOrder.length / rowsPerPage))
-  }, [filteredOrder, rowsPerPage])
-
-  // Get paginated data
   const paginatedOrders = filteredOrder
-    ?.slice((page - 1) * rowsPerPage, page * rowsPerPage)
 
   useEffect(() => {
-    handlerListOrder()
-  }, [])
+    loadOrdersPage(1, rowsPerPage)
+  }, []) 
+  
+  useEffect(() => {
+    loadOrdersPage(1, rowsPerPage, filterStatus === 'all' ? undefined : filterStatus, searchQuery || undefined)
+  }, [filterStatus, searchQuery, rowsPerPage])
+
+  const handleSearch = () => {
+    setSearchQuery(localSearchTerm)
+  }
+  
+  const handlePageChange = (newPage: number) => {
+    loadOrdersPage(newPage, rowsPerPage, filterStatus === 'all' ? undefined : filterStatus, searchQuery || undefined)
+  }
 
   return (
-    <div className="w-full ">
-      <div className="flex flex-col gap-y-6">
-        <div className="flex flex-col md:flex-row justify-between items-end gap-4">
-          <div className="w-full md:w-[170px]">
-            <InputMedusa
-              className="w-full bg-white h-[48px] hover:bg-gray-100 text-gray-600 text-sm border border-gray-300"
-              placeholder="Buscar"
-              id="search-input"
-              type="search"
-              onChange={(e) => setSearchQuery(e.target.value)}
+    <div className="w-full">
+      <div className="flex flex-col gap-y-8 w-full">
+        <div className="flex justify-between gap-4 w-full">
+          <div className="">
+            <div className="flex items-center gap-2">
+            <Input
+              placeholder="Buscar por orden"
+              value={localSearchTerm}
+              onChange={(e) => setLocalSearchTerm(e.target.value)}
+              onKeyPress={(e) => {
+                if (e.key === 'Enter') {
+                  handleSearch()
+                }
+              }}
+              className="flex-1"
             />
+            <Button
+              onClick={handleSearch}
+              className="bg-lila-gf hover:bg-lila-gf/80 text-white rounded-[5px]"
+            >
+              Buscar
+            </Button>
+            </div>
+            {filteredOrder && (
+              <div className="flex items-center justify-between text-sm text-gray-600 mt-2">
+                <span>
+                  Mostrando {paginatedOrders?.length || 0} de {totalCount} órdenes
+                </span>
+                <span>
+                  Página {currentPage} de {totalPages}
+                </span>
+              </div>
+            )}
           </div>
-          <div>
-            <label
-              htmlFor="status-filter"
-              className="font-semibold text-gray-700 text-sm md:text-base"
-            >
-              Filtrar por estado:
-            </label>
-            <select
-              id="status-filter"
-              className="p-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm md:text-base bg-white mt-2 md:mt-0"
-              value={filterStatus}
-              onChange={(e) =>
-                setFilterStatus(
-                  e.target.value as
-                    | "Cancelada"
-                    | "Completado"
-                    | "En discusión"
-                    | "Finalizado"
-                    | "Pendiente de pago"
-                )
-              }
-            >
-              <option value="all">Todos</option>
-              <option value="Cancelada">Cancelada</option>
-              <option value="Pendiente de pago">Pendiente de pago</option>
-              <option value="Completado">Completado</option>
-              <option value="Finalizado">Finalizado</option>
-              <option value="En discusión">En discusión</option>
-            </select>
+          <div className="flex items-end gap-2 max-w-md">
+            <div className="flex items-center gap-2">
+              <label className="font-semibold text-gray-700 text-sm">
+                Estado:
+              </label>
+              <select
+                id="status-filter"
+                className="p-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-lila-gf focus:outline-none text-sm bg-white"
+                value={filterStatus}
+                onChange={(e) => {
+                  setFilterStatus(
+                    e.target.value as
+                      | "Cancelada"
+                      | "Completado"
+                      | "En discusión"
+                      | "Finalizado"
+                      | "Pendiente de pago"
+                      | "all"
+                  )
+                }}
+              >
+                <option value="all">Todos</option>
+                <option value="Cancelada">Cancelada</option>
+                <option value="Pendiente de pago">Pendiente de pago</option>
+                <option value="Completado">Completado</option>
+                <option value="Finalizado">Finalizado</option>
+                <option value="En discusión">En discusión</option>
+              </select>
+            
+            </div>
+            <div className="flex items-center justify-end  gap-2">
+              <label className="font-semibold text-gray-700 text-sm">
+                Por página:
+              </label>
+              <select
+                className="p-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-lila-gf focus:outline-none text-sm bg-white"
+                value={rowsPerPage}
+                onChange={(e) => {
+                  const newRowsPerPage = parseInt(e.target.value)
+                  setRowsPerPage(newRowsPerPage)
+                  loadOrdersPage(1, newRowsPerPage, filterStatus === 'all' ? undefined : filterStatus, searchQuery || undefined)
+                }}
+              >
+                {dataSelecterPage.map((item) => (
+                  <option key={item} value={item}>
+                    {item}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
         </div>
-        <div className="overflow-x-scroll" style={{ transform: "scaleX(-1)" }}>
-          <table
-            className="min-w-full bg-white rounded-lg shadow-md"
-            style={{ transform: "scaleX(-1)" }}
-          >
+        <div className="overflow-x-auto">
+          <table className="min-w-full bg-white rounded-lg shadow-md md:text-base text-sm">
             <thead>
-              <tr className="bg-gray-100 text-gray-700">
-                <th className="px-4 py-2 text-left text-sm md:text-base">
+              <tr>
+                <th className="py-2 text-left">
                   Estado
                 </th>
-                <th className="px-4 py-2 text-left text-sm md:text-base">
+                <th className="py-2 text-left">
                   Número de orden
                 </th>
-                <th className="px-4 py-2 text-left text-sm md:text-base">
+                <th className="py-2 text-left">
                   Fecha y hora
                 </th>
-                <th className="px-4 py-2 text-left text-sm md:text-base">
+                <th className="py-2 text-left">
                   Tiempo a pagar
                 </th>
-                <th className="px-4 py-2 text-center text-sm md:text-base">
+                <th className="py-2 text-center">
                   Detalles
                 </th>
               </tr>
@@ -194,20 +213,20 @@ const OrderTable: React.FC = () => {
                   <tr key={order.id} className="hover:bg-gray-50">
                     <td className="px-4 py-2">
                       <span
-                        className={`px-3 py-1 rounded-lg text-sm md:text-base ${getStatusColor(
+                        className={`px-3 py-1 rounded-lg ${getStatusColor(
                           order.state_order
                         )}`}
                       >
                         {order.state_order}
                       </span>
                     </td>
-                    <td className="px-4 py-2 text-sm md:text-base">
+                    <td className="px-4 py-2">
                       {order.id}
                     </td>
-                    <td className="px-4 py-2 text-sm md:text-base">
+                    <td className="px-4 py-2">
                       {handlerformatDate(order.created_at)}
                     </td>
-                    <td className="px-4 py-2 text-sm md:text-base">
+                    <td className="px-4 py-2">
                       {order.proof_of_payment !== null ? "- -" : order.state_order === "Pendiente de pago" ? (
                         <Timer creationTime={order.created_at} />
                       ) : order.state_order === "Cancelada" ? (
@@ -239,57 +258,50 @@ const OrderTable: React.FC = () => {
             </tbody>
           </table>
           {!isLoading && !filteredOrder?.length && (
-            <div className="p-6 flex items-center justify-center text-gray-700 text-sm md:text-base">
+            <div className="p-10 flex w-full text-center items-center justify-center text-lg">
               <XMarkMini /> {searchQuery ? 'No se encontraron resultados' : 'Aún no tienes órdenes'}
             </div>
           )}
         </div>
-
-        {/* Controles de paginación */}
-        {filteredOrder && filteredOrder.length > 0 && (
-          <div className="flex flex-col md:flex-row justify-between items-center p-4 mt-6 gap-4">
-            <div className="flex items-center gap-4">
-              <p className="md:text-sm text-xs whitespace-nowrap">{`${filteredOrder.length} órdenes`}</p>
-              <Select onValueChange={(value) => {
-                const newRowsPerPage = parseInt(value)
-                setRowsPerPage(newRowsPerPage)
-                setPage(1)
-              }}>
-                <Select.Trigger className="bg-white text-gray-600">
-                  <Select.Value placeholder={rowsPerPage.toString()} />
-                </Select.Trigger>
-                <Select.Content>
-                  {dataSelecterPage.map((item) => (
-                    <Select.Item key={item} value={item.toString()}>
-                      {item}
-                    </Select.Item>
-                  ))}
-                </Select.Content>
-              </Select>
+        {totalPages > 1 && (
+          <div className="flex items-center justify-center gap-2 mt-6">
+            <Button
+              onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
+              disabled={currentPage === 1 || isLoading}
+              size="sm"
+              variant="bordered"
+            >
+              Anterior
+            </Button>
+            
+            <div className="flex items-center gap-1">
+              {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                const pageNumber = Math.max(1, currentPage - 2) + i
+                if (pageNumber > totalPages) return null
+                
+                return (
+                  <Button
+                    key={pageNumber}
+                    onClick={() => handlePageChange(pageNumber)}
+                    disabled={isLoading}
+                    size="sm"
+                    variant={pageNumber === currentPage ? "solid" : "bordered"}
+                    className={pageNumber === currentPage ? "bg-lila-gf text-white" : ""}
+                  >
+                    {pageNumber}
+                  </Button>
+                )
+              })}
             </div>
-            <div className="flex items-center gap-4 md:text-base text-sm">
-              <span>
-                {page} de {pageTotal}
-              </span>
-              <div className="flex gap-2">
-                <IconButton
-                  disabled={page === 1}
-                  onClick={() => setPage(p => Math.max(1, p - 1))}
-                  variant="transparent"
-                  className="disabled:opacity-50"
-                >
-                  <ArrowLongLeft />
-                </IconButton>
-                <IconButton
-                  disabled={page === pageTotal}
-                  onClick={() => setPage(p => Math.min(pageTotal, p + 1))}
-                  variant="transparent"
-                  className="disabled:opacity-50"
-                >
-                  <ArrowLongRight />
-                </IconButton>
-              </div>
-            </div>
+            
+            <Button
+              onClick={() => handlePageChange(Math.min(totalPages, currentPage + 1))}
+              disabled={currentPage === totalPages || isLoading}
+              size="sm"
+              variant="bordered"
+            >
+              Siguiente
+            </Button>
           </div>
         )}
       </div>
@@ -320,25 +332,22 @@ const ModalOrder = ({
   onClose,
 }: ModalOrder) => {
   const { customer } = useMeCustomer()
-  const { listOrder } = useOrderGudfy()
+  const { dataOrders } = useOrderGudfy()
   
-  // Inicializar el estado con orderData
   const [orderState, setOrderState] = useState<order | undefined>(orderData)
 
-  // Actualizar orderState cuando cambia orderData
   useEffect(() => {
     setOrderState(orderData)
   }, [orderData])
   
-  // Actualizar orderState cuando cambia listOrder y hay un orderData seleccionado
   useEffect(() => {
-    if (orderData && listOrder) {
-      const updatedOrder = listOrder.find(order => order.id === orderData.id)
+    if (orderData && dataOrders) {
+      const updatedOrder = dataOrders.find(order => order.id === orderData.id)
       if (updatedOrder) {
         setOrderState(updatedOrder)
       }
     }
-  }, [listOrder, orderData])
+  }, [dataOrders, orderData])
 
   return (
     <Modal

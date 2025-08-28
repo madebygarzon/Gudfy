@@ -124,7 +124,7 @@ class OrderClaimService extends TransactionBaseService {
         notification: saveNoti,
       });
     } catch (error) {
-      console.log("error en la addicion de la reclamacion", error);
+      console.error("error en la addicion de la reclamacion", error);
     }
   }
 
@@ -160,26 +160,42 @@ class OrderClaimService extends TransactionBaseService {
 
       return listClaim;
     } catch (error) {
-      console.log(
+      console.error(
         "error en la obtencion de la lista de reclamaciones en el servicio",
         error
       );
     }
   }
 
-  async retriveListClaimCustomer(idCustomer) {
+  async retriveListClaimCustomer(idCustomer, page = 1, limit = 10, search = '') {
     const repoOrderClaim = this.activeManager_.withRepository(
       this.orderClaimRepository_
     );
-    const listClaim = await repoOrderClaim
-      .createQueryBuilder("oc")
-      .leftJoinAndSelect("oc.store_variant_order", "svo")
-      .leftJoinAndSelect("svo.store_variant", "sxv")
-      .leftJoinAndSelect("sxv.store", "s")
-      .leftJoinAndSelect("sxv.variant", "v")
-      .where("oc.customer_id = :customer_id", { customer_id: idCustomer })
-      .select([
-        "oc.id AS id",
+    
+    try {
+      
+      const skip = (page - 1) * limit;
+      
+      const queryBuilder = repoOrderClaim
+        .createQueryBuilder("oc")
+        .leftJoinAndSelect("oc.store_variant_order", "svo")
+        .leftJoinAndSelect("svo.store_variant", "sxv")
+        .leftJoinAndSelect("sxv.store", "s")
+        .leftJoinAndSelect("sxv.variant", "v")
+        .where("oc.customer_id = :customer_id", { customer_id: idCustomer });
+      
+      if (search && search.trim() !== '') {
+        queryBuilder.andWhere(
+          "(CAST(svo.number_order AS TEXT) ILIKE :search OR oc.id ILIKE :search)", 
+          { search: `%${search}%` }
+        );
+      }
+      
+      const totalCount = await queryBuilder.getCount();
+      
+      const listClaim = await queryBuilder
+        .select([
+          "oc.id AS id",
         "oc.status_order_claim_id AS status_order_claim_id",
         "oc.created_at AS created_at",
         "svo.quantity AS quantity",
@@ -189,9 +205,20 @@ class OrderClaimService extends TransactionBaseService {
         "v.title AS product_name",
       ])
       .orderBy("oc.created_at", "DESC")
+      .offset(skip)
+      .limit(limit)
       .getRawMany();
-
-    return listClaim;
+      
+      return {
+        data: listClaim,
+        totalCount,
+        page: parseInt(page.toString()),
+        limit: parseInt(limit.toString()),
+        totalPages: Math.ceil(totalCount / limit)
+      };
+    } catch (error) {
+      console.error("error en la obtencion de la lista de reclamaciones", error);
+    }
   }
 
   async retriveListClaimSeller(idStore) {
@@ -313,8 +340,7 @@ class OrderClaimService extends TransactionBaseService {
         });
       }
       if (status == "CANCEL_ID") {
-        //estado de la reclamacion si es CANCEL_ID significa que se cierra la reclamacion
-        //  y su estado pasa a finalizado
+       
         
         const updateCla = await repoOrderClaim.update(idClaim, {
           status_order_claim_id: status,
@@ -338,7 +364,7 @@ class OrderClaimService extends TransactionBaseService {
       }
       
     } catch (error) {
-      console.log("error en la actualizacion de la reclamacion", error);
+      console.error("error en la actualizacion de la reclamacion", error);
     }
     
   }
@@ -392,7 +418,6 @@ class OrderClaimService extends TransactionBaseService {
       this.notificationGudfyRepository_
     );
 
-    // Obtener la lista de reclamaciones
     const listClaim = await repoOrderClaim
       .createQueryBuilder("oc")
       .leftJoinAndSelect("oc.store_variant_order", "svo")
@@ -417,10 +442,8 @@ class OrderClaimService extends TransactionBaseService {
     });
 
     if (retriever) {
-      // Actualizar notificación existente
       await repoNotification.update(retriever.id, { seen_status: true });
     } else if (CommentOwner === "COMMENT_STORE_ID") {
-      // Crear nueva notificación solo si el dueño del comentario es la tienda
       const createNotifica = await repoNotification.create({
         order_claim_id: idOrderClaim,
         customer_id: listClaim[0].customer_id,

@@ -22,7 +22,6 @@ interface EmailProps {
 
 export function Email(props: EmailProps) {
   const { url, email, token } = props;
-
   return (
     <Html lang="en">
       <Tailwind

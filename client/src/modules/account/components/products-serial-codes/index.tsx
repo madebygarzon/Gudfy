@@ -3,8 +3,7 @@
 import { useState, useEffect } from "react"
 import React from "react"
 import { XMarkMini } from "@medusajs/icons"
-import { Input } from "@medusajs/ui"
-import { Accordion, AccordionItem, Snippet } from "@heroui/react"
+import { Accordion, AccordionItem, Snippet, Button, Input } from "@heroui/react"
 import { FaEye } from "react-icons/fa6"
 import { getListSerialCode } from "@modules/account/actions/serial-code/get-list-serial-code"
 import Loader from "@lib/loader"
@@ -22,18 +21,26 @@ type SerialCodes = {
   created_at: string
 }
 
-const dataSelecterPage = [10, 20, 30]
+type SerialCodeResponse = {
+  serialCodes: SerialCodes[]
+  totalCount: number
+  page: number
+  limit: number
+  totalPages: number
+}
+
+const dataSelecterPage = [10, 20, 30, 50, 100]
 
 const SerialCodeTable: React.FC = () => {
   const [isLoading, setLoading] = useState(true)
-  const [listSerialCodes, setListSerialCodes] = useState<SerialCodes[]>()
-  const [filteredCodes, setFilteredCodes] = useState<SerialCodes[]>()
+  const [serialCodes, setSerialCodes] = useState<SerialCodes[]>([])
   const [searchQuery, setSearchQuery] = useState("")
+  const [localSearchTerm, setLocalSearchTerm] = useState<string>('')
 
-  // Pagination controls
   const [page, setPage] = useState(1)
   const [rowsPerPage, setRowsPerPage] = useState(dataSelecterPage[0])
-  const [pageTotal, setPageTotal] = useState(1)
+  const [totalPages, setTotalPages] = useState(1)
+  const [totalCount, setTotalCount] = useState(0)
 
   const itemClasses = {
     base: "py-0 w-full",
@@ -44,39 +51,46 @@ const SerialCodeTable: React.FC = () => {
     content: "text-small px-2",
   }
 
-  const handlerGetListSerialCodes = () => {
-    getListSerialCode().then((e) => {
-      setListSerialCodes(e)
+  const loadSerialCodes = async () => {
+    setLoading(true)
+    try {
+      
+      const result = await getListSerialCode({
+        page,
+        limit: rowsPerPage,
+        search: searchQuery
+      })
+      
+      
+      const codesArray = Array.isArray(result.serialCodes) ? result.serialCodes : []
+      
+      setSerialCodes(codesArray)
+      setTotalCount(result.totalCount || 0)
+      setTotalPages(result.totalPages || 1)
+      
+    } catch (error) {
+      console.error("Error al cargar códigos seriales:", error)
+      setSerialCodes([])
+      setTotalCount(0)
+      setTotalPages(1)
+    } finally {
       setLoading(false)
-    })
+    }
   }
 
   useEffect(() => {
-    handlerGetListSerialCodes()
-  }, [])
-
-  // Filter and search effect
-  useEffect(() => {
-    if (!listSerialCodes) return
-
-    const filtered = listSerialCodes.filter(
-      (code) =>
-        code.product_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        code.order_number.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        code.store_name.toLowerCase().includes(searchQuery.toLowerCase())
-    )
-    setFilteredCodes(filtered)
-    setPage(1) // Reset to first page when search changes
-  }, [searchQuery, listSerialCodes])
-
-  // Update total pages
-  useEffect(() => {
-    if (!filteredCodes) return
-    setPageTotal(Math.ceil(filteredCodes.length / rowsPerPage))
-  }, [filteredCodes, rowsPerPage])
+    loadSerialCodes()
+  }, [page, rowsPerPage, searchQuery])
+  
+  const handleSearch = () => {
+    if (searchQuery !== localSearchTerm) {
+      setSearchQuery(localSearchTerm)
+      setPage(1) 
+    }
+  }
 
   const handleNextPage = () => {
-    if (page < pageTotal) setPage(page + 1)
+    if (page < totalPages) setPage(page + 1)
   }
 
   const handlePrevPage = () => {
@@ -89,51 +103,83 @@ const SerialCodeTable: React.FC = () => {
     setPage(1)
   }
 
-  const paginatedCodes = filteredCodes?.slice(
-    (page - 1) * rowsPerPage,
-    page * rowsPerPage
-  )
-
   return (
     <div className="w-full">
-      <div className="flex flex-col gap-y-8 w-full">
-        {/* Search bar */}
-        <div className="flex flex-col md:flex-row gap-4 items-end">
-          <div className="w-full md:w-[170px]">
-            <Input
-              className="w-full bg-white h-[48px] hover:bg-gray-100 text-gray-600 text-sm border border-gray-300"
-              placeholder="Buscar"
-              id="search-input"
-              type="search"
-              onChange={(e) => setSearchQuery(e.target.value)}
+      <div className="flex flex-col gap-y-4 w-full">
+        <div className="flex justify-between  gap-4 w-full">
+          <div className="flex items-center gap-2">
+          <Input
+              placeholder="Buscar por producto, orden o tienda..."
+              value={localSearchTerm}
+              onChange={(e) => setLocalSearchTerm(e.target.value)}
+              onKeyPress={(e) => {
+                if (e.key === 'Enter') {
+                  handleSearch()
+                }
+              }}
+              className="flex-1"
             />
+            <Button
+              onClick={handleSearch}
+              className="bg-lila-gf hover:bg-lila-gf/80 text-white rounded-[5px]"
+            >
+              Buscar
+            </Button>
+          </div>
+
+          <div className="flex flex-col items-end gap-2 max-w-md">
+          <div className="flex items-center gap-2">
+              <label className="font-semibold text-gray-700 text-sm">
+                Por página:
+              </label>
+              <select
+                className="p-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm bg-white"
+                value={rowsPerPage}
+                onChange={(e) => handleRowsPerPageChange(e.target.value)}
+              >
+                {dataSelecterPage.map((item) => (
+                  <option key={item} value={item}>
+                    {item}  
+                  </option>
+                ))}
+              </select>
+            </div>
+          
           </div>
         </div>
+        <div className="flex justify-between">
+          <div className="flex items-center justify-between text-sm text-gray-600">
+            <span>
+              Mostrando {serialCodes?.length || 0} de {totalCount} códigos
+            </span>
+          </div>
+          <span className="text-sm text-gray-600">
+            Página {page} de {totalPages}
+          </span>
+        </div>
         <div className="overflow-x-auto">
-          <table className="min-w-full bg-white  rounded-lg shadow-md md:text-base text-xs">
+          <table className="min-w-full bg-white rounded-lg shadow-md md:text-base text-sm">
             <thead>
               <tr>
-                <th className="px-4 py-2 text-left">Numero orden</th>
-                <th className="px-4 py-2 text-left">Fecha</th>
-                <th className="px-4 py-2 text-left">Producto</th>
-
-                <th className="px-4 py-2 text-left">Nombre de la tienda</th>
-                <th className="px-4 py-2 text-left">Items</th>
-                <th className="px-4 py-2 text-left">Descargar</th>
+                <th className="py-2 text-left">Numero orden</th>
+                <th className="py-2 text-left">Fecha</th>
+                <th className="py-2 text-left">Producto</th>
+                <th className="py-2 text-left">Nombre de la tienda</th>
+                <th className="py-2 text-left">Items</th>
+                <th className="py-2 text-left">Descargar</th>
               </tr>
             </thead>
             <tbody>
               {!isLoading ? (
-                paginatedCodes?.map((code, i) => (
+                serialCodes.map((code: SerialCodes, i: number) => (
                   <tr
                     key={code.store_variant_order}
-                    className="hover:bg-gray-50 items-center"
+                    className="hover:bg-gray-50"
                   >
-                    {/* <td className="md:px-4 py-2 px-2 ">{code.created_at}</td> */}
-                    <td className="md:px-4 py-2 px-2 text-sm">
+                    <td className="px-4 py-2">
                       {code.order_number}
                     </td>
-                    <td className="md:px-4 py-2 px-2 text-sm">
+                    <td className="px-4 py-2">
                       {new Date(code.created_at).toLocaleString("es-CO", {
                         year: "numeric",
                         month: "2-digit",
@@ -145,52 +191,48 @@ const SerialCodeTable: React.FC = () => {
                         timeZone: "America/Bogota",
                       })}
                     </td>
-                    <td className=" md:px-4 py-2 px-2 font-bold text-sm">
+                    <td className="px-4 py-2 font-medium">
                       {code.product_name}
                     </td>
 
-                    <td className="md:px-4 py-2 px-2 text-sm text-lila-gf ">
+                    <td className="px-4 py-2 text-lila-gf">
                       {code.store_name}
                     </td>
 
-                    <td className="md:px-4 py-2 px-2 text-center text-sm">
+                    <td className="px-4 py-2">
                       <Accordion
                         showDivider={false}
-                        className="p-2 flex flex-col gap-1 w-full "
+                        className="flex flex-col gap-1 w-full"
                         variant="shadow"
                         itemClasses={itemClasses}
                       >
                         <AccordionItem
-                          className="text-sm md:text-base"
                           key={i}
                           aria-label="Items"
                           startContent={<FaEye className="text-lila-gf" />}
                           subtitle={
-                            <p className="flex text-sm min-w-[100px]">
+                            <p className="flex min-w-[100px]">
                               {code.serial_codes.length}
                               {" Items "}
                             </p>
                           }
-                          
-                          title={
-                            <p className="flex text-sm"></p>
-                          }
+                          title={<p className="flex"></p>}
                         >
-                          {code.serial_codes.map((code) => (
-                            <div>
+                          {code.serial_codes.map((serialCode: string, idx: number) => (
+                            <div key={idx}>
                               <Snippet
                                 size="sm"
                                 className="text-xs"
                                 color="default"
                               >
-                                {code}
+                                {serialCode}
                               </Snippet>
                             </div>
                           ))}
                         </AccordionItem>
                       </Accordion>
                     </td>
-                    <td className="text-center">
+                    <td className="px-4 py-2 text-center">
                       <DownloadButton
                         data={code.serial_codes}
                         filename={code.product_name}
@@ -199,84 +241,61 @@ const SerialCodeTable: React.FC = () => {
                   </tr>
                 ))
               ) : (
-                <div className="p-6">
-                  <Loader />
-                </div>
+                <tr>
+                  <td colSpan={6} className="p-6 text-center">
+                    <Loader />
+                  </td>
+                </tr>
               )}
             </tbody>
           </table>
-          {!isLoading && !filteredCodes?.length && (
+          {!isLoading && (!serialCodes || serialCodes.length === 0) && totalCount === 0 && (
             <div className="p-10 flex w-full text-center items-center justify-center text-lg">
               <XMarkMini />{" "}
-              {searchQuery ? "No se encontraron resultados" : "Sin compras"}
+              {searchQuery ? "No se encontraron resultados" : "Sin códigos seriales"}
             </div>
           )}
         </div>
 
-        {/* Pagination controls */}
-        {filteredCodes && filteredCodes.length > 0 && (
-          <div className="flex flex-col md:flex-row justify-between items-center p-4 mt-6 gap-4">
-            <div className="flex items-center gap-4">
-              <p className="md:text-sm text-xs whitespace-nowrap">{`${filteredCodes.length} items`}</p>
-              <select
-                className="bg-white text-gray-600 border border-gray-300 rounded-lg p-1 text-sm"
-                value={rowsPerPage}
-                onChange={(e) => handleRowsPerPageChange(e.target.value)}
-              >
-                {dataSelecterPage.map((item) => (
-                  <option key={item} value={item}>
-                    {item}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div className="flex items-center gap-4 md:text-base text-sm">
-              <span>
-                {page} de {pageTotal}
-              </span>
-              <div className="flex gap-2">
-                <button
-                  disabled={page === 1}
-                  onClick={handlePrevPage}
-                  className="disabled:opacity-50 p-1 hover:bg-gray-100 rounded"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
+        {totalPages > 1 && (
+          <div className="flex items-center justify-center gap-2 mt-6">
+            <Button
+              onClick={handlePrevPage}
+              disabled={page === 1 || isLoading}
+              size="sm"
+              variant="bordered"
+            >
+              Anterior
+            </Button>
+            
+            <div className="flex items-center gap-1">
+              {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                const pageNumber = Math.max(1, page - 2) + i
+                if (pageNumber > totalPages) return null
+                
+                return (
+                  <Button
+                    key={pageNumber}
+                    onClick={() => setPage(pageNumber)}
+                    disabled={isLoading}
+                    size="sm"
+                    variant={pageNumber === page ? "solid" : "bordered"}
+                    className={pageNumber === page ? "bg-blue-600 text-white" : ""}
                   >
-                    <path d="M19 12H5" />
-                    <path d="M12 19l-7-7 7-7" />
-                  </svg>
-                </button>
-                <button
-                  disabled={page === pageTotal}
-                  onClick={handleNextPage}
-                  className="disabled:opacity-50 p-1 hover:bg-gray-100 rounded"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <path d="M5 12h14" />
-                    <path d="M12 5l7 7-7 7" />
-                  </svg>
-                </button>
-              </div>
+                    {pageNumber}
+                  </Button>
+                )
+              })}
             </div>
+            
+            <Button
+              onClick={handleNextPage}
+              disabled={page === totalPages || isLoading}
+              size="sm"
+              variant="bordered"
+            >
+              Siguiente
+            </Button>
           </div>
         )}
       </div>
