@@ -57,7 +57,9 @@ const CheckoutForm = ({ orderId }: { orderId: string | undefined }) => {
   })
 
   useEffect(() => {
-     handlerCurrentOrder(orderId )
+    if (orderId) {
+      handlerCurrentOrder(orderId)
+    }
     setSelectedKeys(new Set([checkbox]))
     if (checkbox) setCompleteForm((com) => ({ ...com, payment: true }))
     else setCompleteForm((com) => ({ ...com, payment: false }))
@@ -78,9 +80,8 @@ const CheckoutForm = ({ orderId }: { orderId: string | undefined }) => {
     ).then(() => {
       if (!orderId) alert("error de orden , no se obtuvo la orden")
       else {
-        handlersubmitPaymentMethod(checkbox, cart, orderId).then(() => {
-          deleteCart()
-        })
+        handlersubmitPaymentMethod({ checkbox, cart, order_id: orderId })
+        deleteCart()
       }
     })
   }

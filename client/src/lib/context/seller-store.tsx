@@ -8,11 +8,23 @@ interface SellerStoreContext {
   storeSeller?: store
   handlerGetSellerStore: () => Promise<void>
   isLoadingStore: boolean
-  handlerGetListSellerOrder: () => void
+  handlerGetListSellerOrder: (options?: { page?: number; limit?: number; status?: string; search?: string }) => void
+  loadOrdersPage: (page: number) => void
   isLoadingOrders: boolean
-  listSellerOrders: SellerOrder[]
+  dataOrders: SellerOrder[]
+  loadedPages: Set<number>
+  totalCount: number
+  currentPage: number
+  totalPages: number
+  pageLimit: number
+  setPageLimit: (limit: number) => void
+  searchTerm: string
+  setSearchTerm: (term: string) => void
+  statusFilter: string
+  setStatusFilter: (status: string) => void
   handlerLowStock: () => void
   notificateLowStock: lowStock
+  listSellerOrders: SellerOrder[]
 }
 export type SellerOrder = {
   id: string
@@ -66,6 +78,15 @@ export const SellerStoreProvider = ({
   const [notificateLowStock, setNotificateLowStock] = useState<lowStock>({
     store_x_variant_id: []
   })
+  const [dataOrders, setDataOrders] = useState<SellerOrder[]>([])
+  const [loadedPages, setLoadedPages] = useState<Set<number>>(new Set())
+  const [totalCount, setTotalCount] = useState<number>(0)
+  const [currentPage, setCurrentPage] = useState<number>(1)
+  const [totalPages, setTotalPages] = useState<number>(0)
+  const [pageLimit, setPageLimit] = useState<number>(50)
+  const [searchTerm, setSearchTerm] = useState<string>('')
+  const [statusFilter, setStatusFilter] = useState<string>('all')
+  
   const [listSellerOrders, setListSellerOrder] = useState<SellerOrder[]>([])
 
   const handlerGetSellerStore = async () => {
@@ -78,25 +99,59 @@ export const SellerStoreProvider = ({
     return store
   }
 
-  const handlerGetListSellerOrder = async () => {
+  const handlerGetListSellerOrder = async (options: { page?: number; limit?: number; status?: string; search?: string } = {}) => {
     let store_id = storeSeller
     if (!store_id) {
       store_id = await handlerGetSellerStore()
     }
     setIsLoadingOrders(true)
     if (store_id) {
-      await axios
-        .get(
-          `${process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL}/seller/store/account/${store_id.id}/orders`,
+      const { page = 1, limit = pageLimit, status = statusFilter, search = searchTerm } = options
+      const queryParams = new URLSearchParams()
+      queryParams.append('page', page.toString())
+      queryParams.append('limit', limit.toString())
+      if (status && status !== 'all') {
+        queryParams.append('status', status)
+      }
+      if (search && search.trim()) {
+        queryParams.append('search', search.trim())
+      }
+
+      try {
+        const response = await axios.get(
+          `${process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL}/seller/store/account/${store_id.id}/orders?${queryParams.toString()}`,
           {
             withCredentials: true,
           }
         )
-        .then((e) => {
-          setListSellerOrder(e.data)
-          setIsLoadingOrders(false)
-        })
+        
+        const { data, totalCount: total, totalPages: pages } = response.data
+        
+        setDataOrders(data)
+        setLoadedPages(new Set([page]))
+        setTotalCount(total)
+        setTotalPages(pages)
+        setCurrentPage(page)
+        
+        if (page === 1) {
+          setListSellerOrder(data)
+        }
+        
+        setIsLoadingOrders(false)
+      } catch (error) {
+        console.error('Error loading seller orders:', error)
+        setIsLoadingOrders(false)
+      }
     }
+  }
+
+  const loadOrdersPage = async (page: number) => {
+    await handlerGetListSellerOrder({ 
+      page, 
+      limit: pageLimit, 
+      status: statusFilter, 
+      search: searchTerm 
+    })
   }
 
   const handlerLowStock = async () => {
@@ -124,10 +179,22 @@ export const SellerStoreProvider = ({
         handlerGetSellerStore,
         isLoadingStore,
         handlerGetListSellerOrder,
-        listSellerOrders,
+        loadOrdersPage,
         isLoadingOrders,
+        dataOrders,
+        loadedPages,
+        totalCount,
+        currentPage,
+        totalPages,
+        pageLimit,
+        setPageLimit,
+        searchTerm,
+        setSearchTerm,
+        statusFilter,
+        setStatusFilter,
         handlerLowStock,
         notificateLowStock,
+        listSellerOrders,
       }}
     >
       {children}

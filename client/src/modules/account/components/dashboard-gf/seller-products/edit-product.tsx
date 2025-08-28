@@ -8,6 +8,7 @@ import {
   ModalFooter,
   Button,
   useDisclosure,
+  Spinner,
 } from "@heroui/react"
 import FileUploader from "./file-uploader-txt"
 import { postAddCodesProduct } from "@modules/account/actions/serial-code/post-add-codes-store-variant"
@@ -58,6 +59,7 @@ export default function EditProduct({
   const [Error, setError] = useState<boolean>(false)
   const [addResult, setAddResult] = useState<CodesResult[]>([])
   const [updatedPrice, setUpdatedPrice] = useState<string>(productData?.price || '')
+  const [isLoading, setIsLoading] = useState<boolean>(false)
   useEffect(() => {
     setError(false)
     setUpdatedPrice(productData?.price || '')
@@ -71,31 +73,48 @@ export default function EditProduct({
     }
   }
 
-  const onSubmit = () => {
+  const onSubmit = async () => {
     if (Error) return
-    const code = addResult.find(
-      (data) => data.variantID === productData.storexvariantid
-    )?.codes
-    const codes = {
-      productvariantid: productData.storexvariantid,
-      codes: code,
-    }
-   if(productData?.price !== updatedPrice){
-    const price = {
-      productvariantid: productData.storexvariantid,
-      price: Number(updatedPrice),
-    }
-    postUpdatePriceProduct(price).then(() => {
-      setReset((reset) => !reset)
+    
+    setIsLoading(true)
+    
+    try {
+      const code = addResult.find(
+        (data) => data.variantID === productData.storexvariantid
+      )?.codes
+      
+      const codes = {
+        productvariantid: productData.storexvariantid,
+        codes: code,
+      }
+      
+      // Crear un array de promesas para ejecutar en paralelo
+      const promises = []
+      
+      if(productData?.price !== updatedPrice) {
+        const price = {
+          productvariantid: productData.storexvariantid,
+          price: Number(updatedPrice),
+        }
+        promises.push(postUpdatePriceProduct(price))
+      }
+      
+      if(code?.length) {
+        promises.push(postAddCodesProduct(codes))
+      }
+      
+      // Esperar a que todas las promesas se resuelvan
+      if (promises.length > 0) {
+        await Promise.all(promises)
+        setReset((reset) => !reset)
+      }
+      
       onClose()
-    })
-   }
-   if(code?.length){
-    postAddCodesProduct(codes).then(() => {
-      setReset((reset) => !reset)
-      onClose()
-    })
-   }
+    } catch (error) {
+      console.error('Error al actualizar el producto:', error)
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (
@@ -169,12 +188,19 @@ export default function EditProduct({
                 Cancelar
               </ButtonLigth>
               <ButtonLigth
-                disabled={(addResult.length === 0 || Error) && updatedPrice === productData.price}
+                disabled={isLoading || ((addResult.length === 0 || Error) && updatedPrice === productData.price)}
                 color="primary"
-                className="bg-[#28A745] hover:bg-[#218838] text-white border-none w-full sm:w-auto"
+                className="bg-[#28A745] hover:bg-[#218838] text-white border-none w-full sm:w-auto flex items-center justify-center gap-2"
                 onClick={onSubmit}
               >
-                Guardar
+                {isLoading ? (
+                  <>
+                    <Spinner size="sm" color="white" />
+                    <span>Guardando...</span>
+                  </>
+                ) : (
+                  "Guardar"
+                )}
               </ButtonLigth>
             </ModalFooter>
           </>

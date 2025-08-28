@@ -20,7 +20,6 @@ class RecoveryPassword {
   private readonly resetBaseUrl?: string
 
   constructor({ eventBusService }: InjectedDependencies) {
-    // Validate env early
     const apiKey = process.env.RESEND_API_KEY
     const from = process.env.RESEND_FROM_EMAIL
     this.resetBaseUrl = process.env.URL_RESET_PASSWORD
@@ -35,7 +34,6 @@ class RecoveryPassword {
     this.resend = new Resend(apiKey)
     this.from = from || "Gudfy <no-reply@example.com>"
 
-    // Subscribe once on boot
     eventBusService.subscribe("customer.password_reset", this.handleRecoveryPass)
 
     console.log("[recovery-password] Subscriber registered for 'customer.password_reset'")
@@ -43,30 +41,29 @@ class RecoveryPassword {
 
   private handleRecoveryPass = async (data: DataOptions) => {
     try {
-      console.log("[recovery-password] Event payload:", data)
 
       const { email, token } = data || {}
+
       if (!email || !token) {
         console.warn("[recovery-password] Missing email or token in event payload")
         return
       }
 
-      // Build a reset URL if you prefer to send the full link directly
+
       const resetLink = this.resetBaseUrl
         ? `${this.resetBaseUrl}?token=${encodeURIComponent(token)}&email=${encodeURIComponent(email)}`
         : undefined
 
       const html = render(
         <Email
-          // Your Email component accepts url, email, token — keep backward-compatible
-          url={resetLink || this.resetBaseUrl}
+          url={`${process.env.FRONT_URL}/account/reset-password`}
           email={email}
           token={token}
         />
       )
 
       const { error } = await this.resend.emails.send({
-        from: this.from,                     // must be verified in Resend
+        from: this.from,
         to: email,
         subject: "Restablecimiento de Contraseña Solicitado - GUDFY",
         html,
