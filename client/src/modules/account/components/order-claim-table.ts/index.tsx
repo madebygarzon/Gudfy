@@ -1,18 +1,10 @@
 "use client"
+
 import { useState, useEffect, useRef } from "react"
 import React from "react"
-import {
-  Modal,
-  ModalContent,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
-  Button,
-  useDisclosure,
-  Input,
-} from "@heroui/react"
-import { ChatBubble, PlayMiniSolid, XMarkMini, ArrowLongLeft, ArrowLongRight } from "@medusajs/icons"
-import { Button as ButtonMedusa, Select, Input as InputMedusa, IconButton } from "@medusajs/ui"
+import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure, Input, Button } from "@heroui/react"
+import { IconButton, Select, Input as InputMedusa, Button as ButtonMedusa } from "@medusajs/ui"
+import { XMark, ArrowLongRight, ArrowLongLeft, PlayMiniSolid, XMarkMini } from "@medusajs/icons"
 import { useMeCustomer } from "medusa-react"
 import type { order } from "../../templates/orders-template"
 import handlerformatDate from "@lib/util/formatDate"
@@ -23,7 +15,6 @@ import { updateStatusClaim } from "@modules/account/actions/update-status-claim"
 import { useNotificationContext } from "@lib/context/notification-context"
 import Notification from "@modules/common/components/notification"
 import { updateStateNotification } from "@modules/account/actions/update-state-notification"
-import { hasPassed48Hours } from "@lib/util/date-for-escalation-admin"
 import io, { Socket } from "socket.io-client"
 import Loader from "@lib/loader"
 import { ChatIcon } from "@lib/util/icons"
@@ -32,29 +23,58 @@ import { SendIcon } from "@lib/util/icons"
 import InputFile from "@modules/common/components/input-file"
 import Image from "next/image"
 
-type orders = {
-  orders: order[]
+type ClaimComments = {
+  id?: string
+  comment: string
+  comment_owner_id: string
+  order_claim_id?: string
+  customer_id?: string
+  created_at?: string
+  image?: string
 }
 
-const dataSelecterPage = [10, 20, 30]
+interface ModalClaimCommentProps {
+  comments?: ClaimComments[]
+  setComments: React.Dispatch<React.SetStateAction<ClaimComments[] | undefined>>
+  isOpen: boolean
+  onOpenChange: () => void
+  handleReset: () => void
+  claim?: orderClaim
+}
+
+const dataSelecterPage = [10, 20, 30, 50, 100]
 
 const ClaimTable: React.FC = () => {
-  const { listOrderClaim, handlerListOrderClaim, isLoadingClaim } =
-    useOrderGudfy()
-  const [selectOrderClaim, setSelectOrderClaim] = useState<orderClaim>()
-
-  const [page, setPage] = useState(1)
+  const { 
+    dataOrderClaims, 
+    loadClaimsPage, 
+    handlerListOrderClaim, 
+    isLoadingClaim,
+    totalClaimCount,
+    currentClaimPage,
+    setCurrentClaimPage,
+    totalClaimPages,
+    claimPageLimit,
+    setClaimPageLimit,
+    claimSearchTerm,
+    setClaimSearchTerm
+  } = useOrderGudfy()
+  
+  const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure()
+  const { notifications, setNotifications } = useNotificationContext()
+  
   const [rowsPerPage, setRowsPerPage] = useState(dataSelecterPage[0])
-  const [pageTotal, setPageTotal] = useState(1)
-  const [searchQuery, setSearchQuery] = useState('')
+  const [localSearchTerm, setLocalSearchTerm] = useState('')
+  const [isSearching, setIsSearching] = useState(false)
+  const [selectOrderClaim, setSelectOrderClaim] = useState<orderClaim>()
+  const [comments, setComments] = useState<ClaimComments[]>()
 
   const [filterStatus, setFilterStatus] = useState<
     "CERRADA" | "ABIERTA" | "RESUELTA" | "SIN RESOLVER" | "all"
   >("all")
 
-  const filteredOrderClaims = listOrderClaim
-    ?.filter(claim => {
-      
+  const filteredOrderClaims = dataOrderClaims
+    .filter(claim => {
       if (filterStatus !== "all") {
         switch (filterStatus) {
           case "CERRADA":
@@ -71,17 +91,16 @@ const ClaimTable: React.FC = () => {
       }
       return true
     })
-    .filter(claim => 
-      claim.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      claim.number_order.toLowerCase().includes(searchQuery.toLowerCase())
-    )
 
   const handleReset = () => {
-    handlerListOrderClaim()
+    handlerListOrderClaim(true)
   }
-  const { notifications, setNotifications } = useNotificationContext()
-  const [comments, setComments] = useState<ClaimComments[]>()
-  const { isOpen, onOpen, onOpenChange } = useDisclosure()
+  
+  const handleSearch = () => {
+    setIsSearching(true)
+    loadClaimsPage(1, rowsPerPage, claimSearchTerm)
+      .finally(() => setIsSearching(false))
+  }
 
   const handlerSelectClaimOrder = (claim: orderClaim) => {
     if (notifications.length) {
@@ -89,7 +108,7 @@ const ClaimTable: React.FC = () => {
 
       if (isNotifi)
         updateStateNotification(isNotifi.id, false).then(() => {
-          setNotifications((old) => old.filter((n) => n.id !== isNotifi.id))
+          setNotifications((old) => old.filter((n) => n.id !== isNotifi?.id))
         })
     }
     setSelectOrderClaim(claim)
@@ -98,200 +117,251 @@ const ClaimTable: React.FC = () => {
       onOpen()
     })
   }
-
-  useEffect(() => {
-    if (!filteredOrderClaims) return
-    setPageTotal(Math.ceil(filteredOrderClaims.length / rowsPerPage))
-  }, [filteredOrderClaims, rowsPerPage])
-
+  
   const paginatedClaims = filteredOrderClaims
-    ?.slice((page - 1) * rowsPerPage, page * rowsPerPage)
 
   useEffect(() => {
-    handlerListOrderClaim()
+    loadClaimsPage(1, rowsPerPage)
   }, [])
+  
+  useEffect(() => {
+    loadClaimsPage(1, rowsPerPage, claimSearchTerm)
+  }, [filterStatus, rowsPerPage])
+  
+
+  const handlePageChange = (newPage: number) => {
+    loadClaimsPage(newPage, rowsPerPage, claimSearchTerm)
+  }
 
   return (
-    <div className="w-full p-1 md:p-6">
-      <div className="flex flex-col gap-y-8 w-full">
-        <div className="flex flex-col md:flex-row justify-between items-end gap-4 mb-4">
-          <div className="w-full md:w-[170px]">
-            <InputMedusa
-              className="w-full bg-white h-[48px] hover:bg-gray-100 text-gray-600 text-sm border border-gray-300"
-              placeholder="Buscar"
-              id="search-input"
-              type="search"
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-          </div>
-          <div>
-            <label
-              htmlFor="status-filter"
-              className="mr-4 font-semibold text-gray-700 text-sm lg:text-base"
-            >
-              Filtrar por estado:
-            </label>
-            <select
-              id="status-filter"
-              className="p-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm lg:text-base bg-white"
-              value={filterStatus}
-              onChange={(e) =>
-                setFilterStatus(
-                  e.target.value as
-                    | "CERRADA"
-                    | "ABIERTA"
-                    | "RESUELTA"
-                    | "SIN RESOLVER"
-                    | "all"
-                )
-              }
-            >
-              <option value="all">Todos</option>
-              <option value="CERRADA">Cerrada</option>
-              <option value="ABIERTA">Abierta</option>
-              <option value="RESUELTA">Resuelta</option>
-              <option value="SIN RESOLVER">Escalada al administrador</option>
-            </select>
-          </div>
-        </div>
-
-        <div className="overflow-x-auto">
-          <table className="min-w-full bg-white  rounded-lg shadow-md md:text-base text-xs">
-            <thead>
-              <tr>
-                <th className="py-2 text-left">Estado del reclamo</th>
-                <th className="py-2 text-left">Orden número</th>
-                <th className="py-2 text-left">Detalles del producto</th>
-                <th className="py-2 text-left">Fecha y hora de creación</th>
-                <th className="py-2 text-left">Chat</th>
-              </tr>
-            </thead>
-            <tbody>
-              {!isLoadingClaim ? (
-                paginatedClaims?.map((claim) => (
-                  <tr key={claim.id} className="hover:bg-gray-50">
-                    <td>
-                      {claim.status_order_claim_id === "OPEN_ID" ? (
-                        <div className="mx-1 p-3 bg-blue-200 rounded-md">
-                          Abierta
-                        </div>
-                      ) : claim.status_order_claim_id === "CANCEL_ID" ? (
-                        <div className="mx-1 p-3 bg-green-200 rounded-md">
-                          Cerrada
-                        </div>
-                      ) : claim.status_order_claim_id === "UNSOLVED_ID" ? (
-                        <div className="mx-1 p-3 bg-orange-200 rounded-md">
-                          Escalada al administrador
-                        </div>
-                      ) : (
-                        claim.status_order_claim_id === "SOLVED_ID" && (
-                          <div className="mx-1 p-2 bg-green-200 rounded-md">
-                            Resuelta
-                          </div>
-                        )
-                      )}
-                    </td>
-                    <td className=" py-2">{claim.number_order}</td>
-                    <td className=" py-2">
-                      <div className="">
-                        <h3 className="font-semibold md:text-xs text-[10px]">
-                          {claim.product_name}
-                        </h3>
-                        <p className="md:text-xs text-[10px]">
-                          Cantidad: {claim.quantity}
-                        </p>
-                        <p className="md:text-xs text-[10px]">
-                          por: {claim.store_name}
-                        </p>
-                      </div>
-                    </td>
-                    <td className=" py-2">
-                      {handlerformatDate(claim.created_at)}
-                    </td>
-
-                    <td className=" p4-2">
-                      <div className="relative top-0 right-8">
-                        {notifications.map((n) => {
-                          if (
-                            n.notification_type_id ===
-                              "NOTI_CLAIM_CUSTOMER_ID" &&
-                            n.order_claim_id === claim.id
-                          ) {
-                            return <Notification />
-                          }
-                        })}
-                      </div>
-                      <ChatIcon
-                        className="cursor-pointer hover:scale-110 transition-all"
-                        onClick={() => {
-                          handlerSelectClaimOrder(claim)
-                        }}
-                      />{" "}
-                    </td>
-                  </tr>
-                ))
-              ) : (
-                <div className="p-6">
-                  <Loader />
+    <>
+      <div className="w-full">
+        <div className="flex flex-col gap-y-8 w-full">
+          <div className="flex justify-between gap-4 w-full">
+            <div className="">
+              <div className="flex items-center gap-2">
+                <Input
+                  placeholder="Buscar orden"
+                  value={localSearchTerm}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setLocalSearchTerm(e.target.value)}
+                  onKeyPress={(e: React.KeyboardEvent<HTMLInputElement>) => {
+                    if (e.key === 'Enter') {
+                      setClaimSearchTerm(localSearchTerm)
+                      handleSearch()
+                    }
+                  }}
+                  className="flex-1"
+                />
+                <Button
+                  onClick={() => {
+                    setClaimSearchTerm(localSearchTerm)
+                    handleSearch()
+                  }}
+                  className="bg-lila-gf hover:bg-lila-gf/80 text-white rounded-[5px]"
+                >
+                  Buscar
+                </Button>
+              </div>
+              {filteredOrderClaims && (
+                <div className="flex items-center justify-between text-sm text-gray-600 mt-2">
+                  <span>
+                    Mostrando {paginatedClaims?.length || 0} de {totalClaimCount} reclamos
+                  </span>
+                  <span>
+                    Página {currentClaimPage} de {totalClaimPages}
+                  </span>
                 </div>
               )}
-            </tbody>
-          </table>
-          {!isLoadingClaim && !filteredOrderClaims?.length && (
-            <div className="p-10 flex w-full text-center items-center justify-center text-lg">
-              <XMarkMini /> {searchQuery ? 'No se encontraron resultados' : 'Sin reclamaciones'}
             </div>
-          )}
-        </div>
 
-        {/* Controles de paginación */}
-        {filteredOrderClaims && filteredOrderClaims.length > 0 && (
-          <div className="flex flex-col md:flex-row justify-between items-center p-4 mt-6 gap-4">
-            <div className="flex items-center gap-4">
-              <p className="md:text-sm text-xs whitespace-nowrap">{`${filteredOrderClaims.length} reclamos`}</p>
-              <Select onValueChange={(value) => {
-                const newRowsPerPage = parseInt(value)
-                setRowsPerPage(newRowsPerPage)
-                setPage(1)
-              }}>
-                <Select.Trigger className="bg-white text-gray-600">
-                  <Select.Value placeholder={rowsPerPage.toString()} />
-                </Select.Trigger>
-                <Select.Content>
+            <div className="flex items-end gap-2 max-w-md">
+              <div className="flex items-center gap-2">
+                <label className="font-semibold text-gray-700 text-sm">
+                  Estado:
+                </label>
+                <select
+                  id="status-filter"
+                  className="p-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-lila-gf focus:outline-none text-sm bg-white"
+                  value={filterStatus}
+                  onChange={(e) => {
+                    setFilterStatus(
+                      e.target.value as
+                        | "CERRADA"
+                        | "ABIERTA"
+                        | "RESUELTA"
+                        | "SIN RESOLVER"
+                        | "all"
+                    )
+                  }}
+                >
+                  <option value="all">Todos</option>
+                  <option value="CERRADA">Cerrada</option>
+                  <option value="ABIERTA">Abierta</option>
+                  <option value="RESUELTA">Resuelta</option>
+                  <option value="SIN RESOLVER">Escalada al administrador</option>
+                </select>
+              </div>
+              <div className="flex items-center justify-end gap-2">
+                <label className="font-semibold text-gray-700 text-sm">
+                  Por página:
+                </label>
+                <select
+                  className="p-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-lila-gf focus:outline-none text-sm bg-white"
+                  value={rowsPerPage}
+                  onChange={(e) => {
+                    const newRowsPerPage = parseInt(e.target.value)
+                    setRowsPerPage(newRowsPerPage)
+                    loadClaimsPage(1, newRowsPerPage, claimSearchTerm)
+                  }}
+                >
                   {dataSelecterPage.map((item) => (
-                    <Select.Item key={item} value={item.toString()}>
+                    <option key={item} value={item}>
                       {item}
-                    </Select.Item>
+                    </option>
                   ))}
-                </Select.Content>
-              </Select>
-            </div>
-            <div className="flex items-center gap-4 md:text-base text-sm">
-              <span>
-                {page} de {pageTotal}
-              </span>
-              <div className="flex gap-2">
-                <IconButton
-                  disabled={page === 1}
-                  onClick={() => setPage(p => Math.max(1, p - 1))}
-                  variant="transparent"
-                  className="disabled:opacity-50"
-                >
-                  <ArrowLongLeft />
-                </IconButton>
-                <IconButton
-                  disabled={page === pageTotal}
-                  onClick={() => setPage(p => Math.min(pageTotal, p + 1))}
-                  variant="transparent"
-                  className="disabled:opacity-50"
-                >
-                  <ArrowLongRight />
-                </IconButton>
+                </select>
               </div>
             </div>
           </div>
-        )}
+          <div className="overflow-x-auto">
+            <table className="min-w-full bg-white rounded-lg shadow-md md:text-base text-sm">
+              <thead>
+                <tr>
+                  <th className="py-2 text-left">
+                    Estado
+                  </th>
+                  <th className="py-2 text-left">
+                    Número de orden
+                  </th>
+                  <th className="py-2 text-left">
+                    Detalles del producto
+                  </th>
+                  <th className="py-2 text-left">
+                    Fecha y hora
+                  </th>
+                  <th className="py-2 text-center">
+                    Chat
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {!isLoadingClaim ? (
+                  paginatedClaims?.map((claim) => (
+                    <tr key={claim.id} className="hover:bg-gray-50">
+                      <td className="px-4 py-2">
+                        <span
+                          className={`px-3 py-1 rounded-lg ${
+                            claim.status_order_claim_id === "OPEN_ID" 
+                              ? "bg-blue-500 text-white" 
+                              : claim.status_order_claim_id === "CANCEL_ID" 
+                              ? "bg-green-500 text-white" 
+                              : claim.status_order_claim_id === "UNSOLVED_ID" 
+                              ? "bg-orange-500 text-white" 
+                              : "bg-green-500 text-white"
+                          }`}
+                        >
+                          {claim.status_order_claim_id === "OPEN_ID" 
+                            ? "Abierta" 
+                            : claim.status_order_claim_id === "CANCEL_ID" 
+                            ? "Cerrada" 
+                            : claim.status_order_claim_id === "UNSOLVED_ID" 
+                            ? "Escalada" 
+                            : "Resuelta"}
+                        </span>
+                      </td>
+                      <td className="px-4 py-2">
+                        {claim.number_order}
+                      </td>
+                      <td className="px-4 py-2">
+                        <div>
+                          <h3 className="font-semibold">
+                            {claim.product_name}
+                          </h3>
+                          <p className="text-sm">
+                            Cantidad: {claim.quantity}
+                          </p>
+                          <p className="text-sm">
+                            por: {claim.store_name}
+                          </p>
+                        </div>
+                      </td>
+                      <td className="px-4 py-2">
+                        {handlerformatDate(claim.created_at)}
+                      </td>
+                      <td className="px-4 py-2 text-center">
+                        <div className="relative inline-block">
+                          {notifications.some(n => 
+                            n.notification_type_id === "NOTI_CLAIM_CUSTOMER_ID" && 
+                            n.order_claim_id === claim.id
+                          ) && <Notification />}
+                          <ChatIcon
+                            className="cursor-pointer hover:scale-110 transition-all"
+                            onClick={() => handlerSelectClaimOrder(claim)}
+                          />
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan={5} className="p-6 text-center">
+                      <Loader />
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+            {!isLoadingClaim && !filteredOrderClaims?.length && (
+              <div className="p-10 flex w-full text-center items-center justify-center text-lg">
+                <XMarkMini /> {claimSearchTerm ? 'No se encontraron resultados' : 'Sin reclamaciones'}
+              </div>
+            )}
+          </div>
+
+          {totalClaimPages > 1 && (
+            <div className="flex items-center justify-center gap-2 mt-6">
+              <Button
+                onClick={() => handlePageChange(Math.max(1, currentClaimPage - 1))}
+                disabled={currentClaimPage === 1 || isLoadingClaim}
+                size="sm"
+                variant="bordered"
+              >
+                Anterior
+              </Button>
+              
+              <div className="flex items-center gap-1">
+                {Array.from({ length: Math.min(5, totalClaimPages) }, (_, i) => {
+                  const pageNumber = Math.max(1, currentClaimPage - 2) + i
+                  if (pageNumber > totalClaimPages) return null
+                  
+                  return (
+                    <Button
+                      key={pageNumber}
+                      onClick={() => handlePageChange(pageNumber)}
+                      disabled={isLoadingClaim}
+                      size="sm"
+                      variant={pageNumber === currentClaimPage ? "solid" : "bordered"}
+                      className={pageNumber === currentClaimPage ? "bg-lila-gf text-white" : ""}
+                    >
+                      {pageNumber}
+                    </Button>
+                  )
+                })}
+              </div>
+              
+              <Button
+                onClick={() => handlePageChange(Math.min(totalClaimPages, currentClaimPage + 1))}
+                disabled={currentClaimPage === totalClaimPages || isLoadingClaim}
+                size="sm"
+                variant="bordered"
+              >
+                Siguiente
+              </Button>
+            </div>
+          )}
+        </div>
       </div>
+      
       <ModalClaimComment
         comments={comments}
         setComments={setComments}
@@ -300,26 +370,8 @@ const ClaimTable: React.FC = () => {
         onOpenChange={onOpenChange}
         claim={selectOrderClaim}
       />
-    </div>
+    </>
   )
-}
-type ClaimComments = {
-  id?: string
-  comment: string
-  comment_owner_id: string
-  order_claim_id?: string
-  customer_id?: string
-  created_at?: string
-  image?: string
-}
-
-interface ModalClaimComment {
-  comments?: ClaimComments[]
-  setComments: React.Dispatch<React.SetStateAction<ClaimComments[] | undefined>>
-  isOpen: boolean
-  onOpenChange: () => void
-  handleReset: () => void
-  claim?: orderClaim
 }
 
 const ModalClaimComment = ({
@@ -329,8 +381,8 @@ const ModalClaimComment = ({
   onOpenChange,
   handleReset,
   claim,
-}: ModalClaimComment) => {
-  const [newComment, setNewComment] = useState<string>()
+}: ModalClaimCommentProps) => {
+  const [newComment, setNewComment] = useState<string>('')
   const [socket, setSocket] = useState<Socket | null>(null)
   const [image, setImage] = useState<File | undefined>()
   const [isLoadingStatus, setIsLoadingStatus] = useState<{
@@ -341,6 +393,7 @@ const ModalClaimComment = ({
   const { customer } = useMeCustomer()
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
+
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
   }
@@ -348,19 +401,21 @@ const ModalClaimComment = ({
   useEffect(() => {
     scrollToBottom()
   }, [comments])
+
   const handlerSubmitComment = () => {
+    if (!newComment?.trim() && !image) return
+    
     const dataComment = {
       comment: newComment,
-      order_claim_id: comments?.[0].order_claim_id,
+      order_claim_id: comments?.[0]?.order_claim_id,
       customer_id: customer?.id,
       comment_owner_id: "COMMENT_CUSTOMER_ID",
     }
 
-    postAddComment(dataComment, image).then((e) => {
+    postAddComment(dataComment, image).then(() => {
       setImage(undefined)
       setNewComment("")
       setComments((old) => {
-     
         return old?.length
           ? [
               ...old,
@@ -397,7 +452,8 @@ const ModalClaimComment = ({
       }
       return selectStatus
     })
-    updateStatusClaim(comments?.[0].order_claim_id || " ", status).then(() => {
+    
+    updateStatusClaim(comments?.[0]?.order_claim_id || "", status).then(() => {
       handleReset()
       onOpenChange()
     })
@@ -405,6 +461,7 @@ const ModalClaimComment = ({
 
   useEffect(() => {
     setImage(undefined)
+    setNewComment('')
     setIsLoadingStatus({ solved: false, cancel: false, unsolved: false })
   }, [isOpen])
 
@@ -412,10 +469,11 @@ const ModalClaimComment = ({
     const socketIo = io(process.env.PORT_SOKET || "http://localhost:3001")
 
     socketIo.on("new_comment", (data: { order_claim_id: string }) => {
-      if (data.order_claim_id === claim?.id)
+      if (data.order_claim_id === claim?.id) {
         getListClaimComments(claim?.id).then((e) => {
           setComments(e)
         })
+      }
     })
 
     setSocket(socketIo)
@@ -446,7 +504,7 @@ const ModalClaimComment = ({
       className="rounded-2xl overflow-hidden shadow-lg"
     >
       <ModalContent className="rounded-2xl">
-        {(onClose) => (
+        {(onClose: () => void) => (
           <>
             <ModalHeader className="flex flex-col gap-1 border-b border-slate-200 bg-gray-50 py-3 px-4 rounded-t-2xl">
               <h2 className="text-center text-lg font-semibold">
@@ -544,13 +602,7 @@ const ModalClaimComment = ({
                       />
                     </div>
 
-                    {/* <div className=" px-6 text-[10px] text-gray-600">
-                      *Estimado cliente, le informamos que dispone de varias
-                      opciones para gestionar su reclamación. Le invitamos a
-                      elegir la alternativa que mejor se ajuste a sus
-                      necesidades.*
-                    </div> */}
-                    <div className=" px-6 text-[10px] text-gray-600">
+                    <div className="px-6 text-[10px] text-gray-600">
                       <p>
                         <span className="font-extrabold">
                           ⚠️ Aviso Importante:

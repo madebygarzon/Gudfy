@@ -20,7 +20,7 @@ const Banner = () => {
             Tu Marketplace de productos digitales.
           </p>
           <div className="flex items-center gap-4">
-            <Link href={"/store"}>
+            <Link href={"/tienda"}>
               <Button
                 href="/"
                 className="w-[181.5px] bg-[#9B48ED] rounded-[5px] tracking-tight text-[18px] font-bold px-2 "

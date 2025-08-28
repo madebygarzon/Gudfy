@@ -82,6 +82,7 @@ class StoreProductVariantService extends TransactionBaseService {
         .innerJoin("pv.store_x_variant", "sxv")
         .innerJoinAndSelect("pv.product", "p")
         .innerJoinAndSelect("p.product_comission", "pc")
+        .innerJoinAndSelect("p.categories", "ca")
         .where("COALESCE(sxv.quantity_store, 0) > 0")
         .andWhere("p.status = 'published'")
         .select([
@@ -92,6 +93,8 @@ class StoreProductVariantService extends TransactionBaseService {
           "p.thumbnail AS thumbnail",
           "p.description AS description",
           "pc.percentage AS commission",
+          "ca.id AS category_id",
+          "ca.name AS category_name",
         ])
         .getRawMany();
 
@@ -102,15 +105,19 @@ class StoreProductVariantService extends TransactionBaseService {
           variantMap.set(variant.id, {
             ...variant,
             prices: [formatPrice(variant.price * (1 + Number(variant.commission)))],
+            categories: [{id: variant.category_id, name: variant.category_name}]
           });
-        } else variantMap.get(variant.id).prices.push(formatPrice(variant.price * (1 + Number(variant.commission))));
+        } else {
+          variantMap.get(variant.id).prices.push(formatPrice(variant.price * (1 + Number(variant.commission))))
+          variantMap.get(variant.id).categories.push({id: variant.category_id, name: variant.category_name})
+        }
       });
 
       const listVariant = Array.from(variantMap.values()).map((variant) => {
         return {
           ...variant,
           prices: variant.prices.sort((a, b) => a - b),
-        };
+                };
       });
 
       return listVariant;

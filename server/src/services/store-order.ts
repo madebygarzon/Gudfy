@@ -126,10 +126,83 @@ class StoreOrderService extends TransactionBaseService {
     }
   }
 
-  async listCustomerOrders(customerId) {
+  async listCustomerOrders(customerId, options: {
+    page?: number;
+    limit?: number;
+    status?: string;
+    search?: string;
+  } = {}) {
+    const { page = 1, limit = 10, status = null, search = null } = options;
+    const skip = (page - 1) * limit;
+
     const repoStoreOrder = this.activeManager_.withRepository(
       this.storeOrderRepository_
     );
+    
+    let orderIdsQueryBuilder = repoStoreOrder
+      .createQueryBuilder("so")
+      .innerJoin("so.order_status", "sso")
+      .leftJoin("so.storeVariantOrder", "svo")
+      .leftJoin("svo.store_variant", "sxv")
+      .innerJoin("sxv.variant", "pv")
+      .where("so.customer_id = :customer_id", { customer_id: customerId });
+
+    if (status && status !== "all") {
+      orderIdsQueryBuilder = orderIdsQueryBuilder.andWhere("sso.state = :status", { status });
+    }
+
+    if (search && search.trim()) {
+      orderIdsQueryBuilder = orderIdsQueryBuilder.andWhere(
+        "(so.id ILIKE :search OR pv.title ILIKE :search)",
+        { search: `%${search.trim()}%` }
+      );
+    }
+
+    const totalCountResult = await orderIdsQueryBuilder
+      .select("COUNT(DISTINCT so.id)", "count")
+      .getRawOne();
+    const totalCount = parseInt(totalCountResult.count);
+
+    const subQuery = repoStoreOrder
+      .createQueryBuilder("sub_so")
+      .innerJoin("sub_so.order_status", "sub_sso")
+      .leftJoin("sub_so.storeVariantOrder", "sub_svo")
+      .leftJoin("sub_svo.store_variant", "sub_sxv")
+      .innerJoin("sub_sxv.variant", "sub_pv")
+      .where("sub_so.customer_id = :customer_id", { customer_id: customerId });
+
+    if (status && status !== "all") {
+      subQuery.andWhere("sub_sso.state = :status", { status });
+    }
+    if (search && search.trim()) {
+      subQuery.andWhere(
+        "(sub_so.id ILIKE :search OR sub_pv.title ILIKE :search)",
+        { search: `%${search.trim()}%` }
+      );
+    }
+
+    const orderIds = await subQuery
+      .select("sub_so.id", "id")
+      .addSelect("sub_so.created_at", "created_at")
+      .groupBy("sub_so.id")
+      .addGroupBy("sub_so.created_at")
+      .orderBy("sub_so.created_at", "DESC")
+      .limit(limit)
+      .offset(skip)
+      .getRawMany();
+
+    if (orderIds.length === 0) {
+      return {
+        data: [],
+        totalCount,
+        page,
+        limit,
+        totalPages: Math.ceil(totalCount / limit)
+      };
+    }
+
+    const orderIdsList = orderIds.map(order => order.id);
+
     const listOrder = await repoStoreOrder
       .createQueryBuilder("so")
       .innerJoinAndSelect("so.order_status", "sso")
@@ -139,11 +212,11 @@ class StoreOrderService extends TransactionBaseService {
       .innerJoinAndSelect("pv.product", "p")
       .innerJoinAndSelect("p.product_comission", "pc")
       .leftJoinAndSelect("sxv.store", "s")
-      .where("so.customer_id = :customer_id ", { customer_id: customerId })
+      .where("so.id IN (:...orderIds)", { orderIds: orderIdsList })
       .select([
         "so.id AS id",
-        "so.pay_method_id AS pay_method_id ",
-        "so.quantity_products AS quantity_products ",
+        "so.pay_method_id AS pay_method_id",
+        "so.quantity_products AS quantity_products",
         "so.total_price AS total_price",
         "so.name AS person_name",
         "so.last_name AS person_last_name",
@@ -165,8 +238,35 @@ class StoreOrderService extends TransactionBaseService {
         "s.id AS store_id",
         "svo.commission_order AS commission",
       ])
+      .orderBy("so.created_at", "DESC")
       .getRawMany();
 
+    const eligibleStatuses = ["Completed_ID", "Finished_ID", "Discussion_ID"];
+    const storeVariantOrderIds = listOrder
+      .filter(order => eligibleStatuses.includes(order.status_id))
+      .map(order => order.store_variant_order_id);
+
+    let serialCodesMap = new Map();
+    if (storeVariantOrderIds.length > 0) {
+      const repoSerialCode = this.activeManager_.withRepository(
+        this.serialCodeRepository_
+      );
+      const serialCodes = await repoSerialCode.find({
+        where: {
+          store_variant_order_id: In(storeVariantOrderIds)
+        }
+      });
+
+      serialCodes.forEach(code => {
+        if (!serialCodesMap.has(code.store_variant_order_id)) {
+          serialCodesMap.set(code.store_variant_order_id, []);
+        }
+        serialCodesMap.get(code.store_variant_order_id).push({
+          id: code.id,
+          serial: code.serial
+        });
+      });
+    }
 
     const orderMap = new Map();
 
@@ -194,22 +294,21 @@ class StoreOrderService extends TransactionBaseService {
         produc_title,
         price: price,
         quantity,
-        total_price_for_product: formatPrice(Number(total_price_for_product) ),
+        total_price_for_product: formatPrice(Number(total_price_for_product)),
         variant_order_status_id,
-        serial_code_products:
-          order.status_id === "Completed_ID" ||
-          order.status_id === "Finished_ID" ||
-          order.status_id === "Discussion_ID"
-            ? await this.functionRecoverCodes(store_variant_order_id)
-            : [],
+        serial_code_products: serialCodesMap.get(store_variant_order_id) || [],
       });
     }
+
     const returnArray = Array.from(orderMap.values());
-    returnArray.sort(
-      (a, b) =>
-        new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-    );
-    return returnArray;
+    
+    return {
+      data: returnArray,
+      totalCount,
+      page,
+      limit,
+      totalPages: Math.ceil(totalCount / limit)
+    };
   }
 
   async functionRecoverCodes(store_variant_order_id) {
@@ -225,10 +324,77 @@ class StoreOrderService extends TransactionBaseService {
     return serialCodesForProduct;
   }
 
-  async listSellerOrders(storeId) {
+  async listSellerOrders(storeId, options: { page?: number; limit?: number; status?: string; search?: string } = {}) {
+    const { page = 1, limit = 50, status, search } = options;
+    const skip = (page - 1) * limit;
+
     const repoStoreOrder = this.activeManager_.withRepository(
       this.storeOrderRepository_
     );
+    
+    let orderIdsQueryBuilder = repoStoreOrder
+      .createQueryBuilder("so")
+      .innerJoin("so.order_status", "sso")
+      .leftJoin("so.storeVariantOrder", "svo")
+      .leftJoin("svo.store_variant", "sxv")
+      .innerJoin("sxv.variant", "pv")
+      .where("sxv.store_id = :store_id", { store_id: storeId });
+
+    if (status && status !== "all") {
+      orderIdsQueryBuilder = orderIdsQueryBuilder.andWhere("sso.state = :status", { status });
+    }
+
+    if (search && search.trim()) {
+      orderIdsQueryBuilder = orderIdsQueryBuilder.andWhere(
+        "(so.id ILIKE :search OR CONCAT(so.name, ' ', so.last_name) ILIKE :search OR pv.title ILIKE :search)",
+        { search: `%${search.trim()}%` }
+      );
+    }
+
+    const totalCountResult = await orderIdsQueryBuilder
+      .select("COUNT(DISTINCT so.id)", "count")
+      .getRawOne();
+    const totalCount = parseInt(totalCountResult.count);
+    const subQuery = repoStoreOrder
+      .createQueryBuilder("sub_so")
+      .innerJoin("sub_so.order_status", "sub_sso")
+      .leftJoin("sub_so.storeVariantOrder", "sub_svo")
+      .leftJoin("sub_svo.store_variant", "sub_sxv")
+      .innerJoin("sub_sxv.variant", "sub_pv")
+      .where("sub_sxv.store_id = :store_id", { store_id: storeId });
+
+    if (status && status !== "all") {
+      subQuery.andWhere("sub_sso.state = :status", { status });
+    }
+    if (search && search.trim()) {
+      subQuery.andWhere(
+        "(sub_so.id ILIKE :search OR CONCAT(sub_so.name, ' ', sub_so.last_name) ILIKE :search OR sub_pv.title ILIKE :search)",
+        { search: `%${search.trim()}%` }
+      );
+    }
+
+    const orderIds = await subQuery
+      .select("sub_so.id", "id")
+      .addSelect("sub_so.created_at", "created_at")
+      .groupBy("sub_so.id")
+      .addGroupBy("sub_so.created_at")
+      .orderBy("sub_so.created_at", "DESC")
+      .limit(limit)
+      .offset(skip)
+      .getRawMany();
+
+    if (orderIds.length === 0) {
+      return {
+        data: [],
+        totalCount,
+        page,
+        limit,
+        totalPages: Math.ceil(totalCount / limit)
+      };
+    }
+
+    const orderIdsList = orderIds.map(order => order.id);
+
     const listOrder = await repoStoreOrder
       .createQueryBuilder("so")
       .innerJoinAndSelect("so.order_status", "sso")
@@ -238,7 +404,8 @@ class StoreOrderService extends TransactionBaseService {
       .innerJoinAndSelect("sxv.variant", "pv")
       .innerJoinAndSelect("pv.product", "p")
       .innerJoinAndSelect("p.product_comission", "pc")
-      .where("sxv.store_id = :store_id", { store_id: storeId })
+      .where("so.id IN (:...orderIds)", { orderIds: orderIdsList })
+      .andWhere("sxv.store_id = :store_id", { store_id: storeId })
       .select([
         "so.id AS id",
         "so.name AS person_name",
@@ -328,7 +495,13 @@ class StoreOrderService extends TransactionBaseService {
 
     const returnArray = Array.from(OrderMap.values());
 
-    return returnArray;
+    return {
+      data: returnArray,
+      totalCount,
+      page,
+      limit,
+      totalPages: Math.ceil(totalCount / limit)
+    };
   }
 
   async listSellerPayOrders() {
@@ -461,7 +634,7 @@ class StoreOrderService extends TransactionBaseService {
       });
       return true;
     } catch (error) {
-      console.log("error al actualizar la orden", error);
+      console.error("error al actualizar la orden", error);
     }
   }
 
@@ -490,7 +663,7 @@ class StoreOrderService extends TransactionBaseService {
 
       return cancelOrder;
     } catch (error) {
-      console.log("Error al cambiar la orden de estado a discuccion", error);
+      console.error("Error al cambiar la orden de estado a discuccion", error);
     }
   }
 
@@ -672,7 +845,7 @@ class StoreOrderService extends TransactionBaseService {
         return { order: null, dartaPay: null };
       }
     } catch (error) {
-      console.log("error al buscar la orden de coinpal", error);
+      console.error("error al buscar la orden de coinpal", error);
     }
   }
 
@@ -720,7 +893,7 @@ class StoreOrderService extends TransactionBaseService {
       });
       return true;
     } catch (error) {
-      console.log("error al actualizar la orden", error);
+      console.error("error al actualizar la orden", error);
     }
     
   }
