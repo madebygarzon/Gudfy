@@ -19,7 +19,7 @@ const Dashboard = ({ orders, customer }: DashboardProps) => {
 
   return (
     <div>
-  {/* <div className="flex items-center justify-center w-[50%]">
+  <div className="flex items-center justify-center w-[50%]">
       <Alert
         color="secondary"
         description="¿Eras usuario de nuestra antigua plataforma?"
@@ -33,7 +33,7 @@ const Dashboard = ({ orders, customer }: DashboardProps) => {
        
         variant="faded"
       />
-    </div> */}
+    </div>
     <div className="w-full mt-8 flex items-center justify-center">
       
       <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-4">
