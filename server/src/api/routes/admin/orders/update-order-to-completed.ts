@@ -5,6 +5,7 @@ export default async function UpdateOrderToCompleted(
   res: Response
 ) {
   try {
+    
     const { order_id } = req.body;
     const storeOrderAdminService = req.scope.resolve("storeOrderAdminService");
     const data = await storeOrderAdminService.UpdateOrderToComplete(
