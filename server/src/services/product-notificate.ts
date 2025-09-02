@@ -104,7 +104,7 @@ export default class ProductNotificateService extends TransactionBaseService {
     );
   
     const notioficate = await repo.findOne({ where: { store_x_variant_id } });
-    if (!notioficate.activate || notioficate.stock_notificate > quantity) {
+    if (!notioficate && !notioficate.activate || notioficate.stock_notificate > quantity) {
       return;
     }
     if (notioficate.stock_notificate < quantity) {
