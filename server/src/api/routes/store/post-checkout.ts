@@ -12,6 +12,7 @@ export default async (req: Request, res: Response): Promise<void> => {
   const cartMarketService = req.scope.resolve("cartMarketService");
   const cartItems = await cartMarketService.recoveryCart(cartId);
   var result = null;
+  console.log("cartItems", cartItems, payment_method, order_id);
   try {
     switch (payment_method) {
       case "automatic_binance_pay":
@@ -137,8 +138,9 @@ const autoCoinPalPay = async (cartItems, order_id) => {
 
 
   try {
+    console.log("lo que se envia a coinpal", paymentInfo);
     const result = await coinpal.createPayment(paymentInfo);
-
+    console.log("lo que recibe coinpal", result);
     if (result && result.nextStepContent) {
       return {
         nextStepContent: result.nextStepContent,
