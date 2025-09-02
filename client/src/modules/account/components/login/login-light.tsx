@@ -122,7 +122,7 @@ const LoginLight = () => {
           </div>
         )}
         <div className="mx-max felx justify-center">
-          <Button className=" mt-6 rounded-[5px]">Accerder</Button>
+          <Button className=" mt-6 rounded-[5px]">Acceder</Button>
         </div>
       </form>
     </div>
