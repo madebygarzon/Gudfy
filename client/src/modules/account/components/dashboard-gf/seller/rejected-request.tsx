@@ -31,7 +31,7 @@ const RejectedApplication: React.FC<props> = ({ comment }) => {
         </h1>
         <Alert
           variant="error"
-          className=" text-center text-[18px] font-light max-w-[700px]"
+          className=" text-center text-[18px] font-light max-w-[700px] bg-white"
         >
           {comment.charAt(0).toUpperCase() + comment.slice(1)}
         </Alert>

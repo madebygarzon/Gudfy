@@ -1,6 +1,6 @@
 import { Customer } from "@medusajs/medusa"
 import Link from "next/link"
-import { Avatar } from "@heroui/react"
+import { Avatar, Alert, Button } from "@heroui/react"
 import ButtonLigth from "@modules/common/components/button_light"
 import Cart from "@modules/common/icons/cart"
 import Image from "next/image"
@@ -18,12 +18,31 @@ const Dashboard = ({ orders, customer }: DashboardProps) => {
   const { notifications } = useNotificationContext()
 
   return (
-
+    <div>
+  <div className="flex items-center justify-center w-[50%]">
+      <Alert
+        color="secondary"
+        description="¿Eras usuario de nuestra antigua plataforma?"
+        endContent={
+          <Link href="https://gudfy.com/mi-cuenta" target="_blank">
+          <Button color="secondary" size="sm" variant="flat">
+            Conoce tu histórico aquí
+          </Button>
+          </Link>
+        }
+       
+        variant="faded"
+      />
+    </div>
     <div className="w-full mt-8 flex items-center justify-center">
+      
       <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* Perfil */}
+        
         <DashboardCard id="sct_per">
+
           <div className="h-auto w-full flex flex-col items-center justify-center overflow-hidden">
+          
             <div className="flex flex-col items-center">
               <span className="text-xs text-center">
                 Perfil {`${getProfileCompletion(customer)}%`} completado
@@ -101,6 +120,7 @@ const Dashboard = ({ orders, customer }: DashboardProps) => {
           />
         </DashboardCard>
       </div>
+    </div>
     </div>
   )
 }
