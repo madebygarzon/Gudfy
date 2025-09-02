@@ -24,7 +24,7 @@ const Dashboard = ({ orders, customer }: DashboardProps) => {
         color="secondary"
         description="¿Eras usuario de nuestra antigua plataforma?"
         endContent={
-          <Link href="https://oldgudfy.online/mi-cuenta/" target="_blank">
+          <Link href="https://gudfy.com/mi-cuenta" target="_blank">
           <Button color="secondary" size="sm" variant="flat">
             Conoce tu histórico aquí
           </Button>

@@ -298,24 +298,32 @@ export const OrderGudfyProvider = ({
   const handlersubmitPaymentMethod = (dataForm: dataFormPayment): void => {
     const { checkbox, cart, order_id } = dataForm
     
-    fetch(
-      `${process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL}/store/order/payment-method`,
-      {
-        method: "POST",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
+    setIsLoadingCurrentOrder(true)
+    axios
+      .post(
+        `${process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL}/store/carts/${cart?.id}/checkout`,
+        {
+          payment_method: checkbox,
+          order_id: order_id,
         },
-        body: JSON.stringify({ checkbox, cart, order_id }),
-      }
-    )
-    .then(res => res.json())
-    .then(data => {
-      return data
-    })
-    .catch(error => {
-      console.error("Error submitting payment method:", error)
-    })
+        {
+          withCredentials: true,
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      )
+      .then((res) => {
+        const result = res.data.result
+
+        setDataPay((old) => ({ ...old, dataPay: result }))
+        setIsLoadingCurrentOrder(false)
+        // location.href = result.data.checkoutUrl //redirect user to pay link
+      })
+      .catch((e) => {
+        setIsLoadingCurrentOrder(false)
+        console.error("Error submitting payment method:", e)
+      })
   }
 
   const handlerUpdateDataLastOrder = async (

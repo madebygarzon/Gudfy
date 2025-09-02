@@ -2,6 +2,7 @@ import { StoreGetProductsParams } from "@medusajs/medusa"
 import { useCollections } from "medusa-react"
 import { ChangeEvent, useState, useContext, useEffect } from "react"
 import { categoryContext, CategoryNode } from "@lib/context/category-context"
+import { FiChevronDown, FiChevronUp, FiFilter } from "react-icons/fi"
 
 type RefinementListProps = {
   refinementList: StoreGetProductsParams & {
@@ -34,6 +35,8 @@ const RefinementList = ({
   const [localCollections, setLocalCollections] = useState<string[]>(
     refinementList.collection_id as string[] || []
   )
+  
+  const [isMobileOpen, setIsMobileOpen] = useState(false)
 
   const handleCollectionChange = (e: ChangeEvent<HTMLInputElement>, id: string) => {
     const { checked } = e.target
@@ -132,12 +135,28 @@ const RefinementList = ({
     }))
   }
 
+  const toggleMobileMenu = () => {
+    setIsMobileOpen(!isMobileOpen)
+  }
+
   return (
-    <div className="p-3 w-full">
-      <div className="content-filter border border-solid border-gray-200 p-4 rounded-md shadow-md">
+    <div className="w-full">
+      <button 
+        onClick={toggleMobileMenu}
+        className="flex items-center justify-between w-full p-3 text-left bg-white border border-gray-200 rounded-md shadow-sm md:hidden"
+      >
+        <span className="font-medium">Filtros</span>
+        {isMobileOpen ? <FiChevronUp /> : <FiChevronDown />}
+      </button>
+      
+      <div 
+        className={`content-filter md:mx-5 lg:mx-10  border border-solid border-gray-200 rounded-md shadow-md transition-all duration-300 overflow-hidden ${
+          isMobileOpen ? 'max-h-[2000px] mt-2 p-3' : 'max-h-0 md:max-h-[2000px]'
+        }`}
+      >
         <div className="flex flex-col gap-y-3">
-          <div>
-            <h3 className="text-base font-bold mb-1">Buscar</h3>
+          <div className="p-4 border-b border-gray-100">
+            <h3 className="text-base font-bold mb-2">Buscar</h3>
             <div className="flex gap-1">
               <input
                 type="text"
@@ -268,18 +287,18 @@ const RefinementList = ({
                 ))}
               </div>
             ) : (
-              <div className="flex justify-center py-2">
+                <div className="flex justify-center py-2">
                 <div className="w-5 h-5 border-2 border-lila-gf border-t-transparent rounded-full animate-spin"></div>
               </div>
             )}
           </div>
 
-          <div className="mt-4">
+          <div className="p-4">
             <button 
               onClick={handleClearAllFilters}
-              className="w-full bg-gray-200 text-gray-700 px-4 py-2 rounded text-sm hover:bg-gray-300"
+              className="w-full py-2 px-4 text-sm text-white bg-lila-gf hover:bg-lila-gf/90 rounded-md transition-colors"
             >
-              Limpiar filtros
+              Limpiar todos los filtros
             </button>
           </div>
         </div>

@@ -469,7 +469,7 @@ class StoreOrderAdminService extends TransactionBaseService {
         const storeVariant = await sv.findOneBy({
           id: variant.store_variant_id,
         });
-
+        
         if (!storeVariant || storeVariant.quantity_reserved < quantity) {
           const variantInfo = await sv
             .createQueryBuilder("sv")

@@ -65,6 +65,7 @@ const CheckoutForm = ({ orderId }: { orderId: string | undefined }) => {
     else setCompleteForm((com) => ({ ...com, payment: false }))
     handlerRecoverPaymentOrders(customer?.id || "", orderId || "")
   }, [customer])
+  
   const handlersubmit = async (dataForm?: orderDataForm) => {
     if (!dataForm) {
       return
