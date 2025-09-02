@@ -335,38 +335,39 @@ class OrderPaymentService extends TransactionBaseService {
       
 
       const ListSVO = await svo.find({ where: { store_order_id: order_id } });
-      for (const variant of ListSVO) {
-        const quantity = variant.quantity;
-        const storeVariant = await sv.findOneBy({
-          id: variant.store_variant_id,
-        });
+      
+      // for (const variant of ListSVO) {
+      //   const quantity = variant.quantity;
+      //   const storeVariant = await sv.findOneBy({
+      //     id: variant.store_variant_id,
+      //   });
 
-        if (!storeVariant || storeVariant.quantity_reserved < quantity) {
-          const variantInfo = await sv
-            .createQueryBuilder("sv")
-            .innerJoinAndSelect("sv.variant", "v")
-            .where("sv.id = :id", { id: variant.store_variant_id })
-            .select(["v.title AS title"])
-            .getRawOne();
+      //   if (!storeVariant || storeVariant.quantity_reserved < quantity) {
+      //     const variantInfo = await sv
+      //       .createQueryBuilder("sv")
+      //       .innerJoinAndSelect("sv.variant", "v")
+      //       .where("sv.id = :id", { id: variant.store_variant_id })
+      //       .select(["v.title AS title"])
+      //       .getRawOne();
 
-          const variantTitle = variantInfo
-            ? variantInfo.title
-            : "Unknown variant";
-          insufficientStockVariants.push({
-            title: variantTitle,
-            requested: quantity,
-            available: storeVariant ? storeVariant.quantity_reserved : 0,
-            variant_id: variant.store_variant_id,
-          });
-        }
-      }
-      if (insufficientStockVariants.length > 0) {
-        return {
-          success: false,
-          message: "No hay suficiente stock para algunas variaciones",
-          insufficientStockVariants,
-        };
-      }
+      //     const variantTitle = variantInfo
+      //       ? variantInfo.title
+      //       : "Unknown variant";
+      //     insufficientStockVariants.push({
+      //       title: variantTitle,
+      //       requested: quantity,
+      //       available: storeVariant ? storeVariant.quantity_reserved : 0,
+      //       variant_id: variant.store_variant_id,
+      //     });
+      //   }
+      // }
+      // if (insufficientStockVariants.length > 0) {
+      //   return {
+      //     success: false,
+      //     message: "No hay suficiente stock para algunas variaciones",
+      //     insufficientStockVariants,
+      //   };
+      // }
 
       for (const variant of ListSVO) {
         const quantity = variant.quantity;
