@@ -89,7 +89,7 @@ const ManualBinancePay: React.FC<{
 
       </div>)}
         <p className="mb-4">
-          Por favor use <strong>Binance Pay ID 202554183</strong> o escanee el
+          Por favor use <strong>Binance Pay ID 40794517</strong> o escanee el
           código QR con su aplicación de Binance. Se debe subir el comprobante
           de pago a continuación, todos los pagos serán comprobados
           manualmente.
