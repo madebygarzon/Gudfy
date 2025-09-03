@@ -284,7 +284,7 @@ const CheckoutSelectPayment: React.FC<CheckoutDetailsProps> = ({
           >
             <div className="font-normal px-12 text-sm pb-5">
               <p>
-                Por favor use Binance Pay ID 202554183 o escanee el código QR
+                Por favor use Binance Pay ID 40794517 o escanee el código QR
                 con su aplicación de Binance. Se debe subir el comprobante de
                 pago en la siguiente página, todos los pagos serán comprobados
                 manualmente.
