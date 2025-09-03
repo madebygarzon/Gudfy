@@ -3,16 +3,12 @@
 import { useEffect, useRef, useState, useCallback } from "react"
 import Link from "next/link"
 
-// NOTE: Bump this when you want to show the modal again to all users in a new session
-const MODAL_VERSION = "v1"
-const STORAGE_KEY = `welcome-modal-shown:${MODAL_VERSION}`
-
 const WelcomeModal = () => {
-  const [open, setOpen] = useState(false)
+  const [open, setOpen] = useState(true) // 🔥 Abierto por defecto siempre
   const firstBtnRef = useRef<HTMLAnchorElement | null>(null)
   const dialogRef = useRef<HTMLDivElement | null>(null)
 
-  // Handle body scroll lock
+  // Bloquear scroll del body mientras está abierto
   useEffect(() => {
     if (!open) return
     const original = document.body.style.overflow
@@ -22,33 +18,20 @@ const WelcomeModal = () => {
     }
   }, [open])
 
-  // Open once per session
-  useEffect(() => {
-    // Guard for client-side only
-    if (typeof window === "undefined") return
-    const shown = sessionStorage.getItem(STORAGE_KEY)
-    if (!shown) {
-      setOpen(true)
-      sessionStorage.setItem(STORAGE_KEY, "true")
-    }
-  }, [])
-
-  // Focus management once open
+  // Foco inicial
   useEffect(() => {
     if (open) {
-      // Focus first actionable element
       firstBtnRef.current?.focus()
     }
   }, [open])
 
-  // Close on Escape
+  // Cerrar con Escape + trap de tab
   const onKeyDown = useCallback((e: React.KeyboardEvent<HTMLDivElement>) => {
     if (e.key === "Escape") {
       e.stopPropagation()
       setOpen(false)
     }
 
-    // Simple focus trap for Tab navigation
     if (e.key === "Tab" && dialogRef.current) {
       const focusable = dialogRef.current.querySelectorAll<HTMLElement>(
         'a, button, [tabindex]:not([tabindex="-1"])'
@@ -59,13 +42,11 @@ const WelcomeModal = () => {
       const active = document.activeElement as HTMLElement | null
 
       if (e.shiftKey) {
-        // Shift+Tab on first -> jump to last
         if (active === first) {
           e.preventDefault()
           last.focus()
         }
       } else {
-        // Tab on last -> jump to first
         if (active === last) {
           e.preventDefault()
           first.focus()
@@ -82,7 +63,7 @@ const WelcomeModal = () => {
       aria-hidden={!open}
       onKeyDown={onKeyDown}
     >
-      {/* Click outside to close */}
+      {/* Click fuera para cerrar */}
       <button
         aria-hidden
         className="absolute inset-0 cursor-default"
@@ -98,7 +79,7 @@ const WelcomeModal = () => {
         ref={dialogRef}
         className="relative mx-4 w-full max-w-md rounded-[10px] bg-white p-6 shadow-2xl outline-none"
       >
-        {/* Close button */}
+        {/* Botón cerrar */}
         <button
           aria-label="Cerrar"
           className="absolute right-4 top-4 rounded-full p-1 text-2xl leading-none text-gray-500 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#9B48ED]"
