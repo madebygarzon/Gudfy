@@ -262,8 +262,8 @@ const CheckoutSelectPayment: React.FC<CheckoutDetailsProps> = ({
           </AccordionItem>
           <AccordionItem
             key="manual_binance_pay"
-            aria-label="Binance Pay Entrega Manual Pay ID 202554183"
-            title="Binance Pay Entrega Manual Pay ID 202554183"
+            aria-label="Binance Pay Entrega Manual Pay ID 40794517"
+            title="Binance Pay Entrega Manual Pay ID 40794517"
             className="font-medium"
             startContent={
               <Checkbox
@@ -291,7 +291,7 @@ const CheckoutSelectPayment: React.FC<CheckoutDetailsProps> = ({
                 <div className="m-5 flex justify-center">
                   <Image
                     src="/pay/BinancePayId.webp"
-                    alt="Binance Pay ID 202554183"
+                    alt="Binance Pay ID 40794517"
                     width={300}
                     height={300}
                   />
