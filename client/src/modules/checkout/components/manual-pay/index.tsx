@@ -98,7 +98,7 @@ const ManualBinancePay: React.FC<{
         <div className="my-6 flex justify-center">
           <Image
             src="/pay/BinancePayId.webp"
-            alt="Binance Pay ID 202554183"
+            alt="Binance Pay ID 40794517"
             width={250}
             height={250}
             className="border border-gray-200 rounded-md"
