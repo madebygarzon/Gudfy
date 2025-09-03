@@ -5,6 +5,7 @@ import Banner from "@modules/home/components/banner"
 import ProductsTypes from "@modules/home/components/product-types"
 import BannerSecondary from "@modules/home/components/banner_secondary"
 import FeaturedProductsSecond from "@modules/home/components/featured-products-second"
+import WelcomeModal from "@modules/home/components/welcome-modal"
 
 export const metadata: Metadata = {
   title: "Inicio",
@@ -15,6 +16,7 @@ export const metadata: Metadata = {
 const Home = () => {
   return (
     <div className="">
+      <WelcomeModal />
       <div>
         <Banner />
       </div>
