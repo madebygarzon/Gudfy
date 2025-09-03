@@ -19,7 +19,7 @@ import { Snippet } from "@heroui/react"
 import { XMark, ArrowLongRight, ArrowLongLeft, Trash } from "@medusajs/icons"
 import { IconButton } from "@medusajs/ui"
 import DeleteSerialCode from "@modules/account/actions/serial-code/delete-serial-code"
-import DeletetSerials from "./delete-product-serials"
+import DeleteSerials from "./delete-product-serials"
 
 type props = {
   productData: StoreProducVariant
@@ -72,6 +72,11 @@ export default function ViewProductSerials({
   const [filterStatus, setFilterStatus] = useState<
     "all" | "sold" | "available"
   >("all")
+
+  const refreshAfterDelete = () => {
+    setSelectedSerials([]);
+    setSerialDelete("");
+  };
 
   const totalPages = Math.ceil(filteredSerials.length / rowsPerPage)
 
@@ -395,12 +400,13 @@ export default function ViewProductSerials({
         </>
       </div>
 
-      <DeletetSerials
-        onCloseDelete={onCloseDelete}
-        serials={serialDelete}
-        handlergetListProductSerials={handlergetListProductSerials}
-        isOpen={isOpenDelete}
-        onOpenChange={onOpenChangeDelete}
+      <DeleteSerials
+       onCloseDelete={onCloseDelete}
+      serials={serialDelete}
+      handlergetListProductSerials={handlergetListProductSerials}
+      isOpen={isOpenDelete}
+      onOpenChange={onOpenChangeDelete}
+      onSuccess={refreshAfterDelete}
       />
     </>
   )
