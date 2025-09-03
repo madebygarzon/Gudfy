@@ -4,25 +4,21 @@ import { useEffect, useRef, useState, useCallback } from "react"
 import Link from "next/link"
 
 const WelcomeModal = () => {
-  // Start with modal closed on server to avoid hydration mismatch
   const [open, setOpen] = useState(false)
   const firstBtnRef = useRef<HTMLAnchorElement | null>(null)
   const dialogRef = useRef<HTMLDivElement | null>(null)
 
-  // Function to handle closing the modal and saving status
   const handleCloseModal = useCallback(() => {
     setOpen(false)
-    // Save to localStorage that user has seen the modal
+ 
     if (typeof window !== "undefined") {
       localStorage.setItem("welcomeStatus", "seen")
     }
   }, [])
 
-  // Check localStorage after component mounts (client-side only)
+  
   useEffect(() => {
-    // Check if modal has been seen before
     const hasSeenModal = localStorage.getItem("welcomeStatus") === "seen"
-    // Only open if not seen before
     if (!hasSeenModal) {
       setOpen(true)
     }
