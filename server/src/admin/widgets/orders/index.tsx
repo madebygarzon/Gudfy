@@ -89,7 +89,7 @@ const dataSelecFilter = [
     label: "En discusión",
   },
   {
-    value: "Pending_ID",
+    value: "Payment_Pending_ID",
     label: "Pendiente de pago",
   },
 ];
