@@ -4,9 +4,25 @@ import { useEffect, useRef, useState, useCallback } from "react"
 import Link from "next/link"
 
 const WelcomeModal = () => {
-  const [open, setOpen] = useState(true) // 🔥 Abierto por defecto siempre
+  const [open, setOpen] = useState(false)
   const firstBtnRef = useRef<HTMLAnchorElement | null>(null)
   const dialogRef = useRef<HTMLDivElement | null>(null)
+
+  const handleCloseModal = useCallback(() => {
+    setOpen(false)
+ 
+    if (typeof window !== "undefined") {
+      localStorage.setItem("welcomeStatus", "seen")
+    }
+  }, [])
+
+  
+  useEffect(() => {
+    const hasSeenModal = localStorage.getItem("welcomeStatus") === "seen"
+    if (!hasSeenModal) {
+      setOpen(true)
+    }
+  }, [])
 
   // Bloquear scroll del body mientras está abierto
   useEffect(() => {
@@ -29,7 +45,7 @@ const WelcomeModal = () => {
   const onKeyDown = useCallback((e: React.KeyboardEvent<HTMLDivElement>) => {
     if (e.key === "Escape") {
       e.stopPropagation()
-      setOpen(false)
+      handleCloseModal()
     }
 
     if (e.key === "Tab" && dialogRef.current) {
@@ -67,7 +83,7 @@ const WelcomeModal = () => {
       <button
         aria-hidden
         className="absolute inset-0 cursor-default"
-        onClick={() => setOpen(false)}
+        onClick={handleCloseModal}
         tabIndex={-1}
       />
 
@@ -83,7 +99,7 @@ const WelcomeModal = () => {
         <button
           aria-label="Cerrar"
           className="absolute right-4 top-4 rounded-full p-1 text-2xl leading-none text-gray-500 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#9B48ED]"
-          onClick={() => setOpen(false)}
+          onClick={handleCloseModal}
         >
           ×
         </button>
@@ -101,6 +117,8 @@ const WelcomeModal = () => {
             href="https://gudfyp2p.com/account/register"
             ref={firstBtnRef}
             className="inline-flex items-center justify-center rounded-xl bg-[#9B48ED] px-4 py-2 font-medium text-white transition hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-[#9B48ED]"
+            onClick={handleCloseModal}
+          
           >
             Registro 
           </Link>
