@@ -24,7 +24,7 @@ const CartTemplate = () => {
 
   return (
     <div className="bg-gray-50 md:pb-12 pb-4">
-      <div className="h-16 bg-white">
+      {/* <div className="h-16 bg-white">
         <nav className="flex items-center h-full justify-between content-container">
           <Link
             href="/cart"
@@ -38,7 +38,7 @@ const CartTemplate = () => {
 
           <div className="flex-1 basis-0" />
         </nav>
-      </div>
+      </div> */}
 
       <div className="content-container md:p-12 p-2">
         {items?.length ? (

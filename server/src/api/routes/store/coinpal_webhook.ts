@@ -33,20 +33,20 @@ const verifySignature = (data: any, secretKey: string): boolean => {
 };
 
 export default async (req: Request, res: Response): Promise<void> => {
-  console.log("ENTRA AL WEB HOOK");
+ 
   const rawBody = req.body.toString();
 
   const parsedData = querystring.parse(rawBody);
 
   const secretKey = process.env.COINPAL_API_KEY;
   if (!verifySignature(parsedData, secretKey)) {
-    console.log("INVALID SIGNATURE");
+   
     res.status(401).json({ error: "Invalid signature" });
     return;
   }
- console.log("VALID SIGNATURE", parsedData.status);
+ 
   if (parsedData.status === "paid") {
-    console.log("ENTRA A PAID");
+   
     const orderPaymentService = req.scope.resolve("orderPaymentService");
     try {
       const success = await orderPaymentService.successPayOrder(
@@ -64,7 +64,7 @@ export default async (req: Request, res: Response): Promise<void> => {
       res.status(500).json({ error: "Error interno del servidor" });
     }
   } else {
-    console.log("ENTRA A ELSE");
+    
     res
       .status(200)
       .json({ message: `Estado del pedido: ${parsedData.status}` });

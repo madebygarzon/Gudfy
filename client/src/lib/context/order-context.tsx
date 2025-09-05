@@ -284,6 +284,7 @@ export const OrderGudfyProvider = ({
     try {
       const e = await getCurrentOrder(id || "")
       setCurrentOrderr(e)
+      
     } catch (error) {
       console.error("Error al obtener la orden actual:", error)
     } finally {

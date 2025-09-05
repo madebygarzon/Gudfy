@@ -9,6 +9,7 @@ import CoinPalPayment from "../../components/coinpal"
 import ManualBinancePay from "../../components/manual-pay"
 import { useMeCustomer } from "medusa-react"
 import Loader from "@lib/loader"
+import Timer from "@lib/util/timer-order"
 
 type CompleteForm = {
   form: boolean
@@ -105,6 +106,8 @@ const CheckoutForm = ({ orderId }: { orderId: string | undefined }) => {
       ) : viewPaymentMethod === "manual_binance_pay" ? (
         <ManualBinancePay dataForm={dataForm} storeOrder={orderId} />
       ) : (
+        <>
+        
         <CheckoutSelectPayment
           cart={cart}
           completedForm={completedForm}
@@ -117,6 +120,7 @@ const CheckoutForm = ({ orderId }: { orderId: string | undefined }) => {
           dataForm={dataForm}
           setDataForm={setDataForm}
         />
+        </>
       )}
     </div>
   )

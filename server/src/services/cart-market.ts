@@ -7,6 +7,7 @@ import StoreXVariantRepository from "../repositories/store-x-variant";
 import StoreOrderRepository from "../repositories/store-order";
 import StoreVariantOrderRepository from "../repositories/store-variant-order";
 import { formatPrice } from "./utils/format-price";
+import { Customer } from "@medusajs/medusa";
 
 class CartMarketService extends TransactionBaseService {
   static LIFE_TIME = Lifetime.SCOPED;
@@ -16,6 +17,7 @@ class CartMarketService extends TransactionBaseService {
   protected readonly storeXVariantRepository_: typeof StoreXVariantRepository;
   protected readonly storeOrderRepository_: typeof StoreOrderRepository;
   protected readonly storeVariantOrderRepository_: typeof StoreVariantOrderRepository;
+  protected readonly loggedInCustomer_: Customer | null | undefined;
 
   constructor({
     lineItemRepository,
@@ -24,6 +26,7 @@ class CartMarketService extends TransactionBaseService {
     storeXVariantRepository,
     storeOrderRepository,
     storeVariantOrderRepository,
+    loggedInCustomer,
   }) {
     super(arguments[0]);
 
@@ -33,6 +36,8 @@ class CartMarketService extends TransactionBaseService {
     this.storeXVariantRepository_ = storeXVariantRepository;
     this.storeOrderRepository_ = storeOrderRepository;
     this.storeVariantOrderRepository_ = storeVariantOrderRepository;
+    this.loggedInCustomer_ = loggedInCustomer;
+
   }
 
   async recoveryCart(cart_id) {
@@ -287,12 +292,12 @@ class CartMarketService extends TransactionBaseService {
         order_status_id: "Payment_Pending_ID",
         quantity_products: quantity,
         total_price: formatPrice(totalComiBina),
-        // name: "",
-        // last_name: "",
-        // email: "",
+        name: this.loggedInCustomer_?.first_name,
+        last_name: this.loggedInCustomer_?.last_name,
+        email: this.loggedInCustomer_?.email,
         // conty: "",
         // city: "",
-        // phone: "",
+        phone: this.loggedInCustomer_?.phone,
       });
       
       // Guardamos la orden dentro de la misma transacción

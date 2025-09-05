@@ -12,7 +12,7 @@ export default async (req: Request, res: Response): Promise<void> => {
   const cartMarketService = req.scope.resolve("cartMarketService");
   const cartItems = await cartMarketService.recoveryCart(cartId);
   var result = null;
-  console.log("cartItems", cartItems, payment_method, order_id);
+  
   try {
     switch (payment_method) {
       case "automatic_binance_pay":
@@ -28,7 +28,7 @@ export default async (req: Request, res: Response): Promise<void> => {
     await storeOrderService.postMethodPaymentOrder(order_id, payment_method, result.nextStepContent);
     res.status(200).json({ result });
   } catch (error) {
-    console.log("Error en el endpoint de pago:", error);
+    console.error("Error en el endpoint de pago:", error);
     res.status(500).json({
       error: error.message,
       details: error.response?.data || error.details,
