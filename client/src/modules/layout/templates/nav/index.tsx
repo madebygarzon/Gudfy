@@ -4,7 +4,7 @@ import { useAccount } from "@lib/context/account-context"
 import { useMobileMenu } from "@lib/context/mobile-menu-context"
 import CartDropdown from "@modules/layout/components/cart-dropdown"
 import MobileMenu from "@modules/mobile-menu/templates"
-import DesktopSearchModal from "@modules/search/templates/desktop-search-modal"
+import ProductSearch from "@modules/search/components/product-search"
 import clsx from "clsx"
 import Image from "next/image"
 import { usePathname } from "next/navigation"
@@ -114,8 +114,7 @@ const Nav = () => {
               </div>
 
               <div className="hidden sm:flex ml-4 items-center h-full">
-                <DesktopSearchModal />
-                {/* {process.env.FEATURE_SEARCH_ENABLED && <DesktopSearchModal />} */}
+                <ProductSearch />
               </div>
               <div className="min-w-[350px]">{/* <CountrySelect /> */}</div>
             </div>
@@ -166,7 +165,7 @@ const Nav = () => {
                 </Link>
 
                 {/* <div className="flex sm:hidden">
-            <DesktopSearchModal />
+            <ProductSearch />
           </div> */}
               </div>
             </div>
