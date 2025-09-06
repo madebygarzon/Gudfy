@@ -7,13 +7,16 @@ import { useTranslation } from "react-i18next"
 
 // Search component displayed in the header.
 // Shows a list of matching product variants under the input field.
+
 const ProductSearch = () => {
   const [term, setTerm] = useState("")
   const [open, setOpen] = useState(false)
   const [activeIndex, setActiveIndex] = useState(-1)
   const containerRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
+
   const { results } = useVariantSearch(term)
+
   const router = useRouter()
   const { t } = useTranslation("common")
 
@@ -49,9 +52,11 @@ const ProductSearch = () => {
       setActiveIndex((prev) => (prev - 1 + results.length) % results.length)
     }
     if (e.key === "Enter") {
+
       const variant = results[activeIndex]
       if (variant) {
         router.push(`/products/${variant.product?.handle}`)
+
         setOpen(false)
         setTerm("")
       }
@@ -75,19 +80,24 @@ const ProductSearch = () => {
       {open && (
         <ul className="absolute left-0 right-0 mt-2 bg-white border border-gray-200 rounded-md shadow-lg max-h-80 overflow-auto z-50">
           {results.length > 0 ? (
+
             results.map((variant, index) => (
               <li
                 key={variant.id}
+
                 className={`flex items-center gap-2 p-2 cursor-pointer hover:bg-gray-100 ${
                   index === activeIndex ? "bg-gray-100" : ""
                 }`}
               >
                 <Link
+
                   href={`/products/${variant.product?.handle}`}
+
                   className="flex items-center gap-2 w-full"
                   onClick={() => setOpen(false)}
                 >
                   <div className="w-10 h-10 flex-shrink-0">
+
                     <Thumbnail
                       thumbnail={variant.product?.thumbnail}
                       size="bsmall"
@@ -96,6 +106,7 @@ const ProductSearch = () => {
                   <span className="text-sm text-gray-900">
                     {variant.product?.title} - {variant.title}
                   </span>
+
                 </Link>
               </li>
             ))
